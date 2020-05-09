@@ -1,0 +1,139 @@
+walkoff_version: 1.0.0
+app_version: 1.0.0
+name: hoxhunt 
+description: Hoxhunt app interface
+contact_info:
+  name: "@frikkylikeme"
+  url: https://github.com/frikky
+  email: "frikky@shuffler.io"
+actions:
+  - name: list_incidents 
+    description: Get hoxhunt incidents of a given status
+    parameters:
+      - name: apikey 
+        description: The apikey to use for the API 
+        multiline: false
+        example: "meteor-LsShkYxhQisn1ucfMI7c1CbkMC3wX7rnIZ02I8FwVXZ"
+        required: true
+        schema:
+          type: string
+      - name: organization_id 
+        description: Your organization's ID
+        multiline: false
+        example: "sk9JHBGPDPiQ6NQZ4"
+        required: true
+        schema:
+          type: string
+      - name: state
+        description: The state to look for. Defaults to OPEN
+        multiline: false
+        example: "OPEN"
+        required: false 
+        schema:
+          type: string
+      - name: limit 
+        description: The maximum amount to get
+        multiline: false
+        example: "100"
+        required: false 
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: get_incident 
+    description: Get a hoxhunt incidents with details 
+    parameters:
+      - name: apikey 
+        description: The apikey to use for the API 
+        multiline: false
+        example: "meteor-LsShkYxhQisn1ucfMI7c1CbkMC3wX7rnIZ02I8FwVXZ"
+        required: true
+        schema:
+          type: string
+      - name: organization_id 
+        description: Your organization's ID
+        multiline: false
+        example: "sk9JHBGPDPiQ6NQZ4"
+        required: true
+        schema:
+          type: string
+      - name: incident_id 
+        description: The id to look for. 
+        multiline: false
+        example: "e.g. RESOLVED or OPEN"
+        required: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: change_incident_status 
+    description: Get a hoxhunt incidents with details 
+    parameters:
+      - name: apikey 
+        description: The apikey to use for the API 
+        multiline: false
+        example: "meteor-LsShkYxhQisn1ucfMI7c1CbkMC3wX7rnIZ02I8FwVXZ"
+        required: true
+        schema:
+          type: string
+      - name: organization_id 
+        description: Your organization's ID
+        multiline: false
+        example: "sk9JHBGPDPiQ6NQZ4"
+        required: true
+        schema:
+          type: string
+      - name: incident_id 
+        description: The id to look for
+        multiline: false
+        example: "1234"
+        required: true
+        schema:
+          type: string
+      - name: state 
+        description: The state to look for. Defaults to OPEN
+        multiline: false
+        example: "RESOLVED"
+        required: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: list_threats 
+    description: Get hoxhunt threats of a given status
+    parameters:
+      - name: apikey 
+        description: The apikey to use for the API 
+        multiline: false
+        example: "meteor-LsShkYxhQisn1ucfMI7c1CbkMC3wX7rnIZ02I8FwVXZ"
+        required: true
+        schema:
+          type: string
+      - name: organization_id 
+        description: Your organization's ID
+        multiline: false
+        example: "sk9JHBGPDPiQ6NQZ4"
+        required: true
+        schema:
+          type: string
+      - name: state
+        description: The state to look for. Defaults to OPEN
+        multiline: false
+        example: "OPEN"
+        required: false 
+        schema:
+          type: string
+      - name: limit 
+        description: The maximum amount to get
+        multiline: false
+        example: "100"
+        required: false 
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+large_image: data:image/png;base64,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

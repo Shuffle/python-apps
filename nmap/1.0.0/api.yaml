@@ -1,0 +1,128 @@
+walkoff_version: 1.0.0
+app_version: 1.0.0
+name: nmap
+description: A simple app to interact with map
+contact_info:
+  name: Walkoff Team
+  url: https://github.com/nsacyber/walkoff
+  email: walkoff@nsa.gov
+license_info:
+  name: Creative Commons
+  url: https://github.com/nsacyber/WALKOFF/blob/master/LICENSE.md
+actions:
+  - name: run_scan
+    description: Runs an nmap scan, returns results as string or filename
+    parameters:
+      - name: targets
+        description: The target(s) to scan, comma separated values, CIDR supported
+        parallelizable: true
+        required: true
+        schema:
+          type: array
+      - name: options
+        description: see nmap manpage -- some options require root
+        required: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: array
+      description: xml string on nmap output
+  - name: get_hosts_from_scan
+    description: Gets the list of active hosts on a network from an nmap scan
+    parameters:
+      - name: targets
+        required: true
+        schema:
+          type: array
+        description: The target (or targets in CIDR notation) to scan
+      - name: options
+        required: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+      description: xml string on nmap output
+  - name: parse_xml_for_linux
+    description: looks into xml nmap for osfamily to match Linux
+    parameters:
+      - name: nmap_arr
+        required: true
+        schema:
+          type: array
+        description: nmap output as xml array
+    returns:
+      schema:
+        type: array
+      description: os
+  - name: parse_xml_for_windows
+    description: looks into xml nmap for osfamily to match Windows
+    parameters:
+      - name: nmap_arr
+        required: true
+        schema:
+          type: array
+        description: nmap output as xml array
+    returns:
+      schema:
+        type: array
+      description: os
+  - name: parse_xml_for_linux_from_file
+    description: looks into xml nmap for osfamily
+    parameters:
+      - name: nmap_file
+        required: true
+        schema:
+          type: string
+        description: nmap output as xml filename
+    returns:
+      schema:
+        type: array
+      description: os
+  - name: parse_xml_for_windows_from_file
+    description: looks into xml nmap for osfamily
+    parameters:
+      - name: nmap_file
+        required: true
+        schema:
+          type: string
+        description: nmap output as xml filename
+    returns:
+      schema:
+        type: array
+      description: os
+  - name: xml_to_json
+    description: transforms xml nmap results into json
+    parameters:
+      - name: nmap_out
+        required: true
+        schema:
+          type: string
+        description: nmap output either as xml filename or string
+      - name: is_file
+        required: true
+        schema:
+          type: boolean
+        description: whether the previous parameter is a filename or string
+    returns:
+      schema:
+        type: string
+      description: xml string on nmap output
+  - name: ports_and_hosts_from_json
+    description: retrieves the hosts and ports from an nmap scan for use with OpenVAS
+    parameters:
+      - name: nmap_json
+        required: true
+        description: json string or filename
+        schema:
+          type: string
+      - name: is_file
+        required: true
+        description: whether or not first input is a filename or not
+        schema:
+          type: boolean
+        placeholder: false
+    returns:
+      schema:
+        type: string

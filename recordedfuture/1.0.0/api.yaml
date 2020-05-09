@@ -1,0 +1,57 @@
+walkoff_version: 1.0.0
+app_version: 1.0.0
+name: recordedfuture
+description: Recordedfuture example app 
+contact_info:
+  name: "@frikkylikeme"
+  url: https://github.com/frikky
+  email: "frikky@shuffler.io"
+actions:
+  - name: get_alerts 
+    description: Gets alerts from recorded future
+    parameters:
+      - name: apikey
+        description: Apikey for Recorded Future
+        multiline: false
+        example: "asdf1234"
+        required: true
+        schema:
+          type: string
+      - name: status 
+        description: Apikey for Recorded Future
+        multiline: false
+        example: "actionable"
+        required: false 
+        schema:
+          type: string
+      - name: limit
+        description: Limit of alerts
+        multiline: false
+        example: "10"
+        required: false 
+        schema:
+          type: string 
+    returns:
+      schema:
+        type: string
+  - name: get_alert
+    description: Gets alerts from recorded future
+    parameters:
+      - name: apikey
+        description: Apikey for Recorded Future
+        multiline: false
+        example: "asdf1234"
+        required: true
+        schema:
+          type: string
+      - name: id
+        description: The alert ID to get
+        multiline: false
+        example: "bvYNuu"
+        required: true 
+        schema:
+          type: string 
+    returns:
+      schema:
+        type: string
+large_image: data:image/png;base64,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

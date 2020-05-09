@@ -1,0 +1,217 @@
+walkoff_version: 1.0.0
+app_version: 1.0.0
+name: netcraft 
+description: Netcraft app interface
+contact_info:
+  name: "@frikkylikeme"
+  url: https://github.com/frikky
+  email: "frikky@shuffler.io"
+actions:
+  - name: report_attack 
+    description: Report an attack for takedown
+    parameters:
+      - name: user 
+        description: The user to use for the API 
+        multiline: false
+        example: "Username"
+        required: true
+        schema:
+          type: string
+      - name: password 
+        description: The password to use for the API 
+        multiline: false
+        example: "p@ssw0rd"
+        required: true
+        schema:
+          type: string
+      - name: attack 
+        description: The url or email you want to report 
+        multiline: false
+        example: "https://google.com"
+        required: true
+        schema:
+          type: string
+      - name: comment 
+        description: A comment to use for the takedown
+        multiline: false
+        example: "Thanks for taking down my phishing site :)"
+        required: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: get_takedowns
+    description: Get a takedown by multiple values
+    parameters:
+      - name: user 
+        description: The user to use for the API 
+        multiline: false
+        example: "Username"
+        required: true
+        schema:
+          type: string
+      - name: password 
+        description: The password to use for the API 
+        multiline: false
+        example: "p@ssw0rd"
+        required: true
+        schema:
+          type: string
+      - name: id 
+        description: The id of the takedown 
+        multiline: false
+        example: "123456"
+        required: false
+        schema:
+          type: string
+      - name: group_id 
+        description: The groupid of the takedown
+        multiline: false
+        example: "654321"
+        required: false
+        schema:
+          type: string
+      - name: domain
+        description: The domain to search for
+        multiline: false
+        example: "example.com"
+        required: false
+        schema:
+          type: string
+      - name: attack_url 
+        description: The url to search for
+        multiline: false
+        example: "https://example.com/malicious"
+        required: false
+        schema:
+          type: string
+      - name: ip
+        description: The IP to search for
+        multiline: false
+        example: "1.2.3.4"
+        required: false
+        schema:
+          type: string
+      - name: domain_attack
+        description: Is it a domain attack?
+        multiline: false
+        example: "yes"
+        required: false
+        schema:
+          type: string
+      - name: statuses
+        description: Statuses to search for
+        multiline: false
+        example: "Verified,Contacted Police"
+        required: false
+        schema:
+          type: string
+      - name: phishkit_only 
+        description: Requires phishkit?
+        multiline: false
+        example: "false"
+        required: false
+        schema:
+          type: string
+
+    async def get_takedowns(user, password, id="", group_id="", url="", ip="", domain_attack="", statuses="", phishkit_only=""): 
+    returns:
+      schema:
+        type: string
+  - name: get_takedown 
+    description: Get a takedown by its id or group_id
+    parameters:
+      - name: user 
+        description: The user to use for the API 
+        multiline: false
+        example: "Username"
+        required: true
+        schema:
+          type: string
+      - name: password 
+        description: The password to use for the API 
+        multiline: false
+        example: "p@ssw0rd"
+        required: true
+        schema:
+          type: string
+      - name: id 
+        description: The id of the takedown 
+        multiline: false
+        example: "123456"
+        required: false
+        schema:
+          type: string
+      - name: group_id 
+        description: The groupid of the takedown
+        multiline: false
+        example: "654321"
+        required: false
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: escalate_takedown 
+    description: Use to escalate a takedown to manual
+    parameters:
+      - name: user 
+        description: The user to use for the API 
+        multiline: false
+        example: "Username"
+        required: true
+        schema:
+          type: string
+      - name: password 
+        description: The password to use for the API 
+        multiline: false
+        example: "p@ssw0rd"
+        required: true
+        schema:
+          type: string
+      - name: id
+        description: The ID of the item to take down
+        multiline: false
+        example: "123456"
+        required: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: screenshot 
+    description: Take a screenshot of an URL using Netcraft
+    parameters:
+      - name: user 
+        description: The user to use for the API 
+        multiline: false
+        example: "Username"
+        required: true
+        schema:
+          type: string
+      - name: password 
+        description: The password to use for the API 
+        multiline: false
+        example: "p@ssw0rd"
+        required: true
+        schema:
+          type: string
+      - name: takedownurl
+        description: The URL to screenshot
+        multiline: false
+        example: "https://malicious.com"
+        required: true 
+        schema:
+          type: string
+      - name: proxies 
+        description: The proxies to use based on netcraft standards
+        multiline: false
+        example: "dk,us,jp"
+        required: false
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+large_image: data:image/png;base64,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

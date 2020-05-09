@@ -1,0 +1,57 @@
+walkoff_version: 1.0.0
+app_version: 1.0.0
+name: otrs 
+description: otrs app 
+contact_info:
+  name: "@frikkylikeme"
+  url: https://github.com/frikky
+  email: "frikky@shuffler.io"
+actions:
+  - name: get_ticket 
+    description: Get ticket ids 
+    parameters:
+      - name: url 
+        description: The url your instance is at
+        multiline: false
+        example: "test.service-now.com"
+        required: true
+        schema:
+          type: string
+      - name: username 
+        description: The user to authenticate with
+        multiline: false
+        example: "username12345"
+        required: true
+        schema:
+          type: string
+      - name: password 
+        description: The password for the user to authenticate with
+        multiline: false
+        example: "pw1234"
+        required: true
+        schema:
+          type: string
+      - name: table_name 
+        description: The type to get. Empty as default
+        multiline: false
+        example: "INCIDENT"
+        required: true
+        schema:
+          type: string
+      - name: record_id 
+        description: The ID to get from the table
+        multiline: false
+        example: "INC123456"
+        required: true 
+        schema:
+          type: string
+      - name: number 
+        description: The number to get instead of record_id
+        multiline: false
+        example: "20"
+        required: false
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string

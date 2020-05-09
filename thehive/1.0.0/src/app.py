@@ -1,0 +1,196 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import asyncio
+import time
+import random
+
+import requests
+import thehive4py
+from thehive4py.api import TheHiveApi
+from thehive4py.query import *
+from thehive4py.models import Alert
+
+from walkoff_app_sdk.app_base import AppBase
+
+class TheHive(AppBase):
+    """
+    An example of a Walkoff App.
+    Inherit from the AppBase class to have Redis, logging, and console logging set up behind the scenes.
+    """
+    __version__ = "1.0.0"
+    app_name = "thehive"
+
+    def __init__(self, redis, logger, console_logger=None):
+        """
+        Each app should have this __init__ to set up Redis and logging.
+        :param redis:
+        :param logger:
+        :param console_logger:
+        """
+        super().__init__(redis, logger, console_logger)
+
+    async def search_cases(self, apikey, url, title_query):
+        self.thehive = TheHiveApi(url, apikey)
+
+        response = self.thehive.find_cases(query=String("title:'%s'" % title_query), range='all', sort=[])
+        return response.text
+
+    async def search_alerts(self, apikey, url, title_query):
+        self.thehive = TheHiveApi(url, apikey)
+
+        response = self.thehive.find_alerts(query=String("title:'%s'" % title_query), range='all', sort=[])
+        return response.text
+
+    async def create_alert(self, apikey, url, type, source, sourceref, title, description="", tlp=1, severity=1, tags=""):
+        self.thehive = TheHiveApi(url, apikey)
+        if tags:
+            if tags.contains(", "):
+                tags = tags.split(", ")
+            else:
+                tags = tags.split(",")
+        else:
+            tags = []
+
+        # Wutface fix
+        if not tlp:
+            tlp = 1
+        if not severity:
+            severity = 1
+
+        if isinstance(tlp, str):
+            if not tlp.isdigit():
+                return "TLP needs to be a number from 0-2, not %s" % tlp
+            tlp = int(tlp)
+        if isinstance(severity, str):
+            if not severity.isdigit():
+                return "Severity needs to be a number from 0-2, not %s" % tlp
+
+            severity = int(severity)
+
+        if tlp > 2 or tlp < 0:
+            return "TLP needs to be a number from 0-2, not %d" % tlp
+        if severity > 2 or severity < 0:
+            return "Severity needs to be a number from 0-2, not %d" % tlp
+
+        alert = Alert(
+            title=title,
+            tlp=tlp,
+            severity=severity,
+            tags=tags,
+            description=description,
+            type=type,
+            source=source,
+            sourceRef=sourceref,
+        )
+
+        try:
+            ret = self.thehive.create_alert(alert)
+            return ret.text
+        except requests.exceptions.ConnectionError as e:
+            return "ConnectionError: %s" % e
+
+    # Gets an item based on input. E.g. field_type = Alert
+    async def get_item(self, apikey, url, field_type, cur_id): 
+        self.thehive = TheHiveApi(url, apikey)
+
+        newstr = ""
+        ret = ""
+        if field_type.lower() == "alert":
+            ret = self.thehive.get_alert(cur_id) 
+        elif field_type.lower() == "case":
+            ret = self.thehive.get_case(cur_id)
+        elif field_type.lower() == "case_observables":
+            ret = self.thehive.get_case_observables(cur_id)
+        elif field_type.lower() == "case_task":
+            ret = self.thehive.get_case_task(cur_id)
+        elif field_type.lower() == "case_tasks":
+            ret = self.thehive.get_case_tasks(cur_id)
+        elif field_type.lower() == "case_template":
+            ret = self.thehive.get_case_tasks(cur_id)
+        elif field_type.lower() == "linked_cases":
+            ret = self.thehive.get_linked_cases(cur_id)
+        elif field_type.lower() == "task_log":
+            ret = self.thehive.get_task_log(cur_id)
+        elif field_type.lower() == "task_logs":
+            ret = self.thehive.get_task_logs(cur_id)
+        else:
+            return "%s is not implemented. See https://github.com/frikky/walkoff-integrations for more info." % field_type
+
+        newstr = str(ret.json()).replace("\'", "\"")
+        newstr = newstr.replace("True", "true")
+        newstr = newstr.replace("False", "false")
+        return newstr
+
+    # Not sure what the data should be
+    async def close_alert(self, apikey, url, alert_id):
+        url = "%s/api/alert/%s/markAsRead" % (url, alert_id)
+        ret = requests.post(
+            url,
+            headers={
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer %s' % apikey
+            }
+        )
+
+        return ret.text
+
+    # Not sure what the data should be
+    async def reopen_alert(self, apikey, url, alert_id):
+        url = "%s/api/alert/%s/markAsUnread" % (url, alert_id)
+        ret = requests.post(
+            url,
+            headers={
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer %s' % apikey
+            }
+        )
+
+        return ret.text
+
+    # Not sure what the data should be
+    async def update_field(self, apikey, url, field_type, cur_id, field, data):
+        # This is kinda silly but..
+        if field_type.lower() == "alert":
+            newdata = {}
+
+            if data.startswith("%s"): 
+                ticket = self.thehive.get_alert(cur_id)
+                if ticket.status_code != 200:
+                    pass 
+            
+                newdata[field] = "%s%s" % (ticket.json()[field], data[2:])
+            else:
+                newdata[field] = data
+
+            # Bleh
+            url = "%s/api/alert/%s" % (url, cur_id)
+            if field == "status":
+                if data == "New" or data == "Updated":
+                    url = "%s/markAsUnread" % url
+                elif data == "Ignored": 
+                    url = "%s/markAsRead" % url
+
+                ret = requests.post(
+                    url,
+                    headers={
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer %s' % apikey
+                    }
+                )
+            else:
+                ret = requests.patch(
+                    url,
+                    headers={
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer %s' % apikey
+                    }, 
+                    json=newdata,
+                )
+
+            return str(ret.status_code)
+        else:
+            return "%s is not implemented. See https://github.com/frikky/walkoff-integrations for more info." % field_type
+
+if __name__ == "__main__":
+    asyncio.run(TheHive.run(), debug=True)

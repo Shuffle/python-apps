@@ -1,0 +1,72 @@
+walkoff_version: 1.0.0
+app_version: 1.0.0
+name: carbon_black 
+description: Carbon Black integration with WALKOFF 
+contact_info:
+  name: "@frikkylikeme" 
+  url: https://github.com/frikky
+actions:
+  - name: isolate 
+    description: Isolate a host in Carbon Black
+    parameters:
+      - name: url 
+        description: The CB URL 
+        required: true
+        schema:
+          type: string 
+      - name: token
+        description: The carbon black API-key 
+        required: true
+        schema:
+          type: string 
+      - name: hostname 
+        description: The hostname of the host to isolate
+        required: true
+        schema:
+          type: string 
+    returns:
+      schema:
+        type: boolean 
+  - name: process_search
+    description: Runs a process search and returns the amount found 
+    parameters:
+      - name: url 
+        description: The CB URL 
+        required: true
+        schema:
+          type: string 
+      - name: token
+        description: The carbon black API-key 
+        required: true
+        schema:
+          type: string 
+      - name: query 
+        description: The searchquery to use
+        required: true
+        schema:
+          type: string 
+    returns:
+      schema:
+        type: string 
+  - name: binary_search
+    description: Runs a binary search and returns the amount found 
+    parameters:
+      - name: url 
+        description: The CB URL 
+        required: true
+        schema:
+          type: string 
+      - name: token
+        description: The carbon black API-key 
+        required: true
+        schema:
+          type: string 
+      - name: query 
+        description: The searchquery to use
+        required: true
+        schema:
+          type: string 
+    returns:
+      schema:
+        type: string 
+large_image: data:image/png;base64,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

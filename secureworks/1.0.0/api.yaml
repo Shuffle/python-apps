@@ -1,0 +1,228 @@
+walkoff_version: 1.0.0
+app_version: 1.0.0
+name: secureworks 
+description: secureworks app 
+contact_info:
+  name: "@frikkylikeme"
+  url: https://github.com/frikky
+  email: "frikky@shuffler.io"
+actions:
+  - name: get_ticket_ids 
+    description: Get ticket ids 
+    parameters:
+      - name: username
+        description: The user to authenticate with
+        multiline: false
+        example: "username12345"
+        required: true
+        schema:
+          type: string
+      - name: password 
+        description: The password for the user to authenticate with
+        multiline: false
+        example: "username12345"
+        required: true
+        schema:
+          type: string
+      - name: tickettype 
+        description: The type to get. Empty as default
+        multiline: false
+        example: "INCIDENT"
+        required: false
+        schema:
+          type: string
+      - name: grouptype 
+        description: The grouptype of ticket to get. Empty as default
+        multiline: false
+        example: "SECURITY"
+        required: false
+        schema:
+          type: string
+      - name: limit 
+        description: The amount of ticket IDs to get
+        multiline: false
+        example: "10"
+        required: false
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: get_ticket
+    description: Get ticket
+    parameters:
+      - name: username
+        description: The user to authenticate with
+        multiline: false
+        example: "username12345"
+        required: true
+        schema:
+          type: string
+      - name: password 
+        description: The password for the user to authenticate with
+        multiline: false
+        example: "username12345"
+        required: true
+        schema:
+          type: string
+      - name: ticketId 
+        description: The ticket ID to get
+        multiline: false
+        example: "IN1234567"
+        required: true
+        schema:
+          type: string
+      - name: includeWorklogs
+        description: To get worklog information in the ticket or not. Defaults to true
+        multiline: false
+        example: "true"
+        required: false
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: close_ticket 
+    description: Close a ticket
+    parameters:
+      - name: username
+        description: The user to authenticate with
+        multiline: false
+        example: "username12345"
+        required: true
+        schema:
+          type: string
+      - name: password 
+        description: The password for the user to authenticate with
+        multiline: false
+        example: "username12345"
+        required: true
+        schema:
+          type: string
+      - name: ticketId 
+        description: The ticket ID to get
+        multiline: false
+        example: "IN1234567"
+        required: true
+        schema:
+          type: string
+      - name: closeCode
+        description: The code to use
+        multiline: false
+        example: "False Positive"
+        required: true 
+        schema:
+          type: string
+      - name: worklogContent 
+        description: The information to add as last note
+        multiline: false
+        example: "False because of blah blah"
+        required: true 
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: add_worklog 
+    description: Add info to a ticket
+    parameters:
+      - name: username
+        description: The user to authenticate with
+        multiline: false
+        example: "username12345"
+        required: true
+        schema:
+          type: string
+      - name: password 
+        description: The password for the user to authenticate with
+        multiline: false
+        example: "username12345"
+        required: true
+        schema:
+          type: string
+      - name: ticketId 
+        description: The ticket ID to get
+        multiline: false
+        example: "IN1234567"
+        required: true
+        schema:
+          type: string
+      - name: body 
+        description: The information to add as note
+        multiline: false
+        example: "This is an example note"
+        required: true 
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: assign_ticket 
+    description: Assign a ticket to Secureworks
+    parameters:
+      - name: username
+        description: The user to authenticate with
+        multiline: false
+        example: "username12345"
+        required: true
+        schema:
+          type: string
+      - name: password 
+        description: The password for the user to authenticate with
+        multiline: false
+        example: "username12345"
+        required: true
+        schema:
+          type: string
+      - name: ticketId 
+        description: The ticket ID to get
+        multiline: false
+        example: "IN1234567"
+        required: true
+        schema:
+          type: string
+      - name: body 
+        description: The information to add as note
+        multiline: false
+        example: "This is an example note"
+        required: true 
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: acknowledge_ticket 
+    description: Assign a ticket to Secureworks
+    parameters:
+      - name: username
+        description: The user to authenticate with
+        multiline: false
+        example: "username12345"
+        required: true
+        schema:
+          type: string
+      - name: password 
+        description: The password for the user to authenticate with
+        multiline: false
+        example: "username12345"
+        required: true
+        schema:
+          type: string
+      - name: ticketId 
+        description: The ticket ID to get
+        multiline: false
+        example: "IN1234567"
+        required: true
+        schema:
+          type: string
+      - name: version 
+        description: The version to acknowledge. $ticket.version as JSON
+        multiline: false
+        example: "93a35c3f57e10f1deea1c193b8f4b683fa58522a541ddc6397c888bf9cdfce2500897e1b737a1833a8c0bf9de11c487aa42786"
+        required: true 
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+large_image: data:image/png;base64,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

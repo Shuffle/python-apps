@@ -1,0 +1,102 @@
+walkoff_version: 1.0.0
+app_version: 1.0.0
+name: cortex 
+environment: onprem
+description: Cortex implementation with WALKOFF
+contact_info:
+  name: "@frikkylikeme" 
+  url: https://github.com/frikky
+actions:
+  - name: get_available_analyzers 
+    description: Gets a list of all analyzers
+    parameters:
+      - name: apikey 
+        description: The apikey to use
+        example: ""
+        required: true
+        schema:
+          type: string
+      - name: url 
+        description: The URL to target 
+        example: "http://localhost:9001"
+        required: true
+        schema:
+          type: string
+      - name: datatype 
+        description: The datatype to search for (e.g. domain, ip)
+        example: "domain"
+        required: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: run_available_analyzers
+    description: Runs all valid cortex analyzers for the datatype
+    parameters:
+      - name: data 
+        description: The data to analyze
+        required: true
+        schema:
+          type: string
+      - name: datatype
+        description: The datatype to run  
+        required: true
+        schema:
+          type: string
+      - name: message 
+        description: The message to add, default blank 
+        required: false 
+        schema:
+          type: string
+      - name: tlp 
+        description: The tlp to use (0-3), default 1
+        required: false 
+        schema:
+          type: tlp
+    returns:
+      schema:
+        type: string 
+  - name: run_analyzer 
+    description: Run a cortex analyzer 
+    parameters:
+      - name: analyzer_name 
+        description: The analyzer to run  
+        required: true
+        schema:
+          type: string
+      - name: data 
+        description: The data to analyze
+        required: true
+        schema:
+          type: string
+      - name: datatype
+        description: The datatype to run  
+        required: true
+        schema:
+          type: string
+      - name: message 
+        description: The message to add, default blank 
+        required: false 
+        schema:
+          type: string
+      - name: tlp 
+        description: The tlp to use (0-3), default 1
+        required: false 
+        schema:
+          type: tlp
+    returns:
+      schema:
+        type: string
+  - name: get_analyzer_result 
+    description: Get the result from an analyzer
+    parameters:
+      - name: id 
+        description: The id of the report to get
+        required: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+large_image: data:image/png;base64,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
