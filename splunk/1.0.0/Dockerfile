@@ -23,5 +23,4 @@ RUN apk --no-cache add --update libmagic
 
 # Finally, lets run our app!
 WORKDIR /app
-RUN cp -r /app/walkoff_app_sdk/common /app/common
 CMD python app.py --log-level DEBUG
