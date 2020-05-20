@@ -38,6 +38,7 @@ actions:
       - name: call
         description: message to repeat
         required: true
+        multiline: true
         schema:
           type: string
     returns:

@@ -45,10 +45,12 @@ class TheHive(AppBase):
     async def create_alert(self, apikey, url, type, source, sourceref, title, description="", tlp=1, severity=1, tags=""):
         self.thehive = TheHiveApi(url, apikey)
         if tags:
-            if tags.contains(", "):
+            if ", " in tags:
                 tags = tags.split(", ")
-            else:
+            elif "," in tags:
                 tags = tags.split(",")
+            else:
+                tags = []
         else:
             tags = []
 
