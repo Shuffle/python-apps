@@ -9,11 +9,14 @@ import requests
 
 from walkoff_app_sdk.app_base import AppBase
 
+print("Start of file..")
+
 class HTTP(AppBase):
     __version__ = "1.0.0"
     app_name = "http"  
 
     def __init__(self, redis, logger, console_logger=None):
+        print("INIT")
         """
         Each app should have this __init__ to set up Redis and logging.
         :param redis:
@@ -136,6 +139,7 @@ class HTTP(AppBase):
 
 # Run the actual thing after we've checked params
 def run(request):
+    print("Starting!")
     action = request.get_json() 
     print(action)
     print(type(action))

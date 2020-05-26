@@ -5,6 +5,8 @@ import socket
 import asyncio
 import requests
 
+from walkoff_app_sdk.app_base import AppBase
+
 class Servicenow(AppBase):
     __version__ = "1.0.0"
     app_name = "servicenow"  

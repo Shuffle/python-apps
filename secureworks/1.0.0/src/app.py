@@ -6,7 +6,9 @@ import socket
 import asyncio
 import requests
 
-class HTTP(AppBase):
+from walkoff_app_sdk.app_base import AppBase
+
+class Secureworks(AppBase):
     __version__ = "1.0.0"
     app_name = "secureworks"  
 
@@ -134,7 +136,7 @@ def run(request):
     current_execution_id = action.get("execution_id")
 	
     if action and "name" in action and "app_name" in action:
-        asyncio.run(HTTP.run(action), debug=True)
+        asyncio.run(Secureworks.run(action), debug=True)
         return f'Attempting to execute function {action["name"]} in app {action["app_name"]}' 
     else:
         return f'Invalid action'
