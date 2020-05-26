@@ -177,3 +177,5 @@ def run(request):
         return f'Invalid action'
 
 	
+if __name__ == "__main__":
+    asyncio.run(Lastline.run(), debug=True)

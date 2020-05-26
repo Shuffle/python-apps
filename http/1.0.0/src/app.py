@@ -9,8 +9,6 @@ import requests
 
 from walkoff_app_sdk.app_base import AppBase
 
-print("Start of file..")
-
 class HTTP(AppBase):
     __version__ = "1.0.0"
     app_name = "http"  
@@ -139,7 +137,7 @@ class HTTP(AppBase):
 
 # Run the actual thing after we've checked params
 def run(request):
-    print("Starting!")
+    print("Starting cloud!")
     action = request.get_json() 
     print(action)
     print(type(action))
@@ -153,4 +151,4 @@ def run(request):
         return f'Invalid action'
 
 if __name__ == "__main__":
-    asyncio.run(HelloWorld.run(), debug=True)
+    asyncio.run(HTTP.run(), debug=True)

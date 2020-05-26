@@ -52,3 +52,6 @@ def run(request):
         return f'Attempting to execute function {action["name"]} in app {action["app_name"]}' 
     else:
         return f'Invalid action'
+
+if __name__ == "__main__":
+    asyncio.run(Recordedfuture.run(), debug=True)
