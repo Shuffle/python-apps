@@ -49,6 +49,7 @@ actions:
         description: The description to use
         example: ""
         required: false
+        multiline: true
         schema:
           type: string
       - name: tlp 
