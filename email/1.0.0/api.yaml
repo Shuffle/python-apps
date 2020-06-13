@@ -7,9 +7,71 @@ contact_info:
   url: https://github.com/frikky
   email: "frikky@shuffler.io"
 actions:
-  - name: send_mail 
+  - name: send_mail
+    description: Send an email with smtp
+    parameters:
+      - name: username 
+        description: The sender of the mail
+        multiline: false
+        example: "frikky@shuffler.io"
+        required: true
+        schema:
+          type: string
+      - name: password
+        description: The password to log in with SMTP
+        multiline: false
+        example: "******************"
+        required: true
+        schema:
+          type: string
+      - name: smtp_host 
+        description: The host of the SMTP
+        multiline: false 
+        example: "smtp-mail.outlook.com"
+        required: true
+        schema:
+          type: string
+      - name: recipient 
+        description: The receiver(s) of the email
+        multiline: true 
+        example: "frikky@shuffler.io,frikky@shuffler.io"
+        required: true
+        schema:
+          type: string
+       - name: subject 
+        description: The subject of the email
+        multiline: true 
+        example: "This is a subject, hello there :)"
+        required: true
+        schema:
+          type: string
+      - name: body
+        description: The body to add to the mail
+        multiline: true 
+        example: "This is an email alert from Shuffler.io :)"
+        required: true
+        schema:
+          type: string
+      - name: smtp_port 
+        description: The port to use for SMTP
+        multiline: true 
+        example: "587"
+        required: false 
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: send_mail_shuffle
     description: Run a curl command
     parameters:
+      - name: apikey 
+        description: Your https://shuffler.io apikey
+        multiline: false
+        example: "https://shuffler.io apikey"
+        required: true
+        schema:
+          type: string
       - name: recipients
         description: The recipients of the mail
         multiline: false

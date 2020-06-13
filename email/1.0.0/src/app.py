@@ -21,7 +21,8 @@ class Email(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
-    async def send_mail(self, recipients, subject, body):
+    # This is a mail function of Shuffle
+    async def send_mail_shuffle(self, apikey, recipients, subject, body):
         targets = [recipients]
         if ", " in recipients:
             targets = recipients.split(", ")
@@ -36,9 +37,35 @@ class Email(AppBase):
         }
 
         url = "https://shuffler.io/functions/sendmail"
-        key = "377469e8-dd5d-4521-8d9e-416d8d2f6fd5"
-        headers={"Authorization": "Bearer %s" % key}
+        headers={"Authorization": "Bearer %s" % apikey}
         return requests.post(url, headers=headers, json=data).text
+
+    async def send_mail_smtp(self, username, password, smtp_host, recipient, subject, body, smtp_port=587):
+        if type(smtp_port) == str:
+            smtp_port = int(smtp_port)
+        
+        try:
+            s = smtplib.SMTP(host=smtp_host, port=smtp_port)
+        except socket.gaierror:
+            return "Bad SMTP host or port"
+            
+        s.starttls()
+
+        try:
+            s.login(username, password)
+        except smtplib.SMTPAuthenticationError:
+            return "Bad username or password"
+        
+        # setup the parameters of the message
+        msg = MIMEMultipart()       
+        msg['From']=username
+        msg['To']=recipient
+        msg['Subject']=subject
+        msg.attach(MIMEText(body, 'plain'))
+        
+        s.send_message(msg)
+        print("Successfully sent email with subject %s to %s" % (subject, recipient))
+        return "Email sent!"
 
 # Run the actual thing after we've checked params
 def run(request):
