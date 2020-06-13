@@ -90,7 +90,7 @@ actions:
         description: The port to use for SMTP
         multiline: true 
         example: "587"
-        required: false 
+        required: true 
         schema:
           type: string
     returns:

@@ -6,6 +6,10 @@ import socket
 import asyncio
 import requests
 
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 from walkoff_app_sdk.app_base import AppBase
 
 class Email(AppBase):
@@ -40,9 +44,12 @@ class Email(AppBase):
         headers={"Authorization": "Bearer %s" % apikey}
         return requests.post(url, headers=headers, json=data).text
 
-    async def send_mail(self, username, password, smtp_host, recipient, subject, body, smtp_port=587):
+    async def send_mail(self, username, password, smtp_host, recipient, subject, body, smtp_port):
         if type(smtp_port) == str:
-            smtp_port = int(smtp_port)
+            try:
+                smtp_port = int(smtp_port)
+            except ValueError:
+                return "SMTP port needs to be a number (Current: %s)" % smtp_port
         
         try:
             s = smtplib.SMTP(host=smtp_host, port=smtp_port)
