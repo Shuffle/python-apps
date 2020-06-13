@@ -40,7 +40,7 @@ class Email(AppBase):
         headers={"Authorization": "Bearer %s" % apikey}
         return requests.post(url, headers=headers, json=data).text
 
-    async def send_mail_smtp(self, username, password, smtp_host, recipient, subject, body, smtp_port=587):
+    async def send_mail(self, username, password, smtp_host, recipient, subject, body, smtp_port=587):
         if type(smtp_port) == str:
             smtp_port = int(smtp_port)
         
