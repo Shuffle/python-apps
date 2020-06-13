@@ -72,7 +72,7 @@ class Email(AppBase):
         
         s.send_message(msg)
         print("Successfully sent email with subject %s to %s" % (subject, recipient))
-        return "Email sent!"
+        return "Email sent to %s!" % recipient
 
 # Run the actual thing after we've checked params
 def run(request):

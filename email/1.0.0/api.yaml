@@ -67,14 +67,14 @@ actions:
           type: string
       - name: recipient 
         description: The receiver(s) of the email
-        multiline: true 
+        multiline: false 
         example: "frikky@shuffler.io,frikky@shuffler.io"
         required: true
         schema:
           type: string
       - name: subject 
         description: The subject of the email
-        multiline: true 
+        multiline: false 
         example: "This is a subject, hello there :)"
         required: true
         schema:
@@ -88,7 +88,7 @@ actions:
           type: string
       - name: smtp_port 
         description: The port to use for SMTP
-        multiline: true 
+        multiline: false 
         example: "587"
         required: true 
         schema:
