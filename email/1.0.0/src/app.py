@@ -120,20 +120,17 @@ class Email(AppBase):
     
             if data == None:
                 continue
-    
-            parseddata = []
-            for item in data[0]:
-                try:
-                    newitem = item.decode("utf-8")
-                except UnicodeDecodeError as err:
-                    print("Failed to decode part of mail %s" % id_list[i])
-                    newitem = "Failed to decode mail %s" % id_list[i]
-                    #parseddata.append(item)
-                    #continue
 
-                parseddata.append(newitem)
+            try:
+                data = data[0][1].decode("utf-8")
+            except UnicodeDecodeError as err:
+                print("Failed to decode part of mail %s" % id_list[i])
+                data = "Failed to decode mail %s" % id_list[i]
+            except IndexError as err:
+                print("Indexerror: %s" % err)
+                data = "Something went wrong while parsing. Check logs."
 
-            emails.append({"id": id_list[i].decode("utf-8"), "data": parseddata})
+            emails.append({"id": id_list[i].decode("utf-8"), "data": data})
 
         return json.dumps(emails)
 
