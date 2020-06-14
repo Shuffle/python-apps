@@ -75,7 +75,7 @@ class Email(AppBase):
         print("Successfully sent email with subject %s to %s" % (subject, recipient))
         return "Email sent to %s!" % recipient
 
-    async def get_mail_imap(self, username, password, imap_server, foldername="inbox", amount=10):
+    async def get_mail_imap(self, username, password, imap_server, foldername, amount):
         if type(amount) == str:
             try:
                 amount = int(amount)
