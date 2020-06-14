@@ -96,7 +96,7 @@ class Email(AppBase):
         try:
             # IMAP search queries, e.g. "seen" or "read"
             # https://www.rebex.net/secure-mail.net/features/imap-search.aspx
-            type, data = mail.search(None, 'ALL')
+            thistype, data = mail.search(None, 'ALL')
         except imaplib.IMAP4.error as error:
             return "Couldn't find folder %s." % (foldername)
     
@@ -140,8 +140,6 @@ class Email(AppBase):
 # Run the actual thing after we've checked params
 def run(request):
     action = request.get_json() 
-    print(action)
-    print(type(action))
     authorization_key = action.get("authorization")
     current_execution_id = action.get("execution_id")
 	
