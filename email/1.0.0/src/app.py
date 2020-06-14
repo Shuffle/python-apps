@@ -110,6 +110,7 @@ class Email(AppBase):
         except TypeError:
             return "Error getting mail. Data: %s" % data
         
+        # FIXME: Should parse as JSON.
         emails = []
         for i in range(len(id_list)-1, len(id_list)-amount, -1):
             resp, data = mail.fetch(id_list[i], "(RFC822)")
@@ -120,10 +121,21 @@ class Email(AppBase):
             if data == None:
                 continue
     
-            emails.append({"id": id_list[i].decode("utf-8"), "data": data})
+            parseddata = []
+            for item in data[0]:
+                try:
+                    newitem = item.decode("utf-8")
+                except UnicodeDecodeError as err:
+                    print("Failed to decode part of mail %s" % id_list[i])
+                    newitem = "Failed to decode mail %s" % id_list[i]
+                    #parseddata.append(item)
+                    #continue
 
+                parseddata.append(newitem)
 
-    return emails
+            emails.append({"id": id_list[i].decode("utf-8"), "data": parseddata})
+
+        return json.dumps(emails)
 
 # Run the actual thing after we've checked params
 def run(request):
