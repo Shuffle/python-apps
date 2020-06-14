@@ -6,6 +6,7 @@ import socket
 import asyncio
 import requests
 
+import imaplib
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -73,6 +74,56 @@ class Email(AppBase):
         s.send_message(msg)
         print("Successfully sent email with subject %s to %s" % (subject, recipient))
         return "Email sent to %s!" % recipient
+
+    async def get_mail_imap(self, username, password, imap_server, foldername="inbox", amount=10):
+        if type(amount) == str:
+            try:
+                amount = int(amount)
+            except ValueError:
+                return "Amount needs to be a number, not %s" % amount
+
+        try:
+            mail = imaplib.IMAP4_SSL(imap_server)
+        except socket.gaierror as error:
+            return "Can't connect to IMAP server %s: %s" % (imap_server, error)
+    
+        try:
+            mail.login(username, password)
+        except imaplib.IMAP4.error as error:
+            return "Failed to log into %s: %s" % (username, error)
+    
+        mail.select(foldername)
+        try:
+            # IMAP search queries, e.g. "seen" or "read"
+            # https://www.rebex.net/secure-mail.net/features/imap-search.aspx
+            type, data = mail.search(None, 'ALL')
+        except imaplib.IMAP4.error as error:
+            return "Couldn't find folder %s." % (foldername)
+    
+        mail_ids = data[0]
+        id_list = mail_ids.split()
+        if id_list == None:
+            return "Couldn't retrieve mail. Data: %s" % data
+    
+        try:
+            print("LIST: ", len(id_list))
+        except TypeError:
+            return "Error getting mail. Data: %s" % data
+        
+        emails = []
+        for i in range(len(id_list)-1, len(id_list)-amount, -1):
+            resp, data = mail.fetch(id_list[i], "(RFC822)")
+            if resp != 'OK':
+                print("Failed getting %s" % id_list[i])
+                continue
+    
+            if data == None:
+                continue
+    
+            emails.append({"id": id_list[i].decode("utf-8"), "data": data})
+
+
+    return emails
 
 # Run the actual thing after we've checked params
 def run(request):
