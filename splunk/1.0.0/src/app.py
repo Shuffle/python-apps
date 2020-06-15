@@ -24,6 +24,7 @@ class Splunk(AppBase):
         :param console_logger:
         """
         self.verify = False
+        self.timeout = 10
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
         super().__init__(redis, logger, console_logger)
 
@@ -32,19 +33,18 @@ class Splunk(AppBase):
 
     def run_search(self, auth, url, query):
         url = '%s/services/search/jobs?output_mode=json' % (url)
-        ret = requests.post(url, auth=auth, data=query, timeout=timeout, verify=False)
+        ret = requests.post(url, auth=auth, data=query, timeout=self.timeout, verify=False)
         return ret
 
     def get_search(self, auth, url, search_sid):
         # Wait for search to be done?
         url = '%s/services/search/jobs/%s?output_mode=json' % (url, search_sid)
-
         time.sleep(0.2)
         maxrunduration = 30
         ret = ""
         while(True):
             try:
-                ret = requests.get(url, auth=auth, timeout=timeout, verify=False)
+                ret = requests.get(url, auth=auth, timeout=self.timeout, verify=False)
             except requests.exceptions.ConnectionError:
                 time.sleep(1)
                 continue
