@@ -39,10 +39,12 @@ class Splunk(AppBase):
     def get_search(self, auth, url, search_sid):
         # Wait for search to be done?
         url = '%s/services/search/jobs/%s?output_mode=json' % (url, search_sid)
+        print("STARTED FUNCTION WITH URL %s" % url)
         time.sleep(0.2)
         maxrunduration = 30
         ret = ""
         while(True):
+            print("In while loop")
             try:
                 ret = requests.get(url, auth=auth, timeout=self.timeout, verify=False)
             except requests.exceptions.ConnectionError:
@@ -88,11 +90,11 @@ class Splunk(AppBase):
             ret = self.run_search(auth, url, query)
         except requests.exceptions.ConnectTimeout as e:
             print("Timeout: %s" % e)
-            return "0"
+            return "Timeout: %s" % e
 
         if ret.status_code != 201:
             print("Bad status code: %d" % ret.status_code)
-            return "0"
+            return "Bad status code: %d" % ret.status_code
 
         search_id = ret.json()["sid"]
 
@@ -105,7 +107,7 @@ class Splunk(AppBase):
             return str(count)
 
         print("No results (or wrong?): %d" % (len(ret.json()["entry"])))
-        return "0"
+        return "No results."
         
 if __name__ == "__main__":
     asyncio.run(Splunk.run(), debug=True)
