@@ -35,31 +35,21 @@ class HelloWorld(AppBase):
 
         return message
 
-    async def repeat_trigger_as_json(self, call):
-        this = json.loads(call)
-        return this
-
     async def repeat_back_to_me(self, call):
         return call
 
     async def return_plus_one(self, number):
-        return number + 1
+        return str(number + 1)
 
     async def pause(self, seconds):
         time.sleep(seconds)
-        return seconds
+        return "Waited %d seconds" % seconds
+
+    async def get_type(self, value):
+        return "Type: %s" % type(value)
 
     async def random_number(self):
         return random.random()
-
-    async def echo_array(self, data):
-        self.logger.info(f"Echoing array: {data}")
-        return data
-
-    async def echo_json(self, data):
-        self.logger.info(f"Echoing JSON: {data}")
-        return data
-
 
 if __name__ == "__main__":
     asyncio.run(HelloWorld.run(), debug=True)
