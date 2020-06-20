@@ -6,6 +6,7 @@ import time
 import random
 import requests
 import urllib3
+import json 
 
 from walkoff_app_sdk.app_base import AppBase
 
@@ -42,12 +43,12 @@ class Splunk(AppBase):
         print("STARTED FUNCTION WITH URL %s" % url)
         time.sleep(0.2)
         maxrunduration = 30
-        ret = ""
+        ret = "No results yet"
         while(True):
-            print("In while loop")
             try:
                 ret = requests.get(url, auth=auth, timeout=self.timeout, verify=False)
             except requests.exceptions.ConnectionError:
+                print("Sleeping for 1 second")
                 time.sleep(1)
                 continue
 
@@ -60,13 +61,21 @@ class Splunk(AppBase):
 
             try:
                 if content["resultCount"] > 0 or content["isDone"] or content["isFinalized"] or content["runDuration"] > maxrunduration:
-                    print(content)
-                    break
+                    print("CONTENT PRE EVENTS: ", content)
+                    eventsurl = '%s/services/search/jobs/%s/events?output_mode=json' % (url, search_sid)
+                    try:
+                        newret = requests.get(eventsurl, auth=auth, timeout=self.timeout, verify=False)
+                        if ret.status_code < 300 and ret.status_code >= 200:
+                            return newret.text
+                        else:
+                            return "Bad status code for events: %sd", ret.status_code
+                    except requests.exceptions.ConnectionError:
+                        return "Events requesterror: %s" % e
             except KeyError:
                 try:
-                	print(ret.json()["messages"])
-                except KeyError:
-                    print(content)
+                    return ret.json()["messages"]
+                except KeyError as e:
+                    return "KeyError: %s" % e
                 
             time.sleep(1)
 
@@ -101,13 +110,14 @@ class Splunk(AppBase):
         print("Search ID: %s" % search_id)
 
         ret = self.get_search(auth, url, search_id)
-        if len(ret.json()["entry"]) == 1:
-            count = ret.json()["entry"][0]["content"]["resultCount"]
-            print("Result: %d" % count)
-            return str(count)
+        return ret
+        #if len(ret.json()["entry"]) == 1:
+        #    count = ret.json()["entry"][0]["content"]["resultCount"]
+        #    print("Result: %d" % count)
+        #    return str(count)
 
-        print("No results (or wrong?): %d" % (len(ret.json()["entry"])))
-        return "No results."
+        #print("No results (or wrong?): %d" % (len(ret.json()["entry"])))
+        #return "No results"
         
 if __name__ == "__main__":
     asyncio.run(Splunk.run(), debug=True)
