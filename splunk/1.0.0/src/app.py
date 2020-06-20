@@ -39,14 +39,14 @@ class Splunk(AppBase):
 
     def get_search(self, auth, url, search_sid):
         # Wait for search to be done?
-        url = '%s/services/search/jobs/%s?output_mode=json' % (url, search_sid)
-        print("STARTED FUNCTION WITH URL %s" % url)
+        firsturl = '%s/services/search/jobs/%s?output_mode=json' % (url, search_sid)
+        print("STARTED FUNCTION WITH URL %s" % firsturl)
         time.sleep(0.2)
         maxrunduration = 30
         ret = "No results yet"
         while(True):
             try:
-                ret = requests.get(url, auth=auth, timeout=self.timeout, verify=False)
+                ret = requests.get(firsturl, auth=auth, timeout=self.timeout, verify=False)
             except requests.exceptions.ConnectionError:
                 print("Sleeping for 1 second")
                 time.sleep(1)
@@ -63,6 +63,7 @@ class Splunk(AppBase):
                 if content["resultCount"] > 0 or content["isDone"] or content["isFinalized"] or content["runDuration"] > maxrunduration:
                     print("CONTENT PRE EVENTS: ", content)
                     eventsurl = '%s/services/search/jobs/%s/events' % (url, search_sid)
+                    print("Running events check towards %s" % eventsurl)
                     try:
                         newret = requests.get(eventsurl, auth=auth, timeout=self.timeout, verify=False)
                         if ret.status_code < 300 and ret.status_code >= 200:
