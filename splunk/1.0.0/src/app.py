@@ -62,7 +62,7 @@ class Splunk(AppBase):
             try:
                 if content["resultCount"] > 0 or content["isDone"] or content["isFinalized"] or content["runDuration"] > maxrunduration:
                     print("CONTENT PRE EVENTS: ", content)
-                    eventsurl = '%s/services/search/jobs/%s/events?output_mode=json' % (url, search_sid)
+                    eventsurl = '%s/services/search/jobs/%s/events' % (url, search_sid)
                     try:
                         newret = requests.get(eventsurl, auth=auth, timeout=self.timeout, verify=False)
                         if ret.status_code < 300 and ret.status_code >= 200:
