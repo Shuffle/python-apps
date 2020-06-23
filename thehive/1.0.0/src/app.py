@@ -5,6 +5,7 @@ import asyncio
 import time
 import random
 
+
 import requests
 import thehive4py
 from thehive4py.api import TheHiveApi
