@@ -9,7 +9,7 @@ import requests
 import thehive4py
 from thehive4py.api import TheHiveApi
 from thehive4py.query import *
-from thehive4py.models import Alert
+import thehive4py.models
 
 from walkoff_app_sdk.app_base import AppBase
 
@@ -36,11 +36,83 @@ class TheHive(AppBase):
         response = self.thehive.find_cases(query=String("title:'%s'" % title_query), range='all', sort=[])
         return response.text
 
+    async def add_observable(self, apikey, url, case_id, data, datatype, tags):
+        self.thehive = TheHiveApi(url, apikey)
+
+        if tags:
+            if ", " in tags:
+                tags = tags.split(", ")
+            elif "," in tags:
+                tags = tags.split(",")
+            else:
+                tags = []
+        else:
+            tags = []
+
+        item = thehive4py.models.CaseObservable(
+            dataType=datatype,
+            data=data,
+            tlp=1,
+            ioc=False,
+            sighted=False,
+            tags=["Shuffle"],
+            message="Created by shuffle",
+        )
+
+        return self.thehive.create_case_observable(case_id, item).text
+
     async def search_alerts(self, apikey, url, title_query):
         self.thehive = TheHiveApi(url, apikey)
 
         response = self.thehive.find_alerts(query=String("title:'%s'" % title_query), range='all', sort=[])
         return response.text
+
+    async def create_case(self, apikey, url, title, description="", tlp=1, severity=1, tags=""):
+        self.thehive = TheHiveApi(url, apikey)
+        if tags:
+            if ", " in tags:
+                tags = tags.split(", ")
+            elif "," in tags:
+                tags = tags.split(",")
+            else:
+                tags = []
+        else:
+            tags = []
+
+        # Wutface fix
+        if not tlp:
+            tlp = 1
+        if not severity:
+            severity = 1
+
+        if isinstance(tlp, str):
+            if not tlp.isdigit():
+                return "TLP needs to be a number from 0-2, not %s" % tlp
+            tlp = int(tlp)
+        if isinstance(severity, str):
+            if not severity.isdigit():
+                return "Severity needs to be a number from 0-2, not %s" % tlp
+
+            severity = int(severity)
+
+        if tlp > 3 or tlp < 0:
+            return "TLP needs to be a number from 0-3, not %d" % tlp
+        if severity > 2 or severity < 0:
+            return "Severity needs to be a number from 0-2, not %d" % tlp
+
+        case = thehive4py.models.Case(
+            title=title,
+            tlp=tlp,
+            severity=severity,
+            tags=tags,
+            description=description,
+        )
+
+        try:
+            ret = self.thehive.create_case(case)
+            return ret.text
+        except requests.exceptions.ConnectionError as e:
+            return "ConnectionError: %s" % e
 
     async def create_alert(self, apikey, url, type, source, sourceref, title, description="", tlp=1, severity=1, tags=""):
         self.thehive = TheHiveApi(url, apikey)
@@ -75,7 +147,7 @@ class TheHive(AppBase):
         if severity > 2 or severity < 0:
             return "Severity needs to be a number from 0-2, not %d" % tlp
 
-        alert = Alert(
+        alert = thehive4py.models.Alert(
             title=title,
             tlp=tlp,
             severity=severity,
@@ -117,7 +189,7 @@ class TheHive(AppBase):
         elif field_type.lower() == "task_logs":
             ret = self.thehive.get_task_logs(cur_id)
         else:
-            return "%s is not implemented. See https://github.com/frikky/walkoff-integrations for more info." % field_type
+            return "%s is not implemented. See https://github.com/frikky/shuffle-apps for more info." % field_type
 
         newstr = str(ret.json()).replace("\'", "\"")
         newstr = newstr.replace("True", "true")
