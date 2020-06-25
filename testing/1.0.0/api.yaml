@@ -62,39 +62,6 @@ actions:
     returns:
       schema:
         type: number
-  - name: parse_list 
-    description: Parses a list and returns it as a json object
-    parameters:
-      - name: items
-        description: List of items
-        required: true
-        multiline: true
-        example: shuffler.io,test.com,test.no
-        schema:
-          type: string 
-      - name: splitter 
-        description: The splitter to use
-        required: false
-        multiline: false 
-        example: ","
-        schema:
-          type: string 
-    returns:
-      schema:
-        type: string 
-  - name: get_length 
-    description: Parses a list and returns length
-    parameters:
-      - name: item
-        description: The item to check
-        required: true
-        multiline: true
-        example: \[\"shuffler.io\", \"frikky.com\"\]
-        schema:
-          type: string 
-    returns:
-      schema:
-        type: string
   - name: raise_error 
     description: This function doesn't exist and is here to test errors 
     returns:

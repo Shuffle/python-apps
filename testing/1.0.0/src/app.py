@@ -48,24 +48,5 @@ class HelloWorld(AppBase):
     async def get_type(self, value):
         return "Type: %s" % type(value)
 
-    async def parse_list(self, items, splitter="\n"):
-        if splitter == "":
-            splitter = "\n"
-
-        splititems = items.split(splitter)
-
-        return str(splititems)
-
-    async def get_length(self, item):
-        if item.startswith("[") and item.endswith("]"):
-            try:
-                item = item.replace("\'", "\"", -1)
-                item = json.loads(item)
-            except json.decoder.JSONDecodeError as e:
-                print("Parse error: %s" % e) 
-                pass
-
-        return str(len(item))
-
 if __name__ == "__main__":
     asyncio.run(HelloWorld.run(), debug=True)
