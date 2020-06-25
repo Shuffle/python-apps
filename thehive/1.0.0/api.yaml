@@ -1,7 +1,7 @@
 walkoff_version: 1.0.0
 app_version: 1.0.0
 name: thehive
-description: Testing of thehive implementation with WALKOFF
+description: TheHive implementation for Shuffle 
 contact_info:
   name: "@frikkylikeme" 
   url: https://github.com/frikky

@@ -1,19 +1,26 @@
 app_version: 1.0.0
 name: Shuffle Tools 
-description: A tool app for Shuffle
+description: A  tool app for Shuffle
 contact_info:
   name: "@frikkylikeme"
   url: https://shuffler.io
   email: frikky@shuffler.io
 actions:
   - name: parse_ioc
-    description: Takes a string an returns ioc's
+    description: Parse IOC's based on https://github.com/fhightower/ioc-finder
     parameters:
       - name: input_string 
         description: The string to check
         required: true
         multiline: true
-        example: "123ijq192.168.3.6kljqwiejs8"
+        example: "123ijq192.168.3.6kljqwiejs8 https://shuffler.io"
+        schema:
+          type: string
+      - name: input_type
+        description: The string to check
+        required: false
+        multiline: false 
+        example: "md5s"
         schema:
           type: string
     returns:
@@ -40,13 +47,13 @@ actions:
       schema:
         type: string 
   - name: get_length 
-    description: Parses a list and returns length
+    description: Parses a list or text and returns the length
     parameters:
       - name: item
         description: The item to check
         required: true
         multiline: true
-        example: \[\"shuffler.io\", \"frikky.com\"\]
+        example: Hello this is a string
         schema:
           type: string 
     returns:
