@@ -30,6 +30,13 @@ class TheHive(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
+    #async def run_analyzer(self, apikey, url, title_query):
+    #    self.thehive = TheHiveApi(url, apikey)
+
+    #    response = self.thehive.find_cases(query=String("title:'%s'" % title_query), range='all', sort=[])
+    #    return response.text
+
+
     async def search_cases(self, apikey, url, title_query):
         self.thehive = TheHiveApi(url, apikey)
 

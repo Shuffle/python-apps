@@ -53,6 +53,12 @@ class Tools(AppBase):
                         if data not in newarray:
                             newarray.append(data)
 
+
+        # Reformatting IP
+        for item in newarray:
+            if "ip" in item["data_type"]:
+                item["data_type"] = "ip"
+
         try:
             newarray = json.dumps(newarray)
         except json.decoder.JSONDecodeError as e:

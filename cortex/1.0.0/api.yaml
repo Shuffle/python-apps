@@ -12,7 +12,7 @@ actions:
     parameters:
       - name: apikey 
         description: The apikey to use
-        example: ""
+        example: "*****"
         required: true
         schema:
           type: string
@@ -34,6 +34,18 @@ actions:
   - name: run_available_analyzers
     description: Runs all valid cortex analyzers for the datatype
     parameters:
+      - name: apikey 
+        description: The apikey to use
+        example: "*****"
+        required: true
+        schema:
+          type: string
+      - name: url 
+        description: The URL to target 
+        example: "http://localhost:9001"
+        required: true
+        schema:
+          type: string
       - name: data 
         description: The data to analyze
         required: true
@@ -60,6 +72,18 @@ actions:
   - name: run_analyzer 
     description: Run a cortex analyzer 
     parameters:
+      - name: apikey 
+        description: The apikey to use
+        example: "*****"
+        required: true
+        schema:
+          type: string
+      - name: url 
+        description: The URL to target 
+        example: "http://localhost:9001"
+        required: true
+        schema:
+          type: string
       - name: analyzer_name 
         description: The analyzer to run  
         required: true
@@ -91,7 +115,19 @@ actions:
   - name: get_analyzer_result 
     description: Get the result from an analyzer
     parameters:
-      - name: id 
+      - name: apikey 
+        description: The apikey to use
+        example: "*****"
+        required: true
+        schema:
+          type: string
+      - name: url 
+        description: The URL to target 
+        example: "http://localhost:9001"
+        required: true
+        schema:
+          type: string
+      - name: result_id 
         description: The id of the report to get
         required: true
         schema:

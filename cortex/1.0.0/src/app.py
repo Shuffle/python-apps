@@ -3,9 +3,8 @@
 
 import asyncio
 import urllib3
-
-from cortex4py.api import Api
 import cortex4py 
+from cortex4py.api import Api
 
 from walkoff_app_sdk.app_base import AppBase
 
@@ -89,9 +88,10 @@ class Cortex(AppBase):
 
         return job.id
 
-    async def get_analyzer_result(self, id):
+    async def get_analyzer_result(self, url, apikey, result_id):
+        self.api = Api(url, apikey, cert=False)
         try:
-            report = self.api.jobs.get_report(id).report
+            report = self.api.jobs.get_report(result_id).report
         except cortex4py.exceptions.ServiceUnavailableError as e:
             return e
         except cortex4py.exceptions.AuthorizationError as e:
