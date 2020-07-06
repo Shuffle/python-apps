@@ -273,5 +273,10 @@ class TheHive(AppBase):
         else:
             return "%s is not implemented. See https://github.com/frikky/walkoff-integrations for more info." % field_type
 
+    # https://github.com/TheHive-Project/TheHiveDocs/tree/master/api/connectors/cortex
+    async def run_analyzer(self, apikey, url, cortex_id, analyzer_id, artifact_id):
+        self.thehive = TheHiveApi(url, apikey)
+        return self.thehive.run_analyzer(cortex_id, artifact_id, analyzer_id).text
+
 if __name__ == "__main__":
     asyncio.run(TheHive.run(), debug=True)

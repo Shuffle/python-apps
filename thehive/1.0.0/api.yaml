@@ -324,6 +324,40 @@ actions:
         required: true
         schema:
           type: string
+  - name: run_analyzer 
+    description: Reopen an alert in TheHive
+    parameters:
+      - name: apikey 
+        description: The Apikey to use 
+        example: ""
+        required: true
+        schema:
+          type: string
+      - name: url 
+        description: The Apikey to use 
+        example: ""
+        required: true
+        schema:
+          type: string
+      - name: cortex_id 
+        description: The cortex ID 
+        example: "MISP_2_0"
+        required: true
+        schema:
+          type: string
+      - name: analyzer_id
+        description: The analyzer to run
+        example: "MISP_2_0"
+        required: true
+        schema:
+          type: string
+      - name: artifact_id 
+        description: The artifact ID 
+        example: "adf5e3d0fd85633be17004735a0a119e"
+        required: true
+        schema:
+          type: string
+
     returns:
       schema:
         type: string 
