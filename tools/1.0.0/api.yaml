@@ -26,6 +26,33 @@ actions:
     returns:
       schema:
         type: string
+  - name: translate_value 
+    description: Takes a list of values and translates it in your input data
+    parameters:
+      - name: input_data 
+        description: The input data to use
+        required: true
+        multiline: true
+        example: Hello this is an md5
+        schema:
+          type: string 
+      - name: translate_from 
+        description: The source items to look for
+        required: true
+        multiline: false
+        example: sha256,md5,sha1
+        schema:
+          type: string 
+      - name: translate_to 
+        description: The destination data to change to
+        required: true
+        multiline: true
+        example: hash
+        schema:
+          type: string 
+    returns:
+      schema:
+        type: string
   - name: parse_list 
     description: Parses a list and returns it as a json object
     parameters:

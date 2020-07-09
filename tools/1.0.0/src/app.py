@@ -85,5 +85,18 @@ class Tools(AppBase):
 
         return str(len(item))
 
+    async def translate_value(self, input_data, translate_from, translate_to):
+        splitdata = [translate_from]
+        splitvalue = ""
+        if ", " in translate_from:
+            splitdata = translate_from.split(", ")
+        elif "," in translate_from:
+            splitdata = translate_from.split(",")
+
+        for item in splitdata:
+            input_data = input_data.replace(item, translate_to)
+
+        return input_data
+
 if __name__ == "__main__":
     asyncio.run(Tools.run(), debug=True)
