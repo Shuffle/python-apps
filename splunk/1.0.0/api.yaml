@@ -5,28 +5,32 @@ description: Splunk integration with WALKOFF
 contact_info:
   name: "@frikkylikeme" 
   url: https://github.com/frikky
+authentication:
+  required: true
+  parameters:
+    - name: url 
+      description: The Splunk URL 
+      required: true
+      example: "http://splunk:8081"
+      schema:
+        type: string 
+    - name: username 
+      description: The Splunk username
+      example: username@splunk.com 
+      required: true
+      schema:
+        type: string 
+    - name: password 
+      description: The Splunk password
+      required: true
+      example: "******"
+      schema:
+        type: string 
+
 actions:
   - name: SplunkQuery 
     description: Returns the amount of search results
     parameters:
-      - name: url 
-        description: The Splunk URL 
-        required: true
-        example: "http://splunk:8081"
-        schema:
-          type: string 
-      - name: username 
-        description: The Splunk username
-        example: username@splunk.com 
-        required: true
-        schema:
-          type: string 
-      - name: password 
-        description: The Splunk password
-        required: true
-        example: "******"
-        schema:
-          type: string 
       - name: query 
         description: The Splunk query to run 
         required: true

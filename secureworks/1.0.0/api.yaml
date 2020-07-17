@@ -6,6 +6,24 @@ contact_info:
   name: "@frikkylikeme"
   url: https://github.com/frikky
   email: "frikky@shuffler.io"
+authentication:
+  required: true
+  parameters:
+    - name: username
+      description: The user to authenticate with
+      multiline: false
+      example: "username12345"
+      required: true
+      schema:
+        type: string
+    - name: password 
+      description: The password for the user to authenticate with
+      multiline: false
+      example: "username12345"
+      required: true
+      schema:
+        type: string
+
 actions:
   - name: get_ticket_ids 
     description: Get ticket ids 

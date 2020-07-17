@@ -7,24 +7,28 @@ contact_info:
   name: "@frikkylikeme"
   url: https://github.com/frikky
   email: "frikky@shuffler.io"
+authentication:
+  required: true
+  parameters:
+    - name: username
+      description: Username of the user
+      multiline: false
+      example: "test@shuffler.io"
+      required: true
+      schema:
+        type: string
+    - name: apikey
+      description: apikey to use
+      multiline: false
+      example: "ee9618a507fce0b9abb8c6a57e250940qwec76ed0e3fbf304c98372ebbfa72ab"
+      required: true
+      schema:
+        type: string 
+
 actions:
   - name: add_artifact 
     description: Adds an artifact to a project 
     parameters:
-      - name: username
-        description: Username of the user
-        multiline: false
-        example: "test@shuffler.io"
-        required: true
-        schema:
-          type: string
-      - name: apikey
-        description: apikey to use
-        multiline: false
-        example: "ee9618a507fce0b9abb8c6a57e250940qwec76ed0e3fbf304c98372ebbfa72ab"
-        required: true
-        schema:
-          type: string 
       - name: project
         description: "The project's ID"
         multiline: false

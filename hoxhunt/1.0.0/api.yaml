@@ -6,6 +6,23 @@ contact_info:
   name: "@frikkylikeme"
   url: https://github.com/frikky
   email: "frikky@shuffler.io"
+authentication:
+  required: true
+  parameters:
+    - name: apikey 
+      description: The apikey to use for the API 
+      multiline: false
+      example: "meteor-LsShkYxhQisn1ucfMI7c1CbkMC3wX7rnIZ02I8FwVXZ"
+      required: true
+      schema:
+        type: string
+    - name: organization_id 
+      description: Your organization's ID
+      multiline: false
+      example: "sk9JHBGPDPiQ6NQZ4"
+      required: true
+      schema:
+        type: string
 actions:
   - name: list_incidents 
     description: Get hoxhunt incidents of a given status

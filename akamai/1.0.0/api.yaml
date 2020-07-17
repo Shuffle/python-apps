@@ -6,31 +6,35 @@ contact_info:
   name: "@frikkylikeme"
   url: https://github.com/frikky
   email: "frikky@shuffler.io"
+authentication:
+  required: true
+  parameters:
+    - name: url 
+      description: The url to use for the API
+      multiline: false
+      example: "https://user.lastline.com"
+      required: true
+      schema:
+        type: string
+    - name: username 
+      description: The username to use for the API 
+      multiline: false
+      example: "Username"
+      required: true
+      schema:
+        type: string
+    - name: password 
+      description: The password to use for the API 
+      multiline: false
+      example: "p@ssw0rd"
+      required: true
+      schema:
+        type: string
+
 actions:
   - name: get_event 
     description: Get an event
     parameters:
-      - name: url 
-        description: The url to use for the API
-        multiline: false
-        example: "https://user.lastline.com"
-        required: true
-        schema:
-          type: string
-      - name: username 
-        description: The username to use for the API 
-        multiline: false
-        example: "Username"
-        required: true
-        schema:
-          type: string
-      - name: password 
-        description: The password to use for the API 
-        multiline: false
-        example: "p@ssw0rd"
-        required: true
-        schema:
-          type: string
       - name: event_id 
         description: The event ID to get
         multiline: false

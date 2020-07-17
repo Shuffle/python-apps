@@ -6,17 +6,20 @@ contact_info:
   name: "@frikkylikeme"
   url: https://github.com/frikky
   email: "frikky@shuffler.io"
+authentication:
+  required: true
+  parameters:
+    - name: apikey
+      description: Apikey for Recorded Future
+      multiline: false
+      example: "asdf1234"
+      required: true
+      schema:
+        type: string
 actions:
   - name: get_alerts 
     description: Gets alerts from recorded future
     parameters:
-      - name: apikey
-        description: Apikey for Recorded Future
-        multiline: false
-        example: "asdf1234"
-        required: true
-        schema:
-          type: string
       - name: status 
         description: Apikey for Recorded Future
         multiline: false

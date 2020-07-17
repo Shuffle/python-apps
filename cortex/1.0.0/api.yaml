@@ -6,22 +6,25 @@ description: Cortex implementation with WALKOFF
 contact_info:
   name: "@frikkylikeme" 
   url: https://github.com/frikky
+authentication:
+  required: true
+  parameters:
+    - name: apikey 
+      description: The apikey to use
+      example: "*****"
+      required: true
+      schema:
+        type: string
+    - name: url 
+      description: The URL to target 
+      example: "http://localhost:9001"
+      required: true
+      schema:
+        type: string
 actions:
   - name: get_available_analyzers 
     description: Gets a list of all analyzers
     parameters:
-      - name: apikey 
-        description: The apikey to use
-        example: "*****"
-        required: true
-        schema:
-          type: string
-      - name: url 
-        description: The URL to target 
-        example: "http://localhost:9001"
-        required: true
-        schema:
-          type: string
       - name: datatype 
         description: The datatype to search for (e.g. domain, ip)
         example: "domain"
