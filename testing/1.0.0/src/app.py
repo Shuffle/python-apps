@@ -48,5 +48,8 @@ class HelloWorld(AppBase):
     async def get_type(self, value):
         return "Type: %s" % type(value)
 
+    async def input_options_test(self, call):
+        return "Value: %s" % call 
+
 if __name__ == "__main__":
     asyncio.run(HelloWorld.run(), debug=True)

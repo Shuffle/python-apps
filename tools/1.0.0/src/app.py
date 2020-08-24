@@ -4,7 +4,6 @@ import time
 import random
 import json
 
-
 from ioc_finder import find_iocs
 from walkoff_app_sdk.app_base import AppBase
 
@@ -97,6 +96,17 @@ class Tools(AppBase):
             input_data = input_data.replace(item, translate_to)
 
         return input_data
+
+    async def execute_python(self, code, shuffle_input):
+        print("Run with shuffle_data %s" % shuffle_input)
+        print("And python code %s" % code)
+        # Write the code to a file, then jdjd
+        exec(code)
+
+        # May be necessary
+        #compile()
+
+        return "Some return: %s" % shuffle_input 
 
 if __name__ == "__main__":
     asyncio.run(Tools.run(), debug=True)
