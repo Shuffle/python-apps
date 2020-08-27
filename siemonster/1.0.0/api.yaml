@@ -2,6 +2,14 @@ walkoff_version: 1.0.0
 app_version: 1.0.0
 name: siemonster
 description: SIEMonster App
+tags:
+  - Testing 
+  - Search
+  - SIEM 
+categories:
+  - Testing 
+  - Search
+  - SIEM 
 contact_info:
   name: SIEMonster Team
   url: https://siemonster.com/

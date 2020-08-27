@@ -2,6 +2,14 @@ walkoff_version: 1.0.0
 app_version: 1.0.0
 name: passivetotal 
 description: Passivetotal example app 
+tags:
+  - Antivirus
+  - Threat intel
+  - EDR
+categories:
+  - Antivirus
+  - Threat intel
+  - EDR
 contact_info:
   name: "@frikkylikeme"
   url: https://github.com/frikky

@@ -3,6 +3,12 @@ app_version: 1.0.0
 name: misp
 environment: onprem
 description: MISP implementation with WALKOFF
+tags:
+  - TI
+  - Threat intel
+categories:
+  - TI
+  - Threat intel
 contact_info:
   name: "@frikkylikeme" 
   url: https://github.com/frikky

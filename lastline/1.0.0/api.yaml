@@ -2,6 +2,14 @@ walkoff_version: 1.0.0
 app_version: 1.0.0
 name: lastline
 description: Lastline app interface
+tags:
+  - sandbox 
+  - antivirus
+  - email
+categories:
+  - sandbox 
+  - antivirus
+  - email
 contact_info:
   name: "@frikkylikeme"
   url: https://github.com/frikky

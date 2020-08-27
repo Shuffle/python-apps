@@ -2,6 +2,12 @@ walkoff_version: 1.0.0
 app_version: 1.0.0
 name: netcraft 
 description: Netcraft app interface
+tags:
+  - Phishing
+  - Threat intel
+categories:
+  - Phishing
+  - Threat intel
 contact_info:
   name: "@frikkylikeme"
   url: https://github.com/frikky

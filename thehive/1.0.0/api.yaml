@@ -2,6 +2,12 @@ walkoff_version: 1.0.0
 app_version: 1.0.0
 name: thehive
 description: TheHive implementation for Shuffle  
+tags:
+  - Ticketing 
+  - Search
+categories:
+  - Ticketing 
+  - Search
 contact_info:
   name: "@frikkylikeme" 
   url: https://github.com/frikky
@@ -152,6 +158,15 @@ actions:
       - name: field_type 
         description: The type to get (alert, case..)
         example: "alert"
+        options:
+          - alert
+          - case
+          - case_observables
+          - case_task
+          - case_tasks
+          - linked_cases 
+          - task_log 
+          - task_logs
         required: true
         schema:
           type: string

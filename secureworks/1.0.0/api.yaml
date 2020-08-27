@@ -2,6 +2,14 @@ walkoff_version: 1.0.0
 app_version: 1.0.0
 name: secureworks 
 description: secureworks app 
+tags:
+  - Threat intel 
+  - Ticketing 
+  - MSSP
+categories:
+  - Threat intel 
+  - Ticketing 
+  - MSSP
 contact_info:
   name: "@frikkylikeme"
   url: https://github.com/frikky
