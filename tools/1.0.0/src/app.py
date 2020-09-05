@@ -108,5 +108,100 @@ class Tools(AppBase):
 
         return "Some return: %s" % shuffle_input 
 
+    async def filter_list(self, input_list, field, check, value):
+        print("Running function with list %s", input_list) 
+
+        input_list = input_list.replace("\'", "\"", -1)
+        input_list = json.loads(input_list)
+
+        print("CHECK: %s - Parsed list to %s", check, input_list) 
+
+        new_list = []
+        for item in input_list: 
+            item = json.loads(item)
+
+            if check == "equals":
+                if item[field] == value:
+                    print("APPENDED BECAUSE %s %s %s" % (field, check, value))
+                    new_list.append(item)
+            elif check == "does not equal":
+                if item[field] != value:
+                    new_list.append(item)
+
+        #"=",
+        #"equals",
+        #"!=",
+        #"does not equal",
+        #">",
+        #"larger than",
+        #"<",
+        #"less than",
+        #">=",
+        #"<=",
+        #"startswith",
+        #"endswith",
+        #"contains",
+        #"re",
+        #"matches regex",
+
+        try:
+            new_list = json.dumps(new_list)
+        except json.decoder.JSONDecodeError as e:
+            return "Failed parsing filter list output" % e
+
+        return new_list
+
+    async def multi_list_filter(self, input_list, field, check, value):
+        input_list = input_list.replace("\'", "\"", -1)
+        input_list = json.loads(input_list)
+
+        fieldsplit = field.split(",")
+        if ", " in field:
+            fieldsplit = field.split(", ")
+
+        valuesplit = value.split(",")
+        if ", " in value:
+            valuesplit = value.split(", ")
+
+        checksplit = check.split(",")
+        if ", " in check:
+            checksplit = check.split(", ")
+
+        new_list = []
+        for list_item in input_list: 
+            list_item = json.loads(list_item)
+
+            index = 0
+            for check in checksplit:
+                if check == "equals":
+                    print("Checking %s vs %s" % (list_item[fieldsplit[index]],  valuesplit[index]))
+                    if list_item[fieldsplit[index]] == valuesplit[index]:
+                        new_list.append(list_item)
+
+            index += 1
+
+        #"=",
+        #"equals",
+        #"!=",
+        #"does not equal",
+        #">",
+        #"larger than",
+        #"<",
+        #"less than",
+        #">=",
+        #"<=",
+        #"startswith",
+        #"endswith",
+        #"contains",
+        #"re",
+        #"matches regex",
+
+        try:
+            new_list = json.dumps(new_list)
+        except json.decoder.JSONDecodeError as e:
+            return "Failed parsing filter list output" % e
+
+        return new_list
+
 if __name__ == "__main__":
     asyncio.run(Tools.run(), debug=True)
