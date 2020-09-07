@@ -111,43 +111,34 @@ class Tools(AppBase):
     async def filter_list(self, input_list, field, check, value):
         print("Running function with list %s", input_list) 
 
-        input_list = input_list.replace("\'", "\"", -1)
-        input_list = json.loads(input_list)
-
-        print("CHECK: %s - Parsed list to %s", check, input_list) 
+        try:
+            input_list = input_list.replace("\'", "\"", -1)
+            input_list = json.loads(input_list)
+        except Exception as e:
+            print("Error parsing string to array. Continuing anyway.")
 
         new_list = []
-        for item in input_list: 
-            item = json.loads(item)
+        try:
+            for item in input_list: 
+                try:
+                    item = json.loads(item)
+                except:
+                    pass
 
-            if check == "equals":
-                if item[field] == value:
-                    print("APPENDED BECAUSE %s %s %s" % (field, check, value))
-                    new_list.append(item)
-            elif check == "does not equal":
-                if item[field] != value:
-                    new_list.append(item)
-
-        #"=",
-        #"equals",
-        #"!=",
-        #"does not equal",
-        #">",
-        #"larger than",
-        #"<",
-        #"less than",
-        #">=",
-        #"<=",
-        #"startswith",
-        #"endswith",
-        #"contains",
-        #"re",
-        #"matches regex",
+                if check == "equals":
+                    if item[field] == value:
+                        print("APPENDED BECAUSE %s %s %s" % (field, check, value))
+                        new_list.append(item)
+                elif check == "does not equal":
+                    if item[field] != value:
+                        new_list.append(item)
+        except Exception as e:
+            return "Error: %s" % e
 
         try:
             new_list = json.dumps(new_list)
         except json.decoder.JSONDecodeError as e:
-            return "Failed parsing filter list output" % e
+            return "Failed parsing filter list output: %s" % e
 
         return new_list
 
