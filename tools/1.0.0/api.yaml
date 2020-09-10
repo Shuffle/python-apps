@@ -163,18 +163,18 @@ actions:
     returns:
       schema:
         type: string
-  - name: execute_python 
-    description: Runs python with the data inputted available (TBD)
+  - name: execute_bash
+    description: Runs bash with the data inputted available (TBD)
     parameters:
       - name: code 
         description: The code to run
         required: true
         multiline: true
-        example: print(shuffle_input["data"])
+        example: echo "Hello"
         schema:
           type: string 
       - name: shuffle_input
-        description: The item to check
+        description: Alternative data to add
         required: false
         multiline: true
         example: '{"data": "Hello world"}'

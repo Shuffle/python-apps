@@ -3,6 +3,7 @@ import asyncio
 import time
 import random
 import json
+import subprocess
 
 from ioc_finder import find_iocs
 from walkoff_app_sdk.app_base import AppBase
@@ -103,10 +104,32 @@ class Tools(AppBase):
         # Write the code to a file, then jdjd
         exec(code)
 
+        # 1. Take the data into a file
+        # 2. Subprocess execute file?
+
         # May be necessary
         #compile()
 
         return "Some return: %s" % shuffle_input 
+
+    async def execute_bash(self, code, shuffle_input):
+        process = subprocess.Popen(code, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
+        stdout = process.communicate()
+        item = ""
+        if len(stdout[0]) > 0:
+            print("Succesfully ran bash!")
+            item = stdout[0]
+        else:
+            print("FAILED to run bash!")
+            item = stdout[1]
+    
+        try:
+            ret = item.decode("utf-8")
+            return ret 
+        except:
+            return item
+
+        return item
 
     async def filter_list(self, input_list, field, check, value):
         print("Running function with list %s", input_list) 
