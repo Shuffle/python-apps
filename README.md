@@ -8,5 +8,9 @@ Apps in this repository are mostly manually made. Shuffle is striving for standa
 
 [Shuffle OpenAPI](https://github.com/frikky/security-openapis)
 
+# External contributions
+* [@aoighost](https://github.com/aoighost/public_shuffleapps)
+* [@bioniccyber](https://github.com/bioniccyber/ShuffleApps)
+
 # License
 All apps, workflows and modular parts of Shuffle including our App SDK is under licensed under MIT, meaning you can freely use it anywhere in any way you want.
