@@ -136,6 +136,21 @@ actions:
         required: false
         schema:
           type: string
+  - name: merge_alert_into_case
+    description: Merge alert into case. Each observable of the alert will be added to the case if it doesn't exist in the case. The description of the alert will be appended to the case's description.
+    parameters:
+      - name: alert_id
+        description: The alert to merge into case
+        example: ""
+        required: true
+        schema:
+          type: string
+      - name: case_id 
+        description: The case to merge it to
+        example: ""
+        required: true
+        schema:
+          type: string
   - name: add_observable 
     description: Add an observable to TheHive
     parameters:
