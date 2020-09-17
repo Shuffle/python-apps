@@ -203,30 +203,23 @@ class TheHive(AppBase):
         newstr = newstr.replace("False", "false")
         return newstr
 
-    # Not sure what the data should be
     async def close_alert(self, apikey, url, alert_id):
-        url = "%s/api/alert/%s/markAsRead" % (url, alert_id)
-        ret = requests.post(
-            url,
-            headers={
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer %s' % apikey
-            }
-        )
+        self.thehive = TheHiveApi(url, apikey)
+        return self.thehive.mark_alert_as_read(alert_id).text
 
-        return ret.text
-
-    # Not sure what the data should be
     async def reopen_alert(self, apikey, url, alert_id):
-        url = "%s/api/alert/%s/markAsUnread" % (url, alert_id)
-        ret = requests.post(
-            url,
-            headers={
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer %s' % apikey
-            }
-        )
+        self.thehive = TheHiveApi(url, apikey)
+        return self.thehive.mark_alert_as_unread(alert_id).text
 
+    async def create_case_from_alert(self, apikey, url, alert_id, case_template=None):
+        self.thehive = TheHiveApi(url, apikey)
+        response = self.thehive.promote_alert_to_case(alert_id=alert_id, case_template=case_template)
+        return response.text
+
+    async def merge_alert_into_case(self, apikey, url, alert_id, case_id):
+        self.thehive = TheHiveApi(url, apikey)
+        req = url + f"/api/alert/{alert_id}/merge/{case_id}"
+        ret = requests.post(req, auth=self.thehive.auth)
         return ret.text
 
     # Not sure what the data should be
