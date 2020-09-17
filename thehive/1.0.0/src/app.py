@@ -207,6 +207,10 @@ class TheHive(AppBase):
         self.thehive = TheHiveApi(url, apikey)
         return self.thehive.mark_alert_as_read(alert_id).text
 
+    async def reopen_alert(self, apikey, url, alert_id):
+        self.thehive = TheHiveApi(url, apikey)
+        return self.thehive.mark_alert_as_unread(alert_id).text
+
     async def create_case_from_alert(self, apikey, url, alert_id, case_template=None):
         self.thehive = TheHiveApi(url, apikey)
         response = self.thehive.promote_alert_to_case(alert_id=alert_id, case_template=case_template)
@@ -216,12 +220,7 @@ class TheHive(AppBase):
         self.thehive = TheHiveApi(url, apikey)
         req = url + f"/api/alert/{alert_id}/merge/{case_id}"
         ret = requests.post(req, auth=self.thehive.auth)
-
         return ret.text
-
-    async def reopen_alert(self, apikey, url, alert_id):
-        self.thehive = TheHiveApi(url, apikey)
-        return self.thehive.mark_alert_as_unread(alert_id).text
 
     # Not sure what the data should be
     async def update_field(self, apikey, url, field_type, cur_id, field, data):
