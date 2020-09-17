@@ -121,7 +121,15 @@ actions:
     returns:
       schema:
         type: string 
-
+  - name: create_case_from_alert
+  - description: Create a case from alert
+    parameters:
+      - name: alert_id
+        description: The alert to promote it
+        example: ""
+        required: true
+        schema:
+          type: string
   - name: add_observable 
     description: Add an observable to TheHive
     parameters:
