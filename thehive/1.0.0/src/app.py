@@ -222,14 +222,9 @@ class TheHive(AppBase):
         return response.text
 
     async def merge_alert_into_case(self, apikey, url, alert_id, case_id):
-        url = "%s/api/alert/%s/merge/%s" % (url, alert_id, case_id)
-        ret = requests.post(
-            url,
-            headers={
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer %s' % apikey
-            }
-        )
+        self.thehive = TheHiveApi(url, apikey)
+        req = url + f"/api/alert/{alert_id}/merge/{case_id}"
+        ret = requests.post(req, auth=self.thehive.auth)
 
         return ret.text
 
