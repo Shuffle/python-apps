@@ -122,7 +122,7 @@ actions:
       schema:
         type: string 
   - name: create_case_from_alert
-  - description: Create a case from alert
+    description: Create a case from alert
     parameters:
       - name: alert_id
         description: The alert to promote it
