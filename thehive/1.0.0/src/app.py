@@ -221,6 +221,18 @@ class TheHive(AppBase):
         response = self.thehive.promote_alert_to_case(alert_id=alert_id, case_template=case_template)
         return response.text
 
+    async def merge_alert_into_case(self, apikey, url, alert_id, case_id):
+        url = "%s/api/alert/%s/merge/%s" % (url, alert_id, case_id)
+        ret = requests.post(
+            url,
+            headers={
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer %s' % apikey
+            }
+        )
+
+        return ret.text
+
     # Not sure what the data should be
     async def reopen_alert(self, apikey, url, alert_id):
         url = "%s/api/alert/%s/markAsUnread" % (url, alert_id)
