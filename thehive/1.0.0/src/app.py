@@ -203,18 +203,9 @@ class TheHive(AppBase):
         newstr = newstr.replace("False", "false")
         return newstr
 
-    # Not sure what the data should be
     async def close_alert(self, apikey, url, alert_id):
-        url = "%s/api/alert/%s/markAsRead" % (url, alert_id)
-        ret = requests.post(
-            url,
-            headers={
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer %s' % apikey
-            }
-        )
-
-        return ret.text
+        self.thehive = TheHiveApi(url, apikey)
+        return self.thehive.mark_alert_as_read(alert_id).text
 
     async def create_case_from_alert(self, apikey, url, alert_id, case_template=None):
         self.thehive = TheHiveApi(url, apikey)
@@ -228,18 +219,9 @@ class TheHive(AppBase):
 
         return ret.text
 
-    # Not sure what the data should be
     async def reopen_alert(self, apikey, url, alert_id):
-        url = "%s/api/alert/%s/markAsUnread" % (url, alert_id)
-        ret = requests.post(
-            url,
-            headers={
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer %s' % apikey
-            }
-        )
-
-        return ret.text
+        self.thehive = TheHiveApi(url, apikey)
+        return self.thehive.mark_alert_as_unread(alert_id).text
 
     # Not sure what the data should be
     async def update_field(self, apikey, url, field_type, cur_id, field, data):
