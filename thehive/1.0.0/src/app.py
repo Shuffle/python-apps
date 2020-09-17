@@ -216,6 +216,11 @@ class TheHive(AppBase):
 
         return ret.text
 
+    async def create_case_from_alert(self, apikey, url, alert_id, case_template=None):
+        self.thehive = TheHiveApi(url, apikey)
+        response = self.thehive.promote_alert_to_case(alert_id=alert_id, case_template=case_template)
+        return response.text
+
     # Not sure what the data should be
     async def reopen_alert(self, apikey, url, alert_id):
         url = "%s/api/alert/%s/markAsUnread" % (url, alert_id)
