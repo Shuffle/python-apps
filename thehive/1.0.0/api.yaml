@@ -130,6 +130,12 @@ actions:
         required: true
         schema:
           type: string
+      - name: case_template 
+        description: Case template name to apply when creating the case
+        example: ""
+        required: false
+        schema:
+          type: string
   - name: add_observable 
     description: Add an observable to TheHive
     parameters:
