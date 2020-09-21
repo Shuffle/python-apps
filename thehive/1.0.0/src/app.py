@@ -178,7 +178,7 @@ class TheHive(AppBase):
         newstr = ""
         ret = ""
         if field_type.lower() == "alert":
-            ret = self.thehive.get_alert(cur_id) 
+            ret = self.thehive.get_alert(cur_id + "?similarity=1") 
         elif field_type.lower() == "case":
             ret = self.thehive.get_case(cur_id)
         elif field_type.lower() == "case_observables":
