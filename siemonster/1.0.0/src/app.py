@@ -20,7 +20,7 @@ class Siemonster(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
-    async def ping(self):
+    async def ping(self, username, password, url):
         message = f"SIEMonster welcomes from {socket.gethostname()} in workflow {self.current_execution_id}!"
 
         # This logs to the docker logs
@@ -28,15 +28,15 @@ class Siemonster(AppBase):
 
         return message
 
-    async def es_get_cluster_health(self, url):
-        return requests.get(url + "/_cluster/health", verify=False).text
+    async def es_get_cluster_health(self, username, password, url):
+        return requests.get(url + "/_cluster/health", auth=(username, password), verify=False).text
 
-    async def es_query(self, method, url, path, body):
+    async def es_query(self, method, username, password, url, path, body):
         headers = {
             "Accept": "application/json",
             "Content-type": "application/json",
         }
-        return requests.request(method, url + path, data=body, headers=headers, verify=False).text
+        return requests.request(method, url + path, auth=(username, password), data=body, headers=headers, verify=False).text
 
 if __name__ == "__main__":
     asyncio.run(Siemonster.run(), debug=True)

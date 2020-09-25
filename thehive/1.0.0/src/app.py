@@ -178,7 +178,7 @@ class TheHive(AppBase):
         newstr = ""
         ret = ""
         if field_type.lower() == "alert":
-            ret = self.thehive.get_alert(cur_id) 
+            ret = self.thehive.get_alert(cur_id + "?similarity=1") 
         elif field_type.lower() == "case":
             ret = self.thehive.get_case(cur_id)
         elif field_type.lower() == "case_observables":
@@ -198,10 +198,7 @@ class TheHive(AppBase):
         else:
             return "%s is not implemented. See https://github.com/frikky/shuffle-apps for more info." % field_type
 
-        newstr = str(ret.json()).replace("\'", "\"")
-        newstr = newstr.replace("True", "true")
-        newstr = newstr.replace("False", "false")
-        return newstr
+        return ret.text
 
     async def close_alert(self, apikey, url, alert_id):
         self.thehive = TheHiveApi(url, apikey)
