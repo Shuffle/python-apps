@@ -6,6 +6,7 @@ import socket
 import uncurl
 import asyncio
 import requests
+import subprocess
 
 from walkoff_app_sdk.app_base import AppBase
 
@@ -24,19 +25,37 @@ class HTTP(AppBase):
         super().__init__(redis, logger, console_logger)
 
     # This is dangerously fun :)
+    # Do we care about arbitrary code execution here?
     async def curl(self, statement):
-        try: 
-            if not statement.startswith("curl "):
-                statement = "curl %s" % statement
-
-            data = uncurl.parse(statement)
-            request = eval(data)
-            if isinstance(request, requests.models.Response):
-                return request.text
-            else:
-                return "Unable to parse the curl parameter. Remember to start with curl "
+        process = subprocess.Popen(statement, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
+        stdout = process.communicate()
+        item = ""
+        if len(stdout[0]) > 0:
+            print("Succesfully ran bash!")
+            item = stdout[0]
+        else:
+            print("FAILED to run bash!")
+            item = stdout[1]
+    
+        try:
+            ret = item.decode("utf-8")
+            return ret 
         except:
-            return "An error occurred during curl parsing"
+            return item
+
+        return item
+        #try: 
+        #    if not statement.startswith("curl "):
+        #        statement = "curl %s" % statement
+
+        #    data = uncurl.parse(statement)
+        #    request = eval(data)
+        #    if isinstance(request, requests.models.Response):
+        #        return request.text
+        #    else:
+        #        return "Unable to parse the curl parameter. Remember to start with curl "
+        #except:
+        #    return "An error occurred during curl parsing"
 
     def splitheaders(self, headers):
         parsed_headers = {}

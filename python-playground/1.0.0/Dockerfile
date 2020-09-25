@@ -17,7 +17,6 @@ RUN pip install --prefix="/install" -r /requirements.txt
 FROM base
 COPY --from=builder /install /usr/local
 COPY src /app
-RUN apk add curl
 
 # Install any binary dependencies needed in our final image
 # RUN apk --no-cache add --update my_binary_dependency
