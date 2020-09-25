@@ -149,11 +149,11 @@ class Tools(AppBase):
                     pass
 
                 if check == "equals":
-                    if item[field] == value:
+                    if str(item[field]) == value:
                         print("APPENDED BECAUSE %s %s %s" % (field, check, value))
                         new_list.append(item)
                 elif check == "does not equal":
-                    if item[field] != value:
+                    if str(item[field]) != value:
                         new_list.append(item)
         except Exception as e:
             return "Error: %s" % e
