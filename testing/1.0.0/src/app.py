@@ -38,6 +38,9 @@ class HelloWorld(AppBase):
     async def repeat_back_to_me(self, call):
         return call
 
+    async def repeat_back_to_me_multi(self, call, call2):
+        return "1: %s\n2: %s" % (call, call2)
+
     async def return_plus_one(self, number):
         return str(number + 1)
 

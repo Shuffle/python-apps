@@ -30,6 +30,26 @@ actions:
     returns:
       schema:
         type: string
+  - name: repeat_back_to_me_multi
+    description: Repeats the call parameter
+    parameters:
+      - name: call
+        description: The message to repeat
+        required: true
+        multiline: true
+        example: "REPEATING: Hello world"
+        schema:
+          type: string
+      - name: call2
+        description: The message to repeat
+        required: true
+        multiline: true
+        example: "REPEATING: Hello world"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
   - name: return_plus_one
     description: Increments the number parameter by 1
     parameters:

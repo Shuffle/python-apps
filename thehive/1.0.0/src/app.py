@@ -68,10 +68,14 @@ class TheHive(AppBase):
 
         return self.thehive.create_case_observable(case_id, item).text
 
-    async def search_alerts(self, apikey, url, title_query):
+    async def search_alerts(self, apikey, url, title_query, search_range="0-25"):
         self.thehive = TheHiveApi(url, apikey)
 
-        response = self.thehive.find_alerts(query=String("title:'%s'" % title_query), range='all', sort=[])
+        # Could be "all" too
+        if search_range == "":
+            search_range = "0-25"
+
+        response = self.thehive.find_alerts(query=String("title:'%s'" % title_query), range=search_range, sort=[])
         return response.text
 
     async def create_case(self, apikey, url, title, description="", tlp=1, severity=1, tags=""):

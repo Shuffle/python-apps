@@ -259,6 +259,12 @@ actions:
         required: true
         schema:
           type: string
+      - name: search_range 
+        description: The amount of alerts to get. Defaults to 0-25
+        example: "0-50"
+        required: false 
+        schema:
+          type: string
     returns:
       schema:
         type: string 
