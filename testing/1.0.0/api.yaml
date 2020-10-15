@@ -1,6 +1,6 @@
 app_version: 1.0.0
 name: Testing
-description: Debugging app for Shuffle 
+description: Debugging  app for Shuffle 
 tags:
   - Testing 
 categories:
@@ -41,6 +41,13 @@ actions:
         schema:
           type: string
       - name: call2
+        description: The message to repeat
+        required: true
+        multiline: true
+        example: "REPEATING: Hello world"
+        schema:
+          type: string
+      - name: call3
         description: The message to repeat
         required: true
         multiline: true
