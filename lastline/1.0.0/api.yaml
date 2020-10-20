@@ -25,8 +25,8 @@ actions:
         required: true
         schema:
           type: string
-      - name: username 
-        description: The username to use for the API 
+      - name: user
+        description: The user to use for the API 
         multiline: false
         example: "Username"
         required: true
@@ -59,8 +59,8 @@ actions:
         required: true
         schema:
           type: string
-      - name: username 
-        description: The username to use for the API 
+      - name: user 
+        description: The user to use for the API 
         multiline: false
         example: "Username"
         required: true
@@ -107,8 +107,8 @@ actions:
         required: true
         schema:
           type: string
-      - name: username 
-        description: The username to use for the API 
+      - name: user
+        description: The user to use for the API 
         multiline: false
         example: "Username"
         required: true
@@ -155,8 +155,8 @@ actions:
         required: true
         schema:
           type: string
-      - name: username 
-        description: The username to use for the API 
+      - name: user
+        description: The user to use for the API 
         multiline: false
         example: "Username"
         required: true
@@ -203,8 +203,8 @@ actions:
         required: true
         schema:
           type: string
-      - name: username 
-        description: The username to use for the API 
+      - name: user
+        description: The user to use for the API 
         multiline: false
         example: "Username"
         required: true
@@ -251,8 +251,8 @@ actions:
         required: true
         schema:
           type: string
-      - name: username 
-        description: The username to use for the API 
+      - name: user
+        description: The user to use for the API 
         multiline: false
         example: "Username"
         required: true
@@ -285,8 +285,8 @@ actions:
         required: true
         schema:
           type: string
-      - name: username 
-        description: The username to use for the API 
+      - name: user
+        description: The user to use for the API 
         multiline: false
         example: "Username"
         required: true

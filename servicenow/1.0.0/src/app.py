@@ -102,7 +102,7 @@ class Servicenow(AppBase):
         }  
     
         path = 'table/%s' % table_name 
-        return send_request(self, url, username, password, path, 'get', params=query_params)
+        return self.send_request(url, username, password, path, 'get', params=query_params)
 
 # Run the actual thing after we've checked params
 def run(request):
