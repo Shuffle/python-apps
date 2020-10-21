@@ -84,7 +84,7 @@ class Email(AppBase):
 
         try:
             mail = imaplib.IMAP4_SSL(imap_server)
-        except socket.gaierror as error:
+        except (socket.gaierror, ConnectionRefusedError) as error:
             try:
                 mail = imaplib.IMAP4(imap_server)
                 mail.starttls()
