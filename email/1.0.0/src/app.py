@@ -1,6 +1,5 @@
 import time
 import json
-import json
 import random
 import socket
 import asyncio
@@ -8,6 +7,7 @@ import requests
 
 import imaplib
 import smtplib
+import eml_parser
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
@@ -85,7 +85,11 @@ class Email(AppBase):
         try:
             mail = imaplib.IMAP4_SSL(imap_server)
         except socket.gaierror as error:
-            return "Can't connect to IMAP server %s: %s" % (imap_server, error)
+            try:
+                mail = imaplib.IMAP4(imap_server)
+                mail.starttls()
+            except socket.gaierror as error:
+                return "Can't connect to IMAP server %s: %s" % (imap_server, error)
     
         try:
             mail.login(username, password)
@@ -112,6 +116,9 @@ class Email(AppBase):
         
         # FIXME: Should parse as JSON.
         emails = []
+        
+        ep = eml_parser.EmlParser()
+
         for i in range(len(id_list)-1, len(id_list)-amount, -1):
             resp, data = mail.fetch(id_list[i], "(RFC822)")
             if resp != 'OK':
@@ -122,7 +129,8 @@ class Email(AppBase):
                 continue
 
             try:
-                data = data[0][1].decode("utf-8")
+                parsed_eml = ep.decode_email_bytes(data[0][1])
+
             except UnicodeDecodeError as err:
                 print("Failed to decode part of mail %s" % id_list[i])
                 data = "Failed to decode mail %s" % id_list[i]
@@ -130,7 +138,7 @@ class Email(AppBase):
                 print("Indexerror: %s" % err)
                 data = "Something went wrong while parsing. Check logs."
 
-            emails.append({"id": id_list[i].decode("utf-8"), "data": data})
+            emails.append({"id": id_list[i].decode("utf-8"), "data": parsed_eml})
 
         return json.dumps(emails)
 
