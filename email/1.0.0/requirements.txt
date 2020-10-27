@@ -1,3 +1,4 @@
 # No extra requirements needed
 requests
 eml_parser
+glom
