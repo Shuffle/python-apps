@@ -141,7 +141,9 @@ actions:
       - name: unread
         description: Retrieve just unread emails
         multiline: false
-        example: "true"
+        options:
+          - "true"
+          - "false" 
         required: true
         schema:
           type: bool
@@ -155,14 +157,20 @@ actions:
       - name: include_raw_body
         description: Include raw body in email export
         multiline: false
-        example: "false"
+        options:
+          - ""
+          - "true"
+          - "false" 
         required: false
         schema:
           type: bool
       - name: include_attachment_data
         description: Include raw attachments in email export
         multiline: false
-        example: "false"
+        options:
+          - ""
+          - "true"
+          - "false" 
         required: false
         schema:
           type: bool
