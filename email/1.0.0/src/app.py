@@ -146,7 +146,7 @@ class Email(AppBase):
         emails = []
         error = None
 
-        if type(fields) == str:
+        if type(fields) == str and fields.strip() != "":
             fields = {k.strip(): k.strip() for k in fields.split(",")}
         else:
             fields = None
