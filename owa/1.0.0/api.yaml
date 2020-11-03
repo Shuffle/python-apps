@@ -1,0 +1,189 @@
+walkoff_version: 1.0.0
+app_version: 1.0.0
+name: owa
+description: Email app for Exchange (OWA)
+tags:
+  - email
+  - owa
+categories:
+  - email
+contact_info:
+  name: "@frikkylikeme"
+  url: https://github.com/frikky
+  email: "frikky@shuffler.io"
+authentication:
+  required: true
+  parameters:
+    - name: username
+      description: The Exchange (OWA) login username
+      multiline: false
+      example: "frikky@shuffler.io"
+      required: true
+      schema:
+        type: string
+    - name: password
+      description: The password to log in
+      multiline: false
+      example: "******************"
+      required: true
+      schema:
+        type: string
+    - name: server
+      description: The Exchange (OWA) server path
+      multiline: false
+      example: "Outlook.office365.com"
+      required: true
+      schema:
+        type: string
+    - name: build
+      description: The Exchange build version
+      multiline: false
+      example: "15.1"
+      required: false
+      schema:
+        type: string
+    - name: account
+      description: Account name for delegation
+      multiline: false
+      example: "frikky@shuffler.io"
+      required: true
+      schema:
+        type: string
+    - name: verifyssl
+      description: False to ignore ssl verification during login
+      multiline: false
+      options:
+        - "true"
+        - "false"
+      required: true
+      schema:
+        type: bool
+actions:
+  - name: send_email
+    description: Send an email from Exchange (OWA)
+    parameters:
+      - name: recipient
+        description: The receiver(s) of the email
+        multiline: false
+        example: "frikky@shuffler.io,frikky@shuffler.io"
+        required: true
+        schema:
+          type: string
+      - name: subject
+        description: The subject of the email
+        multiline: false
+        example: "This is a subject, hello there :)"
+        required: true
+        schema:
+          type: string
+      - name: body
+        description: The body to add to the email
+        multiline: true
+        example: "This is an email alert from Shuffler.io :)"
+        required: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: get_emails
+    description: Get email from Exchange (OWA)
+    parameters:
+      - name: foldername
+        description: The folder to use, e.g. "inbox"
+        multiline: false
+        example: "inbox"
+        required: true
+        schema:
+          type: string
+      - name: amount
+        description: Amount of emails to retrieve
+        multiline: false
+        example: "10"
+        required: true
+        schema:
+          type: string
+      - name: unread
+        description: Retrieve just unread email
+        multiline: false
+        options:
+          - "false"
+          - "true"
+        required: true
+        schema:
+          type: bool
+      - name: fields
+        description: The comma separated fields to export
+        multiline: false
+        example: "body, header.subject, header.header.message-id"
+        required: false
+        schema:
+          type: string
+      - name: include_raw_body
+        description: Include raw body in email export
+        multiline: false
+        options:
+          - "false"
+          - "true"
+        required: true
+        schema:
+          type: bool
+      - name: include_attachment_data
+        description: Include raw attachments in email export
+        multiline: false
+        options:
+          - "false"
+          - "true"
+        required: true
+        schema:
+          type: bool
+    returns:
+      schema:
+        type: string
+  - name: mark_email_as_read
+    description: Mark Exchange (OWA) email as read
+    parameters:
+      - name: email_id
+        description: Id of the email to be marked as read
+        multiline: false
+        example: "<F96257F63EAEB94C890EA6CE1437145C013B01FA@example.com>"
+        required: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: delete_email
+    description: Delete Exchange (OWA) email
+    parameters:
+      - name: email_id
+        description: Id of the email to be deleted
+        multiline: false
+        example: "<F96257F63EAEB94C890EA6CE1437145C013B01FA@example.com>"
+        required: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: move_email
+    description: Move an Exchange (OWA) email in specific folder
+    parameters:
+      - name: email_id
+        description: Id of the email to be moved
+        multiline: false
+        example: "<F96257F63EAEB94C890EA6CE1437145C013B01FA@example.com>"
+        required: true
+        schema:
+          type: string
+      - name: foldername
+        description: The destination folder to use, e.g. "inbox"
+        multiline: false
+        example: "inbox"
+        required: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+large_image: data:image/jpeg;base64,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
