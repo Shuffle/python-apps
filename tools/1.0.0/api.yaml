@@ -30,7 +30,7 @@ actions:
         schema:
           type: string
       - name: body
-        description: The SMS to add to the SMS 
+        description: The SMS to add to the numbers 
         multiline: true
         example: "This is an alert from Shuffle :)"
         required: true

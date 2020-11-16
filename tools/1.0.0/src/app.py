@@ -4,6 +4,7 @@ import time
 import random
 import json
 import subprocess
+import requests
 
 from ioc_finder import find_iocs
 from walkoff_app_sdk.app_base import AppBase
@@ -25,6 +26,7 @@ class Tools(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
+    # This is an SMS function of Shuffle
     async def send_sms_shuffle(self, apikey, numbers, body):
         targets = [numbers]
         if ", " in numbers:
@@ -34,7 +36,7 @@ class Tools(AppBase):
 
         data = {"numbers": targets, "body": body}
 
-        url = "https://shuffler.io/functions/sendsms"
+        url = "https://shuffler.io/api/v1/functions/sendsms"
         headers = {"Authorization": "Bearer %s" % apikey}
         return requests.post(url, headers=headers, json=data).text
 
@@ -48,7 +50,7 @@ class Tools(AppBase):
 
         data = {"targets": targets, "body": body, "subject": subject, "type": "alert"}
 
-        url = "https://shuffler.io/functions/sendmail"
+        url = "https://shuffler.io/api/v1/functions/sendmail"
         headers = {"Authorization": "Bearer %s" % apikey}
         return requests.post(url, headers=headers, json=data).text
 
