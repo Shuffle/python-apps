@@ -27,12 +27,12 @@ class Tools(AppBase):
         super().__init__(redis, logger, console_logger)
 
     # This is an SMS function of Shuffle
-    async def send_sms_shuffle(self, apikey, numbers, body):
-        targets = [numbers]
-        if ", " in numbers:
-            targets = numbers.split(", ")
-        elif "," in numbers:
-            targets = numbers.split(",")
+    async def send_sms_shuffle(self, apikey, phone_numbers, body):
+        targets = [phone_numbers]
+        if ", " in phone_numbers:
+            targets = phone_numbers.split(", ")
+        elif "," in phone_numbers:
+            targets = phone_numbers.split(",")
 
         data = {"numbers": targets, "body": body}
 
@@ -51,20 +51,6 @@ class Tools(AppBase):
         data = {"targets": targets, "body": body, "subject": subject, "type": "alert"}
 
         url = "https://shuffler.io/api/v1/functions/sendmail"
-        headers = {"Authorization": "Bearer %s" % apikey}
-        return requests.post(url, headers=headers, json=data).text
-
-    # This is an sms function of Shuffle
-    async def send_sms_shuffle(self, apikey, recipients, subject, body):
-        targets = [recipients]
-        if ", " in recipients:
-            targets = recipients.split(", ")
-        elif "," in recipients:
-            targets = recipients.split(",")
-
-        data = {"targets": targets, "body": body, "subject": subject, "type": "alert"}
-
-        url = "https://shuffler.io/functions/sendmail"
         headers = {"Authorization": "Bearer %s" % apikey}
         return requests.post(url, headers=headers, json=data).text
 

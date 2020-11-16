@@ -22,7 +22,7 @@ actions:
         required: true
         schema:
           type: string
-      - name: numbers 
+      - name: phone_numbers 
         description: The receivers of the SMS
         multiline: false
         example: "+4741323535,+8151023022"
