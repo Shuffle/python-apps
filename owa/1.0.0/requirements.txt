@@ -1,0 +1,5 @@
+# No extra requirements needed
+requests
+exchangelib
+eml_parser
+glom
