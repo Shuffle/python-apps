@@ -54,5 +54,8 @@ class HelloWorld(AppBase):
     async def input_options_test(self, call):
         return "Value: %s" % call 
 
+    async def get_file(self, call):
+        return "Value: %s" % call 
+
 if __name__ == "__main__":
     asyncio.run(HelloWorld.run(), debug=True)

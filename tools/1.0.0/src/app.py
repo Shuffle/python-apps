@@ -25,6 +25,47 @@ class Tools(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
+    async def send_sms_shuffle(self, apikey, numbers, body):
+        targets = [numbers]
+        if ", " in numbers:
+            targets = numbers.split(", ")
+        elif "," in numbers:
+            targets = numbers.split(",")
+
+        data = {"numbers": targets, "body": body}
+
+        url = "https://shuffler.io/functions/sendsms"
+        headers = {"Authorization": "Bearer %s" % apikey}
+        return requests.post(url, headers=headers, json=data).text
+
+    # This is an email function of Shuffle
+    async def send_email_shuffle(self, apikey, recipients, subject, body):
+        targets = [recipients]
+        if ", " in recipients:
+            targets = recipients.split(", ")
+        elif "," in recipients:
+            targets = recipients.split(",")
+
+        data = {"targets": targets, "body": body, "subject": subject, "type": "alert"}
+
+        url = "https://shuffler.io/functions/sendmail"
+        headers = {"Authorization": "Bearer %s" % apikey}
+        return requests.post(url, headers=headers, json=data).text
+
+    # This is an sms function of Shuffle
+    async def send_sms_shuffle(self, apikey, recipients, subject, body):
+        targets = [recipients]
+        if ", " in recipients:
+            targets = recipients.split(", ")
+        elif "," in recipients:
+            targets = recipients.split(",")
+
+        data = {"targets": targets, "body": body, "subject": subject, "type": "alert"}
+
+        url = "https://shuffler.io/functions/sendmail"
+        headers = {"Authorization": "Bearer %s" % apikey}
+        return requests.post(url, headers=headers, json=data).text
+
     # https://github.com/fhightower/ioc-finder
     async def parse_ioc(self, input_string, input_type="all"):
         if input_type == "":
