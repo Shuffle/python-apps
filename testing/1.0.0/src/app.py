@@ -54,8 +54,22 @@ class HelloWorld(AppBase):
     async def input_options_test(self, call):
         return "Value: %s" % call 
 
-    async def get_file(self, call):
-        return "Value: %s" % call 
+    async def get_file(self, filedata):
+        if filedata == None:
+            return "File is empty?"
+
+        file_content = filedata
+        return "FILE CONTENT: %s" % file_content 
+
+    async def upload_file(self, filename, data):
+        print("Inside function")
+        filedata = {
+            "filename": filename,
+            "data": data,
+        }
+        print("Done with function")
+
+        return ("Successfully put your data in a file", filedata)
 
 if __name__ == "__main__":
     asyncio.run(HelloWorld.run(), debug=True)
