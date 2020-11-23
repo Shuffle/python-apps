@@ -4,9 +4,10 @@
 import asyncio
 import time
 import random
-
+import json
 import requests
 import thehive4py
+
 from thehive4py.api import TheHiveApi
 from thehive4py.query import *
 import thehive4py.models
@@ -271,6 +272,53 @@ class TheHive(AppBase):
     async def run_analyzer(self, apikey, url, cortex_id, analyzer_id, artifact_id):
         self.thehive = TheHiveApi(url, apikey)
         return self.thehive.run_analyzer(cortex_id, artifact_id, analyzer_id).text
+
+    # Creates a task log in TheHive with file
+    async def create_task_log(self, apikey, url, task_id, message, filedata={}):
+        if filedata["success"] == False:
+            return "No file to upload. Skipping message."
+
+        headers = {
+            "Authorization": "Bearer %s" % apikey,
+        }
+
+        files = {}
+        if len(filedata["data"]) > 0:
+            files = {
+                'attachment': (filedata["filename"], filedata["data"]),
+            }
+
+        data = {'_json': """{"message": "%s"}""" % message}
+        response = requests.post("%s/api/case/task/%s/log" % (url, task_id), headers=headers, files=files, data=data)
+        return response.text
+
+    # Creates an observable as a file in a case
+    async def create_case_file_observable(self, apikey, url, case_id, tags, filedata):
+        if filedata["success"] == False:
+            return "No file to upload. Skipping message."
+
+        headers = {
+            "Authorization": "Bearer %s" % apikey,
+        }
+
+        if tags:
+            if ", " in tags:
+                tags = tags.split(", ")
+            elif "," in tags:
+                tags = tags.split(",")
+            else:
+                tags = [tags]
+
+        files = {}
+        if len(filedata["data"]) > 0:
+            files = {
+                'attachment': (filedata["filename"], filedata["data"]),
+            }
+
+        outerarray = {"dataType": "file", "tags": tags}
+        data = {'_json': """%s""" % json.dumps(outerarray)}
+        response = requests.post("%s/api/case/%s/artifact" % (url, case_id), headers=headers, files=files, data=data)
+        return response.text
 
 if __name__ == "__main__":
     asyncio.run(TheHive.run(), debug=True)
