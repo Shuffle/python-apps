@@ -3,6 +3,7 @@ import asyncio
 import time
 import random
 import json
+import requests
 
 from walkoff_app_sdk.app_base import AppBase
 
@@ -70,6 +71,15 @@ class HelloWorld(AppBase):
         print("Done with function")
 
         return ("Successfully put your data in a file", filedata)
+
+    async def delete_file(self, file_id):
+        headers = {
+            "Authorization": "Bearer %s" % self.authorization,
+        }
+        print("HEADERS: %s" % headers)
+
+        ret = requests.delete("%s/api/v1/files/%s?execution_id=%s" % (self.url, file_id, self.current_execution_id), headers=headers)
+        return ret.text
 
 if __name__ == "__main__":
     asyncio.run(HelloWorld.run(), debug=True)

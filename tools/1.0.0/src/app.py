@@ -246,5 +246,15 @@ class Tools(AppBase):
 
         return new_list
 
+    # Use data from AppBase to talk to backend
+    async def delete_file(self, file_id):
+        headers = {
+            "Authorization": "Bearer %s" % self.authorization,
+        }
+        print("HEADERS: %s" % headers)
+
+        ret = requests.delete("%s/api/v1/files/%s?execution_id=%s" % (self.url, file_id, self.current_execution_id), headers=headers)
+        return ret.text
+
 if __name__ == "__main__":
     asyncio.run(Tools.run(), debug=True)
