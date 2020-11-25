@@ -10,31 +10,73 @@ categories:
   - TI
   - Threat intel
 contact_info:
-  name: "@frikkylikeme" 
+  name: "@frikkylikeme"
   url: https://github.com/frikky
   email: "frikky@shuffler.io"
 authentication:
   required: true
   parameters:
-    - name: apikey 
+    - name: apikey
       description: The apikey to use
       example: ""
       required: true
       schema:
         type: string
-    - name: url 
-      description: The URL to target 
+    - name: url
+      description: The URL to target
       example: "https://localhost:9001"
       required: true
       schema:
         type: string
 
 actions:
-  - name: search 
-    description: Gets a list of all analyzers
+  - name: attributes_search
+    description: Serch query in attributes
     parameters:
-      - name: data 
-        description: The datatype to search for (e.g. domain, ip)
+      - name: data
+        description: The query to search for
+        example: '{"value": "example.com}'
+        required: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: events_search
+    description: Serch query in events
+    parameters:
+      - name: data
+        description: The query to search for
+        example: '{"value": "example.com}'
+        required: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: events_index
+    description: Return events index filtering by data
+    parameters:
+      - name: data
+        description: The query to search for
+        example: '{"value": "example.com}'
+        required: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: event_edit
+    description: Update event with json daa
+    parameters:
+      - name: event_id
+        description: Event id to update
+        example: "1"
+        required: true
+        schema:
+          type: string
+      - name: data
+        description: The updated json to use
         example: '{"value": "example.com}'
         required: true
         schema:
