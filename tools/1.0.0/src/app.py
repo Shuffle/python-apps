@@ -275,7 +275,7 @@ class Tools(AppBase):
         )
         return ret.text
 
-    async def extract_archive(self, filedata={}, fileformat="zip"):
+    async def extract_archive(self, filedata={}, fileformat="zip", password=None):
         uuids = []
 
         data = filedata["data"].encode("ISO-8859-1")
@@ -319,6 +319,69 @@ class Tools(AppBase):
             print("*" * 100)
             return "Failure during extract"
         return ("Successfully put your data in a file", uuids)
+
+    async def inflate_archive(self, file_uids, fileformat, name, password=None):
+
+        ## TODO: password support
+        ## TODO: support rar/7zip
+        ## TODO: workflow_id e org_id are manually insered for testing, how to find them?
+
+        file_uids = file_uids.split()
+        print("picking {}".format(file_uids))
+        headers = {
+            "Authorization": "Bearer %s" % self.authorization,
+        }
+
+        items = []
+
+        for file_id in file_uids:
+            ret = requests.get(
+                "%s/api/v1/files/%s?execution_id=%s"
+                % (self.url, file_id, self.current_execution_id),
+                headers=headers,
+            )
+            if ret.status_code != 200:
+                return "Error managing file: [{}] - {}".format(file_id, ret.text)
+            filename = ret.json()["filename"]
+            ret = requests.get(
+                "%s/api/v1/files/%s/content?execution_id=%s"
+                % (self.url, file_id, self.current_execution_id),
+                headers=headers,
+            )
+            if ret.status_code != 200:
+                return "Error managing file: [{}] - {}".format(file_id, ret.text)
+            data = ret.text
+            items.append((filename, data))
+
+        if len(items) == 0:
+            return "No file to inflate"
+
+        print("{} items to inflate".format(len(items)))
+
+        if fileformat == "zip":
+            archive_name = "archive.zip" if not name else name
+
+            with tempfile.NamedTemporaryFile() as tmp:
+                with zipfile.ZipFile(tmp.name, "w", zipfile.ZIP_DEFLATED) as archive:
+                    for filename, filedata in items:
+                        archive.writestr(filename, filedata)
+
+                data = {
+                    "filename": archive_name,
+                    "workflow_id": "349ed8dd-b749-4244-a157-71a9b20cc062",
+                    "org_id": "98ddfbb8-92c8-4a28-993e-4aba9306d053",
+                }
+                ret = requests.post(
+                    "%s/api/v1/files/create?execution_id=%s"
+                    % (self.url, self.current_execution_id),
+                    headers=headers,
+                    json=data,
+                )
+                if ret.status_code != 200:
+                    return "Error managing file: {}".format(ret.text)
+                return ret.json()
+        else:
+            return "wip"
 
 
 if __name__ == "__main__":

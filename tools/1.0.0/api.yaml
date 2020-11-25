@@ -273,6 +273,46 @@ actions:
           - 7zip
         schema:
           type: string
+      - name: password
+        description:
+        required: false
+        multiline: false
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: inflate_archive
+    description: Compress files in archive, return archive uid
+    parameters:
+      - name: file_uids
+        description:
+        required: true
+        multiline: true
+        schema:
+          type: string
+      - name: fileformat
+        description:
+        required: true
+        multiline: false
+        options:
+          - zip
+          - rar
+          - 7zip
+        schema:
+          type: string
+      - name: name
+        description:
+        required: false
+        multiline: false
+        schema:
+          type: string
+      - name: password
+        description:
+        required: false
+        multiline: false
+        schema:
+          type: string
     returns:
       schema:
         type: string
