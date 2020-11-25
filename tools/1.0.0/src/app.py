@@ -278,16 +278,16 @@ class Tools(AppBase):
     async def extract_archive(self, filedata={}, fileformat="zip", password=None):
         uuids = []
 
-        data = filedata["data"].encode("ISO-8859-1")
+        #data = (b"%s" % filedata["data"]).encode("utf-8")
+        data = filedata["data"]
+        #.encode("utf8")
+        #encode("ISO-8859-1")
 
         try:
             if filedata["success"] == False:
                 return "No file to upload. Skipping message."
 
-            headers = {
-                "Authorization": "Bearer %s" % self.authorization,
-            }
-
+            print("Working with fileformat %s" % fileformat)
             with tempfile.TemporaryDirectory() as tmpdirname:
                 # Get archive and save phisically
                 with open(os.path.join(tmpdirname, "archive"), "wb") as f:
@@ -302,6 +302,7 @@ class Tools(AppBase):
                             filename = os.path.basename(member)
                             if not filename:
                                 continue
+
                             # get item, push to shuffle, keep uid
                             source = zip_file.open(member)
                             filedata = {
@@ -309,22 +310,25 @@ class Tools(AppBase):
                                 "data": source.read(),
                             }
                             uuids.append(filedata)
-                elif format.strip().lower() == "rar":
+                elif fileformat.strip().lower() == "rar":
                     return "wip"
-                elif format.strip().lower() == "7zip":
+                elif fileformat.strip().lower() == "7zip":
                     return "wip"
+                else:
+                    return "No such format: %s" % fileformat
         except Exception as excp:
             print("*" * 100)
-            print(excp)
+            print("Exception: %s" % excp)
             print("*" * 100)
-            return "Failure during extract"
-        return ("Successfully put your data in a file", uuids)
+            return "Failure during extract: %s" % excp
+
+        print("Files: %s", uuids)
+        return ("Successfully extracted your archive as %s" % fileformat, uuids)
 
     async def inflate_archive(self, file_uids, fileformat, name, password=None):
 
         ## TODO: password support
         ## TODO: support rar/7zip
-        ## TODO: workflow_id e org_id are manually insered for testing, how to find them?
 
         file_uids = file_uids.split()
         print("picking {}".format(file_uids))
@@ -340,16 +344,20 @@ class Tools(AppBase):
                 % (self.url, file_id, self.current_execution_id),
                 headers=headers,
             )
+
             if ret.status_code != 200:
                 return "Error managing file: [{}] - {}".format(file_id, ret.text)
+
             filename = ret.json()["filename"]
             ret = requests.get(
                 "%s/api/v1/files/%s/content?execution_id=%s"
                 % (self.url, file_id, self.current_execution_id),
                 headers=headers,
             )
+
             if ret.status_code != 200:
-                return "Error managing file: [{}] - {}".format(file_id, ret.text)
+                return "Error managing file download: [{}] - {}".format(file_id, ret.text)
+
             data = ret.text
             items.append((filename, data))
 
@@ -361,6 +369,8 @@ class Tools(AppBase):
         if fileformat == "zip":
             archive_name = "archive.zip" if not name else name
 
+            print("Before zip")
+
             with tempfile.NamedTemporaryFile() as tmp:
                 with zipfile.ZipFile(tmp.name, "w", zipfile.ZIP_DEFLATED) as archive:
                     for filename, filedata in items:
@@ -368,17 +378,34 @@ class Tools(AppBase):
 
                 data = {
                     "filename": archive_name,
-                    "workflow_id": "349ed8dd-b749-4244-a157-71a9b20cc062",
-                    "org_id": "98ddfbb8-92c8-4a28-993e-4aba9306d053",
+                    "workflow_id": self.full_execution["workflow"]["id"],
+                    "org_id": self.full_execution["workflow"]["execution_org"]["id"],
                 }
+
+                # Creates an upload location
                 ret = requests.post(
                     "%s/api/v1/files/create?execution_id=%s"
                     % (self.url, self.current_execution_id),
                     headers=headers,
                     json=data,
                 )
+
                 if ret.status_code != 200:
                     return "Error managing file: {}".format(ret.text)
+
+                # Does the actual upload
+                files={"shuffle_file": open(tmp.name, "rb")}
+                ret2 = requests.post(
+                    "%s/api/v1/files/%s/upload?execution_id=%s" 
+                    % (self.url, ret.json()["id"], self.current_execution_id),
+                    headers=headers,
+                    files=files,
+                )
+
+                if ret2.status_code != 200:
+                    return "Failed uploading file: {}".format(ret2.text)
+
+                # Returns the first file's ID
                 return ret.json()
         else:
             return "wip"

@@ -283,7 +283,7 @@ actions:
       schema:
         type: string
   - name: inflate_archive
-    description: Compress files in archive, return archive uid
+    description: Compress files in archive, return archive's file uid
     parameters:
       - name: file_uids
         description:
