@@ -338,10 +338,10 @@ class Tools(AppBase):
                         to_be_uploaded.append(item)
 
             elif fileformat.strip().lower() == "7zip":
-                with v.SevenZipFile(
+                with py7zr.SevenZipFile(
                     tmpdirname, mode="r", password=password if password else None
                 ) as z_file:
-                    for filename, sorce in zip.readall().items():
+                    for filename, source in zip.readall().items():
                         item = {
                             "data": {
                                 "filename": source.name,
