@@ -1,6 +1,4 @@
 import os
-import shutil
-import zipfile
 import socket
 import asyncio
 import time
@@ -9,6 +7,12 @@ import json
 import subprocess
 import requests
 import tempfile
+
+import py7zr
+import shutil
+import rarfile
+import zipfile
+import pyminizip
 
 from ioc_finder import find_iocs
 from walkoff_app_sdk.app_base import AppBase
@@ -276,12 +280,9 @@ class Tools(AppBase):
         return ret.text
 
     async def extract_archive(self, filedata={}, fileformat="zip", password=None):
-        uuids = []
 
-        #data = (b"%s" % filedata["data"]).encode("utf-8")
-        data = filedata["data"]
-        #.encode("utf8")
-        #encode("ISO-8859-1")
+        workflow_id = self.full_execution["workflow"]["id"]
+        org_id = self.full_execution["workflow"]["execution_org"]["id"]
 
         try:
             if filedata["success"] == False:
@@ -289,41 +290,111 @@ class Tools(AppBase):
 
             print("Working with fileformat %s" % fileformat)
             with tempfile.TemporaryDirectory() as tmpdirname:
+
                 # Get archive and save phisically
                 with open(os.path.join(tmpdirname, "archive"), "wb") as f:
-                    f.write(data)
+                    f.write(filedata["data"])
 
-                # Extract
+                # grab files before, upload them later
+                to_be_uploaded = []
+                uuids = []
+
+                # Zipfile for zipped archive
                 if fileformat.strip().lower() == "zip":
-                    with zipfile.ZipFile(
-                        os.path.join(tmpdirname, "archive")
-                    ) as zip_file:
-                        for member in zip_file.namelist():
+                    with zipfile.ZipFile(os.path.join(tmpdirname, "archive")) as z_file:
+                        if password:
+                            zip_file.setpassword(password)
+                        for member in z_file.namelist():
                             filename = os.path.basename(member)
                             if not filename:
                                 continue
-
-                            # get item, push to shuffle, keep uid
-                            source = zip_file.open(member)
-                            filedata = {
-                                "filename": source.name,
-                                "data": source.read(),
+                            source = z_file.open(member)
+                            item = {
+                                "data": {
+                                    "filename": source.name,
+                                    "workflow_id": workflow_id,
+                                    "org_id": org_id,
+                                },
+                                "file": source.read(),
                             }
-                            uuids.append(filedata)
+                            to_be_uploaded.append(item)
+
                 elif fileformat.strip().lower() == "rar":
-                    return "wip"
+                    with rarfile.RarFile(os.path.join(tmpdirname, "archive")) as z_file:
+                        if password:
+                            z_file.setpassword(password)
+                        for member in z_file.namelist():
+                            filename = os.path.basename(member)
+                            if not filename:
+                                continue
+                            source = z_file.open(member)
+                            item = {
+                                "data": {
+                                    "filename": source.name,
+                                    "workflow_id": workflow_id,
+                                    "org_id": org_id,
+                                },
+                                "file": source.read(),
+                            }
+                            to_be_uploaded.append(item)
+
                 elif fileformat.strip().lower() == "7zip":
-                    return "wip"
+                    with v.SevenZipFile(
+                        tmpdirname, mode="r", password=password if password else None
+                    ) as z_file:
+                        for filename, sorce in zip.readall().items():
+                            item = {
+                                "data": {
+                                    "filename": source.name,
+                                    "workflow_id": workflow_id,
+                                    "org_id": org_id,
+                                },
+                                "file": source.read(),
+                            }
+                            to_be_uploaded.append(item)
+
                 else:
                     return "No such format: %s" % fileformat
-        except Exception as excp:
-            print("*" * 100)
-            print("Exception: %s" % excp)
-            print("*" * 100)
-            return "Failure during extract: %s" % excp
 
-        print("Files: %s", uuids)
-        return ("Successfully extracted your archive as %s" % fileformat, uuids)
+                if len(to_be_uploaded) == 0:
+                    return "Problem during extraction, no file found"
+
+                headers = {
+                    "Authorization": "Bearer %s" % self.authorization,
+                }
+
+                for item in to_be_uploaded:
+                    data = item["data"]
+
+                    # Creates an upload location
+                    ret = requests.post(
+                        "%s/api/v1/files/create?execution_id=%s"
+                        % (self.url, self.current_execution_id),
+                        headers=headers,
+                        json=data,
+                    )
+
+                    if ret.status_code != 200:
+                        return "Error managing file: {}".format(ret.text)
+
+                    # Does the actual upload
+                    files = {"shuffle_file": item["file"]}
+                    ret2 = requests.post(
+                        "%s/api/v1/files/%s/upload?execution_id=%s"
+                        % (self.url, ret.json()["id"], self.current_execution_id),
+                        headers=headers,
+                        files=files,
+                    )
+
+                    if ret2.status_code != 200:
+                        return "Failed uploading file: {}".format(ret2.text)
+
+                    # Returns the first file's ID
+                    uuids.append(ret.json())
+            return ("Successfully extracted your archive as %s" % fileformat, uuids)
+
+        except Exception as excp:
+            return "Failure during extract: %s" % excp
 
     async def inflate_archive(self, file_uids, fileformat, name, password=None):
 
@@ -356,7 +427,9 @@ class Tools(AppBase):
             )
 
             if ret.status_code != 200:
-                return "Error managing file download: [{}] - {}".format(file_id, ret.text)
+                return "Error managing file download: [{}] - {}".format(
+                    file_id, ret.text
+                )
 
             data = ret.text
             items.append((filename, data))
@@ -394,9 +467,9 @@ class Tools(AppBase):
                     return "Error managing file: {}".format(ret.text)
 
                 # Does the actual upload
-                files={"shuffle_file": open(tmp.name, "rb")}
+                files = {"shuffle_file": open(tmp.name, "rb")}
                 ret2 = requests.post(
-                    "%s/api/v1/files/%s/upload?execution_id=%s" 
+                    "%s/api/v1/files/%s/upload?execution_id=%s"
                     % (self.url, ret.json()["id"], self.current_execution_id),
                     headers=headers,
                     files=files,
