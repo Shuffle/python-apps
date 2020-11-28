@@ -297,7 +297,6 @@ actions:
         multiline: false
         options:
           - zip
-          - rar
           - 7zip
         schema:
           type: string

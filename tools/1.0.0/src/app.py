@@ -1,6 +1,4 @@
 import os
-import shutil
-import zipfile
 import socket
 import asyncio
 import time
@@ -9,6 +7,12 @@ import json
 import subprocess
 import requests
 import tempfile
+
+import py7zr
+import shutil
+import rarfile
+import zipfile
+import pyminizip
 
 from ioc_finder import find_iocs
 from walkoff_app_sdk.app_base import AppBase
@@ -276,75 +280,135 @@ class Tools(AppBase):
         return ret.text
 
     async def extract_archive(self, filedata={}, fileformat="zip", password=None):
-        uuids = []
 
-        #data = (b"%s" % filedata["data"]).encode("utf-8")
-        data = filedata["data"]
-        #.encode("utf8")
-        #encode("ISO-8859-1")
+        workflow_id = self.full_execution["workflow"]["id"]
+        org_id = self.full_execution["workflow"]["execution_org"]["id"]
 
-        try:
-            if filedata["success"] == False:
-                return "No file to upload. Skipping message."
+        if filedata["success"] == False:
+            return "No file to upload. Skipping message."
 
-            print("Working with fileformat %s" % fileformat)
-            with tempfile.TemporaryDirectory() as tmpdirname:
-                # Get archive and save phisically
-                with open(os.path.join(tmpdirname, "archive"), "wb") as f:
-                    f.write(data)
+        print("Working with fileformat %s" % fileformat)
+        with tempfile.TemporaryDirectory() as tmpdirname:
 
-                # Extract
-                if fileformat.strip().lower() == "zip":
-                    with zipfile.ZipFile(
-                        os.path.join(tmpdirname, "archive")
-                    ) as zip_file:
-                        for member in zip_file.namelist():
-                            filename = os.path.basename(member)
-                            if not filename:
-                                continue
+            # Get archive and save phisically
+            with open(os.path.join(tmpdirname, "archive"), "wb") as f:
+                f.write(filedata["data"])
 
-                            # get item, push to shuffle, keep uid
-                            source = zip_file.open(member)
-                            filedata = {
+            # grab files before, upload them later
+            to_be_uploaded = []
+            uuids = []
+
+            # Zipfile for zipped archive
+            if fileformat.strip().lower() == "zip":
+                with zipfile.ZipFile(os.path.join(tmpdirname, "archive")) as z_file:
+                    if password:
+                        zip_file.setpassword(password)
+                    for member in z_file.namelist():
+                        filename = os.path.basename(member)
+                        if not filename:
+                            continue
+                        source = z_file.open(member)
+                        item = {
+                            "data": {
                                 "filename": source.name,
-                                "data": source.read(),
-                            }
-                            uuids.append(filedata)
-                elif fileformat.strip().lower() == "rar":
-                    return "wip"
-                elif fileformat.strip().lower() == "7zip":
-                    return "wip"
-                else:
-                    return "No such format: %s" % fileformat
-        except Exception as excp:
-            print("*" * 100)
-            print("Exception: %s" % excp)
-            print("*" * 100)
-            return "Failure during extract: %s" % excp
+                                "workflow_id": workflow_id,
+                                "org_id": org_id,
+                            },
+                            "file": source.read(),
+                        }
+                        to_be_uploaded.append(item)
 
-        print("Files: %s", uuids)
+            elif fileformat.strip().lower() == "rar":
+                with rarfile.RarFile(os.path.join(tmpdirname, "archive")) as z_file:
+                    if password:
+                        z_file.setpassword(password)
+                    for member in z_file.namelist():
+                        filename = os.path.basename(member)
+                        if not filename:
+                            continue
+                        source = z_file.open(member)
+                        item = {
+                            "data": {
+                                "filename": source.name,
+                                "workflow_id": workflow_id,
+                                "org_id": org_id,
+                            },
+                            "file": source.read(),
+                        }
+                        to_be_uploaded.append(item)
+
+            elif fileformat.strip().lower() == "7zip":
+                with py7zr.SevenZipFile(
+                    tmpdirname, mode="r", password=password if password else None
+                ) as z_file:
+                    for filename, source in zip.readall().items():
+                        item = {
+                            "data": {
+                                "filename": source.name,
+                                "workflow_id": workflow_id,
+                                "org_id": org_id,
+                            },
+                            "file": source.read(),
+                        }
+                        to_be_uploaded.append(item)
+
+            else:
+                return "No such format: %s" % fileformat
+
+            if len(to_be_uploaded) == 0:
+                return "Problem during extraction, no file found"
+
+            headers = {
+                "Authorization": "Bearer %s" % self.authorization,
+            }
+
+            for item in to_be_uploaded:
+                data = item["data"]
+
+                # Creates an upload location
+                ret = requests.post(
+                    "%s/api/v1/files/create?execution_id=%s"
+                    % (self.url, self.current_execution_id),
+                    headers=headers,
+                    json=data,
+                )
+
+                if ret.status_code != 200:
+                    return "Error managing file: {}".format(ret.text)
+
+                # Does the actual upload
+                files = {"shuffle_file": item["file"]}
+                ret2 = requests.post(
+                    "%s/api/v1/files/%s/upload?execution_id=%s"
+                    % (self.url, ret.json()["id"], self.current_execution_id),
+                    headers=headers,
+                    files=files,
+                )
+
+                if ret2.status_code != 200:
+                    return "Failed uploading file: {}".format(ret2.text)
+
+                # Returns the first file's ID
+                uuids.append(ret.json())
         return ("Successfully extracted your archive as %s" % fileformat, uuids)
 
     async def inflate_archive(self, file_uids, fileformat, name, password=None):
 
-        ## TODO: password support
-        ## TODO: support rar/7zip
-
+        # TODO: will in future support multiple files instead of string uids?
         file_uids = file_uids.split()
         print("picking {}".format(file_uids))
         headers = {
             "Authorization": "Bearer %s" % self.authorization,
         }
 
+        # GET all items from shuffle
         items = []
-
         for file_id in file_uids:
             ret = requests.get(
                 "%s/api/v1/files/%s?execution_id=%s"
                 % (self.url, file_id, self.current_execution_id),
                 headers=headers,
             )
-
             if ret.status_code != 200:
                 return "Error managing file: [{}] - {}".format(file_id, ret.text)
 
@@ -354,27 +418,42 @@ class Tools(AppBase):
                 % (self.url, file_id, self.current_execution_id),
                 headers=headers,
             )
-
             if ret.status_code != 200:
-                return "Error managing file download: [{}] - {}".format(file_id, ret.text)
+                return "Error managing file download: [{}] - {}".format(
+                    file_id, ret.text
+                )
 
             data = ret.text
             items.append((filename, data))
-
         if len(items) == 0:
             return "No file to inflate"
 
-        print("{} items to inflate".format(len(items)))
+        # Dump files on disk, because libs want path :(
+        with tempfile.TemporaryDirectory() as tmpdir:
+            paths = []
+            for (filename, filedata) in items:
+                with open(os.path.join(tmpdir, filename), "w") as f:
+                    f.write(filedata)
+                    paths.append(os.path.join(tmpdir, filename))
 
-        if fileformat == "zip":
-            archive_name = "archive.zip" if not name else name
+            # Create archive temporary
+            print("{} items to inflate".format(len(items)))
+            with tempfile.NamedTemporaryFile() as archive:
 
-            print("Before zip")
+                if fileformat == "zip":
+                    archive_name = "archive.zip" if not name else name
+                    pyminizip.compress_multiple(paths, [], archive.name, password, 5)
 
-            with tempfile.NamedTemporaryFile() as tmp:
-                with zipfile.ZipFile(tmp.name, "w", zipfile.ZIP_DEFLATED) as archive:
-                    for filename, filedata in items:
-                        archive.writestr(filename, filedata)
+                elif fileformat == "7zip":
+                    archive_name = "archive.7z" if not name else name
+                    with py7zr.SevenZipFile(
+                        archive.name, "w", password=password
+                    ) as sz_archive:
+                        for path in paths:
+                            sz_archive.write(path)
+
+                else:
+                    return "Format {} not supported".format(fileformat)
 
                 data = {
                     "filename": archive_name,
@@ -394,9 +473,9 @@ class Tools(AppBase):
                     return "Error managing file: {}".format(ret.text)
 
                 # Does the actual upload
-                files={"shuffle_file": open(tmp.name, "rb")}
+                files = {"shuffle_file": open(archive.name, "rb")}
                 ret2 = requests.post(
-                    "%s/api/v1/files/%s/upload?execution_id=%s" 
+                    "%s/api/v1/files/%s/upload?execution_id=%s"
                     % (self.url, ret.json()["id"], self.current_execution_id),
                     headers=headers,
                     files=files,
@@ -407,8 +486,6 @@ class Tools(AppBase):
 
                 # Returns the first file's ID
                 return ret.json()
-        else:
-            return "wip"
 
 
 if __name__ == "__main__":
