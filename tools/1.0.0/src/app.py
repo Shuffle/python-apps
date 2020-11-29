@@ -287,6 +287,8 @@ class Tools(AppBase):
         if filedata["success"] == False:
             return "No file to upload. Skipping message."
 
+        print(type(filedata["data"]))
+
         print("Working with fileformat %s" % fileformat)
         with tempfile.TemporaryDirectory() as tmpdirname:
 
@@ -294,7 +296,7 @@ class Tools(AppBase):
             with open(os.path.join(tmpdirname, "archive"), "wb") as f:
                 f.write(filedata["data"])
 
-            # grab files before, upload them later
+            # Grab files before, upload them later
             to_be_uploaded = []
             uuids = []
 
@@ -302,7 +304,7 @@ class Tools(AppBase):
             if fileformat.strip().lower() == "zip":
                 with zipfile.ZipFile(os.path.join(tmpdirname, "archive")) as z_file:
                     if password:
-                        zip_file.setpassword(password)
+                        z_file.setpassword(bytes(password.encode()))
                     for member in z_file.namelist():
                         filename = os.path.basename(member)
                         if not filename:
@@ -338,18 +340,22 @@ class Tools(AppBase):
                         to_be_uploaded.append(item)
 
             elif fileformat.strip().lower() == "7zip":
+                print("4")
                 with py7zr.SevenZipFile(
-                    tmpdirname, mode="r", password=password if password else None
+                    os.path.join(tmpdirname, "archive"), mode="r", password=password if password else None
                 ) as z_file:
-                    for filename, source in zip.readall().items():
+                    for filename, source in z_file.readall().items():
+                        # Removes paths
+                        filename = filename.split("/")[-1]
                         item = {
                             "data": {
-                                "filename": source.name,
+                                "filename": filename,
                                 "workflow_id": workflow_id,
                                 "org_id": org_id,
                             },
                             "file": source.read(),
                         }
+
                         to_be_uploaded.append(item)
 
             else:
@@ -390,7 +396,9 @@ class Tools(AppBase):
 
                 # Returns the first file's ID
                 uuids.append(ret.json())
-        return ("Successfully extracted your archive as %s" % fileformat, uuids)
+
+        return {"file_ids": uuids}
+        #("Successfully extracted your archive as %s" % fileformat, uuids)
 
     async def inflate_archive(self, file_uids, fileformat, name, password=None):
 
@@ -409,6 +417,7 @@ class Tools(AppBase):
                 % (self.url, file_id, self.current_execution_id),
                 headers=headers,
             )
+
             if ret.status_code != 200:
                 return "Error managing file: [{}] - {}".format(file_id, ret.text)
 
@@ -418,21 +427,24 @@ class Tools(AppBase):
                 % (self.url, file_id, self.current_execution_id),
                 headers=headers,
             )
+
             if ret.status_code != 200:
                 return "Error managing file download: [{}] - {}".format(
                     file_id, ret.text
                 )
 
-            data = ret.text
+            data = ret.content
             items.append((filename, data))
+
         if len(items) == 0:
             return "No file to inflate"
 
         # Dump files on disk, because libs want path :(
         with tempfile.TemporaryDirectory() as tmpdir:
             paths = []
+            print("Number 1")
             for (filename, filedata) in items:
-                with open(os.path.join(tmpdir, filename), "w") as f:
+                with open(os.path.join(tmpdir, filename), "wb") as f:
                     f.write(filedata)
                     paths.append(os.path.join(tmpdir, filename))
 
@@ -447,7 +459,7 @@ class Tools(AppBase):
                 elif fileformat == "7zip":
                     archive_name = "archive.7z" if not name else name
                     with py7zr.SevenZipFile(
-                        archive.name, "w", password=password
+                        archive.name, "w", password=password if len(password) > 0 else None
                     ) as sz_archive:
                         for path in paths:
                             sz_archive.write(path)
