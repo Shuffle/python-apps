@@ -10,6 +10,7 @@ import smtplib
 import datetime
 import eml_parser
 import exchangelib
+import tempfile
 
 from glom import glom
 from email.mime.multipart import MIMEMultipart
@@ -146,6 +147,7 @@ class Owa(AppBase):
         recipient,
         subject,
         body,
+        attachments,
     ):
         # Authenticate
         auth = await self.authenticate(
@@ -163,6 +165,16 @@ class Owa(AppBase):
                 Mailbox(email_address=address) for address in recipient.split(", ")
             ],
         )
+
+        file_uids = attachments.split()
+        if len(file_uids) > 0:
+            for file_uid in file_uids:
+                attachment_data = self.get_files(file_uid)
+                file = FileAttachment(
+                    name=attachment_data["filename"], content=attachment_data["data"]
+                )
+                m.attach(file)
+
         m.send()
         return {"ok": True, "error": False}
 
@@ -255,6 +267,8 @@ class Owa(AppBase):
         fields,
         include_raw_body,
         include_attachment_data,
+        upload_email_shuffle,
+        upload_attachments_shuffle,
     ):
         def path_to_dict(path, value=None):
             def pack(parts):
@@ -302,6 +316,12 @@ class Owa(AppBase):
         include_attachment_data = (
             True if include_attachment_data.lower().strip() == "true" else False
         )
+        upload_email_shuffle = (
+            True if upload_email_shuffle.lower().strip() == "true" else False
+        )
+        upload_attachments_shuffle = (
+            True if upload_attachments_shuffle.lower().strip() == "true" else False
+        )
 
         # Convert <amount> of mails in json
         emails = []
@@ -329,6 +349,19 @@ class Owa(AppBase):
                         )
                 else:
                     output_dict = parsed_eml
+
+                if upload_email_shuffle:
+                    email_up = [{"filename": "email.msg", "data": email.mime_content}]
+                    email_id = self.set_files(email_up)
+                    output_dict["email_uid"] = email_id[0]
+
+                if upload_attachments_shuffle:
+                    atts_up = [
+                        {"filename": attachment.name, "data": attachment.content}
+                        for attachment in email.attachments
+                    ]
+                    atts_ids = self.set_files(atts_up)
+                    output_dict["attachments_uids"] = atts_ids
 
                 emails.append(output_dict)
         except Exception as err:
