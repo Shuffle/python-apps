@@ -10,7 +10,6 @@ import smtplib
 import datetime
 import eml_parser
 import exchangelib
-import tempfile
 
 from glom import glom
 from email.mime.multipart import MIMEMultipart
