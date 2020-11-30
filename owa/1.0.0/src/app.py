@@ -168,7 +168,7 @@ class Owa(AppBase):
         file_uids = attachments.split()
         if len(file_uids) > 0:
             for file_uid in file_uids:
-                attachment_data = self.get_files(file_uid)
+                attachment_data = self.get_file(file_uid)
                 file = FileAttachment(
                     name=attachment_data["filename"], content=attachment_data["data"]
                 )
