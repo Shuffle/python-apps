@@ -25,6 +25,7 @@ from exchangelib import (
     Build,
     Mailbox,
     Message,
+    FileAttachment,
 )
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
 from walkoff_app_sdk.app_base import AppBase
