@@ -83,6 +83,12 @@ actions:
         required: true
         schema:
           type: string
+      - name: attachments
+        description: Uid of files to add as attachments
+        multiline: false
+        required: false
+        schema:
+          type: string
     returns:
       schema:
         type: string
@@ -130,6 +136,24 @@ actions:
           type: bool
       - name: include_attachment_data
         description: Include raw attachments in email export
+        multiline: false
+        options:
+          - "false"
+          - "true"
+        required: true
+        schema:
+          type: bool
+      - name: upload_email_shuffle
+        description: Upload email in shuffle, return uid
+        multiline: false
+        options:
+          - "false"
+          - "true"
+        required: true
+        schema:
+          type: bool
+      - name: upload_attachments_shuffle
+        description: Upload attachments in shuffle, return uids
         multiline: false
         options:
           - "false"
