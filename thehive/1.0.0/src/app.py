@@ -14,11 +14,13 @@ import thehive4py.models
 
 from walkoff_app_sdk.app_base import AppBase
 
+
 class TheHive(AppBase):
     """
     An example of a Walkoff App.
     Inherit from the AppBase class to have Redis, logging, and console logging set up behind the scenes.
     """
+
     __version__ = "1.0.0"
     app_name = "thehive"
 
@@ -31,17 +33,18 @@ class TheHive(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
-    #async def run_analyzer(self, apikey, url, title_query):
+    # async def run_analyzer(self, apikey, url, title_query):
     #    self.thehive = TheHiveApi(url, apikey)
 
     #    response = self.thehive.find_cases(query=String("title:'%s'" % title_query), range='all', sort=[])
     #    return response.text
 
-
     async def search_cases(self, apikey, url, title_query):
         self.thehive = TheHiveApi(url, apikey)
 
-        response = self.thehive.find_cases(query=String("title:'%s'" % title_query), range='all', sort=[])
+        response = self.thehive.find_cases(
+            query=String("title:'%s'" % title_query), range="all", sort=[]
+        )
         return response.text
 
     async def add_observable(self, apikey, url, case_id, data, datatype, tags):
@@ -76,10 +79,14 @@ class TheHive(AppBase):
         if search_range == "":
             search_range = "0-25"
 
-        response = self.thehive.find_alerts(query=String("title:'%s'" % title_query), range=search_range, sort=[])
+        response = self.thehive.find_alerts(
+            query=String("title:'%s'" % title_query), range=search_range, sort=[]
+        )
         return response.text
 
-    async def create_case(self, apikey, url, title, description="", tlp=1, severity=1, tags=""):
+    async def create_case(
+        self, apikey, url, title, description="", tlp=1, severity=1, tags=""
+    ):
         self.thehive = TheHiveApi(url, apikey)
         if tags:
             if ", " in tags:
@@ -87,7 +94,7 @@ class TheHive(AppBase):
             elif "," in tags:
                 tags = tags.split(",")
             else:
-                tags = []
+                tags = [tags]
         else:
             tags = []
 
@@ -126,7 +133,19 @@ class TheHive(AppBase):
         except requests.exceptions.ConnectionError as e:
             return "ConnectionError: %s" % e
 
-    async def create_alert(self, apikey, url, type, source, sourceref, title, description="", tlp=1, severity=1, tags=""):
+    async def create_alert(
+        self,
+        apikey,
+        url,
+        type,
+        source,
+        sourceref,
+        title,
+        description="",
+        tlp=1,
+        severity=1,
+        tags="",
+    ):
         self.thehive = TheHiveApi(url, apikey)
         if tags:
             if ", " in tags:
@@ -177,13 +196,13 @@ class TheHive(AppBase):
             return "ConnectionError: %s" % e
 
     # Gets an item based on input. E.g. field_type = Alert
-    async def get_item(self, apikey, url, field_type, cur_id): 
+    async def get_item(self, apikey, url, field_type, cur_id):
         self.thehive = TheHiveApi(url, apikey)
 
         newstr = ""
         ret = ""
         if field_type.lower() == "alert":
-            ret = self.thehive.get_alert(cur_id + "?similarity=1") 
+            ret = self.thehive.get_alert(cur_id + "?similarity=1")
         elif field_type.lower() == "case":
             ret = self.thehive.get_case(cur_id)
         elif field_type.lower() == "case_observables":
@@ -201,7 +220,10 @@ class TheHive(AppBase):
         elif field_type.lower() == "task_logs":
             ret = self.thehive.get_task_logs(cur_id)
         else:
-            return "%s is not implemented. See https://github.com/frikky/shuffle-apps for more info." % field_type
+            return (
+                "%s is not implemented. See https://github.com/frikky/shuffle-apps for more info."
+                % field_type
+            )
 
         return ret.text
 
@@ -215,7 +237,9 @@ class TheHive(AppBase):
 
     async def create_case_from_alert(self, apikey, url, alert_id, case_template=None):
         self.thehive = TheHiveApi(url, apikey)
-        response = self.thehive.promote_alert_to_case(alert_id=alert_id, case_template=case_template)
+        response = self.thehive.promote_alert_to_case(
+            alert_id=alert_id, case_template=case_template
+        )
         return response.text
 
     async def merge_alert_into_case(self, apikey, url, alert_id, case_id):
@@ -230,11 +254,11 @@ class TheHive(AppBase):
         if field_type.lower() == "alert":
             newdata = {}
 
-            if data.startswith("%s"): 
+            if data.startswith("%s"):
                 ticket = self.thehive.get_alert(cur_id)
                 if ticket.status_code != 200:
-                    pass 
-            
+                    pass
+
                 newdata[field] = "%s%s" % (ticket.json()[field], data[2:])
             else:
                 newdata[field] = data
@@ -244,29 +268,32 @@ class TheHive(AppBase):
             if field == "status":
                 if data == "New" or data == "Updated":
                     url = "%s/markAsUnread" % url
-                elif data == "Ignored": 
+                elif data == "Ignored":
                     url = "%s/markAsRead" % url
 
                 ret = requests.post(
                     url,
                     headers={
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer %s' % apikey
-                    }
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer %s" % apikey,
+                    },
                 )
             else:
                 ret = requests.patch(
                     url,
                     headers={
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer %s' % apikey
-                    }, 
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer %s" % apikey,
+                    },
                     json=newdata,
                 )
 
             return str(ret.status_code)
         else:
-            return "%s is not implemented. See https://github.com/frikky/walkoff-integrations for more info." % field_type
+            return (
+                "%s is not implemented. See https://github.com/frikky/walkoff-integrations for more info."
+                % field_type
+            )
 
     # https://github.com/TheHive-Project/TheHiveDocs/tree/master/api/connectors/cortex
     async def run_analyzer(self, apikey, url, cortex_id, analyzer_id, artifact_id):
@@ -285,11 +312,16 @@ class TheHive(AppBase):
         files = {}
         if len(filedata["data"]) > 0:
             files = {
-                'attachment': (filedata["filename"], filedata["data"]),
+                "attachment": (filedata["filename"], filedata["data"]),
             }
 
-        data = {'_json': """{"message": "%s"}""" % message}
-        response = requests.post("%s/api/case/task/%s/log" % (url, task_id), headers=headers, files=files, data=data)
+        data = {"_json": """{"message": "%s"}""" % message}
+        response = requests.post(
+            "%s/api/case/task/%s/log" % (url, task_id),
+            headers=headers,
+            files=files,
+            data=data,
+        )
         return response.text
 
     # Creates an observable as a file in a case
@@ -312,13 +344,19 @@ class TheHive(AppBase):
         files = {}
         if len(filedata["data"]) > 0:
             files = {
-                'attachment': (filedata["filename"], filedata["data"]),
+                "attachment": (filedata["filename"], filedata["data"]),
             }
 
         outerarray = {"dataType": "file", "tags": tags}
-        data = {'_json': """%s""" % json.dumps(outerarray)}
-        response = requests.post("%s/api/case/%s/artifact" % (url, case_id), headers=headers, files=files, data=data)
+        data = {"_json": """%s""" % json.dumps(outerarray)}
+        response = requests.post(
+            "%s/api/case/%s/artifact" % (url, case_id),
+            headers=headers,
+            files=files,
+            data=data,
+        )
         return response.text
+
 
 if __name__ == "__main__":
     asyncio.run(TheHive.run(), debug=True)
