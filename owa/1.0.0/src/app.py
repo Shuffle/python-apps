@@ -359,6 +359,7 @@ class Owa(AppBase):
                     atts_up = [
                         {"filename": attachment.name, "data": attachment.content}
                         for attachment in email.attachments
+                        if type(attachment) == FileAttachment
                     ]
                     atts_ids = self.set_files(atts_up)
                     output_dict["attachments_uids"] = atts_ids

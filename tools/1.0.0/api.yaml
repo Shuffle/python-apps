@@ -164,6 +164,25 @@ actions:
     returns:
       schema:
         type: string
+  - name: parse_file_ioc
+    description: Parse IOC's based on https://github.com/fhightower/ioc-finder
+    parameters:
+      - name: file_ids
+        description: The shuffle file to check
+        required: true
+        multiline: false
+        schema:
+          type: string
+      - name: input_type
+        description: The string to check
+        required: false
+        multiline: false
+        example: "md5s"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
   - name: translate_value
     description: Takes a list of values and translates it in your input data
     parameters:
@@ -255,14 +274,14 @@ actions:
       schema:
         type: string
   - name: extract_archive
-    description: Extract a compressed file, return file uids
+    description: Extract compressed files, return file ids
     parameters:
-      - name: filedata
+      - name: file_ids
         description:
         required: true
         multiline: false
         schema:
-          type: file
+          type: string
       - name: fileformat
         description:
         required: true
@@ -283,9 +302,9 @@ actions:
       schema:
         type: string
   - name: inflate_archive
-    description: Compress files in archive, return archive's file uid
+    description: Compress files in archive, return archive's file id
     parameters:
-      - name: file_uids
+      - name: file_ids
         description:
         required: true
         multiline: true

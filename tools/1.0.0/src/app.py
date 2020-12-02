@@ -67,6 +67,56 @@ class Tools(AppBase):
         return requests.post(url, headers=headers, json=data).text
 
     # https://github.com/fhightower/ioc-finder
+    async def parse_file_ioc(self, file_ids, input_type="all"):
+        if input_type == "":
+            input_type = "all"
+
+        return_list = []
+
+        # Even if I put .#.# it's considered as list
+        if len(file_ids) > 0 and type(file_ids[0]) == list:
+            file_ids = file_ids[0]
+
+        for file_id in file_ids:
+
+            filedata = self.get_file(file_id)
+            iocs = find_iocs(filedata["data"].decode("utf8"))
+
+            newarray = []
+            for key, value in iocs.items():
+                if input_type != "all":
+                    if key != input_type:
+                        continue
+
+                if len(value) > 0:
+                    for item in value:
+                        # If in here: attack techniques. Shouldn't be 3 levels so no
+                        # recursion necessary
+                        if isinstance(value, dict):
+                            for subkey, subvalue in value.items():
+                                if len(subvalue) > 0:
+                                    for subitem in subvalue:
+                                        data = {
+                                            "data": subitem,
+                                            "data_type": "%s_%s" % (key[:-1], subkey),
+                                        }
+                                        if data not in newarray:
+                                            newarray.append(data)
+                        else:
+                            data = {"data": item, "data_type": key[:-1]}
+                            if data not in newarray:
+                                newarray.append(data)
+
+            # Reformatting IP
+            for item in newarray:
+                if "ip" in item["data_type"]:
+                    item["data_type"] = "ip"
+
+            return_list.append(newarray)
+
+        return return_list
+
+    # https://github.com/fhightower/ioc-finder
     async def parse_ioc(self, input_string, input_type="all"):
         if input_type == "":
             input_type = "all"
@@ -279,139 +329,154 @@ class Tools(AppBase):
         )
         return ret.text
 
-    async def extract_archive(self, filedata={}, fileformat="zip", password=None):
+    async def extract_archive(self, file_ids, fileformat="zip", password=None):
+        try:
+            workflow_id = self.full_execution["workflow"]["id"]
+            org_id = self.full_execution["workflow"]["execution_org"]["id"]
 
-        workflow_id = self.full_execution["workflow"]["id"]
-        org_id = self.full_execution["workflow"]["execution_org"]["id"]
+            return_data = []
 
-        if filedata["success"] == False:
-            return "No file to upload. Skipping message."
+            for file_id in file_ids:
 
-        print(type(filedata["data"]))
+                filedata = self.get_file(file_id)
 
-        print("Working with fileformat %s" % fileformat)
-        with tempfile.TemporaryDirectory() as tmpdirname:
+                print("Working with fileformat %s" % fileformat)
+                with tempfile.TemporaryDirectory() as tmpdirname:
 
-            # Get archive and save phisically
-            with open(os.path.join(tmpdirname, "archive"), "wb") as f:
-                f.write(filedata["data"])
+                    # Get archive and save phisically
+                    with open(os.path.join(tmpdirname, "archive"), "wb") as f:
+                        f.write(filedata["data"])
 
-            # Grab files before, upload them later
-            to_be_uploaded = []
-            uuids = []
+                    # Grab files before, upload them later
+                    to_be_uploaded = []
+                    return_ids = []
 
-            # Zipfile for zipped archive
-            if fileformat.strip().lower() == "zip":
-                with zipfile.ZipFile(os.path.join(tmpdirname, "archive")) as z_file:
-                    if password:
-                        z_file.setpassword(bytes(password.encode()))
-                    for member in z_file.namelist():
-                        filename = os.path.basename(member)
-                        if not filename:
-                            continue
-                        source = z_file.open(member)
-                        item = {
-                            "data": {
-                                "filename": source.name,
-                                "workflow_id": workflow_id,
-                                "org_id": org_id,
-                            },
-                            "file": source.read(),
-                        }
-                        to_be_uploaded.append(item)
+                    # Zipfile for zipped archive
+                    if fileformat.strip().lower() == "zip":
+                        with zipfile.ZipFile(
+                            os.path.join(tmpdirname, "archive")
+                        ) as z_file:
+                            if password:
+                                z_file.setpassword(bytes(password.encode()))
+                            for member in z_file.namelist():
+                                filename = os.path.basename(member)
+                                if not filename:
+                                    continue
+                                source = z_file.open(member)
+                                item = {
+                                    "data": {
+                                        "filename": source.name,
+                                        "workflow_id": workflow_id,
+                                        "org_id": org_id,
+                                    },
+                                    "file": source.read(),
+                                }
+                                to_be_uploaded.append(item)
 
-            elif fileformat.strip().lower() == "rar":
-                with rarfile.RarFile(os.path.join(tmpdirname, "archive")) as z_file:
-                    if password:
-                        z_file.setpassword(password)
-                    for member in z_file.namelist():
-                        filename = os.path.basename(member)
-                        if not filename:
-                            continue
-                        source = z_file.open(member)
-                        item = {
-                            "data": {
-                                "filename": source.name,
-                                "workflow_id": workflow_id,
-                                "org_id": org_id,
-                            },
-                            "file": source.read(),
-                        }
-                        to_be_uploaded.append(item)
+                    elif fileformat.strip().lower() == "rar":
+                        with rarfile.RarFile(
+                            os.path.join(tmpdirname, "archive")
+                        ) as z_file:
+                            if password:
+                                z_file.setpassword(password)
+                            for member in z_file.namelist():
+                                filename = os.path.basename(member)
+                                if not filename:
+                                    continue
+                                source = z_file.open(member)
+                                item = {
+                                    "data": {
+                                        "filename": source.name,
+                                        "workflow_id": workflow_id,
+                                        "org_id": org_id,
+                                    },
+                                    "file": source.read(),
+                                }
+                                to_be_uploaded.append(item)
 
-            elif fileformat.strip().lower() == "7zip":
-                print("4")
-                with py7zr.SevenZipFile(
-                    os.path.join(tmpdirname, "archive"), mode="r", password=password if password else None
-                ) as z_file:
-                    for filename, source in z_file.readall().items():
-                        # Removes paths
-                        filename = filename.split("/")[-1]
-                        item = {
-                            "data": {
-                                "filename": filename,
-                                "workflow_id": workflow_id,
-                                "org_id": org_id,
-                            },
-                            "file": source.read(),
-                        }
+                    elif fileformat.strip().lower() == "7zip":
+                        print("4")
+                        with py7zr.SevenZipFile(
+                            os.path.join(tmpdirname, "archive"),
+                            mode="r",
+                            password=password if password else None,
+                        ) as z_file:
+                            for filename, source in z_file.readall().items():
+                                # Removes paths
+                                filename = filename.split("/")[-1]
+                                item = {
+                                    "data": {
+                                        "filename": filename,
+                                        "workflow_id": workflow_id,
+                                        "org_id": org_id,
+                                    },
+                                    "file": source.read(),
+                                }
 
-                        to_be_uploaded.append(item)
+                                to_be_uploaded.append(item)
 
-            else:
-                return "No such format: %s" % fileformat
+                    else:
+                        return "No such format: %s" % fileformat
 
-            if len(to_be_uploaded) == 0:
-                return "Problem during extraction, no file found"
+                    if len(to_be_uploaded) == 0:
+                        return "Problem during extraction, no file found"
 
-            headers = {
-                "Authorization": "Bearer %s" % self.authorization,
-            }
+                    headers = {
+                        "Authorization": "Bearer %s" % self.authorization,
+                    }
 
-            for item in to_be_uploaded:
-                data = item["data"]
+                    for item in to_be_uploaded:
+                        data = item["data"]
 
-                # Creates an upload location
-                ret = requests.post(
-                    "%s/api/v1/files/create?execution_id=%s"
-                    % (self.url, self.current_execution_id),
-                    headers=headers,
-                    json=data,
-                )
+                        # Creates an upload location
+                        ret = requests.post(
+                            "%s/api/v1/files/create?execution_id=%s"
+                            % (self.url, self.current_execution_id),
+                            headers=headers,
+                            json=data,
+                        )
 
-                if ret.status_code != 200:
-                    return "Error managing file: {}".format(ret.text)
+                        if ret.status_code != 200:
+                            return "Error managing file: {}".format(ret.text)
 
-                # Does the actual upload
-                files = {"shuffle_file": item["file"]}
-                ret2 = requests.post(
-                    "%s/api/v1/files/%s/upload?execution_id=%s"
-                    % (self.url, ret.json()["id"], self.current_execution_id),
-                    headers=headers,
-                    files=files,
-                )
+                        # Does the actual upload
+                        files = {"shuffle_file": item["file"]}
+                        ret2 = requests.post(
+                            "%s/api/v1/files/%s/upload?execution_id=%s"
+                            % (self.url, ret.json()["id"], self.current_execution_id),
+                            headers=headers,
+                            files=files,
+                        )
 
-                if ret2.status_code != 200:
-                    return "Failed uploading file: {}".format(ret2.text)
+                        if ret2.status_code != 200:
+                            return "Failed uploading file: {}".format(ret2.text)
 
-                # Returns the first file's ID
-                uuids.append(ret.json())
+                        # Returns the first file's ID
+                        ret_data = ret.json()
+                        if ret_data["success"] == True:
+                            return_ids.append(ret_data["id"])
 
-        return {"file_ids": uuids}
-        #("Successfully extracted your archive as %s" % fileformat, uuids)
+                    return_data.append(return_ids)
 
-    async def inflate_archive(self, file_uids, fileformat, name, password=None):
+                return {"success": True, "file_ids": return_data}
 
-        # TODO: will in future support multiple files instead of string uids?
-        file_uids = file_uids.split()
-        print("picking {}".format(file_uids))
+        except zipfile.BadZipFile:
+            return {"success": False, "message": "File is not a zip"}
+        except Exception as excp:
+            return {"success": False, "message": excp}
+
+    async def inflate_archive(self, file_ids, fileformat, name, password=None):
+
+        # TODO: will in future support multiple files instead of string ids?
+        file_ids = file_ids.split()
+        print("picking {}".format(file_ids))
         headers = {
             "Authorization": "Bearer %s" % self.authorization,
         }
 
         # GET all items from shuffle
         items = []
-        for file_id in file_uids:
+        for file_id in file_ids:
             ret = requests.get(
                 "%s/api/v1/files/%s?execution_id=%s"
                 % (self.url, file_id, self.current_execution_id),
@@ -459,7 +524,9 @@ class Tools(AppBase):
                 elif fileformat == "7zip":
                     archive_name = "archive.7z" if not name else name
                     with py7zr.SevenZipFile(
-                        archive.name, "w", password=password if len(password) > 0 else None
+                        archive.name,
+                        "w",
+                        password=password if len(password) > 0 else None,
                     ) as sz_archive:
                         for path in paths:
                             sz_archive.write(path)
