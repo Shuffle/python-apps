@@ -98,11 +98,13 @@ actions:
         options:
           - equals
           - does not equal
+          - is not empty
+          - is empty
         schema:
           type: string
       - name: value
         description: The value to check with
-        required: true
+        required: false
         multiline: false
         example: "1.2.3.4"
         schema:

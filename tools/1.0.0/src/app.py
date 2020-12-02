@@ -243,12 +243,27 @@ class Tools(AppBase):
                 except:
                     pass
 
+                # Support for nested dict key
+                tmp = item
+                for subfield in field.split("."):
+                    tmp = tmp[subfield]
+
                 if check == "equals":
-                    if str(item[field]) == value:
+                    if str(tmp) == value:
                         print("APPENDED BECAUSE %s %s %s" % (field, check, value))
                         new_list.append(item)
                 elif check == "does not equal":
-                    if str(item[field]) != value:
+                    if str(tmp) != value:
+                        new_list.append(item)
+                elif check == "is not empty":
+                    if type(tmp) == list and len(tmp) > 0:
+                        new_list.append(item)
+                    elif type(tmp) == str and tmp:
+                        new_list.append(item)
+                elif check == "is empty":
+                    if type(tmp) == list and len(tmp) == 0:
+                        new_list.append(item)
+                    elif type(tmp) == str and not tmp:
                         new_list.append(item)
         except Exception as e:
             return "Error: %s" % e
