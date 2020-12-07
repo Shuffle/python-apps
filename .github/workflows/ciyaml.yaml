@@ -81,7 +81,9 @@ jobs:
           file: ${{ matrix.app }}/${{ matrix.version }}/Dockerfile          
           platforms: linux/amd64,linux/arm64,linux/386
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.app }}:${{ matrix.version }}
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.app }}:${{ matrix.version }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.app }}:latest
       -
         name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
