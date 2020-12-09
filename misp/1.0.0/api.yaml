@@ -37,6 +37,7 @@ actions:
         description: The query to search for
         example: '{"value": "example.com}'
         required: true
+        multiline: false
         schema:
           type: string
     returns:
@@ -49,6 +50,7 @@ actions:
         description: The query to search for
         example: '{"value": "example.com}'
         required: true
+        multiline: false
         schema:
           type: string
     returns:
@@ -61,6 +63,7 @@ actions:
         description: The query to search for
         example: '{"value": "example.com}'
         required: true
+        multiline: false
         schema:
           type: string
     returns:
@@ -73,12 +76,27 @@ actions:
         description: Event id to update
         example: "1"
         required: true
+        multiline: false
         schema:
           type: string
       - name: data
         description: The updated json to use
         example: '{"value": "example.com}'
         required: true
+        multiline: false
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: attributes_downloadsample
+    description: Makes MISP samples available in shuffle as files
+    parameters:
+      - name: md5_list
+        description: Md5 file you want to download
+        example: "3520b8c2eacee8a506498c5ce7d02d3b"
+        required: true
+        multiline: true
         schema:
           type: string
     returns:

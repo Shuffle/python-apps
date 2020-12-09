@@ -1,6 +1,6 @@
 app_version: 1.0.0
 name: Gpg Tools
-description: A pgp app for Shuffle
+description: A gpg app for Shuffle
 contact_info:
   name: "@dadokkio"
 authentication:
