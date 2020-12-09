@@ -27,7 +27,6 @@ jobs:
         EOF
         matrix=$(python3 list.py)
         echo "::set-output name=matrix::$matrix"
-        echo "${{github.ref}}"
 
   main:
     runs-on: ubuntu-latest
@@ -57,7 +56,7 @@ jobs:
 #          password: ${{ secrets.CR_PAT }} 
       -
         name: Build and push Master
-        if: ${{ github.event_name == 'commit' && github.ref == 'master' }}
+        if: ${{ github.event_name == 'commit' && github.ref == 'refs/heads/master' }}
         id: docker_build_master
         uses: docker/build-push-action@v2
         with:
