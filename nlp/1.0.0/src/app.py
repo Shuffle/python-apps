@@ -52,6 +52,16 @@ class NLP(AppBase):
                 resp.append({'ent':ent.text, 'label':ent.label_})
         return resp
 
+    def get_content(self, data):
+        import tika
+        tika.initVM()
+        try:
+            parsed = tika.parser.from_file('/path/to/file')
+            print(parsed["metadata"])
+            return parsed["content"]
+        except:
+            return "Error parsing content"
+
     async def extract(self, data, extract):
         switcher = {
             "get_ipv4s" : self.get_ipv4s,
