@@ -27,7 +27,6 @@ jobs:
         EOF
         matrix=$(python3 list.py)
         echo "::set-output name=matrix::$matrix"
-        echo "${{github.head_ref}}"
 
   main:
     runs-on: ubuntu-latest
@@ -83,5 +82,5 @@ jobs:
       -
         name: Image digest
         run: |
-          echo ${{ steps.docker_build.outputs.digest }}
-          echo ${{ steps.docker_build.outputs.digest }}
+          echo ${{ steps.docker_build_master.outputs.digest }}
+          echo ${{ steps.docker_build_feature.outputs.digest }}
