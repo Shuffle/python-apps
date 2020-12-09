@@ -82,14 +82,21 @@ class Gpg(AppBase):
         gpg = gnupg.GPG(
             gnupghome=os.path.join("/app/local/", gpg_home), gpgbinary="/usr/bin/gpg"
         )
+
+        with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
+            with open(tmpfile.name, "wb") as f:
+                tmpfile.write(filedata["data"])
+
         gpg.encrypt_file(
-            filedata["data"],
+            open(tmpfile.name, "r"),
             recipients=recipients,
             output=output_name,
             always_trust=always_trust,
         )
 
-        with open(output_name, "wb") as f:
+        os.unlink(tmpfile.name)
+
+        with open(output_name, "r") as f:
             data = f.read()
 
         file_id = self.set_files([{"filename": output_name, "data": data}])
