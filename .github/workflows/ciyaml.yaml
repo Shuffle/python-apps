@@ -21,6 +21,8 @@ jobs:
            version: 1.0.0
          - app: http
            version: 1.0.0
+         - app: gpg
+           version: 1.0.0
          - app: lastline
            version: 1.0.0
          - app: misp
