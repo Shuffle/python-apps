@@ -20,8 +20,9 @@ COPY src /app
 
 # Install any binary dependencies needed in our final image
 # RUN apk --no-cache add --update my_binary_dependency
-RUN apk add --no-cache libstdc++
+RUN apk add --no-cache libstdc++ openjdk8
 RUN python -m spacy download en_core_web_lg
+RUN python3 -c 'import tika; tika.initVM(); tika.parser.from_file('/bin/bash')'
 
 # Finally, lets run our app!
 WORKDIR /app

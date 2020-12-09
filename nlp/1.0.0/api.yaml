@@ -26,6 +26,7 @@ actions:
           - get_urls
           - get_emails
           - get_entities
+          - get_content
         schema:
           type: string
     returns:
