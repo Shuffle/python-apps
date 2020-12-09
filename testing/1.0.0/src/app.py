@@ -60,7 +60,7 @@ class HelloWorld(AppBase):
             return "File is empty?"
 
         file_content = filedata
-        return "FILE CONTENT: %s" % file_content 
+        return file_content 
 
     async def upload_file(self, filename, data):
         print("Inside function")

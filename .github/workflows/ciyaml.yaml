@@ -3,54 +3,36 @@ name: ci
 on:
   push:
     branches: master
+  pull_request:
+    branches: master
 jobs:
+  list_apps:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - id: set-matrix
+      run: |
+        cat > list.py << EOF
+        import glob
+        import json
+        flist = glob.glob('*/*')
+        ret = []
+        for i in flist:
+          a,v = i.split('/')
+          ret.append({'app':a, 'version':v })
+        print(json.dumps({'include': ret}))
+        EOF
+        matrix=$(python3 list.py)
+        echo "::set-output name=matrix::$matrix"
+
   main:
     runs-on: ubuntu-latest
+    needs: list_apps
     strategy:
-      matrix:
-        include:
-         - app: akamai
-           version: 1.0.0
-         - app: atp
-           version: 1.0.0
-         - app: cortex
-           version: 1.0.0
-         - app: email
-           version: 1.0.0
-         - app: hoxhunt
-           version: 1.0.0
-         - app: http
-           version: 1.0.0
-         - app: lastline
-           version: 1.0.0
-         - app: misp
-           version: 1.0.0
-         - app: netcraft
-           version: 1.0.0
-         - app: nlp
-           version: 1.0.0
-         - app: owa
-           version: 1.0.0
-         - app: passivetotal
-           version: 1.0.0
-         - app: python-playground
-           version: 1.0.0
-         - app: recordedfuture
-           version: 1.0.0
-         - app: secureworks
-           version: 1.0.0
-         - app: servicenow
-           version: 1.0.0
-         - app: siemonster
-           version: 1.0.0
-         - app: splunk
-           version: 1.0.0
-         - app: testing
-           version: 1.0.0
-         - app: thehive
-           version: 1.0.0
-         - app: tools
-           version: 1.0.0
+      matrix: ${{fromJson(needs.list_apps.outputs.matrix)}}
     steps:
       -
         name: Checkout
@@ -73,8 +55,9 @@ jobs:
 #          username: ${{ github.repository_owner }}
 #          password: ${{ secrets.CR_PAT }} 
       -
-        name: Build and push
-        id: docker_build
+        name: Build and push Master
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+        id: docker_build_master
         uses: docker/build-push-action@v2
         with:
           context: ${{ matrix.app }}/${{ matrix.version }}
@@ -85,5 +68,19 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.app }}:${{ matrix.version }}
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.app }}:latest
       -
+        name: Build and push Feature PR
+        if: ${{ github.event_name == 'pull_request' }}
+        id: docker_build_feature
+        uses: docker/build-push-action@v2
+        with:
+          context: ${{ matrix.app }}/${{ matrix.version }}
+          file: ${{ matrix.app }}/${{ matrix.version }}/Dockerfile          
+          platforms: linux/amd64,linux/arm64,linux/386
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.app }}:${{ github.head_ref }}
+      -
         name: Image digest
-        run: echo ${{ steps.docker_build.outputs.digest }}
+        run: |
+          echo ${{ steps.docker_build_master.outputs.digest }}
+          echo ${{ steps.docker_build_feature.outputs.digest }}
