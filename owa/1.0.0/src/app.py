@@ -97,7 +97,7 @@ class Owa(AppBase):
                 account, config=config, autodiscover=False, access_type=DELEGATE
             )
             account.root.refresh()
-        except exchangelib.errors.TransportError as error:
+        except (exchangelib.errors.TransportError, Exception) as error:
             return {
                 "account": None,
                 "error": "Can't connect to Exchange server: %s" % (error),

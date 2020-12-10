@@ -1,15 +1,11 @@
 import os
-import socket
 import asyncio
-import time
-import random
 import json
 import subprocess
 import requests
 import tempfile
 
 import py7zr
-import shutil
 import rarfile
 import zipfile
 import pyminizip
@@ -68,64 +64,80 @@ class Tools(AppBase):
 
     # https://github.com/fhightower/ioc-finder
     async def parse_file_ioc(self, file_ids, input_type="all"):
+        def parse(data):
+            try:
+                iocs = find_iocs(str(data))
+                newarray = []
+                for key, value in iocs.items():
+                    if input_type != "all":
+                        if key not in input_type:
+                            continue
+                    if len(value) > 0:
+                        for item in value:
+                            if isinstance(value, dict):
+                                for subkey, subvalue in value.items():
+                                    if len(subvalue) > 0:
+                                        for subitem in subvalue:
+                                            data = {
+                                                "data": subitem,
+                                                "data_type": "%s_%s"
+                                                % (key[:-1], subkey),
+                                            }
+                                            if data not in newarray:
+                                                newarray.append(data)
+                            else:
+                                data = {"data": item, "data_type": key[:-1]}
+                                if data not in newarray:
+                                    newarray.append(data)
+                for item in newarray:
+                    if "ip" in item["data_type"]:
+                        item["data_type"] = "ip"
+                return {"success": True, "items": newarray}
+            except Exception as excp:
+                return {"success": False, "message": "{}".format(excp)}
+
         if input_type == "":
             input_type = "all"
+        else:
+            input_type = input_type.split(",")
 
-        return_list = []
+        try:
+            file_ids = eval(file_ids)
+        except SyntaxError:
+            file_ids = file_ids
 
-        # Even if I put .#.# it's considered as list
-        if len(file_ids) > 0 and type(file_ids[0]) == list:
-            file_ids = file_ids[0]
-
-        for file_id in file_ids:
-
-            filedata = self.get_file(file_id)
-            iocs = find_iocs(filedata["data"].decode("utf8"))
-
-            newarray = []
-            for key, value in iocs.items():
-                if input_type != "all":
-                    if key != input_type:
-                        continue
-
-                if len(value) > 0:
-                    for item in value:
-                        # If in here: attack techniques. Shouldn't be 3 levels so no
-                        # recursion necessary
-                        if isinstance(value, dict):
-                            for subkey, subvalue in value.items():
-                                if len(subvalue) > 0:
-                                    for subitem in subvalue:
-                                        data = {
-                                            "data": subitem,
-                                            "data_type": "%s_%s" % (key[:-1], subkey),
-                                        }
-                                        if data not in newarray:
-                                            newarray.append(data)
-                        else:
-                            data = {"data": item, "data_type": key[:-1]}
-                            if data not in newarray:
-                                newarray.append(data)
-
-            # Reformatting IP
-            for item in newarray:
-                if "ip" in item["data_type"]:
-                    item["data_type"] = "ip"
-
-            return_list.append(newarray)
-
-        return return_list
+        return_value = None
+        if type(file_ids) == str:
+            return_value = parse(self.get_file(file_ids)["data"])
+        elif type(file_ids) == list and type(file_ids[0]) == str:
+            return_value = [
+                parse(self.get_file(file_id)["data"]) for file_id in file_ids
+            ]
+        elif (
+            type(file_ids) == list
+            and type(file_ids[0]) == list
+            and type(file_ids[0][0]) == str
+        ):
+            return_value = [
+                [parse(self.get_file(file_id2)["data"]) for file_id2 in file_id]
+                for file_id in file_ids
+            ]
+        else:
+            return "Invalid input"
+        return return_value
 
     # https://github.com/fhightower/ioc-finder
     async def parse_ioc(self, input_string, input_type="all"):
         if input_type == "":
             input_type = "all"
+        else:
+            input_type = input_type.split(",")
 
         iocs = find_iocs(input_string)
         newarray = []
         for key, value in iocs.items():
             if input_type != "all":
-                if key != input_type:
+                if key not in input_type:
                     continue
 
             if len(value) > 0:
@@ -265,6 +277,41 @@ class Tools(AppBase):
                         new_list.append(item)
                     elif type(tmp) == str and not tmp:
                         new_list.append(item)
+                elif check == "starts with":
+                    if type(tmp) == list and tmp[0] == value:
+                        new_list.append(item)
+                    elif type(tmp) == str and tmp.startswith(value):
+                        new_list.append(item)
+                elif check == "ends with":
+                    if type(tmp) == list and tmp[-1] == value:
+                        new_list.append(item)
+                    elif type(tmp) == str and tmp.endswith(value):
+                        new_list.append(item)
+                elif check == "files by extension":
+                    if type(tmp) == list:
+                        file_list = []
+
+                        current = item
+                        for p in field.split(".")[:-1]:
+                            current = current[p]
+
+                        for file_id in tmp:
+                            filedata = self.get_file(file_id)
+                            root, ext = os.path.splitext(filedata["filename"])
+                            if ext.lower().strip() == value.lower().strip():
+                                file_list.append(file_id)
+
+                        tmp = item
+                        for subfield in field.split(".")[:-1]:
+                            tmp = tmp[subfield]
+                        tmp[field.split(".")[-1]] = file_list
+                        new_list.append(item)
+
+                    elif type(tmp) == str:
+                        filedata = self.get_file(tmp)
+                        root, ext = os.path.splitext(filedata["filename"])
+                        if ext.lower().strip() == value.lower().strip():
+                            new_list.append(item)
         except Exception as e:
             return "Error: %s" % e
 
@@ -347,11 +394,17 @@ class Tools(AppBase):
     async def extract_archive(self, file_ids, fileformat="zip", password=None):
         try:
             return_data = []
+            try:
+                file_ids = eval(file_ids)
+            except SyntaxError:
+                file_ids = file_ids
+
             items = file_ids if type(file_ids) == list else file_ids.split(",")
 
             for file_id in items:
 
                 item = self.get_file(file_id)
+                return_ids = None
 
                 print("Working with fileformat %s" % fileformat)
                 with tempfile.TemporaryDirectory() as tmpdirname:
@@ -379,47 +432,89 @@ class Tools(AppBase):
                                     to_be_uploaded.append(
                                         {"filename": source.name, "data": source.read()}
                                     )
-                        except zipfile.BadZipFile:
-                            return {"success": False, "message": "File is not a zip"}
+                        except (zipfile.BadZipFile, Exception):
+                            return_data.append(
+                                {
+                                    "success": False,
+                                    "filename": item["filename"],
+                                    "message": "File is not a valid zip archive",
+                                }
+                            )
+                            continue
 
                     elif fileformat.strip().lower() == "rar":
-                        with rarfile.RarFile(
-                            os.path.join(tmpdirname, "archive")
-                        ) as z_file:
-                            if password:
-                                z_file.setpassword(password)
-                            for member in z_file.namelist():
-                                filename = os.path.basename(member)
-                                if not filename:
-                                    continue
-                                source = z_file.open(member)
-                                to_be_uploaded.append(
-                                    {"filename": source.name, "data": source.read()}
-                                )
+                        try:
+                            with rarfile.RarFile(
+                                os.path.join(tmpdirname, "archive")
+                            ) as z_file:
+                                if password:
+                                    z_file.setpassword(password)
+                                for member in z_file.namelist():
+                                    filename = os.path.basename(member)
+                                    if not filename:
+                                        continue
+                                    source = z_file.open(member)
+                                    to_be_uploaded.append(
+                                        {"filename": source.name, "data": source.read()}
+                                    )
+                        except Exception:
+                            return_data.append(
+                                {
+                                    "success": False,
+                                    "filename": item["filename"],
+                                    "message": "File is not a valid rar archive",
+                                }
+                            )
+                            continue
 
                     elif fileformat.strip().lower() == "7zip":
-                        print("4")
-                        with py7zr.SevenZipFile(
-                            os.path.join(tmpdirname, "archive"),
-                            mode="r",
-                            password=password if password else None,
-                        ) as z_file:
-                            for filename, source in z_file.readall().items():
-                                # Removes paths
-                                filename = filename.split("/")[-1]
-                                to_be_uploaded.append(
-                                    {"filename": filename, "data": source.read()}
-                                )
+                        try:
+                            with py7zr.SevenZipFile(
+                                os.path.join(tmpdirname, "archive"),
+                                mode="r",
+                                password=password if password else None,
+                            ) as z_file:
+                                for filename, source in z_file.readall().items():
+                                    # Removes paths
+                                    filename = filename.split("/")[-1]
+                                    to_be_uploaded.append(
+                                        {
+                                            "filename": filename,
+                                            "filename": item["filename"],
+                                            "data": source.read(),
+                                        }
+                                    )
+                        except Exception:
+                            return_data.append(
+                                {
+                                    "success": False,
+                                    "filename": item["filename"],
+                                    "message": "File is not a valid 7zip archive",
+                                }
+                            )
+                            continue
                     else:
                         return "No such format: %s" % fileformat
 
-                    if len(to_be_uploaded) == 0:
-                        return "Problem during extraction, no file found"
+                    if len(to_be_uploaded) > 0:
+                        return_ids = self.set_files(to_be_uploaded)
+                        return_data.append(
+                            {
+                                "success": True,
+                                "filename": item["filename"],
+                                "file_ids": return_ids,
+                            }
+                        )
+                    else:
+                        return_data.append(
+                            {
+                                "success": False,
+                                "filename": item["filename"],
+                                "message": "Archive is empty",
+                            }
+                        )
 
-                    return_ids = self.set_files(to_be_uploaded)
-                    return_data.append(return_ids)
-
-                return {"success": True, "file_ids": return_data}
+            return return_data
 
         except Exception as excp:
             return {"success": False, "message": excp}
