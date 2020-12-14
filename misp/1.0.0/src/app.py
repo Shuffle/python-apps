@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+import os
 import asyncio
 import urllib3
 import requests
+import base64
+import tempfile
 
 from walkoff_app_sdk.app_base import AppBase
 
@@ -64,6 +66,48 @@ class Misp(AppBase):
             "Authorization": apikey,
         }
         return requests.post(url, headers=headers, data=data, verify=self.verify).text
+
+    async def attributes_downloadsample(self, apikey, url, md5_list):
+        atts_up = []
+        items = md5_list if type(md5_list) == list else md5_list.split(",")
+        for md5 in items:
+
+            print("Initial md5_list: {}".format(md5_list))
+
+            # value returned from misp is filename|md5
+            # the list in converted as string, so items has quote and last closing parenthesis
+            md5 = md5.split("|")[-1]
+            # .replace("[", "").replace('"', "").replace("]", "")
+
+            print("Downloading with md5: {}".format(md5))
+
+            url = "{}/attributes/downloadSample/{}".format(url, md5)
+            misp_headers = {
+                "Accept": "application/json",
+                "Content-type": "application/json",
+                "Authorization": apikey,
+            }
+            # get sample by md5 (works only if md5 is related to file object)
+            ret = requests.get(url, headers=misp_headers, verify=self.verify)
+
+            if ret.status_code == 200:
+                sample = ret.json().get("result", None)
+                if sample and len(sample) == 1:
+                    sample = sample[0]
+                elif not sample and ret.json().get("message", None):
+                    return "Return message: {}".format(ret.json()["message"])
+
+                atts_up.append(
+                    {
+                        "filename": "{}.zip".format(sample["filename"]),
+                        "data": base64.b64decode(sample["base64"]),
+                    }
+                )
+            else:
+                return "Issue downloading {}".format(md5)
+        if len(atts_up) > 0:
+            uuids = self.set_files(atts_up)
+            return uuids
 
 
 if __name__ == "__main__":

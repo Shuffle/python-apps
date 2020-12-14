@@ -100,6 +100,9 @@ actions:
           - does not equal
           - is not empty
           - is empty
+          - starts with
+          - ends with
+          - files by extension
         schema:
           type: string
       - name: value
