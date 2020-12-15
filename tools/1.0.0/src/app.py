@@ -247,6 +247,11 @@ class Tools(AppBase):
         except Exception as e:
             print("Error parsing string to array. Continuing anyway.")
 
+        # Workaround D:
+        if not isinstance(input_list, list):
+            return "Error: %s is not a list, but %s. Remove # to use this app." % (input_list, type(input_list))
+            input_list = [input_list]
+
         new_list = []
         try:
             for item in input_list:
