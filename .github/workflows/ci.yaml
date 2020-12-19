@@ -67,6 +67,7 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.app }}:${{ matrix.version }}
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.app }}:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/shuffle:${{ matrix.app }}_${{ matrix.version }}
       -
         name: Build and push Feature PR
         if: ${{ github.event_name == 'pull_request' }}
