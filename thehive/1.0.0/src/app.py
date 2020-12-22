@@ -56,7 +56,7 @@ class TheHive(AppBase):
             elif "," in tags:
                 tags = tags.split(",")
             else:
-                tags = []
+                tags = [tags]
         else:
             tags = []
 
@@ -153,7 +153,7 @@ class TheHive(AppBase):
             elif "," in tags:
                 tags = tags.split(",")
             else:
-                tags = []
+                tags = [tags]
         else:
             tags = []
 
