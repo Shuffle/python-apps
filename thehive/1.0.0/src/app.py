@@ -165,18 +165,19 @@ class TheHive(AppBase):
 
         if isinstance(tlp, str):
             if not tlp.isdigit():
-                return "TLP needs to be a number from 0-2, not %s" % tlp
+                return "TLP needs to be a number from 0-3, not %s" % tlp
+
             tlp = int(tlp)
         if isinstance(severity, str):
             if not severity.isdigit():
-                return "Severity needs to be a number from 0-2, not %s" % tlp
+                return "Severity needs to be a number from 1-3, not %s" % severity 
 
             severity = int(severity)
 
-        if tlp > 2 or tlp < 0:
-            return "TLP needs to be a number from 0-2, not %d" % tlp
-        if severity > 2 or severity < 0:
-            return "Severity needs to be a number from 0-2, not %d" % tlp
+        if tlp > 3 or tlp < 0:
+            return "TLP needs to be a number from 0-3, not %d" % tlp
+        if severity > 3 or severity < 1:
+            return "Severity needs to be a number from 1-3, not %d" % severity 
 
         alert = thehive4py.models.Alert(
             title=title,
