@@ -42,7 +42,58 @@ class AWSEC2(AppBase):
         return self.ec2
 
     # Write your data inside this function
-    async def create_acl_entry(self, access_key, secret_key, region, ACL_id, cidr_block, dryrun, egress, portrange_from, portrange_to, protocol, rule_action, rule_number):
+    async def get_rules(self, access_key, secret_key, region, ACL_id):
+        self.ec2 = await self.auth_ec2(access_key, secret_key, region)
+
+        network_acl = self.ec2.NetworkAcl(ACL_id)
+        return network_acl.entries
+
+    # Write your data inside this function
+    async def block_ip(self, access_key, secret_key, region, ACL_id, ip, direction):
+        self.ec2 = await self.auth_ec2(access_key, secret_key, region)
+        network_acl = self.ec2.NetworkAcl(ACL_id)
+
+        if "/" not in ip:
+            ip = "%s/32" % ip
+
+        egress = True 
+        if direction == "inbound":
+            egress = False
+
+        minimum = 100
+        for item in network_acl.entries:
+            if egress != item["Egress"]:
+                continue
+
+            print(item)
+
+            if item["RuleNumber"] > minimum and item["RuleNumber"] < 30000: 
+                minimum = item["RuleNumber"]+1
+
+        try:
+            return network_acl.create_entry(
+                CidrBlock=ip,
+                DryRun=False,
+                Egress=egress,
+                IcmpTypeCode={
+                    'Code': 123,
+                    'Type': 123
+                },
+                PortRange={
+                    'From': 0,
+                    'To': 65500
+                },
+                Protocol="6",
+                RuleAction="DENY",
+                RuleNumber=minimum,
+            )
+        except botocore.exceptions.ClientError as e:
+            print("Error: %s" % e)
+            return e
+
+
+    # Write your data inside this function
+    async def create_acl_entry(self, access_key, secret_key, region, ACL_id, cidr_block, dryrun, direction, portrange_from, portrange_to, protocol, rule_action, rule_number):
         self.ec2 = await self.auth_ec2(access_key, secret_key, region)
 
         network_acl = self.ec2.NetworkAcl(ACL_id)
@@ -51,7 +102,8 @@ class AWSEC2(AppBase):
         elif protocol.lower() == "udp":
             protocol = "17"
 
-        if egress.lower() == "false":
+        egress = True 
+        if direction == "inbound":
             egress = False
         else:
             egress = True

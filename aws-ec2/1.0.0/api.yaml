@@ -27,6 +27,49 @@ authentication:
       schema:
         type: string
 actions:
+  - name: block_ip 
+    description: Creates a new firewall entry to block an IP
+    parameters:
+      - name: ACL_id 
+        description: The ACL id to edit
+        required: true
+        multiline: false 
+        example: 'acl-0f91affa651ff09f4'
+        schema:
+          type: string
+      - name: ip 
+        description: The IP to handle
+        required: true
+        multiline: false 
+        example: '10.0.0.0'
+        schema:
+          type: string
+      - name: direction 
+        description: The direction the rule applies to 
+        required: true
+        multiline: false 
+        example: '{"data": "testing"}'
+        options:
+          - inbound 
+          - outbound 
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: get_rules 
+    description: Gets the rules for an ACL ID
+    parameters:
+      - name: ACL_id 
+        description: The ACL id to get
+        required: true
+        multiline: false 
+        example: 'acl-0f91affa651ff09f4'
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
   - name: create_acl_entry 
     description: Creates an ACL entry 
     parameters:
@@ -38,14 +81,14 @@ actions:
         schema:
           type: string
       - name: cidr_block 
-        description: The JSON to handle 
+        description: The IP's to handle
         required: true
         multiline: false 
         example: '10.0.0.0/24'
         schema:
           type: string
       - name: dryrun 
-        description: The JSON to handle 
+        description: Test or not
         required: true
         multiline: false 
         example: '{"data": "testing"}'
@@ -54,14 +97,14 @@ actions:
           - false 
         schema:
           type: string
-      - name: egress 
-        description: The JSON to handle 
+      - name: direction 
+        description: The direction the rule applies to 
         required: true
         multiline: false 
         example: '{"data": "testing"}'
         options:
-          - true
-          - false 
+          - inbound 
+          - outbound 
         schema:
           type: string
       - name: portrange_from 
