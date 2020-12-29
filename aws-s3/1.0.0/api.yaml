@@ -50,6 +50,26 @@ actions:
     returns:
       schema:
         type: string
+  - name: block_ip_access 
+    description: Blocks access from a specific IP to a bucket
+    parameters:
+      - name: bucket_name 
+        description: The bucket name to use
+        required: true
+        multiline: false 
+        example: 'my-test-bucket-name'
+        schema:
+          type: string
+      - name: ip 
+        description: The IP to block
+        required: true
+        multiline: false 
+        example: '1.2.3.5'
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
   - name: list_buckets 
     description: Lists all buckets
     returns:

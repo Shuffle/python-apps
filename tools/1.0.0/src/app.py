@@ -62,6 +62,9 @@ class Tools(AppBase):
         headers = {"Authorization": "Bearer %s" % apikey}
         return requests.post(url, headers=headers, json=data).text
 
+    async def repeat_back_to_me(self, call):
+        return call
+
     # https://github.com/fhightower/ioc-finder
     async def parse_file_ioc(self, file_ids, input_type="all"):
         def parse(data):

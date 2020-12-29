@@ -73,6 +73,19 @@ actions:
     returns:
       schema:
         type: string
+  - name: repeat_back_to_me
+    description: Repeats the call parameter
+    parameters:
+      - name: call
+        description: The message to repeat
+        required: true
+        multiline: true
+        example: "REPEATING: Hello world"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
   - name: filter_list
     description: Takes a list and filters based on your data
     skip_multicheck: true
