@@ -119,7 +119,7 @@ class AWSEC2(AppBase):
                         }
                     }
                 }]
-            }""" % (ip, bucket_name)
+            }""" % (bucket_name, ip)
 
         print(bucket_policy)
         print()
