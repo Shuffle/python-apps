@@ -60,7 +60,19 @@ class AWSEC2(AppBase):
         if direction == "inbound":
             egress = False
 
+        # This is a shitty system :)
         minimum = 100
+        numbers = []
+        found = False
+        for item in network_acl.entries:
+            if egress != item["Egress"]:
+                continue
+
+            if ip == item["CidrBlock"]:
+                raise Exception("IP %s is already being blocked." % ip)
+
+            numbers.append(item["RuleNumber"])
+
         for item in network_acl.entries:
             if egress != item["Egress"]:
                 continue
@@ -68,7 +80,13 @@ class AWSEC2(AppBase):
             print(item)
 
             if item["RuleNumber"] > minimum and item["RuleNumber"] < 30000: 
-                minimum = item["RuleNumber"]+1
+                if item["RuleNumber"]+1 not in numbers:
+                    minimum = item["RuleNumber"]+1
+                    break
+
+        #if minimum in numbers:
+        #    minimum += 1
+        print("New number: %d" % minimum)
 
         try:
             return network_acl.create_entry(
