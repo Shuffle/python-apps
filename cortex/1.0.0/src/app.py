@@ -68,6 +68,8 @@ class Cortex(AppBase):
             except cortex4py.exceptions.NotFoundError as e:
                 return [e]
 
+        #if len(alljobs) == 1:
+        #    return alljobs[0]
         return alljobs
 
     async def run_analyzer(self, apikey, url, analyzer_name, data, datatype, message="", tlp=1):
