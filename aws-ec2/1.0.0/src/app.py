@@ -62,6 +62,7 @@ class AWSEC2(AppBase):
 
         # This is a shitty system :)
         minimum = 100
+        max_range = 30000
         numbers = []
         found = False
         for item in network_acl.entries:
