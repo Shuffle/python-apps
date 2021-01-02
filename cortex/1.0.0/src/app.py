@@ -47,6 +47,9 @@ class Cortex(AppBase):
         return all_results
 
     async def run_available_analyzers(self, apikey, url, data, datatype, message="", tlp=1):
+        if data == "" or data == "[]":
+            return "No values to handle []"
+
         self.api = Api(url, apikey, cert=False)
         analyzers = await self.get_available_analyzers(apikey, url, datatype)
 
