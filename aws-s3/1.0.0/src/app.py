@@ -104,22 +104,21 @@ class AWSEC2(AppBase):
         except botocore.exceptions.ClientError:
             # FIXME: If here, create new policy
             bucket_policy = """{
-                'Version': '2012-10-17',
-                'Statement': [{
-                    'Sid': 'IPDeny',
-                    'Effect': 'Deny',
-                    "Principal": "*",
-                    "Action": "s3:*",
-                    "Resource": "arn:aws:s3:::%s/*",
-                    "Condition": {
-                        "IpAddress": {
-                            "aws:SourceIp": [
-                                "%s",
-                            ]
-                        }
-                    }
-                }]
-            }""" % (bucket_name, ip)
+'Version': '2012-10-17',
+'Statement': [{
+    'Sid': 'IPDeny',
+    'Effect': 'Deny',
+    "Principal": "*",
+    "Action": "s3:*",
+    "Resource": "arn:aws:s3:::%s/*",
+    "Condition": {
+        "IpAddress": {
+            "aws:SourceIp": [
+                "%s"
+            ]
+        }
+    }
+}]}""" % (bucket_name, ip)
 
         print(bucket_policy)
         print()
