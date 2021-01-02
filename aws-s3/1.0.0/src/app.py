@@ -70,6 +70,23 @@ class AWSEC2(AppBase):
         self.s3 = await self.auth_s3(access_key, secret_key, region)
         client = self.s3.meta.client
 
+        ip_policy = {
+            'Effect': 'Deny',
+            "Principal": "*",
+            "Action": "s3:*",
+            "Resource": [
+                "arn:aws:s3:::%s/*" % bucket_name,
+                "arn:aws:s3:::%s" % bucket_name
+            ],
+            "Condition": {
+                "IpAddress": {
+                    "aws:SourceIp": [
+                        ip,
+                    ]
+                }
+            }
+        }
+
         try:
             result = client.get_bucket_policy(Bucket=bucket_name)
             try:
@@ -79,50 +96,24 @@ class AWSEC2(AppBase):
                     return "IP %s is already in this policy" % ip
 
                 json_policy = json.loads(policy)
-                ip_policy = {
-                    'Sid': 'IPDeny',
-                    'Effect': 'Deny',
-                    "Principal": "*",
-                    "Action": "s3:*",
-                    "Resource": "arn:aws:s3:::%s/*" % bucket_name,
-                    "Condition": {
-                        "IpAddress": {
-                            "aws:SourceIp": [
-                                ip,
-                            ]
-                        }
-                    }
-                }
                 try:
                     json_policy["Statement"].append(ip_policy)
                 except KeyError:
                     json_policy["Statement"] = [ip_policy]
 
-                bucket_policy = json.dumps(json_policy)
             except KeyError as e:
                 return "Couldn't find key: %s" % e
         except botocore.exceptions.ClientError:
             # FIXME: If here, create new policy
-            bucket_policy = """{
-'Version': '2012-10-17',
-'Statement': [{
-    'Sid': 'IPDeny',
-    'Effect': 'Deny',
-    "Principal": "*",
-    "Action": "s3:*",
-    "Resource": "arn:aws:s3:::%s/*",
-    "Condition": {
-        "IpAddress": {
-            "aws:SourceIp": [
-                "%s"
-            ]
-        }
-    }
-}]}""" % (bucket_name, ip)
+            bucket_policy = {
+                'Version': '2012-10-17',
+                'Statement': [ip_policy]
+            }
 
         print(bucket_policy)
         print()
         #new_policy = json.loads(bucket_policy)
+        bucket_policy = json.dumps(json_policy)
 
         try:
             putaction = client.put_bucket_policy(Bucket=bucket_name, Policy=bucket_policy)
