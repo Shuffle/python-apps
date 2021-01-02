@@ -28,11 +28,11 @@ class Cortex(AppBase):
         try:
             analyzers = self.api.analyzers.find_all({}, range='all')
         except cortex4py.exceptions.ServiceUnavailableError as e:
-            return [e]
+            return [str(e)]
         except cortex4py.exceptions.AuthorizationError as e:
-            return [e]
+            return [str(e)]
         except cortex4py.exceptions.NotFoundError as e:
-            return [e]
+            return [str(e)]
 
         if len(analyzers) == 0:
             return []
@@ -62,11 +62,11 @@ class Cortex(AppBase):
 
                 alljobs.append(job.id)
             except cortex4py.exceptions.ServiceUnavailableError as e:
-                return [e]
+                return [str(e)]
             except cortex4py.exceptions.AuthorizationError as e:
-                return [e]
+                return [str(e)]
             except cortex4py.exceptions.NotFoundError as e:
-                return [e]
+                return [str(e)]
 
         #if len(alljobs) == 1:
         #    return alljobs[0]
@@ -82,11 +82,11 @@ class Cortex(AppBase):
                 'message': message,
             }, force=1)
         except cortex4py.exceptions.ServiceUnavailableError as e:
-            return e
+            return str(e)
         except cortex4py.exceptions.AuthorizationError as e:
-            return e
+            return str(e)
         except cortex4py.exceptions.NotFoundError as e:
-            return e
+            return str(e)
 
         return job.id
 
@@ -95,11 +95,11 @@ class Cortex(AppBase):
         try:
             report = self.api.jobs.get_report(result_id).report
         except cortex4py.exceptions.ServiceUnavailableError as e:
-            return e
+            return str(e)
         except cortex4py.exceptions.AuthorizationError as e:
-            return e
+            return str(e)
         except cortex4py.exceptions.NotFoundError as e:
-            return e
+            return str(e)
 
         return report 
 
