@@ -219,7 +219,15 @@ actions:
     parameters:
       - name: field_type 
         description: The type to modify (alert, case..)
-        example: "alert"
+        options:
+          - alert
+          - case
+          - case_observables
+          - case_task
+          - case_tasks
+          - linked_cases 
+          - task_log 
+          - task_logs
         required: true
         schema:
           type: string
@@ -236,6 +244,7 @@ actions:
       - name: data 
         description: The data to set the field to. If you want to append to what already exists, start with %s.
         required: true
+        multiline: true
         schema:
           type: string
     returns:
