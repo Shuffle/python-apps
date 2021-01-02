@@ -74,6 +74,7 @@ class AWSEC2(AppBase):
 
             numbers.append(item["RuleNumber"])
 
+
         for index in range(minimum, max_range):
             if index in numbers:
                 continue
