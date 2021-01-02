@@ -48,7 +48,7 @@ class Cortex(AppBase):
 
     async def run_available_analyzers(self, apikey, url, data, datatype, message="", tlp=1):
         self.api = Api(url, apikey, cert=False)
-        analyzers = await self.get_available_analyzers(datatype)
+        analyzers = await self.get_available_analyzers(apikey, url, datatype)
 
         alljobs = []
         for analyzer in analyzers:

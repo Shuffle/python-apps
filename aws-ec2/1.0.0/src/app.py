@@ -73,19 +73,13 @@ class AWSEC2(AppBase):
 
             numbers.append(item["RuleNumber"])
 
-        for item in network_acl.entries:
-            if egress != item["Egress"]:
+        for index in range(minimum, max_range):
+            if index in numbers:
                 continue
 
-            print(item)
+            minimum = index
+            break
 
-            if item["RuleNumber"] > minimum and item["RuleNumber"] < 30000: 
-                if item["RuleNumber"]+1 not in numbers:
-                    minimum = item["RuleNumber"]+1
-                    break
-
-        #if minimum in numbers:
-        #    minimum += 1
         print("New number: %d" % minimum)
 
         try:
@@ -99,7 +93,7 @@ class AWSEC2(AppBase):
                 },
                 PortRange={
                     'From': 0,
-                    'To': 65500
+                    'To': 65535
                 },
                 Protocol="6",
                 RuleAction="DENY",
