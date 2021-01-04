@@ -29,7 +29,14 @@ class Subflow(AppBase):
         headers = {
             "Authorization": "Bearer %s" % user_apikey,
         }
-        ret = requests.post(url, headers=headers, data=argument)
+
+        try:
+            ret = requests.post(url, headers=headers, json=argument)
+            print("Successfully sent as JSON")
+        except:
+            ret = requests.post(url, headers=headers, data=argument)
+            print("Successfully sent as data")
+
         print("Status: %d" % ret.status_code)
         print("RET: %s" % ret.text)
 
