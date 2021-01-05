@@ -103,7 +103,7 @@ class AWSEC2(AppBase):
             )
         except botocore.exceptions.ClientError as e:
             print("Error: %s" % e)
-            return e
+            return "%s" % e
 
 
     # Write your data inside this function
@@ -146,7 +146,7 @@ class AWSEC2(AppBase):
             )
         except botocore.exceptions.ClientError as e:
             print("Error: %s" % e)
-            return e
+            return "%s" % e
 
 
 if __name__ == "__main__":
