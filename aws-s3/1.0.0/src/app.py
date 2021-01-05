@@ -87,6 +87,7 @@ class AWSEC2(AppBase):
             }
         }
 
+        json_policy = {}
         try:
             result = client.get_bucket_policy(Bucket=bucket_name)
             try:
@@ -100,20 +101,19 @@ class AWSEC2(AppBase):
                     json_policy["Statement"].append(ip_policy)
                 except KeyError:
                     json_policy["Statement"] = [ip_policy]
-
             except KeyError as e:
                 return "Couldn't find key: %s" % e
         except botocore.exceptions.ClientError:
             # FIXME: If here, create new policy
-            bucket_policy = {
+            json_policy = {
                 'Version': '2012-10-17',
                 'Statement': [ip_policy]
             }
 
-        print(bucket_policy)
-        print()
         #new_policy = json.loads(bucket_policy)
         bucket_policy = json.dumps(json_policy)
+        print(bucket_policy)
+        print()
 
         try:
             putaction = client.put_bucket_policy(Bucket=bucket_name, Policy=bucket_policy)
