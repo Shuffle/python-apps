@@ -4,6 +4,7 @@ import time
 import random
 import json
 import requests
+import json
 
 from walkoff_app_sdk.app_base import AppBase
 
@@ -30,12 +31,15 @@ class Subflow(AppBase):
             "Authorization": "Bearer %s" % user_apikey,
         }
 
-        try:
-            ret = requests.post(url, headers=headers, json=argument)
-            print("Successfully sent as JSON")
-        except:
-            ret = requests.post(url, headers=headers, data=argument)
-            print("Successfully sent as data")
+        if len(argument) == 0:
+            ret = requests.post(url, headers=headers)
+        else:
+            try:
+                ret = requests.post(url, headers=headers, json=json.loads(argument))
+                print("Successfully sent as JSON")
+            except:
+                ret = requests.post(url, headers=headers, data=argument)
+                print("Successfully sent as data")
 
         print("Status: %d" % ret.status_code)
         print("RET: %s" % ret.text)
