@@ -55,12 +55,12 @@ class HelloWorld(AppBase):
     async def input_options_test(self, call):
         return "Value: %s" % call 
 
-    async def get_file(self, filedata):
+    async def get_file_value(self, filedata):
         if filedata == None:
             return "File is empty?"
-
-        file_content = filedata
-        return file_content 
+        
+        print("INSIDE APP DATA: %s" % filedata)
+        return "%s" % filedata["data"].decode()
 
     async def upload_file(self, filename, data):
         print("Inside function")
@@ -78,7 +78,7 @@ class HelloWorld(AppBase):
         }
         print("HEADERS: %s" % headers)
 
-        ret = requests.delete("%s/api/v1/files/%s?execution_id=%s" % (self.url, file_id, self.current_execution_id), headers=headers)
+        ret = requests.delete("%s/api/v1/files/%s?execution_id=%s" % (self.base_url, file_id, self.current_execution_id), headers=headers)
         return ret.text
 
 if __name__ == "__main__":

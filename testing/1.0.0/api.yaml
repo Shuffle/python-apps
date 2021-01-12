@@ -1,6 +1,6 @@
 app_version: 1.0.0
 name: Testing
-description: Debugging app for Shuffle 
+description: Debugging  app for Shuffle 
 tags:
   - Testing 
 categories:
@@ -116,7 +116,7 @@ actions:
     returns:
       schema:
         type: string
-  - name: get_file
+  - name: get_file_value
     description: This function is made for reading file(s), printing their data
     parameters:
       - name: filedata
