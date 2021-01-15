@@ -1,3 +1,4 @@
 # No extra requirements needed
 boto3
 bson
+requests
