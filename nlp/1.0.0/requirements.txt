@@ -1,3 +1,4 @@
 cyberspacy
 spacy
 tika
+requests
