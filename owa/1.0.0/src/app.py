@@ -1,12 +1,5 @@
-import os
-import time
 import json
-import random
-import socket
 import asyncio
-import requests
-import imaplib
-import smtplib
 import datetime
 import eml_parser
 import exchangelib
@@ -20,7 +13,6 @@ from exchangelib import (
     Account,
     Credentials,
     Configuration,
-    Folder,
     Version,
     Build,
     Mailbox,
@@ -120,9 +112,7 @@ class Owa(AppBase):
                 ),
             }
 
-        if folderroot == "inbox":
-            folder = account.inbox
-        elif folderroot == "outbox":
+        if folderroot == "outbox":
             folder = account.outbox
         elif folderroot == "sent":
             folder = account.sent
@@ -130,6 +120,8 @@ class Owa(AppBase):
             folder = account.trash
         elif folderroot == "draft":
             folder = account.draft
+        else:
+            folder = account.inbox
 
         for sub in foldersubs:
             folder = folder / sub
@@ -349,6 +341,12 @@ class Owa(AppBase):
                         )
                 else:
                     output_dict = parsed_eml
+                    fields = "ALL"
+
+                # Add message-id as top returned field
+                output_dict["message-id"] = parsed_eml["header"]["header"][
+                    "message-id"
+                ][0]
 
                 if upload_email_shuffle:
                     email_up = [{"filename": "email.msg", "data": email.mime_content}]
