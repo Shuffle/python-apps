@@ -299,8 +299,8 @@ class Owa(AppBase):
         folder = await self.parse_folder(account, foldername)
         if folder["error"]:
             return folder["error"]
-        folder = folder["folder"]
 
+        folder = folder["folder"]
         if type(amount) == str:
             try:
                 amount = int(amount)
