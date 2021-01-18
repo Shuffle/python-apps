@@ -1,15 +1,14 @@
-import time
-import glom
 import json
-import random
+import uuid
 import socket
 import asyncio
 import requests
 import datetime
-
+import base64
 import imaplib
 import smtplib
 import eml_parser
+from glom import glom
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from walkoff_app_sdk.app_base import AppBase
@@ -100,7 +99,26 @@ class Email(AppBase):
         fields,
         include_raw_body,
         include_attachment_data,
+        upload_email_shuffle,
+        upload_attachments_shuffle,
     ):
+        def path_to_dict(path, value=None):
+            def pack(parts):
+                return (
+                    {parts[0]: pack(parts[1:]) if len(parts) > 1 else value}
+                    if len(parts) > 1
+                    else {parts[0]: value}
+                )
+
+            return pack(path.split("."))
+
+        def merge(d1, d2):
+            for k in d2:
+                if k in d1 and isinstance(d1[k], dict) and isinstance(d2[k], dict):
+                    merge(d1[k], d2[k])
+                else:
+                    d1[k] = d2[k]
+
         if type(amount) == str:
             try:
                 amount = int(amount)
@@ -143,57 +161,78 @@ class Email(AppBase):
         except TypeError:
             return "Error getting email. Data: %s" % data
 
-        emails = []
-        error = None
-
-        if type(fields) == str and fields.strip() != "":
-            fields = {k.strip(): k.strip() for k in fields.split(",")}
-        else:
-            fields = None
         include_raw_body = True if include_raw_body.lower().strip() == "true" else False
         include_attachment_data = (
             True if include_attachment_data.lower().strip() == "true" else False
         )
-
-        ep = eml_parser.EmlParser(
-            include_attachment_data=include_attachment_data,
-            include_raw_body=include_raw_body,
+        upload_email_shuffle = (
+            True if upload_email_shuffle.lower().strip() == "true" else False
+        )
+        upload_attachments_shuffle = (
+            True if upload_attachments_shuffle.lower().strip() == "true" else False
         )
 
-        for i in range(len(id_list) - 1, len(id_list) - amount - 1, -1):
-            resp, data = email.fetch(id_list[i], "(RFC822)")
-            if resp != "OK":
-                print("Failed getting %s" % id_list[i])
-                continue
+        # Convert <amount> of mails in json
+        emails = []
+        ep = eml_parser.EmlParser(
+            include_attachment_data=include_attachment_data
+            or upload_attachments_shuffle,
+            include_raw_body=include_raw_body,
+        )
+        try:
+            for i in range(len(id_list) - 1, len(id_list) - amount - 1, -1):
+                resp, data = email.fetch(id_list[i], "(RFC822)")
+                error = None
 
-            if data == None:
-                continue
+                if resp != "OK":
+                    print("Failed getting %s" % id_list[i])
+                    continue
 
-            # Convert email in json
-            try:
-                data = json.loads(
-                    json.dumps(ep.decode_email_bytes(data[0][1]), default=default)
-                )
-            except UnicodeDecodeError as err:
-                print("Failed to decode part of email %s" % id_list[i])
-                error = "Failed to decode email %s" % id_list[i]
-            except IndexError as err:
-                print("Indexerror: %s" % err)
-                error = "Something went wrong while parsing. Check logs."
+                if data == None:
+                    continue
 
-            # Pick only selected fields if specified
-            try:
-                data = glom.glom(data, fields) if fields else parsed_eml
-            except glom.core.PathAccessError:
-                print("Required fields are not valid")
-                error = "Required fields are not valid"
+                output_dict = {}
+                parsed_eml = ep.decode_email_bytes(data[0][1])
 
-            if error:
-                emails.append({"id": id_list[i].decode("utf-8"), "error": error})
-            else:
-                emails.append(data)
+                if fields and fields.strip() != "":
+                    for field in fields.split(","):
+                        field = field.strip()
+                        merge(
+                            output_dict,
+                            path_to_dict(
+                                field,
+                                glom(parsed_eml, field, default=None),
+                            ),
+                        )
+                else:
+                    output_dict = parsed_eml
+                    fields = "ALL"
 
-        return json.dumps(emails)
+                # Add message-id as top returned field
+                output_dict["message-id"] = parsed_eml["header"]["header"][
+                    "message-id"
+                ][0]
+
+                if upload_email_shuffle:
+                    email_up = [{"filename": "email.msg", "data": data[0][1]}]
+                    email_id = self.set_files(email_up)
+                    output_dict["email_uid"] = email_id[0]
+
+                if upload_attachments_shuffle:
+                    atts_up = [
+                        {
+                            "filename": x["filename"],
+                            "data": base64.b64decode(x["raw"]),
+                        }
+                        for x in parsed_eml["attachment"]
+                    ]
+                    atts_ids = self.set_files(atts_up)
+                    output_dict["attachments_uids"] = atts_ids
+
+                emails.append(output_dict)
+        except Exception as err:
+            return "Error during email processing: {}".format(err)
+        return json.dumps(emails, default=default)
 
 
 # Run the actual thing after we've checked params
