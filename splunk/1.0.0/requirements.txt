@@ -1,3 +1,2 @@
-# No extra requirements needed
 requests
 python-magic
