@@ -129,7 +129,7 @@ actions:
     returns:
       schema:
         type: string 
-  - name: upload_file 
+  - name: create_file 
     description: Returns uploaded file data 
     parameters:
       - name: filename 
@@ -149,6 +149,19 @@ actions:
     returns:
       schema:
         type: file 
+  - name: download_file 
+    description: Downloads a file from a URL
+    parameters:
+      - name: url 
+        description:  
+        required: true
+        multiline: false 
+        example: "https://secure.eicar.org/eicar.com.txt"
+        schema:
+          type: string 
+    returns:
+      schema:
+        type: string 
   - name: delete_file 
     description: Deletes a file based on ID
     parameters:
