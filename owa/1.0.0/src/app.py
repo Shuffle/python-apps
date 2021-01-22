@@ -101,6 +101,10 @@ class Owa(AppBase):
         """
         Parses specific folder and returns proper object
         """
+        if not foldername:
+            print("Defaulting to inbox as foldername")
+            foldername = "inbox"
+
         foldername = foldername.strip().replace("\\", "/")
         folderroot, *foldersubs = foldername.split("/")
 
@@ -171,24 +175,37 @@ class Owa(AppBase):
         return {"ok": True, "error": False}
 
     async def mark_email_as_read(
-        self, username, password, server, build, account, verifyssl, email_id
+        self, username, password, server, build, account, verifyssl, email_id, foldername="inbox"
     ):
+        if not foldername:
+            foldername = "inbox"
+
         # Authenticate
         auth = await self.authenticate(
             username, password, server, build, account, verifyssl
         )
+
         if auth["error"]:
             return auth["error"]
+
         account = auth["account"]
 
-        # Get email and mark as read
+        folder = await self.parse_folder(account, foldername)
+        if folder["error"]:
+            return folder["error"]
+
+        folder = folder["folder"]
+        email_id = email_id.strip()
+
+        #Authenticates to Exchange server
         try:
-            email = account.inbox.get(message_id=email_id)
+            email = folder.get(message_id=email_id)
             email.is_read = True
             email.save()
             account.root.refresh()
             return {"ok": True, "error": False}
-        except exchangelib.errors.DoesNotExist:
+        except exchangelib.errors.DoesNotExist as e:
+            print("ERROR: %s" % e)
             return {"ok": False, "error": "Email {} does not exists".format(email_id)}
 
     async def delete_email(
@@ -321,6 +338,7 @@ class Owa(AppBase):
             include_attachment_data=include_attachment_data,
             include_raw_body=include_raw_body,
         )
+
         try:
             for email in folder.filter(is_read=not unread).order_by(
                 "-datetime_received"
@@ -344,14 +362,14 @@ class Owa(AppBase):
                     fields = "ALL"
 
                 # Add message-id as top returned field
-                output_dict["message-id"] = parsed_eml["header"]["header"][
+                output_dict["message_id"] = parsed_eml["header"]["header"][
                     "message-id"
                 ][0]
 
                 if upload_email_shuffle:
                     email_up = [{"filename": "email.msg", "data": email.mime_content}]
                     email_id = self.set_files(email_up)
-                    output_dict["email_uid"] = email_id[0]
+                    output_dict["email_fileid"] = email_id[0]
 
                 if upload_attachments_shuffle:
                     atts_up = [
@@ -359,12 +377,22 @@ class Owa(AppBase):
                         for attachment in email.attachments
                         if type(attachment) == FileAttachment
                     ]
+
                     atts_ids = self.set_files(atts_up)
                     output_dict["attachments_uids"] = atts_ids
+
+                try:
+                    if len(output_dict["body"]) > 1:
+                        output_dict["body"][0]["raw_body"] = output_dict["body"][1]["content"]
+                    if len(output_dict["body"]) > 0:
+                        output_dict["body"] = output_dict["body"][0]
+                except KeyError as e:
+                    print("KeyError: %s" % e)
 
                 emails.append(output_dict)
         except Exception as err:
             return "Error during email processing: {}".format(err)
+
         return json.dumps(emails, default=default)
 
 
