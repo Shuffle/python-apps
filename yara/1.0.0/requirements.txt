@@ -1,3 +1,2 @@
 # No extra requirements needed
-requests
-yara
+requests==2.25.1

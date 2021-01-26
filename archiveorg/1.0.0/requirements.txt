@@ -1,2 +1,2 @@
-requests
-savepagenow 
+requests==2.25.1
+savepagenow==1.1.1
