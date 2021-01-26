@@ -1,2 +1,2 @@
-requests
-archiveis
+requests==2.25.1
+archiveis==0.0.9
