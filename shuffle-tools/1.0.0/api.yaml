@@ -113,6 +113,7 @@ actions:
           - does not equal
           - is not empty
           - is empty
+          - contains 
           - starts with
           - ends with
           - files by extension
@@ -123,6 +124,16 @@ actions:
         required: false
         multiline: false
         example: "1.2.3.4"
+        schema:
+          type: string
+      - name: opposite 
+        description: Whether to add or to NOT add
+        required: true 
+        options:
+          - False 
+          - True
+        multiline: false
+        example: "false"
         schema:
           type: string
     returns:

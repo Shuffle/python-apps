@@ -62,13 +62,25 @@ class HelloWorld(AppBase):
         print("INSIDE APP DATA: %s" % filedata)
         return "%s" % filedata["data"].decode()
 
-    async def upload_file(self, filename, data):
+    async def create_file(self, filename, data):
         print("Inside function")
         filedata = {
             "filename": filename,
             "data": data,
         }
         print("Done with function")
+
+        return ("Successfully put your data in a file", filedata)
+
+    async def download_file(self, url):
+        ret = requests.get(url, verify=False)
+        fileret = self.set_files([{
+            "filename": "downloaded",
+            "data": ret.content,
+        }])
+
+        value = {"success": True, "file_ids": fileret}
+        return value 
 
         return ("Successfully put your data in a file", filedata)
 

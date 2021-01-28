@@ -62,20 +62,6 @@ actions:
   - name: update_artifact 
     description: Updates an artifact, e.g. the monitor
     parameters:
-      - name: username
-        description: Username of the user
-        multiline: false
-        example: "test@shuffler.io"
-        required: true
-        schema:
-          type: string
-      - name: apikey
-        description: apikey to use
-        multiline: false
-        example: "ee9618a507fce0b9abb8c6a57e250940qwec76ed0e3fbf304c98372ebbfa72ab"
-        required: true
-        schema:
-          type: string 
       - name: artifact_id 
         description: "The artifact to update"
         multiline: false
@@ -103,20 +89,6 @@ actions:
   - name: get_artifact 
     description: Gets an artifact saved to a project
     parameters:
-      - name: username
-        description: Username of the user
-        multiline: false
-        example: "test@shuffler.io"
-        required: true
-        schema:
-          type: string
-      - name: apikey
-        description: apikey to use
-        multiline: false
-        example: "ee9618a507fce0b9abb8c6a57e250940qwec76ed0e3fbf304c98372ebbfa72ab"
-        required: true
-        schema:
-          type: string 
       - name: query 
         description: "The artifact to update"
         multiline: true 
@@ -127,20 +99,6 @@ actions:
   - name: get_alerts 
     description: Updates a project
     parameters:
-      - name: username
-        description: Username of the user
-        multiline: false
-        example: "test@shuffler.io"
-        required: true
-        schema:
-          type: string
-      - name: apikey
-        description: apikey to use
-        multiline: false
-        example: "ee9618a507fce0b9abb8c6a57e250940qwec76ed0e3fbf304c98372ebbfa72ab"
-        required: true 
-        schema:
-          type: string 
       - name: project_id 
         description: The project ID to look for
         multiline: false
@@ -175,20 +133,6 @@ actions:
   - name: update_project 
     description: Updates a project
     parameters:
-      - name: username
-        description: Username of the user
-        multiline: false
-        example: "test@shuffler.io"
-        required: true
-        schema:
-          type: string
-      - name: apikey
-        description: apikey to use
-        multiline: false
-        example: "ee9618a507fce0b9abb8c6a57e250940qwec76ed0e3fbf304c98372ebbfa72ab"
-        required: true 
-        schema:
-          type: string 
       - name: data 
         description: The data to send
         multiline: true
