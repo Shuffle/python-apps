@@ -245,18 +245,24 @@ class Tools(AppBase):
         print("Running function with list %s", input_list)
 
         flip = False
-        if opposite.lower() == "true": 
-            flip = True 
+        if opposite.lower() == "true":
+            flip = True
 
         try:
-            input_list = input_list.replace("'", '"', -1)
-            input_list = json.loads(input_list)
-        except Exception as e:
-            print("Error parsing string to array. Continuing anyway.")
+            input_list = eval(input_list)
+        except:
+            try:
+                input_list = input_list.replace("'", '"', -1)
+                input_list = json.loads(input_list)
+            except Exception as e:
+                print("Error parsing string to array. Continuing anyway.")
 
         # Workaround D:
         if not isinstance(input_list, list):
-            return "Error: %s is not a list, but %s. Remove # to use this app." % (input_list, type(input_list))
+            return "Error: %s is not a list, but %s. Remove # to use this app." % (
+                input_list,
+                type(input_list),
+            )
             input_list = [input_list]
 
         new_list = []
@@ -269,111 +275,111 @@ class Tools(AppBase):
 
                 # Support for nested dict key
                 tmp = item
-                for subfield in field.split("."):
-                    tmp = tmp[subfield]
+                if field and field.strip() != "":
+                    for subfield in field.split("."):
+                        tmp = tmp[subfield]
 
-                if isinstance(tmp, dict) or isinstance(tmp, list): 
+                if isinstance(tmp, dict) or isinstance(tmp, list):
                     try:
                         tmp = json.dumps(tmp)
                     except json.decoder.JSONDecodeError as e:
                         print("FAILED DECODING: %s" % e)
                         pass
 
-
+                # EQUALS JUST FOR STR
                 if check == "equals":
                     if str(tmp) == value:
                         print("APPENDED BECAUSE %s %s %s" % (field, check, value))
-            
                         if not flip:
                             new_list.append(item)
                     else:
                         if flip:
                             new_list.append(item)
-                elif check == "does not equal":
-                    if str(tmp) != value:
-                        if not flip:
-                            new_list.append(item)
-                    else:
-                        if flip:
-                            new_list.append(item)
-                elif check == "is not empty":
-                    if type(tmp) == list and len(tmp) > 0:
-                        if not flip:
-                            new_list.append(item)
-                    elif type(tmp) == str and tmp:
-                        if not flip:
-                            new_list.append(item)
-                    else:
-                        if flip:
-                            new_list.append(item)
+
+                # IS EMPTY FOR STR OR LISTS
                 elif check == "is empty":
-                    if type(tmp) == list and len(tmp) == 0:
-                        if not flip:
-                            new_list.append(item)
-                    elif type(tmp) == str and not tmp:
-                        if not flip:
-                            new_list.append(item)
-                    else:
-                        if flip:
-                            new_list.append(item)
+                    if type(tmp) == list and len(tmp) == 0 and not flip:
+                        new_list.append(item)
+                    elif type(tmp) == list and len(tmp) > 0 and flip:
+                        new_list.append(item)
+                    elif type(tmp) == str and not tmp and not flip:
+                        new_list.append(item)
+                    elif type(tmp) == str and tmp and flip:
+                        new_list.append(item)
+
+                # STARTS WITH = FOR STR OR [0] FOR LIST
                 elif check == "starts with":
-                    if type(tmp) == list and tmp[0] == value:
-                        if not flip:
-                            new_list.append(item)
-                    elif type(tmp) == str and tmp.startswith(value):
-                        if not flip:
-                            new_list.append(item)
-                    else:
-                        if flip:
-                            new_list.append(item)
+                    if type(tmp) == list and tmp[0] == value and not flip:
+                        new_list.append(item)
+                    elif type(tmp) == list and tmp[0] != value and flip:
+                        new_list.append(item)
+                    elif type(tmp) == str and tmp.startswith(value) and not flip:
+                        new_list.append(item)
+                    elif type(tmp) == str and not tmp.startswith(value) and flip:
+                        new_list.append(item)
+
+                # ENDS WITH = FOR STR OR [-1] FOR LIST
                 elif check == "ends with":
-                    if type(tmp) == list and tmp[-1] == value:
-                        if not flip:
-                            new_list.append(item)
-                    elif type(tmp) == str and tmp.endswith(value):
-                        if not flip:
-                            new_list.append(item)
-                    else:
-                        if flip:
-                            new_list.append(item)
+                    if type(tmp) == list and tmp[-1] == value and not flip:
+                        new_list.append(item)
+                    elif type(tmp) == list and tmp[-1] != value and flip:
+                        new_list.append(item)
+                    elif type(tmp) == str and tmp.endswith(value) and not flip:
+                        new_list.append(item)
+                    elif type(tmp) == str and not tmp.endswith(value) and flip:
+                        new_list.append(item)
+
+                # CONTAINS FIND FOR LIST AND IN FOR STR
                 elif check == "contains":
-                    if value.lower() in tmp.lower():
-                        if not flip:
-                            new_list.append(item)
-                    else:
-                        if flip:
-                            new_list.append(item)
+                    if type(tmp) == list and value.lower() in tmp and not flip:
+                        new_list.append(item)
+                    elif type(tmp) == list and value.lower() not in tmp and flip:
+                        new_list.append(item)
+                    elif (
+                        type(tmp) == str
+                        and tmp.lower().find(value.lower()) != -1
+                        and not flip
+                    ):
+                        new_list.append(item)
+                    elif (
+                        type(tmp) == str
+                        and tmp.lower().find(value.lower()) == -1
+                        and flip
+                    ):
+                        new_list.append(item)
+
+                # SINGLE ITEM COULD BE A FILE OR A LIST OF FILES
                 elif check == "files by extension":
                     if type(tmp) == list:
                         file_list = []
 
-                        current = item
-                        for p in field.split(".")[:-1]:
-                            current = current[p]
-
                         for file_id in tmp:
                             filedata = self.get_file(file_id)
-                            root, ext = os.path.splitext(filedata["filename"])
-                            if ext.lower().strip() == value.lower().strip():
+                            _, ext = os.path.splitext(filedata["filename"])
+                            if (
+                                ext.lower().strip() == value.lower().strip()
+                                and not flip
+                            ):
+                                file_list.append(file_id)
+                            elif ext.lower().strip() != value.lower().strip() and flip:
                                 file_list.append(file_id)
 
                         tmp = item
-                        for subfield in field.split(".")[:-1]:
-                            tmp = tmp[subfield]
-                        tmp[field.split(".")[-1]] = file_list
-
-                        if not flip:
+                        if field and field.strip() != "":
+                            for subfield in field.split(".")[:-1]:
+                                tmp = tmp[subfield]
+                            tmp[field.split(".")[-1]] = file_list
                             new_list.append(item)
+                        else:
+                            new_list = file_list
 
                     elif type(tmp) == str:
                         filedata = self.get_file(tmp)
-                        root, ext = os.path.splitext(filedata["filename"])
-                        if ext.lower().strip() == value.lower().strip():
-                            if not flip:
-                                new_list.append(item)
-                    else:
-                        if flip:
+                        _, ext = os.path.splitext(filedata["filename"])
+                        if ext.lower().strip() == value.lower().strip() and not flip:
                             new_list.append(item)
+                        elif ext.lower().strip() != value.lower().strip() and flip:
+                            new_list.append((item, ext))
 
         except Exception as e:
             return "Error: %s" % e
