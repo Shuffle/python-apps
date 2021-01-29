@@ -43,7 +43,7 @@ class TheHive(AppBase):
         self.thehive = TheHiveApi(url, apikey)
 
         response = self.thehive.find_cases(
-            query=String("title:'%s'" % title_query), range="all", sort=[]
+            query=ContainsString("title", title_query), range="all", sort=[]
         )
         return response.text
 
