@@ -259,6 +259,15 @@ actions:
         required: true
         schema:
           type: string
+  - name: search_query
+    description: custom search Query
+    parameters:
+      - name: custom_query 
+        description: Custom query for search
+        example: "{\"_field\": \"title\", \"_value\": \"shuffle\"}" 
+        required: true
+        schema:
+          type: string
   - name: search_alerts
     description: Get an item from TheHive
     parameters:

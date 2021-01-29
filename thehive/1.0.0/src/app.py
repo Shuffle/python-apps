@@ -47,6 +47,23 @@ class TheHive(AppBase):
         )
         return response.text
 
+    async def search_query(self, apikey, url, custom_query):
+        self.thehive = TheHiveApi(url, apikey)
+
+        try:
+            query = json.loads(custom_query)
+        except:
+            raise IOError("Invalid JSON payload received.")
+
+        response = self.thehive.find_cases(
+            query=query, range="all", sort=[]
+        )
+
+        if response.status_code == 200:
+            return response.text
+        else:
+            raise IOError(response.text)           
+
     async def add_observable(self, apikey, url, case_id, data, datatype, tags):
         self.thehive = TheHiveApi(url, apikey)
 
@@ -80,7 +97,7 @@ class TheHive(AppBase):
             search_range = "0-25"
 
         response = self.thehive.find_alerts(
-            query=String("title:'%s'" % title_query), range=search_range, sort=[]
+            query=ContainsString("title", title_query), range=search_range, sort=[]
         )
         return response.text
 
