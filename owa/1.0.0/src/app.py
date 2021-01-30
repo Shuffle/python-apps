@@ -359,7 +359,6 @@ class Owa(AppBase):
                         )
                 else:
                     output_dict = parsed_eml
-                    fields = "ALL"
 
                 # Add message-id as top returned field
                 output_dict["message_id"] = parsed_eml["header"]["header"][
