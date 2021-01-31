@@ -47,7 +47,7 @@ class TheHive(AppBase):
         )
         return response.text
 
-    async def search_query(self, apikey, url, custom_query):
+    async def search_query(self, apikey, url, search_for, custom_query):
         self.thehive = TheHiveApi(url, apikey)
 
         try:
@@ -55,9 +55,10 @@ class TheHive(AppBase):
         except:
             raise IOError("Invalid JSON payload received.")
 
-        response = self.thehive.find_cases(
-            query=query, range="all", sort=[]
-        )
+        if search_for == "alert":
+            response = self.thehive.find_alerts(query=query, range="all", sort=[])
+        else:
+            response = self.thehive.find_cases(query=query, range="all", sort=[])
 
         if response.status_code == 200:
             return response.text
