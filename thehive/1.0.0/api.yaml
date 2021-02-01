@@ -262,6 +262,14 @@ actions:
   - name: search_query
     description: custom search Query
     parameters:
+      - name: search_for
+        description: select case or alert
+        options:
+          - case
+          - alert
+        required: true
+        schema:
+          type: string
       - name: custom_query 
         description: Custom query for search
         example: "{\"_field\": \"title\", \"_value\": \"shuffle\"}" 
