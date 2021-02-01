@@ -99,7 +99,7 @@ actions:
           type: string
       - name: field
         description: The field to check
-        required: true
+        required: false
         multiline: false
         example: "data"
         schema:
@@ -110,10 +110,8 @@ actions:
         example: "equals"
         options:
           - equals
-          - does not equal
-          - is not empty
           - is empty
-          - contains 
+          - contains
           - starts with
           - ends with
           - files by extension
@@ -126,11 +124,11 @@ actions:
         example: "1.2.3.4"
         schema:
           type: string
-      - name: opposite 
+      - name: opposite
         description: Whether to add or to NOT add
-        required: true 
+        required: true
         options:
-          - False 
+          - False
           - True
         multiline: false
         example: "false"
