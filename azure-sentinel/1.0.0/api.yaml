@@ -1,6 +1,6 @@
 app_version: 1.0.0
 name: Azure Sentinel
-description: An app to interact with Azure Sentinel
+description: Azure Sentinel Incidents
 contact_info:
   name: "@pemontto"
   url: https://github.com/pemontto
@@ -71,6 +71,10 @@ actions:
         description: Comma separated list of statuses to be exported
         multiline: false
         example: "New,Active,Closed"
+        # options:
+        #   - New
+        #   - Active
+        #   - Closed
         required: false
         schema:
           type: string
@@ -91,14 +95,18 @@ actions:
       - name: get_entities 
         description: "Include incident entites in output (default: false)"
         multiline: false
-        example: "True"
+        options:
+          - True
+          - False
         required: false
         schema:
           type: string
       - name: get_comments
         description: "Include incident comments in output (default: false)"
         multiline: false
-        example: "True"
+        options:
+          - True
+          - False
         required: false
         schema:
           type: string
@@ -111,21 +119,25 @@ actions:
       - name: incident_id 
         description: The incident ID to get
         multiline: false
-        example: "1031"
+        example: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
         required: true
         schema:
           type: string
       - name: get_entities 
         description: "Include incident entites in output (default: false)"
         multiline: false
-        example: "True"
+        options:
+          - True
+          - False
         required: false
         schema:
           type: string
       - name: get_comments
         description: "Include incident comments in output (default: false)"
         multiline: false
-        example: "True"
+        options:
+          - True
+          - False
         required: false
         schema:
           type: string
@@ -134,19 +146,24 @@ actions:
         type: string
   - name: close_incident
     description: |
-      Close an incident. The close_reason must be a valid combination of classification and classificationComment. E.g. one of the following values "Undetermined", "TruePositive - SuspiciousActivity", "BenignPositive - SuspiciousButExpected", "FalsePositive - IncorrectAlertLogic", "FalsePositive - InaccurateData"
+      Close an incident
     parameters:
       - name: incident_id
         description: The incident ID to close
         multiline: false
-        example: "1031"
+        example: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
         required: true
         schema:
           type: string
       - name: close_reason 
-        description: The close status (Undetermined, TruePositive - SuspiciousActivity, BenignPositive - SuspiciousButExpected, FalsePositive - IncorrectAlertLogic, FalsePositive - InaccurateData)
+        description: The close reason 
         multiline: false
-        example: "BenignPositive - SuspiciousButExpected"
+        options:
+          - Undetermined
+          - TruePositive - SuspiciousActivity
+          - BenignPositive - SuspiciousButExpected
+          - FalsePositive - IncorrectAlertLogic
+          - FalsePositive - InaccurateData
         required: true
         schema:
           type: string
