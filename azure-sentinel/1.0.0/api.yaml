@@ -1,0 +1,183 @@
+app_version: 1.0.0
+name: Azure Sentinel
+description: An app to interact with Azure Sentinel
+contact_info:
+  name: "@pemontto"
+  url: https://github.com/pemontto
+  email: ""
+tags:
+  - SIEM 
+  - Ticketing
+categories:
+  - SIEM 
+  - Ticketing
+authentication:
+  required: true
+  parameters:
+    - name: tenant_id
+      description: The tenant of the OAuth client
+      example: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+      multiline: false
+      required: true
+      schema:
+        type: string
+    - name: client_id
+      description: The client id to use
+      example: "*****"
+      multiline: false
+      required: true
+      schema:
+        type: string
+    - name: client_secret
+      description: The secret key to use 
+      multiline: false
+      example: "*****"
+      required: true
+      schema:
+        type: string
+    - name: subscription_id
+      description: The subscription for Azure Sentinel
+      multiline: false
+      example: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+      required: true
+      schema:
+        type: string
+    - name: resource_group_name
+      description: The resource group for Azure Sentinel
+      multiline: false
+      example: "SentinelResourceGroupName"
+      required: true
+      schema:
+        type: string
+    - name: workspace_name
+      description: The workspace name for Azure Sentinel
+      multiline: false
+      example: "SentinelWorkspace"
+      required: true
+      schema:
+        type: string
+actions:
+  - name: get_incidents 
+    description: Get incidents
+    parameters:
+      # - name: severity 
+      #   description: Comma separated list of severities to be exported
+      #   multiline: false
+      #   example: "High,Medium,Low,Informational"
+      #   required: false
+      #   schema:
+      #     type: string
+      - name: status 
+        description: Comma separated list of statuses to be exported
+        multiline: false
+        example: "New,Active,Closed"
+        required: false
+        schema:
+          type: string
+      - name: last_modified 
+        description: Only get events modified since this time (UTC)
+        multiline: false
+        example: "2021-01-23T01:30:00"
+        required: false
+        schema:
+          type: string
+      # - name: lookback 
+      #   description: Export events modified after this time period (d=days, h=hours, m=minutes)
+      #   multiline: false
+      #   example: "6h"
+      #   required: false
+      #   schema:
+      #     type: string
+      - name: get_entities 
+        description: "Include incident entites in output (default: false)"
+        multiline: false
+        example: "True"
+        required: false
+        schema:
+          type: string
+      - name: get_comments
+        description: "Include incident comments in output (default: false)"
+        multiline: false
+        example: "True"
+        required: false
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: get_incident
+    description: Get incident
+    parameters:
+      - name: incident_id 
+        description: The incident ID to get
+        multiline: false
+        example: "1031"
+        required: true
+        schema:
+          type: string
+      - name: get_entities 
+        description: "Include incident entites in output (default: false)"
+        multiline: false
+        example: "True"
+        required: false
+        schema:
+          type: string
+      - name: get_comments
+        description: "Include incident comments in output (default: false)"
+        multiline: false
+        example: "True"
+        required: false
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: close_incident
+    description: |
+      Close an incident. The close_reason must be a valid combination of classification and classificationComment. E.g. one of the following values "Undetermined", "TruePositive - SuspiciousActivity", "BenignPositive - SuspiciousButExpected", "FalsePositive - IncorrectAlertLogic", "FalsePositive - InaccurateData"
+    parameters:
+      - name: incident_id
+        description: The incident ID to close
+        multiline: false
+        example: "1031"
+        required: true
+        schema:
+          type: string
+      - name: close_reason 
+        description: The close status (Undetermined, TruePositive - SuspiciousActivity, BenignPositive - SuspiciousButExpected, FalsePositive - IncorrectAlertLogic, FalsePositive - InaccurateData)
+        multiline: false
+        example: "BenignPositive - SuspiciousButExpected"
+        required: true
+        schema:
+          type: string
+      - name: close_comment 
+        description: The close comment
+        multiline: false
+        example: "Incident investigated!"
+        required: false
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: add_comment
+    description: Add comment to incident
+    parameters:
+      - name: incident_id 
+        description: The incident ID to close
+        multiline: false
+        example: "1031"
+        required: true
+        schema:
+          type: string
+      - name: comment 
+        description: The comment to add
+        multiline: false
+        example: "This is an example comment"
+        required: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+large_image: data:image/svg+xml;base64,PHN2ZyBpZD0iYTc1ZTNmM2EtMjY2MS00MTBiLTgyZmItZDMwMGQzN2RlYTJkIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOCIgaGVpZ2h0PSIxOCIgdmlld0JveD0iMCAwIDE4IDE4Ij48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImFmZjYwZGRmLWVlYzEtNDBiZi04YmY1LWYzZTNiNTBlODgxOCIgeDE9IjkiIHkxPSIxNi4yMSIgeDI9IjkiIHkyPSIwLjYyIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMWI5M2ViIiAvPjxzdG9wIG9mZnNldD0iMC4yMSIgc3RvcC1jb2xvcj0iIzIwOTVlYiIgLz48c3RvcCBvZmZzZXQ9IjAuNDQiIHN0b3AtY29sb3I9IiMyZTljZWQiIC8+PHN0b3Agb2Zmc2V0PSIwLjY5IiBzdG9wLWNvbG9yPSIjNDVhN2VmIiAvPjxzdG9wIG9mZnNldD0iMC45NSIgc3RvcC1jb2xvcj0iIzY0YjZmMSIgLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM2YmI5ZjIiIC8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHRpdGxlPkljb24tc2VjdXJpdHktMjQ4PC90aXRsZT48cGF0aCBkPSJNMTYsOC40NGMwLDQuNTctNS41Myw4LjI1LTYuNzMsOWEuNDMuNDMsMCwwLDEtLjQ2LDBDNy41NywxNi42OSwyLDEzLDIsOC40NFYyLjk0YS40NC40NCwwLDAsMSwuNDMtLjQ0QzYuNzcsMi4zOSw1Ljc4LjUsOSwuNXMyLjIzLDEuODksNi41MywyYS40NC40NCwwLDAsMSwuNDMuNDRaIiBmaWxsPSIjMWI5M2ViIiAvPjxwYXRoIGQ9Ik0xNS4zOCw4LjQ4YzAsNC4yLTUuMDcsNy41Ny02LjE3LDguMjVhLjQuNCwwLDAsMS0uNDIsMGMtMS4xLS42OC02LjE3LTQuMDUtNi4xNy04LjI1di01QS40MS40MSwwLDAsMSwzLDNjMy45NC0uMTEsMy0xLjgzLDYtMS44M1MxMS4wNSwyLjkzLDE1LDNhLjQxLjQxLDAsMCwxLC4zOS40WiIgZmlsbD0idXJsKCNhZmY2MGRkZi1lZWMxLTQwYmYtOGJmNS1mM2UzYjUwZTg4MTgpIiAvPjxwYXRoIGQ9Ik05LDYuNTNBMi44OCwyLjg4LDAsMCwxLDExLjg0LDlhLjQ5LjQ5LDAsMCwwLC40OS40aDEuNGEuNDkuNDksMCwwLDAsLjUtLjUzLDUuMjYsNS4yNiwwLDAsMC0xMC40NiwwLC40OS40OSwwLDAsMCwuNS41M2gxLjRBLjQ5LjQ5LDAsMCwwLDYuMTYsOSwyLjg4LDIuODgsMCwwLDEsOSw2LjUzWiIgZmlsbD0iI2MzZjFmZiIgLz48Y2lyY2xlIGN4PSI5IiBjeT0iOS40IiByPSIxLjkxIiBmaWxsPSIjZmZmIiAvPjwvc3ZnPg==
