@@ -77,8 +77,8 @@ class AzureSentinel(AppBase):
         incidents_url = f"{self.azure_url}/subscriptions/{kwargs['subscription_id']}/resourceGroups/{kwargs['resource_group_name']}/providers/Microsoft.OperationalInsights/workspaces/{kwargs['workspace_name']}/providers/Microsoft.SecurityInsights/incidents"
         params = {"api-version": "2020-01-01"}
 
-        # Add query filters if defined
         query_filter = ""
+        # Add filter for statuses
         if kwargs["status"]:
             status_filters = [
                 f"properties/status eq '{x.strip()}'" for x in kwargs["status"].split(",")
@@ -86,11 +86,13 @@ class AzureSentinel(AppBase):
             query_filter = f"( {' or '.join(status_filters)} )"
             self.logger.debug(f"Adding query filter for status: {query_filter}")
 
+        # Add filter for last modified
         if kwargs["last_modified"]:
-            status_filters = [
-                f"properties/status eq '{x.strip()}'" for x in kwargs["status"].split(",")
-            ]
-            query_filter = f"{query_filter} and (properties/lastModifiedTimeUtc ge {kwargs['last_modified']}Z)"
+            last_modified = f"(properties/lastModifiedTimeUtc ge {kwargs['last_modified']}Z)"
+            if query_filter:
+                query_filter = f"{query_filter} and {last_modified}"
+            else:
+                query_filter = last_modified
             self.logger.debug(f"Adding query filter for last_modified: {query_filter}")
 
         if query_filter:
