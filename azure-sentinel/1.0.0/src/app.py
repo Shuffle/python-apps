@@ -40,13 +40,12 @@ class AzureSentinel(AppBase):
         self.logger.debug(f"Making request to: {auth_url}")
         res = self.s.post(auth_url, data=auth_data, headers=auth_headers)
 
+        # Auth failed, raise exception with the response
         if res.status_code != 200:
-            self.logger.error("Authentication error has occurred: ", res.json())
-            return {"success": False, "message": res.text}
+            raise ConnectionError(res.text)
 
         access_token = res.json().get("access_token")
         self.s.headers = {"Authorization": f"Bearer {access_token}", "cache-control": "no-cache"}
-        return {"success": True, "message": res.text}
 
     async def extract_entities(self, incident_uri):
 
@@ -73,11 +72,7 @@ class AzureSentinel(AppBase):
     async def get_incidents(self, **kwargs):
 
         # Get a client credential access token
-        auth = await self.authenticate(
-            kwargs["tenant_id"], kwargs["client_id"], kwargs["client_secret"]
-        )
-        if not auth["success"]:
-            return {"error": auth["message"]}
+        await self.authenticate(kwargs["tenant_id"], kwargs["client_id"], kwargs["client_secret"])
 
         incidents_url = f"{self.azure_url}/subscriptions/{kwargs['subscription_id']}/resourceGroups/{kwargs['resource_group_name']}/providers/Microsoft.OperationalInsights/workspaces/{kwargs['workspace_name']}/providers/Microsoft.SecurityInsights/incidents"
         params = {"api-version": "2020-01-01"}
@@ -104,7 +99,7 @@ class AzureSentinel(AppBase):
         self.logger.info(f"Making request to: {incidents_url}")
         res = self.s.get(incidents_url, params=params)
         if res.status_code != 200:
-            return res.text
+            raise ConnectionError(res.text)
         incidents = res.json()["value"]
 
         # Get incident entities
@@ -136,7 +131,7 @@ class AzureSentinel(AppBase):
 
         res = self.s.get(incident_url, params=params)
         if res.status_code != 200:
-            return res.text
+            raise ConnectionError(res.text)
         incident = res.json()
 
         # Get incident entities
@@ -176,12 +171,9 @@ class AzureSentinel(AppBase):
 
         res = self.s.put(incident_url, json=close_data, params=params)
         if res.status_code != 200:
-            return res.text
+            raise ConnectionError(res.text)
 
-        result = res.json()
-        result["success"] = True
-
-        return json.dumps(result)
+        return res.text
 
     async def add_comment(self, **kwargs):
 
@@ -200,13 +192,10 @@ class AzureSentinel(AppBase):
 
         res = self.s.put(f"{comment_url}/{comment_id}", json=comment_data, params=params)
         if res.status_code != 200:
-            return res.text
+            raise ConnectionError(res.text)
 
-        result = res.json()
-        result["success"] = True
-
-        return json.dumps(result)
+        return res.text
 
 
 if __name__ == "__main__":
-    asyncio.run(AzureSentinel.run(), debug=True)
+    asyncio.run(AzureSentinel.run(), debug=False)
