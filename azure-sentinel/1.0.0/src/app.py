@@ -98,6 +98,21 @@ class AzureSentinel(AppBase):
         if query_filter:
             params["$filter"] = query_filter
 
+        incidents = []
+        self.logger.info(f"Making request to: {incidents_url}")
+        res = self.s.get(incidents_url, params=params)
+        if res.status_code != 200:
+            raise ConnectionError(res.text)
+        incidents += res.json()["value"]
+
+        while "nextLink" in res.json():
+            self.logger.info(f"Making request to nextLink: {res.json()['nextLink']}")
+            res = self.s.get(res.json()["nextLink"])
+            if res.status_code != 200:
+                raise ConnectionError(res.text)
+            incidents += res.json()["value"]
+
+
         self.logger.info(f"Making request to: {incidents_url}")
         res = self.s.get(incidents_url, params=params)
         if res.status_code != 200:
