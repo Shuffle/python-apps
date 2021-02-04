@@ -192,6 +192,37 @@ class AzureSentinel(AppBase):
 
         return res.text
 
+    async def update_incident(self, **kwargs):
+
+        incident = json.loads(await self.get_incident(**kwargs))
+        if "error" in incident:
+            return json.dumps(incident)
+
+        update_data = {
+            "etag": incident.get("etag", "").strip('"'),
+            "properties": {
+                "title": incident["properties"]["title"],
+                "severity": incident["properties"]["severity"],
+            },
+        }
+        if kwargs["severity"]:
+            update_data["properties"]["severity"] = kwargs["severity"]
+
+        if kwargs["status"]:
+            update_data["properties"]["status"] = kwargs["status"]
+
+        if kwargs["owner"]:
+            update_data["properties"]["owner"] = {"userPrincipalName": kwargs["owner"]}
+
+        incident_url = f"{self.azure_url}/subscriptions/{kwargs['subscription_id']}/resourceGroups/{kwargs['resource_group_name']}/providers/Microsoft.OperationalInsights/workspaces/{kwargs['workspace_name']}/providers/Microsoft.SecurityInsights/incidents/{kwargs['incident_id']}"
+        params = {"api-version": "2020-01-01"}
+
+        res = self.s.put(incident_url, json=update_data, params=params)
+        if res.status_code != 200:
+            raise ConnectionError(res.text)
+
+        return res.text
+
     async def add_comment(self, **kwargs):
 
         # Get a client credential access token
