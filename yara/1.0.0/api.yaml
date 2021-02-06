@@ -1,6 +1,12 @@
 app_version: 1.0.0
 name: Yara 
 description: Analyzes files based on set rules
+tags:
+  - Intel 
+  - Malware 
+  - File check
+categories:
+  - Intel 
 contact_info:
   name: "@frikkylikeme"
   url: https://shuffler.io

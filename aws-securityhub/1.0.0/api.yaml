@@ -5,6 +5,12 @@ contact_info:
   name: "@frikkylikeme"
   url: https://shuffler.io
   email: frikky@shuffler.io
+tags:
+  - Ticketing 
+  - SIEM 
+categories:
+  - Ticketing 
+  - SIEM 
 authentication:
   required: true
   parameters:

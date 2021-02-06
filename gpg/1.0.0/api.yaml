@@ -20,6 +20,10 @@ authentication:
         - "true"
       schema:
         type: bool
+tags:
+  - Encryption 
+categories:
+  - Encryption 
 actions:
   - name: decrypt_file
     description: Decrypt file with gpg

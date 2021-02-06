@@ -2,11 +2,11 @@ app_version: 1.0.0
 name: Shuffle Tools
 description: A  tool app for Shuffle
 tags:
-  - Shuffle
   - Testing
+  - Shuffle
 categories:
-  - Shuffle
   - Testing
+  - Shuffle
 contact_info:
   name: "@frikkylikeme"
   url: https://shuffler.io

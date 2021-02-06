@@ -3,13 +3,11 @@ app_version: 1.0.0
 name: siemonster
 description: SIEMonster App
 tags:
-  - Testing
-  - Search
   - SIEM
+  - Search
 categories:
-  - Testing
-  - Search
   - SIEM
+  - Search
 contact_info:
   name: SIEMonster Team
   url: https://siemonster.com/
