@@ -6,10 +6,10 @@ contact_info:
   url: https://github.com/pemontto
   email: ""
 tags:
-  - SIEM 
+  - SIEM
   - Ticketing
 categories:
-  - SIEM 
+  - SIEM
   - Ticketing
 authentication:
   required: true
@@ -29,7 +29,7 @@ authentication:
       schema:
         type: string
     - name: client_secret
-      description: The secret key to use 
+      description: The secret key to use
       multiline: false
       example: "*****"
       required: true
@@ -57,17 +57,17 @@ authentication:
       schema:
         type: string
 actions:
-  - name: get_incidents 
+  - name: get_incidents
     description: Get incidents
     parameters:
-      # - name: severity 
+      # - name: severity
       #   description: Comma separated list of severities to be exported
       #   multiline: false
       #   example: "High,Medium,Low,Informational"
       #   required: false
       #   schema:
       #     type: string
-      - name: status 
+      - name: status
         description: Comma separated list of statuses to be exported
         multiline: false
         example: "New,Active,Closed"
@@ -78,21 +78,21 @@ actions:
         required: false
         schema:
           type: string
-      - name: last_modified 
+      - name: last_modified
         description: Only get events modified since this time (UTC)
         multiline: false
         example: "2021-01-23T01:30:00"
         required: false
         schema:
           type: string
-      # - name: lookback 
+      # - name: lookback
       #   description: Export events modified after this time period (d=days, h=hours, m=minutes)
       #   multiline: false
       #   example: "6h"
       #   required: false
       #   schema:
       #     type: string
-      - name: get_entities 
+      - name: get_entities
         description: "Include incident entites in output (default: false)"
         multiline: false
         options:
@@ -116,14 +116,14 @@ actions:
   - name: get_incident
     description: Get incident
     parameters:
-      - name: incident_id 
+      - name: incident_id
         description: The incident ID to get
         multiline: false
         example: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
         required: true
         schema:
           type: string
-      - name: get_entities 
+      - name: get_entities
         description: "Include incident entites in output (default: false)"
         multiline: false
         options:
@@ -155,8 +155,9 @@ actions:
         required: true
         schema:
           type: string
-      - name: close_reason 
-        description: The close reason 
+      - name: close_reason
+        description: The close reason
+        required: true
         multiline: false
         options:
           - Undetermined
@@ -164,14 +165,54 @@ actions:
           - BenignPositive - SuspiciousButExpected
           - FalsePositive - IncorrectAlertLogic
           - FalsePositive - InaccurateData
+        schema:
+          type: string
+      - name: close_comment
+        description: The close comment
+        required: false
+        multiline: false
+        example: "Incident investigated!"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: update_incident
+    description: |
+      Update an incident
+    parameters:
+      - name: incident_id
+        description: The incident ID to close
+        multiline: false
+        example: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
         required: true
         schema:
           type: string
-      - name: close_comment 
-        description: The close comment
-        multiline: false
-        example: "Incident investigated!"
+      - name: severity
+        description: The incident severity
         required: false
+        multiline: false
+        options:
+          - Informational
+          - Low
+          - Medium
+          - High
+        schema:
+          type: string
+      - name: status
+        description: The incident status
+        required: false
+        multiline: false
+        options:
+          - New
+          - Active
+        schema:
+          type: string
+      - name: owner
+        description: The user principal name of the incident owner
+        required: false
+        multiline: false
+        example: john.smith@example.com
         schema:
           type: string
     returns:
@@ -180,14 +221,14 @@ actions:
   - name: add_comment
     description: Add comment to incident
     parameters:
-      - name: incident_id 
+      - name: incident_id
         description: The incident ID to close
         multiline: false
         example: "1031"
         required: true
         schema:
           type: string
-      - name: comment 
+      - name: comment
         description: The comment to add
         multiline: false
         example: "This is an example comment"

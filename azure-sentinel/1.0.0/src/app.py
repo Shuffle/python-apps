@@ -40,13 +40,12 @@ class AzureSentinel(AppBase):
         self.logger.debug(f"Making request to: {auth_url}")
         res = self.s.post(auth_url, data=auth_data, headers=auth_headers)
 
+        # Auth failed, raise exception with the response
         if res.status_code != 200:
-            self.logger.error("Authentication error has occurred: ", res.json())
-            return {"success": False, "message": res.text}
+            raise ConnectionError(res.text)
 
         access_token = res.json().get("access_token")
         self.s.headers = {"Authorization": f"Bearer {access_token}", "cache-control": "no-cache"}
-        return {"success": True, "message": res.text}
 
     async def extract_entities(self, incident_uri):
 
@@ -73,17 +72,13 @@ class AzureSentinel(AppBase):
     async def get_incidents(self, **kwargs):
 
         # Get a client credential access token
-        auth = await self.authenticate(
-            kwargs["tenant_id"], kwargs["client_id"], kwargs["client_secret"]
-        )
-        if not auth["success"]:
-            return {"error": auth["message"]}
+        await self.authenticate(kwargs["tenant_id"], kwargs["client_id"], kwargs["client_secret"])
 
         incidents_url = f"{self.azure_url}/subscriptions/{kwargs['subscription_id']}/resourceGroups/{kwargs['resource_group_name']}/providers/Microsoft.OperationalInsights/workspaces/{kwargs['workspace_name']}/providers/Microsoft.SecurityInsights/incidents"
         params = {"api-version": "2020-01-01"}
 
-        # Add query filters if defined
         query_filter = ""
+        # Add filter for statuses
         if kwargs["status"]:
             status_filters = [
                 f"properties/status eq '{x.strip()}'" for x in kwargs["status"].split(",")
@@ -91,20 +86,37 @@ class AzureSentinel(AppBase):
             query_filter = f"( {' or '.join(status_filters)} )"
             self.logger.debug(f"Adding query filter for status: {query_filter}")
 
+        # Add filter for last modified
         if kwargs["last_modified"]:
-            status_filters = [
-                f"properties/status eq '{x.strip()}'" for x in kwargs["status"].split(",")
-            ]
-            query_filter = f"{query_filter} and (properties/lastModifiedTimeUtc ge {kwargs['last_modified']}Z)"
+            last_modified = f"(properties/lastModifiedTimeUtc ge {kwargs['last_modified']}Z)"
+            if query_filter:
+                query_filter = f"{query_filter} and {last_modified}"
+            else:
+                query_filter = last_modified
             self.logger.debug(f"Adding query filter for last_modified: {query_filter}")
 
         if query_filter:
             params["$filter"] = query_filter
 
+        incidents = []
         self.logger.info(f"Making request to: {incidents_url}")
         res = self.s.get(incidents_url, params=params)
         if res.status_code != 200:
-            return res.text
+            raise ConnectionError(res.text)
+        incidents += res.json()["value"]
+
+        while "nextLink" in res.json():
+            self.logger.info(f"Making request to nextLink: {res.json()['nextLink']}")
+            res = self.s.get(res.json()["nextLink"])
+            if res.status_code != 200:
+                raise ConnectionError(res.text)
+            incidents += res.json()["value"]
+
+
+        self.logger.info(f"Making request to: {incidents_url}")
+        res = self.s.get(incidents_url, params=params)
+        if res.status_code != 200:
+            raise ConnectionError(res.text)
         incidents = res.json()["value"]
 
         # Get incident entities
@@ -136,7 +148,7 @@ class AzureSentinel(AppBase):
 
         res = self.s.get(incident_url, params=params)
         if res.status_code != 200:
-            return res.text
+            raise ConnectionError(res.text)
         incident = res.json()
 
         # Get incident entities
@@ -176,12 +188,40 @@ class AzureSentinel(AppBase):
 
         res = self.s.put(incident_url, json=close_data, params=params)
         if res.status_code != 200:
-            return res.text
+            raise ConnectionError(res.text)
 
-        result = res.json()
-        result["success"] = True
+        return res.text
 
-        return json.dumps(result)
+    async def update_incident(self, **kwargs):
+
+        incident = json.loads(await self.get_incident(**kwargs))
+        if "error" in incident:
+            return json.dumps(incident)
+
+        update_data = {
+            "etag": incident.get("etag", "").strip('"'),
+            "properties": {
+                "title": incident["properties"]["title"],
+                "severity": incident["properties"]["severity"],
+            },
+        }
+        if kwargs["severity"]:
+            update_data["properties"]["severity"] = kwargs["severity"]
+
+        if kwargs["status"]:
+            update_data["properties"]["status"] = kwargs["status"]
+
+        if kwargs["owner"]:
+            update_data["properties"]["owner"] = {"userPrincipalName": kwargs["owner"]}
+
+        incident_url = f"{self.azure_url}/subscriptions/{kwargs['subscription_id']}/resourceGroups/{kwargs['resource_group_name']}/providers/Microsoft.OperationalInsights/workspaces/{kwargs['workspace_name']}/providers/Microsoft.SecurityInsights/incidents/{kwargs['incident_id']}"
+        params = {"api-version": "2020-01-01"}
+
+        res = self.s.put(incident_url, json=update_data, params=params)
+        if res.status_code != 200:
+            raise ConnectionError(res.text)
+
+        return res.text
 
     async def add_comment(self, **kwargs):
 
@@ -200,13 +240,10 @@ class AzureSentinel(AppBase):
 
         res = self.s.put(f"{comment_url}/{comment_id}", json=comment_data, params=params)
         if res.status_code != 200:
-            return res.text
+            raise ConnectionError(res.text)
 
-        result = res.json()
-        result["success"] = True
-
-        return json.dumps(result)
+        return res.text
 
 
 if __name__ == "__main__":
-    asyncio.run(AzureSentinel.run(), debug=True)
+    asyncio.run(AzureSentinel.run(), debug=False)
