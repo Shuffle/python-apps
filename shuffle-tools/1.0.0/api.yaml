@@ -110,6 +110,8 @@ actions:
         example: "equals"
         options:
           - equals
+          - 'larger than'
+          - 'less than' 
           - is empty
           - contains
           - starts with
@@ -274,6 +276,45 @@ actions:
         example: '{"data": "Hello world"}'
         schema:
           type: string
+  - name: get_file_value
+    description: This function is made for reading file(s), printing their data
+    parameters:
+      - name: filedata
+        description: The files
+        required: true
+        multiline: true
+        example: "REPEATING: Hello world"
+        schema:
+          type: file 
+    returns:
+      schema:
+        type: string 
+  - name: download_remote_file 
+    description: Downloads a file from a URL
+    parameters:
+      - name: url 
+        description:  
+        required: true
+        multiline: false 
+        example: "https://secure.eicar.org/eicar.com.txt"
+        schema:
+          type: string 
+    returns:
+      schema:
+        type: string 
+  - name: get_file_meta 
+    description: Gets the file meta 
+    parameters:
+      - name: file_id
+        description:
+        required: true
+        multiline: false
+        example: ""
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
   - name: delete_file
     description: Deletes a file based on ID
     parameters:

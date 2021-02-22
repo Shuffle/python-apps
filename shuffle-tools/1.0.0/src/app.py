@@ -365,6 +365,21 @@ class Tools(AppBase):
                     else:
                         failed_list.append(item)
 
+                elif check == "larger than":
+                    if int(tmp) > int(value) and not flip:
+                        new_list.append(item)
+                    elif int(tmp) > int(value) and flip:
+                        new_list.append(item)
+                    else:
+                        failed_list.append(item)
+                elif check == "less than":
+                    if int(tmp) < int(value) and not flip:
+                        new_list.append(item)
+                    elif int(tmp) < int(value) and flip:
+                        new_list.append(item)
+                    else:
+                        failed_list.append(item)
+
                 # SINGLE ITEM COULD BE A FILE OR A LIST OF FILES
                 elif check == "files by extension":
                     if type(tmp) == list:
@@ -477,6 +492,22 @@ class Tools(AppBase):
 
         return new_list
 
+    # Gets the file's metadata, e.g. md5
+    async def get_file_meta(self, file_id):
+        headers = {
+            "Authorization": "Bearer %s" % self.authorization,
+        }
+
+        ret = requests.get(
+            "%s/api/v1/files/%s?execution_id=%s"
+            % (self.url, file_id, self.current_execution_id),
+            headers=headers,
+        )
+        print(f"RET: {ret}")
+
+        return ret.text
+
+
     # Use data from AppBase to talk to backend
     async def delete_file(self, file_id):
         headers = {
@@ -490,6 +521,23 @@ class Tools(AppBase):
             headers=headers,
         )
         return ret.text
+
+    async def get_file_value(self, filedata):
+        if filedata == None:
+            return "File is empty?"
+        
+        print("INSIDE APP DATA: %s" % filedata)
+        return "%s" % filedata["data"].decode()
+
+    async def download_remote_file(self, url):
+        ret = requests.get(url, verify=False)
+        fileret = self.set_files([{
+            "filename": "downloaded",
+            "data": ret.content,
+        }])
+
+        value = {"success": True, "file_ids": fileret}
+        return value 
 
     async def extract_archive(self, file_ids, fileformat="zip", password=None):
         try:
