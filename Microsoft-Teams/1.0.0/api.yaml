@@ -1,0 +1,151 @@
+app_version: 1.0.0
+name: Microsoft Teams
+description: Microsoft Teams app for sending an alert to channel.
+contact_info:
+  name: "@ShalinBhavsar"
+  url: https://github.com/shalin24999
+  email: shalinbhavsar17@gmail.com
+tags:
+  - Alert 
+categories:
+  - Communication 
+authentication:
+  required: true
+  parameters:
+    - name: webhook_url
+      description: Enter webhook of the channels you want to send message to.
+      example: "https://example.webhook.office.com/123"
+      required: true
+      schema:
+        type: string  
+actions:
+  - name: send_simple_text
+    description: Sends a message to Teams channel.
+    parameters:
+      - name: webhook_url
+        description: Enter webhook of the channels you want to send message to. 
+        required: true
+        multiline: true
+        example: 'https://example.webhook.office.com/123'
+        schema:
+          type: string
+      - name: message
+        description: Message 
+        required: true
+        multiline: true
+        example: 'Alert...' 
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: send_rich_text
+    description: Sends a rich text card to channel with link.
+    parameters:
+      - name: webhook_url
+        description: Enter webhook of the channels you want to send message to. 
+        required: true
+        multiline: true
+        example: 'https://example.webhook.office.com/123'
+        schema:
+          type: string
+      - name: title
+        description: Title of the rich text card. 
+        required: false
+        multiline: false
+        example: 'Title here'
+        schema:
+          type: string    
+      - name: message
+        description: Message 
+        required: true
+        multiline: true
+        example: 'Alert...' 
+        schema:
+          type: string
+      - name: link_button_text
+        description: Text you want to print on redirect button. 
+        required: true
+        multiline: false
+        example: 'Shuffle' 
+        schema:
+          type: string    
+      - name: link_button_url
+        description: Enter a url you want user to click on.  
+        required: true
+        multiline: true
+        example: 'https://yoururlhere.com/' 
+        schema:
+          type: string    
+    returns:
+      schema:
+        type: string      
+  - name: send_actionable_msg
+    description: Sends message to channel with actions.
+    parameters:
+      - name: webhook_url
+        description: Enter webhook of the channels you want to send message to. 
+        required: true
+        multiline: true
+        example: 'https://example.webhook.office.com/123'
+        schema:
+          type: string
+      - name: title
+        description: Title of the rich text card. 
+        required: false
+        multiline: false
+        example: 'Title here'
+        schema:
+          type: string    
+      - name: message
+        description: Message 
+        required: true
+        multiline: true
+        example: 'Alert...' 
+        schema:
+          type: string
+      - name: callback_url
+        description: webhook url of your workflow in shuffle
+        required: true
+        multiline: false
+        example: 'https://example.com/123' 
+        schema:
+          type: string       
+    returns:
+      schema:
+        type: string   
+  - name: get_user_input
+    description: Sends message with text field for user to input to channel.
+    parameters:
+      - name: webhook_url
+        description: Enter webhook of the channels you want to send message to. 
+        required: true
+        multiline: true
+        example: 'https://example.webhook.office.com/123'
+        schema:
+          type: string
+      - name: title
+        description: Title of the rich text card. 
+        required: false
+        multiline: false
+        example: 'Title here'
+        schema:
+          type: string    
+      - name: message
+        description: Message 
+        required: true
+        multiline: true
+        example: 'Alert...' 
+        schema:
+          type: string
+      - name: callback_url
+        description: webhook url of your workflow in shuffle
+        required: true
+        multiline: false
+        example: 'https://example.com/123' 
+        schema:
+          type: string       
+    returns:
+      schema:
+        type: string   
+large_image: 
