@@ -257,19 +257,6 @@ actions:
     returns:
       schema:
         type: string
-  - name: get_length
-    description: Parses a list or text and returns the length
-    parameters:
-      - name: item
-        description: The item to check
-        required: true
-        multiline: true
-        example: Hello this is a string
-        schema:
-          type: string
-    returns:
-      schema:
-        type: string
   - name: execute_bash
     description: Runs bash with the data inputted available (TBD)
     parameters:
