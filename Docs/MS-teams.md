@@ -2,7 +2,7 @@
 
 The MS Teams app for sending an alert to Teams and allowing users to manage alert from Teams.
 
-![alt text](?raw=true)
+![alt text](https://github.com/shalin24999/Shuffle-apps/blob/master/Docs/MicrosoftTeams-image.png?raw=true)
 
 ## Actions
 
