@@ -18,7 +18,7 @@ The MS Teams app for sending an alert to Teams and allowing users to manage aler
 ## Setup
 
 1. Go to teams section in Teams app.
-2. Select the team then select channel you want to send alert to. (All the members in same channel will be able to see and react to alert/message).
+2. Select the team then select channel you want to send alert to. (__All the members in same channel will be able to see and react to alert/message__).
 3. Go to connectors &#8594; incoming webhook select configure.
 4. Provide suitable name & picture (optional).
 5. Copy webhook url and head over to shuffle.
@@ -27,4 +27,4 @@ The MS Teams app for sending an alert to Teams and allowing users to manage aler
 ## Note
 - If you are planning on sending actionable message or get user input, you'll need to have webhook running in your workflow (Go to your workflow &#8594; Triggers select webhook and start it).
 - Once you start webhook you'll see webhook url. Copy & use the same in callback_url for actionable message / user input.
-- Read more about webhook - https://shuffler.io/docs/triggers#webhook
+- Read more about webhook [here](https://shuffler.io/docs/triggers#webhook).
