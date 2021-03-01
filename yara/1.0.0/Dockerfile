@@ -22,7 +22,7 @@ COPY src /app
 # RUN apk --no-cache add --update my_binary_dependency
 ENV YARA_VERSION 4.0.2
 ENV YARA_PY_VERSION 4.0.2
-RUN apk add --no-cache openssl file jansson bison python3 tini su-exec
+RUN apk add --no-cache openssl file jansson bison python3 tini su-exec wget
 RUN apk add --no-cache -t .build-deps py3-setuptools \
   openssl-dev \
   jansson-dev \
@@ -59,6 +59,8 @@ RUN apk add --no-cache -t .build-deps py3-setuptools \
   && mkdir /rules \
   && echo "rule dummy { condition: true }" > /rules/test_rule \
   && apk del --purge .build-deps
+
+RUN wget -P /rules/ https://raw.githubusercontent.com/airbnb/binaryalert/master/rules/public/eicar.yara
 
 # Finally, lets run our app!
 WORKDIR /app
