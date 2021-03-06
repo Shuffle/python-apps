@@ -46,19 +46,52 @@ class Yara(AppBase):
         if len(matches) > 0:
             for item in matches:
                 submatch = {
-                    "rule": item.rule,
                     "tags": item.tags,
-                    "match": item.strings,
+                    "file": filepath,
                 }
+
+                try:
+                    submatch["rule"] = item.rule.decode("utf-8")
+                except:
+                    print(f"Failed RULE decoding for {item.rule}")
+
+                try:
+                    submatch["match"] = item.strings.decode("utf-8")
+                except:
+                    print(f"Failed MATCH decoding for {item.strings}")
 
                 all_matches.append(submatch)
 
         print("Matches: %d" % len(all_matches))
+        print(all_matches)
+
+        return_data = {
+            "success": True,
+            "matches": all_matches
+        }
 
         try:
-            return json.dumps(all_matches)
-        except json.JSONDecodeError:
-            return all_matches
+            return json.dumps(return_data)
+        except (json.JSONDecodeError, TypeError):
+            return return_data 
+
+    def find_files(self, get_dir):
+        all_files = []
+        data = os.listdir(get_dir)
+        for filename in data:
+            parsedpath = "%s/%s" % (get_dir, filename)
+            if not filename.startswith(".") and os.path.isdir(parsedpath):  
+                #print("FOLDER: %s" % parsedpath)
+                folderpaths = self.find_files(parsedpath)
+                all_files.extend(folderpaths)
+                #print("FOLDERPATHS: %s" % folderpaths)
+                pass
+            else:
+                if filename.endswith(".yar"):
+                    all_files.append(parsedpath)
+        
+        return all_files
+
 
     # Write your data inside this function
     #https://yara.readthedocs.io/en/latest/yarapython.html
@@ -74,17 +107,21 @@ class Yara(AppBase):
         #rules.match(file)
 
         all_matches = []
+        failed_rules = []
 
         basefolder = "/rules"
-        filepaths = os.listdir(basefolder)
-        print(f"FILES: {filepaths}")
-        #filepaths = ["/rules/test_rule", "/rules/eicar.yara"]
+        #filepaths = os.listdir(basefolder)
+        filepaths = self.find_files(basefolder)
+        #print(f"FILES: {filepaths}")
+        print(f"LENGTH: {len(filepaths)}")
+        total_string_matches = 0
 
         for filepath in filepaths:
             try:
                 rules = yara.compile(filepath)
             except:
                 print("[INFO] Rule %s failed" % filepath)
+                failed_rules.append(filepath)
                 continue
 
             matches = rules.match(data=file_ret["data"], timeout=timeout)
@@ -93,17 +130,39 @@ class Yara(AppBase):
                     submatch = {
                         "rule": item.rule,
                         "tags": item.tags,
-                        "match": item.strings,
+                        "file": filepath,
+                        "matches": []
                     }
 
+                    for string in item.strings:
+                        try:
+                            submatch["matches"].append({
+                                "number": string[0],
+                                "name": string[1],
+                                "string": string[2].decode("utf-8"),
+                            })
+                        except:
+                            print(f"Failed MATCH decoding for {string}")
+
+                    submatch["total_matches"] = len(item.strings)
+                    total_string_matches += len(item.strings)
                     all_matches.append(submatch)
 
         print("Matches: %d" % len(all_matches))
+        print(all_matches)
+
+        return_data = {
+            "success": True,
+            "matches": all_matches,
+            "failed_rules": failed_rules,
+            "total_string_matches": total_string_matches,
+            "total_rules": len(filepaths),
+        }
 
         try:
-            return json.dumps(all_matches)
-        except json.JSONDecodeError:
-            return all_matches
+            return json.dumps(return_data)
+        except (json.JSONDecodeError, TypeError):
+            return return_data 
 
 if __name__ == "__main__":
     asyncio.run(Yara.run(), debug=True)
