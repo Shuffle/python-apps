@@ -30,9 +30,9 @@ class Yara(AppBase):
         else:
             timeout = int(timeout)
 
-        print("Getting file: %s" % file_id)
         file_ret = self.get_file(file_id)
-        print("FINISHED GETTING FILE: %s" % file_ret)
+        #print("Getting file: %s" % file_id)
+        #print("FINISHED GETTING FILE: %s" % file_ret)
         #rules.match(file)
 
         all_matches = []
@@ -101,9 +101,9 @@ class Yara(AppBase):
         else:
             timeout = int(timeout)
         
-        print("Getting file: %s" % file_id)
+        print(f"Getting file {file_id} to be analyzed")
         file_ret = self.get_file(file_id)
-        print("FINISHED GETTING FILE: %s" % file_ret)
+        #print("FINISHED GETTING FILE: %s" % file_ret)
         #rules.match(file)
 
         all_matches = []
@@ -120,7 +120,7 @@ class Yara(AppBase):
             try:
                 rules = yara.compile(filepath)
             except:
-                print("[INFO] Rule %s failed" % filepath)
+                print(f"[INFO] Rule {filepath} failed")
                 failed_rules.append(filepath)
                 continue
 
@@ -148,16 +148,21 @@ class Yara(AppBase):
                     total_string_matches += len(item.strings)
                     all_matches.append(submatch)
 
-        print("Matches: %d" % len(all_matches))
-        print(all_matches)
+        #print("Matches: %d" % len(all_matches))
+        #print(all_matches)
+
+        if len(all_matches) >= 10:
+            all_matches = all_matches[0:9]
 
         return_data = {
             "success": True,
             "matches": all_matches,
-            "failed_rules": failed_rules,
+            "failed_rules": len(failed_rules),
+            "total_rule_files": len(filepaths),
             "total_string_matches": total_string_matches,
-            "total_rules": len(filepaths),
         }
+
+        #print(f"RETURN: {return_data}")
 
         try:
             return json.dumps(return_data)
