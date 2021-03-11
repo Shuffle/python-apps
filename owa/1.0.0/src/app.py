@@ -180,7 +180,9 @@ class Owa(AppBase):
         if not foldername:
             foldername = "inbox"
 
+
         # Authenticate
+        print(f"Marking {email_id} as read")
         auth = await self.authenticate(
             username, password, server, build, account, verifyssl
         )
@@ -301,23 +303,31 @@ class Owa(AppBase):
             username, password, server, build, account, verifyssl
         )
         if auth["error"]:
-            return auth["error"]
+            return json.dumps({
+                "success": False,
+                "reason": auth["error"]
+            })
+
         account = auth["account"]
 
         # Parse email folder
         folder = await self.parse_folder(account, foldername)
         if folder["error"]:
-            return folder["error"]
+            return json.dumps({
+                "success": False,
+                "reason": folder["error"]
+            })
 
         folder = folder["folder"]
         if type(amount) == str:
             try:
                 amount = int(amount)
             except ValueError:
-                return {
+                return json.dumps({
+                    "success": False,
                     "account": None,
                     "error": "Amount needs to be a number, not %s" % amount,
-                }
+                })
 
         # Get input from gui
         unread = True if unread.lower().strip() == "true" else False
@@ -360,10 +370,8 @@ class Owa(AppBase):
                 else:
                     output_dict = parsed_eml
 
-                # Add message-id as top returned field
-                output_dict["message_id"] = parsed_eml["header"]["header"][
-                    "message-id"
-                ][0]
+                # Add message_id as top returned field
+                output_dict["message_id"] = parsed_eml["header"]["header"]["message-id"][0]
 
                 if upload_email_shuffle:
                     email_up = [{"filename": "email.msg", "data": email.mime_content}]
@@ -378,21 +386,49 @@ class Owa(AppBase):
                     ]
 
                     atts_ids = self.set_files(atts_up)
-                    output_dict["attachments_uids"] = atts_ids
+                    output_dict["attachment_uids"] = atts_ids
 
                 try:
                     if len(output_dict["body"]) > 1:
                         output_dict["body"][0]["raw_body"] = output_dict["body"][1]["content"]
+                except KeyError as e:
+                    print("OK KeyError (1): %s" % e)
+                except IndexError as e:
+                    print("OK IndexError (1): %s" % e)
+
+                try:
                     if len(output_dict["body"]) > 0:
                         output_dict["body"] = output_dict["body"][0]
                 except KeyError as e:
-                    print("KeyError: %s" % e)
+                    print("OK KeyError (2): %s" % e)
+                except IndexError as e:
+                    print("OK IndexError (2): %s" % e)
 
+                try:
+                    del output_dict["attachment"]
+                except KeyError as e:
+                    print("Ok Error (3): %s" % e)
+                except IndexError as e:
+                    print("OK IndexError (3): %s" % e)
+
+                print("Appending email")
                 emails.append(output_dict)
         except Exception as err:
-            return "Error during email processing: {}".format(err)
+            return json.dumps({
+                "success": False,
+                "reason": "Error during email processing: {}".format(err)
+            })
 
-        return json.dumps(emails, default=default)
+        print("FINISHED - RETURNING")
+        message = {
+            "success": True,
+            "messages": emails,
+        }
+
+        print(message)
+
+        return json.dumps(message, default=default)
+        #json.dumps(message, default=default)
 
 
 # Run the actual thing after we've checked params

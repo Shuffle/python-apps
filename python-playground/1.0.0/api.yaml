@@ -5,6 +5,10 @@ contact_info:
   name: "@frikkylikeme"
   url: https://shuffler.io
   email: frikky@shuffler.io
+tags:
+  - Testing 
+categories:
+  - Testing 
 actions:
   - name: run_python_script
     description: Runs a python script defined by YOU 

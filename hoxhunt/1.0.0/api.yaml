@@ -10,6 +10,11 @@ contact_info:
   name: "@frikkylikeme"
   url: https://github.com/frikky
   email: "frikky@shuffler.io"
+tags:
+  - Email 
+  - Phishing 
+categories:
+  - Phishing 
 authentication:
   required: true
   parameters:

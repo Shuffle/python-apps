@@ -242,7 +242,7 @@ class Tools(AppBase):
         return item
 
     async def filter_list(self, input_list, field, check, value, opposite):
-        print("Running function with list %s", input_list)
+        print(f"Running function with list {input_list}")
 
         flip = False
         if opposite.lower() == "true":
@@ -259,13 +259,15 @@ class Tools(AppBase):
 
         # Workaround D:
         if not isinstance(input_list, list):
-            return "Error: %s is not a list, but %s. Remove # to use this app." % (
-                input_list,
-                type(input_list),
-            )
+            return {
+                "success": False,
+                "reason": "Error: input isnt a list. Remove # to use this app." % type(input_list)
+            }
+
             input_list = [input_list]
 
         new_list = []
+        failed_list = []
         try:
             for item in input_list:
                 try:
@@ -288,13 +290,20 @@ class Tools(AppBase):
 
                 # EQUALS JUST FOR STR
                 if check == "equals":
-                    if str(tmp) == value:
+                    # Mostly for bools
+                    #value = tmp.lower()
+
+                    if str(tmp).lower() == str(value).lower():
                         print("APPENDED BECAUSE %s %s %s" % (field, check, value))
                         if not flip:
                             new_list.append(item)
+                        else:
+                            failed_list.append(item)
                     else:
                         if flip:
                             new_list.append(item)
+                        else:
+                            failed_list.append(item)
 
                 # IS EMPTY FOR STR OR LISTS
                 elif check == "is empty":
@@ -306,6 +315,8 @@ class Tools(AppBase):
                         new_list.append(item)
                     elif type(tmp) == str and tmp and flip:
                         new_list.append(item)
+                    else:
+                        failed_list.append(item)
 
                 # STARTS WITH = FOR STR OR [0] FOR LIST
                 elif check == "starts with":
@@ -317,6 +328,8 @@ class Tools(AppBase):
                         new_list.append(item)
                     elif type(tmp) == str and not tmp.startswith(value) and flip:
                         new_list.append(item)
+                    else:
+                        failed_list.append(item)
 
                 # ENDS WITH = FOR STR OR [-1] FOR LIST
                 elif check == "ends with":
@@ -328,6 +341,8 @@ class Tools(AppBase):
                         new_list.append(item)
                     elif type(tmp) == str and not tmp.endswith(value) and flip:
                         new_list.append(item)
+                    else:
+                        failed_list.append(item)
 
                 # CONTAINS FIND FOR LIST AND IN FOR STR
                 elif check == "contains":
@@ -347,6 +362,23 @@ class Tools(AppBase):
                         and flip
                     ):
                         new_list.append(item)
+                    else:
+                        failed_list.append(item)
+
+                elif check == "larger than":
+                    if int(tmp) > int(value) and not flip:
+                        new_list.append(item)
+                    elif int(tmp) > int(value) and flip:
+                        new_list.append(item)
+                    else:
+                        failed_list.append(item)
+                elif check == "less than":
+                    if int(tmp) < int(value) and not flip:
+                        new_list.append(item)
+                    elif int(tmp) < int(value) and flip:
+                        new_list.append(item)
+                    else:
+                        failed_list.append(item)
 
                 # SINGLE ITEM COULD BE A FILE OR A LIST OF FILES
                 elif check == "files by extension":
@@ -363,6 +395,8 @@ class Tools(AppBase):
                                 file_list.append(file_id)
                             elif ext.lower().strip() != value.lower().strip() and flip:
                                 file_list.append(file_id)
+                            #else:
+                            #    failed_list.append(file_id)
 
                         tmp = item
                         if field and field.strip() != "":
@@ -372,6 +406,8 @@ class Tools(AppBase):
                             new_list.append(item)
                         else:
                             new_list = file_list
+                        #else:
+                        #    failed_list = file_list 
 
                     elif type(tmp) == str:
                         filedata = self.get_file(tmp)
@@ -380,16 +416,26 @@ class Tools(AppBase):
                             new_list.append(item)
                         elif ext.lower().strip() != value.lower().strip() and flip:
                             new_list.append((item, ext))
+                        else:
+                            failed_list.append(item)
 
         except Exception as e:
             return "Error: %s" % e
 
         try:
-            new_list = json.dumps(new_list)
+            return json.dumps({
+                "success": True,
+                "valid": new_list,
+                "invalid": failed_list,
+            })
+            #new_list = json.dumps(new_list)
         except json.decoder.JSONDecodeError as e:
-            return "Failed parsing filter list output: %s" % e
+            return json.dumps({
+                "success": False,
+                "reason": "Failed parsing filter list output" + e,
+            })
 
-        return new_list
+        return new_list 
 
     async def multi_list_filter(self, input_list, field, check, value):
         input_list = input_list.replace("'", '"', -1)
@@ -446,6 +492,22 @@ class Tools(AppBase):
 
         return new_list
 
+    # Gets the file's metadata, e.g. md5
+    async def get_file_meta(self, file_id):
+        headers = {
+            "Authorization": "Bearer %s" % self.authorization,
+        }
+
+        ret = requests.get(
+            "%s/api/v1/files/%s?execution_id=%s"
+            % (self.url, file_id, self.current_execution_id),
+            headers=headers,
+        )
+        print(f"RET: {ret}")
+
+        return ret.text
+
+
     # Use data from AppBase to talk to backend
     async def delete_file(self, file_id):
         headers = {
@@ -460,16 +522,37 @@ class Tools(AppBase):
         )
         return ret.text
 
+    async def get_file_value(self, filedata):
+        if filedata == None:
+            return "File is empty?"
+        
+        print("INSIDE APP DATA: %s" % filedata)
+        return "%s" % filedata["data"].decode()
+
+    async def download_remote_file(self, url):
+        ret = requests.get(url, verify=False)
+        fileret = self.set_files([{
+            "filename": "downloaded",
+            "data": ret.content,
+        }])
+
+        value = {"success": True, "file_ids": fileret}
+        return value 
+
     async def extract_archive(self, file_ids, fileformat="zip", password=None):
         try:
-            return_data = []
+            return_data = {
+                "success": False,
+                "files": []
+            }
+
             try:
                 file_ids = eval(file_ids)
             except SyntaxError:
                 file_ids = file_ids
 
+            print("IDS: %s" % file_ids)
             items = file_ids if type(file_ids) == list else file_ids.split(",")
-
             for file_id in items:
 
                 item = self.get_file(file_id)
@@ -501,14 +584,17 @@ class Tools(AppBase):
                                     to_be_uploaded.append(
                                         {"filename": source.name, "data": source.read()}
                                     )
+                                    return_data["success"] = True 
                         except (zipfile.BadZipFile, Exception):
-                            return_data.append(
+                            return_data["files"].append(
                                 {
                                     "success": False,
+                                    "file_id": file_id,
                                     "filename": item["filename"],
                                     "message": "File is not a valid zip archive",
                                 }
                             )
+
                             continue
 
                     elif fileformat.strip().lower() == "rar":
@@ -526,10 +612,12 @@ class Tools(AppBase):
                                     to_be_uploaded.append(
                                         {"filename": source.name, "data": source.read()}
                                     )
+                                    return_data["success"] = True 
                         except Exception:
-                            return_data.append(
+                            return_data["files"].append(
                                 {
                                     "success": False,
+                                    "file_id": file_id,
                                     "filename": item["filename"],
                                     "message": "File is not a valid rar archive",
                                 }
@@ -553,10 +641,12 @@ class Tools(AppBase):
                                             "data": source.read(),
                                         }
                                     )
+                                    return_data["success"] = True 
                         except Exception:
-                            return_data.append(
+                            return_data["files"].append(
                                 {
                                     "success": False,
+                                    "file_id": file_id,
                                     "filename": item["filename"],
                                     "message": "File is not a valid 7zip archive",
                                 }
@@ -567,17 +657,19 @@ class Tools(AppBase):
 
                     if len(to_be_uploaded) > 0:
                         return_ids = self.set_files(to_be_uploaded)
-                        return_data.append(
+                        return_data["files"].append(
                             {
                                 "success": True,
+                                "file_id": file_id,
                                 "filename": item["filename"],
                                 "file_ids": return_ids,
                             }
                         )
                     else:
-                        return_data.append(
+                        return_data["files"].append(
                             {
                                 "success": False,
+                                "file_id": file_id,
                                 "filename": item["filename"],
                                 "message": "Archive is empty",
                             }
@@ -586,7 +678,7 @@ class Tools(AppBase):
             return return_data
 
         except Exception as excp:
-            return {"success": False, "message": excp}
+            return {"success": False, "message": "%s" % excp}
 
     async def inflate_archive(self, file_ids, fileformat, name, password=None):
 

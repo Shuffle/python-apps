@@ -34,6 +34,27 @@ actions:
         example: "REPEATING: Hello world"
         schema:
           type: string
+      - name: startnode 
+        description: 
+        required: false 
+        multiline: false 
+        example: ""
+        schema:
+          type: string
+      - name: source_workflow
+        description: 
+        required: false 
+        multiline: false 
+        example: ""
+        schema:
+          type: string
+      - name: source_execution 
+        description:
+        required: false
+        multiline: false 
+        example: ""
+        schema:
+          type: string
     returns:
       schema:
         type: string

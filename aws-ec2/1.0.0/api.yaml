@@ -5,6 +5,12 @@ contact_info:
   name: "@frikkylikeme"
   url: https://shuffler.io
   email: frikky@shuffler.io
+tags:
+  - Network 
+  - Assets
+categories:
+  - Network 
+  - Assets
 authentication:
   required: true
   parameters:

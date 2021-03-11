@@ -5,6 +5,10 @@ contact_info:
   name: "@0xpookie"
   url: 'localhost'
   email: pb@shellz.io
+tags:
+  - Parser
+categories:
+  - Parser 
 actions:
   - name: extract
     description: Runs nlp extract on input data

@@ -5,8 +5,8 @@ RUN apk update && \
     apk upgrade
 
 # We're going to stage away all of the bloat from the build tools so lets create a builder stage
-FROM base as builder
 
+FROM base as builder
 RUN apk add --no-cache build-base gcc musl-dev python3-dev libffi-dev libxml2-dev libxslt-dev alpine-sdk openssl-dev libc-dev
 RUN pip install --no-cache-dir -U pip && \
     pip wheel --no-cache-dir --wheel-dir=/root/lxml_wheel lxml

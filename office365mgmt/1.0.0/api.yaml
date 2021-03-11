@@ -1,6 +1,10 @@
 app_version: 1.0.0
 name: Office365 Mgt API
 description: Collect AzureActiveDirectory,Exchange,Sharepoint,General, DLP audit logs
+tags
+  - Audit
+categories
+  - Audit
 contact_info:
   name: "@RobertEvans"
   url: https://shuffler.io

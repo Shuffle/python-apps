@@ -7,7 +7,7 @@ import office365poller
 
 from walkoff_app_sdk.app_base import AppBase
 
-class PythonPlayground(AppBase):
+class Office365Mgmt(AppBase):
     __version__ = "1.0.0"
     app_name = "Office365_Mgt_API"  # this needs to match "name" in api.yaml
 
@@ -64,4 +64,4 @@ class PythonPlayground(AppBase):
         return func(planType,tenantID,clientID,clientSecret)
     
 if __name__ == "__main__":
-    asyncio.run(PythonPlayground.run(), debug=True)
+    asyncio.run(Office365Mgmt.run(), debug=True)

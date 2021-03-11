@@ -25,25 +25,43 @@ class Subflow(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
-    async def run_subflow(self, user_apikey, workflow, argument):
+    async def run_subflow(self, user_apikey, workflow, argument, source_workflow="", source_execution="", startnode=""):
+        print("STARTNODE: %s", startnode)
         url = "%s/api/v1/workflows/%s/execute" % (self.url, workflow)
+
+        params = {}
+        if len(source_workflow) > 0:
+            params["source_workflow"] = source_workflow
+        else:
+            print("No source workflow")
+
+        if len(source_execution) > 0:
+            params["source_execution"] = source_execution
+        else:
+            print("No source execution")
+
+        if len(source_workflow) > 0:
+            params["start"] = startnode 
+        else:
+            print("No startnode")
+
         headers = {
             "Authorization": "Bearer %s" % user_apikey,
         }
 
         if len(argument) == 0:
-            ret = requests.post(url, headers=headers)
+            ret = requests.post(url, headers=headers, params=params)
         else:
             try:
-                ret = requests.post(url, headers=headers, json=json.loads(argument))
+                ret = requests.post(url, headers=headers, params=params, json=json.loads(argument))
                 print("Successfully sent as JSON")
             except:
                 try:
-                    ret = requests.post(url, headers=headers, json=argument)
+                    ret = requests.post(url, headers=headers, json=argument, params=params)
                     print("Successfully sent as JSON (2)")
                 except:
-                    ret = requests.post(url, headers=headers, data=argument)
-                    print("Successfully sent as data")
+                    ret = requests.post(url, headers=headers, data=argument, params=params)
+                    print("Successfully sent as data (3)")
 
         print("Status: %d" % ret.status_code)
         print("RET: %s" % ret.text)

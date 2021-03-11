@@ -2,11 +2,11 @@ app_version: 1.0.0
 name: Shuffle Tools
 description: A  tool app for Shuffle
 tags:
-  - Shuffle
   - Testing
+  - Shuffle
 categories:
-  - Shuffle
   - Testing
+  - Shuffle
 contact_info:
   name: "@frikkylikeme"
   url: https://shuffler.io
@@ -110,6 +110,8 @@ actions:
         example: "equals"
         options:
           - equals
+          - 'larger than'
+          - 'less than' 
           - is empty
           - contains
           - starts with
@@ -257,19 +259,6 @@ actions:
     returns:
       schema:
         type: string
-  - name: get_length
-    description: Parses a list or text and returns the length
-    parameters:
-      - name: item
-        description: The item to check
-        required: true
-        multiline: true
-        example: Hello this is a string
-        schema:
-          type: string
-    returns:
-      schema:
-        type: string
   - name: execute_bash
     description: Runs bash with the data inputted available (TBD)
     parameters:
@@ -287,6 +276,45 @@ actions:
         example: '{"data": "Hello world"}'
         schema:
           type: string
+  - name: get_file_value
+    description: This function is made for reading file(s), printing their data
+    parameters:
+      - name: filedata
+        description: The files
+        required: true
+        multiline: true
+        example: "REPEATING: Hello world"
+        schema:
+          type: file 
+    returns:
+      schema:
+        type: string 
+  - name: download_remote_file 
+    description: Downloads a file from a URL
+    parameters:
+      - name: url 
+        description:  
+        required: true
+        multiline: false 
+        example: "https://secure.eicar.org/eicar.com.txt"
+        schema:
+          type: string 
+    returns:
+      schema:
+        type: string 
+  - name: get_file_meta 
+    description: Gets the file meta 
+    parameters:
+      - name: file_id
+        description:
+        required: true
+        multiline: false
+        example: ""
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
   - name: delete_file
     description: Deletes a file based on ID
     parameters:

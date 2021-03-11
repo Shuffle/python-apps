@@ -5,6 +5,10 @@ contact_info:
   name: "@frikkylikeme"
   url: https://shuffler.io
   email: frikky@shuffler.io
+tags:
+  - Network 
+categories:
+  - Network 
 authentication:
   required: true
   parameters:

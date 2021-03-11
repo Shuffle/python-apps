@@ -5,6 +5,10 @@ contact_info:
   name: "@frikkylikeme"
   url: https://shuffler.io
   email: frikky@shuffler.io
+tags:
+  - Intel 
+categories:
+  - Intel 
 actions:
   - name: get_rss
     description: Gets the available fields

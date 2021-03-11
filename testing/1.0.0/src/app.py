@@ -43,7 +43,7 @@ class HelloWorld(AppBase):
         return {"call1": call, "call2": call2, "call3": call3} 
 
     async def return_plus_one(self, number):
-        return str(number + 1)
+        return int(number) + 1
 
     async def pause(self, seconds):
         time.sleep(seconds)
