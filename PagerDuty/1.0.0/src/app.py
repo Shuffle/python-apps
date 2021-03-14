@@ -38,6 +38,7 @@ class Pagerduty(AppBase):
         'Accept': 'application/vnd.pagerduty+json;version=2',
         'Authorization': f'Token token={api_key}'
         }
+
         try:
             r = requests.get(url, headers=headers)
             return json.dumps(r.json())
@@ -82,6 +83,7 @@ class Pagerduty(AppBase):
         'Accept': 'application/vnd.pagerduty+json;version=2',
         'Authorization': f'Token token={api_key}'
         }
+
         try:
             r = requests.get(url, headers = headers)
             return r.json()
