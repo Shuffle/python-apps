@@ -29,7 +29,7 @@ __Note__: access_key, secret_key and region are used for authentication.
 2. From navbar click on user dropwodown &#8594; My Security Credentials.
 3. Open the Access keys tab, and then choose Create access key.
 4. To see the new access key, choose Show. Your credentials resemble the following:
-   - Access key ID: <mark>AKIAIOSFODNN7EXAMPLE</mark>
+   - Access key ID: AKIAIOSFODNN7EXAMPLE
    - Secret access key: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
  
  ## Note
