@@ -1,6 +1,8 @@
 ## AWS IAM App
 Aws IAM (Identity and Access Management) app for managing IAM operations from the shuffle.
 
+![alt_text](https://github.com/dhaval055/Shuffle-apps/blob/master/Docs/iam.png?raw=true)
+
 ## Actions
 
 | No. | Action | Description | Parameters |
@@ -22,7 +24,7 @@ __Note__: access_key, secret_key and region are used for authentication.
 1. AWS account
 2. Access key, Secret key and region of the user. 
 
-- __How to get access key & secret key?__
+- __How to find access key & secret key ?__
 1. Open https://console.aws.amazon.com/
 2. From navbar click on user dropwodown &#8594; My Security Credentials.
 3. Open the Access keys tab, and then choose Create access key.
@@ -32,5 +34,5 @@ __Note__: access_key, secret_key and region are used for authentication.
  
  ## Note
  Some actions have marker and max_items parameters (Both are used for paginating results).
- - marker : Use this parameter only when paginating results and only after you receive a response indicating that the results are truncated. Set it to the value of the Marker element in the response that you received to indicate where the next call should start.
+ - marker : Use this parameter only when paginating results and only after you receive a response indicating that the results are truncated. Set it to the value of the marker element in the response that you received to indicate where the next call should start.
  - max_items : Use this only when paginating results to indicate the maximum number of items you want in the response.
