@@ -531,12 +531,17 @@ class Tools(AppBase):
 
     async def download_remote_file(self, url):
         ret = requests.get(url, verify=False)
+        filename = url.split("/")[-1]
         fileret = self.set_files([{
-            "filename": "downloaded",
+            "filename": filename,
             "data": ret.content,
         }])
 
-        value = {"success": True, "file_ids": fileret}
+        if len(fileret) > 0:
+            value = {"success": True, "file_id": fileret[0]}
+        else:
+            value = {"success": False, "reason": "No files downloaded"}
+
         return value 
 
     async def extract_archive(self, file_ids, fileformat="zip", password=None):
