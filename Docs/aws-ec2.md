@@ -1,7 +1,7 @@
 ## AWS EC2 App
 AWS EC2 (Elastic Compute Cloud) app to interact with Amazon EC2 from Shuffle.
 
-![alt_text](https://github.com/dhaval055/Shuffle-apps/blob/master/Docs/ec2.png?raw=true)
+![alt_text](https://github.com/shalin24999/Shuffle-apps/blob/master/Docs/ec2.png?raw=true)
 
 ## Actions
 
