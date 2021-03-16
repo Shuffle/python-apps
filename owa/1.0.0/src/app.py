@@ -180,7 +180,9 @@ class Owa(AppBase):
         if not foldername:
             foldername = "inbox"
 
+
         # Authenticate
+        print(f"Marking {email_id} as read")
         auth = await self.authenticate(
             username, password, server, build, account, verifyssl
         )
@@ -368,10 +370,8 @@ class Owa(AppBase):
                 else:
                     output_dict = parsed_eml
 
-                # Add message-id as top returned field
-                output_dict["message_id"] = parsed_eml["header"]["header"][
-                    "message-id"
-                ][0]
+                # Add message_id as top returned field
+                output_dict["message_id"] = parsed_eml["header"]["header"]["message-id"][0]
 
                 if upload_email_shuffle:
                     email_up = [{"filename": "email.msg", "data": email.mime_content}]
