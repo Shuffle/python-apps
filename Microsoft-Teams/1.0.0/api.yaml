@@ -104,6 +104,13 @@ actions:
         example: 'Alert...' 
         schema:
           type: string
+      - name: added_information 
+        description: Some extra information to be added to the callback. E.g. an alert 
+        required: true
+        multiline: true
+        example: '$new_ticket.ticket_id' 
+        schema:
+          type: string
       - name: callback_url
         description: webhook url of your workflow in shuffle
         required: true

@@ -261,15 +261,17 @@ class Tools(AppBase):
         if not isinstance(input_list, list):
             return {
                 "success": False,
-                "reason": "Error: input isnt a list. Remove # to use this app." % type(input_list)
+                "reason": "Error: input isnt a list. Remove # to use this app." % type(input_list),
+                "valid": [],
+                "invalid": [],
             }
 
             input_list = [input_list]
 
         new_list = []
         failed_list = []
-        try:
-            for item in input_list:
+        for item in input_list:
+            try:
                 try:
                     item = json.loads(item)
                 except:
@@ -419,8 +421,11 @@ class Tools(AppBase):
                         else:
                             failed_list.append(item)
 
-        except Exception as e:
-            return "Error: %s" % e
+            except Exception as e:
+                #"Error: %s" % e
+                print("FAILED WITH EXCEPTION: %s" % e)
+                failed_list.append(item)
+            #return 
 
         try:
             return json.dumps({

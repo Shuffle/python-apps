@@ -43,15 +43,38 @@ class MsTeams(AppBase):
         
         return f'Message Sent'        
 
-    async def send_actionable_msg(self, webhook_url, title, message, callback_url):
+    async def send_actionable_msg(self, webhook_url, title, message, added_information, callback_url):
         try:
             myTeamsMessage = teams.connectorcard(webhook_url)    # You must create the connectorcard object with the Microsoft Webhook URL
             myTeamsMessage.title(title) # title for your card
             myTeamsMessage.text(message)     # Add text to the message.
             myTeamsPotentialAction3 = teams.potentialaction(_name = "Select_Action")
-            myTeamsPotentialAction3.choices.addChoices("Accept","Accept") #option 1
-            myTeamsPotentialAction3.choices.addChoices("Reject","Reject") #option 2
-            myTeamsPotentialAction3.addInput("MultichoiceInput","list","Select Action",False) #Dropdown menu
+
+            value = {
+                "choice": "ACCEPT",
+                "extra": added_information,
+            }
+
+            #print(f"VALUE: {value}")
+
+            try:
+                accept = json.dumps(value)
+            except:
+                print("FAILED ENCODING ACCEPT")
+                accept = "ACCEPT"
+
+            myTeamsPotentialAction3.choices.addChoices("Accept", accept) #option 1
+
+            value["choice"] = "REJECT"
+            try:
+                deny = json.dumps(value)
+            except:
+                print("FAILED ENCODING REJECT")
+                deny = "REJECT"
+
+            myTeamsPotentialAction3.choices.addChoices("Reject", deny) #option 2
+
+            myTeamsPotentialAction3.addInput("MultichoiceInput","list","Select Action", False) #Dropdown menu
             myTeamsPotentialAction3.addAction("HttpPost","Submit",callback_url) #post request to Shuffle
             myTeamsMessage.addPotentialAction(myTeamsPotentialAction3)
             myTeamsMessage.send()# send the message.
@@ -74,5 +97,6 @@ class MsTeams(AppBase):
             return f'{e.__class__} occured'
 
         return f'Message Sent'
+
 if __name__ == "__main__":
     asyncio.run(MsTeams.run(), debug=True)
