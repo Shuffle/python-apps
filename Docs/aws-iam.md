@@ -1,7 +1,7 @@
 ## AWS IAM App
 Aws IAM (Identity and Access Management) app for managing IAM operations from the shuffle.
 
-![alt_text](https://github.com/dhaval055/Shuffle-apps/blob/master/Docs/iam.png?raw=true)
+![alt_text](https://github.com/dhaval055/Shuffle-apps/blob/master/Docs/aws-iam.png?raw=true)
 
 ## Actions
 
