@@ -63,7 +63,7 @@ class TheHive(AppBase):
         if response.status_code == 200:
             return response.text
         else:
-            raise IOError(response.text)           
+            raise IOError(response.text)
 
     async def add_observable(self, apikey, url, case_id, data, datatype, tags):
         self.thehive = TheHiveApi(url, apikey, cert=False)
@@ -188,14 +188,14 @@ class TheHive(AppBase):
             tlp = int(tlp)
         if isinstance(severity, str):
             if not severity.isdigit():
-                return "Severity needs to be a number from 1-3, not %s" % severity 
+                return "Severity needs to be a number from 1-3, not %s" % severity
 
             severity = int(severity)
 
         if tlp > 3 or tlp < 0:
             return "TLP needs to be a number from 0-3, not %d" % tlp
         if severity > 3 or severity < 1:
-            return "Severity needs to be a number from 1-3, not %d" % severity 
+            return "Severity needs to be a number from 1-3, not %d" % severity
 
         alert = thehive4py.models.Alert(
             title=title,
@@ -213,6 +213,58 @@ class TheHive(AppBase):
             return ret.text
         except requests.exceptions.ConnectionError as e:
             return "ConnectionError: %s" % e
+
+    async def create_alert_artifact(
+        self,
+        apikey,
+        url,
+        alert_id,
+        dataType,
+        data,
+        message=None,
+        tlp="2",
+        ioc="False",
+        sighted="False",
+        ignoreSimilarity="False",
+        tags=None
+    ):
+        self.thehive = TheHiveApi(url, apikey, cert=False, version=4)
+
+        if tlp:
+            tlp = int(tlp)
+        else:
+            tlp = 2
+
+        ioc = ioc.lower().strip() == "true"
+        sighted = sighted.lower().strip() == "true"
+        ignoreSimilarity = ignoreSimilarity.lower().strip() == "true"
+
+        if tags:
+            tags = [x.strip() for x in tags.split(",")]
+        else:
+            tags = []
+
+
+
+        alert_artifact = thehive4py.models.AlertArtifact(
+            dataType=dataType,
+            data=data,
+            message=message,
+            tlp=tlp,
+            ioc=ioc,
+            sighted=sighted,
+            ignoreSimilarity=ignoreSimilarity,
+            tags=tags
+        )
+
+        try:
+            ret = self.thehive.create_alert_artifact(alert_id, alert_artifact)
+        except requests.exceptions.ConnectionError as e:
+            return "ConnectionError: %s" % e
+        if ret.status_code > 299:
+            raise ConnectionError(ret.text)
+
+        return ret.text
 
     # Gets an item based on input. E.g. field_type = Alert
     async def get_item(self, apikey, url, field_type, cur_id):
