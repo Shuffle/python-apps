@@ -1,15 +1,15 @@
-import os
 import asyncio
 import json
+import os
+import re
 import subprocess
-import requests
 import tempfile
+import zipfile
 
 import py7zr
-import rarfile
-import zipfile
 import pyminizip
-
+import rarfile
+import requests
 from ioc_finder import find_iocs
 from walkoff_app_sdk.app_base import AppBase
 
@@ -216,6 +216,19 @@ class Tools(AppBase):
         print(f"Mapping {input_data} to {output_data}")
 
         return output_data
+
+
+    async def regex_replace(self, input_data, regex, replace_string="", ignore_case="False"):
+
+        print("="*80)
+        print(f"Regex: {regex}")
+        print(f"replace_string: {replace_string}")
+        print("="*80)
+
+        if ignore_case.lower().strip() == "true":
+            return re.sub(regex, replace_string, input_data, flags=re.IGNORECASE)
+        else:
+            return re.sub(regex, replace_string, input_data)
 
     async def execute_python(self, code, shuffle_input):
         print("Run with shuffle_data %s" % shuffle_input)
