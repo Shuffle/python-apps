@@ -345,6 +345,8 @@ actions:
           - zip
           - rar
           - 7zip
+          - tar
+          - tar.gz
         schema:
           type: string
       - name: password
