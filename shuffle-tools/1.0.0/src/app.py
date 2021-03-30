@@ -207,6 +207,17 @@ class Tools(AppBase):
 
         return input_data
 
+    async def map_value(self, input_data, mapping):
+
+        mapping = json.loads(mapping)
+        print(f"Got mapping {json.dumps(mapping, indent=2)}")
+
+        # Get value if input_data in map, otherwise return original input_data
+        output_data = mapping.get(input_data, input_data)
+        print(f"Mapping {input_data} to {output_data}")
+
+        return output_data
+
     async def execute_python(self, code, shuffle_input):
         print("Run with shuffle_data %s" % shuffle_input)
         print("And python code %s" % code)
@@ -262,15 +273,17 @@ class Tools(AppBase):
         if not isinstance(input_list, list):
             return {
                 "success": False,
-                "reason": "Error: input isnt a list. Remove # to use this app." % type(input_list)
+                "reason": "Error: input isnt a list. Remove # to use this app." % type(input_list),
+                "valid": [],
+                "invalid": [],
             }
 
             input_list = [input_list]
 
         new_list = []
         failed_list = []
-        try:
-            for item in input_list:
+        for item in input_list:
+            try:
                 try:
                     item = json.loads(item)
                 except:
@@ -408,7 +421,7 @@ class Tools(AppBase):
                         else:
                             new_list = file_list
                         #else:
-                        #    failed_list = file_list 
+                        #    failed_list = file_list
 
                     elif type(tmp) == str:
                         filedata = self.get_file(tmp)
@@ -420,8 +433,11 @@ class Tools(AppBase):
                         else:
                             failed_list.append(item)
 
-        except Exception as e:
-            return "Error: %s" % e
+            except Exception as e:
+                #"Error: %s" % e
+                print("FAILED WITH EXCEPTION: %s" % e)
+                failed_list.append(item)
+            #return
 
         try:
             return json.dumps({
@@ -436,7 +452,7 @@ class Tools(AppBase):
                 "reason": "Failed parsing filter list output" + e,
             })
 
-        return new_list 
+        return new_list
 
     async def multi_list_filter(self, input_list, field, check, value):
         input_list = input_list.replace("'", '"', -1)
@@ -526,7 +542,7 @@ class Tools(AppBase):
     async def get_file_value(self, filedata):
         if filedata == None:
             return "File is empty?"
-        
+
         print("INSIDE APP DATA: %s" % filedata)
         return "%s" % filedata["data"].decode()
 
@@ -543,7 +559,7 @@ class Tools(AppBase):
         else:
             value = {"success": False, "reason": "No files downloaded"}
 
-        return value 
+        return value
 
     async def extract_archive(self, file_ids, fileformat="zip", password=None):
         try:
@@ -590,7 +606,7 @@ class Tools(AppBase):
                                     to_be_uploaded.append(
                                         {"filename": source.name, "data": source.read()}
                                     )
-                                    return_data["success"] = True 
+                                    return_data["success"] = True
                         except (zipfile.BadZipFile, Exception):
                             return_data["files"].append(
                                 {
@@ -618,7 +634,7 @@ class Tools(AppBase):
                                     to_be_uploaded.append(
                                         {"filename": source.name, "data": source.read()}
                                     )
-                                    return_data["success"] = True 
+                                    return_data["success"] = True
                         except Exception:
                             return_data["files"].append(
                                 {
@@ -688,7 +704,7 @@ class Tools(AppBase):
                                             "data": source.read(),
                                         }
                                     )
-                                    return_data["success"] = True 
+                                    return_data["success"] = True
                         except Exception:
                             return_data["files"].append(
                                 {
