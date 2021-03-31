@@ -11,6 +11,12 @@ import pyminizip
 import rarfile
 import requests
 import tarfile
+
+import dicttoxml
+import xmltodict
+from json2xml import json2xml
+from json2xml.utils import readfromurl, readfromstring, readfromjson
+
 from ioc_finder import find_iocs
 from walkoff_app_sdk.app_base import AppBase
 
@@ -816,6 +822,18 @@ class Tools(AppBase):
 
         except Exception as excp:
             return {"success": False, "message": excp}
+    
+    async def xml_json_convertor(self, convertto, data):
+        try:
+            if convertto=='json':
+                ans=xmltodict.parse(data)
+                json_data = json.dumps(ans)
+                return json_data
+            else:
+                ans = readfromstring(data)
+                return json2xml.Json2xml(ans, wrapper="all", pretty=True).to_xml()
+        except Exception as e:
+            return e
 
 
 if __name__ == "__main__":
