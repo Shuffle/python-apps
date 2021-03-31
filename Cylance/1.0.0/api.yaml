@@ -1,6 +1,6 @@
 app_version: 1.0.0
 name: Cylance 
-description: An app to handle Cylance. Awful authentication.
+description: An app to handle Cylance. 
 contact_info:
   name: "@frikkylikeme"
   url: https://shuffler.io
