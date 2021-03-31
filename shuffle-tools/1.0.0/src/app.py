@@ -10,6 +10,7 @@ import py7zr
 import pyminizip
 import rarfile
 import requests
+import tarfile
 from ioc_finder import find_iocs
 from walkoff_app_sdk.app_base import AppBase
 
@@ -654,6 +655,47 @@ class Tools(AppBase):
                                     "file_id": file_id,
                                     "filename": item["filename"],
                                     "message": "File is not a valid rar archive",
+                                }
+                            )
+                            continue
+
+                    elif fileformat.strip().lower() == "tar":
+                        try:
+                            with tarfile.open(os.path.join(tmpdirname, "archive"),mode="r"
+                            ) as z_file:
+                                for member in z_file.getnames():
+                                    member_files = z_file.extractfile(member)
+                                    to_be_uploaded.append(
+                                            {"filename": member, "data":member_files.read() }
+                                        )                                   
+                                return_data["success"] = True 
+                        except Exception as e:
+                            return_data["files"].append(
+                                {
+                                    "success": False,
+                                    "file_id": file_id,
+                                    "filename": item["filename"],
+                                    "message": e,
+                                }
+                            )
+                            continue  
+                    elif fileformat.strip().lower() == "tar.gz":
+                        try:
+                            with tarfile.open(os.path.join(tmpdirname, "archive" ),mode="r:gz"
+                            ) as z_file:
+                                for member in z_file.getnames():
+                                    member_files = z_file.extractfile(member)
+                                    to_be_uploaded.append(
+                                            {"filename": member, "data":member_files.read() }
+                                        )                                   
+                                return_data["success"] = True 
+                        except Exception as e:
+                            return_data["files"].append(
+                                {
+                                    "success": False,
+                                    "file_id": file_id,
+                                    "filename": item["filename"],
+                                    "message": e,
                                 }
                             )
                             continue

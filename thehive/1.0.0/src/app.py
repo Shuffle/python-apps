@@ -45,6 +45,7 @@ class TheHive(AppBase):
         response = self.thehive.find_cases(
             query=ContainsString("title", title_query), range="all", sort=[]
         )
+
         return response.text
 
     async def search_query(self, apikey, url, search_for, custom_query):
