@@ -264,6 +264,40 @@ actions:
     returns:
       schema:
         type: string
+  - name: regex_replace
+    description: Replace all instances matching a regular expression
+    parameters:
+      - name: input_data
+        description: The input data to use
+        required: true
+        multiline: true
+        example: $exec.http_headers
+        schema:
+          type: string
+      - name: regex
+        description: Your regular expression
+        multiline: false
+        example: "(Content-\\w+): (.*)"
+        required: true
+        schema:
+          type: string
+      - name: replace_string
+        description: Replacement string (capture groups with \1 \2)
+        multiline: true
+        example: "Content header '\\1' = '\\2'"
+        required: false
+        schema:
+          type: string
+      - name: ignore_case
+        description: "Make regex case insensitive (Default: False)"
+        multiline: false
+        example: "False"
+        required: false
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
   - name: parse_list
     description: Parses a list and returns it as a json object
     parameters:
