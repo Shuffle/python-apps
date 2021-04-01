@@ -43,36 +43,53 @@ class MsTeams(AppBase):
         
         return f'Message Sent'        
 
-    async def send_actionable_msg(self, webhook_url, title, message, added_information, callback_url):
+    async def send_actionable_msg(self, webhook_url, title, message, added_information, choices, callback_url):
         try:
             myTeamsMessage = teams.connectorcard(webhook_url)    # You must create the connectorcard object with the Microsoft Webhook URL
             myTeamsMessage.title(title) # title for your card
             myTeamsMessage.text(message)     # Add text to the message.
             myTeamsPotentialAction3 = teams.potentialaction(_name = "Select_Action")
 
-            value = {
-                "choice": "ACCEPT",
-                "extra": added_information,
-            }
+            if choices:
+                for choice in choices.split(","):
+                    choice = choice.strip()
+                    value = {
+                        "choice": choice,
+                        "extra": added_information,
+                    }
 
-            #print(f"VALUE: {value}")
+                    try:
+                        choice_value = json.dumps(value)
+                    except:
+                        print("FAILED ENCODING {}".format(choice))
+                        choice_value = choice
 
-            try:
-                accept = json.dumps(value)
-            except:
-                print("FAILED ENCODING ACCEPT")
-                accept = "ACCEPT"
+                    myTeamsPotentialAction3.choices.addChoices(choice, choice_value) #option 1
 
-            myTeamsPotentialAction3.choices.addChoices("Accept", accept) #option 1
+            else:
+                value = {
+                    "choice": "ACCEPT",
+                    "extra": added_information,
+                }
 
-            value["choice"] = "REJECT"
-            try:
-                deny = json.dumps(value)
-            except:
-                print("FAILED ENCODING REJECT")
-                deny = "REJECT"
+                #print(f"VALUE: {value}")
 
-            myTeamsPotentialAction3.choices.addChoices("Reject", deny) #option 2
+                try:
+                    accept = json.dumps(value)
+                except:
+                    print("FAILED ENCODING ACCEPT")
+                    accept = "ACCEPT"
+
+                myTeamsPotentialAction3.choices.addChoices("Accept", accept) #option 1
+
+                value["choice"] = "REJECT"
+                try:
+                    deny = json.dumps(value)
+                except:
+                    print("FAILED ENCODING REJECT")
+                    deny = "REJECT"
+
+                myTeamsPotentialAction3.choices.addChoices("Reject", deny) #option 2
 
             myTeamsPotentialAction3.addInput("MultichoiceInput","list","Select Action", False) #Dropdown menu
             myTeamsPotentialAction3.addAction("HttpPost","Submit",callback_url) #post request to Shuffle
