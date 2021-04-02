@@ -104,6 +104,13 @@ actions:
         example: 'Alert...' 
         schema:
           type: string
+      - name: choices
+        description: List of choices to select from
+        required: false
+        multiline: true
+        example: Choice 1,Choice 2,Choice 3
+        schema:
+          type: string
       - name: added_information 
         description: Some extra information to be added to the callback. E.g. an alert 
         required: true
