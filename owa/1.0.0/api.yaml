@@ -1,6 +1,6 @@
 walkoff_version: 1.0.0
 app_version: 1.0.0
-name: owa
+name: owa tag
 description: Email app for Exchange (OWA)
 tags:
   - email
@@ -100,6 +100,13 @@ actions:
         multiline: false
         example: "inbox"
         required: true
+        schema:
+          type: string
+      - name: category
+        description: The category/tag to filter by
+        multiline: false
+        example: "phishing"
+        required: false
         schema:
           type: string
       - name: amount
