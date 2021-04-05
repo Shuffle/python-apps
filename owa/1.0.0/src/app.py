@@ -40,7 +40,7 @@ def default(o):
 
 class Owa(AppBase):
     __version__ = "1.0.0"
-    app_name = "owa tag"
+    app_name = "owa"
 
     def __init__(self, redis, logger, console_logger=None):
         """
