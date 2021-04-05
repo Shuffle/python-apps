@@ -41,6 +41,16 @@ class Tools(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
+    async def string_to_base64(self, string):
+        encoded_bytes = base64.b64encode(string.encode("utf-8"))
+        encoded_string = str(encoded_bytes, "utf-8")
+        return encoded_string
+
+    async def base64_to_string(self, base64_string):
+        decoded_bytes = base64.b64decode(base64_string.encode("utf-8"))
+        decoded_string = str(decoded_bytes, "utf-8")
+        return decoded_string
+
     # This is an SMS function of Shuffle
     async def send_sms_shuffle(self, apikey, phone_numbers, body):
         targets = [phone_numbers]
