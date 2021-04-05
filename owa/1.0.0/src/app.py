@@ -40,7 +40,7 @@ def default(o):
 
 class Owa(AppBase):
     __version__ = "1.0.0"
-    app_name = "owa"
+    app_name = "owa tag"
 
     def __init__(self, redis, logger, console_logger=None):
         """
@@ -273,6 +273,7 @@ class Owa(AppBase):
         account,
         verifyssl,
         foldername,
+        category,
         amount,
         unread,
         fields,
@@ -331,6 +332,7 @@ class Owa(AppBase):
 
         # Get input from gui
         unread = True if unread.lower().strip() == "true" else False
+        category = category.lower().strip()
         include_raw_body = True if include_raw_body.lower().strip() == "true" else False
         include_attachment_data = (
             True if include_attachment_data.lower().strip() == "true" else False
@@ -350,10 +352,17 @@ class Owa(AppBase):
         )
 
         try:
-            for email in folder.filter(is_read=not unread).order_by(
-                "-datetime_received"
-            )[:amount]:
 
+            if category:
+                folder_filter = folder.filter(is_read=not unread,categories__icontains=category).order_by(
+                "-datetime_received"
+            )[:amount]
+            else:
+                folder_filter = folder.filter(is_read=not unread).order_by(
+                "-datetime_received"
+            )[:amount]
+
+            for email in folder_filter:
                 output_dict = {}
                 parsed_eml = ep.decode_email_bytes(email.mime_content)
 
