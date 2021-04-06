@@ -221,6 +221,30 @@ actions:
         required: true
         schema:
           type: string
+  - name: add_category
+    description: Add a category/tag to an email
+    parameters:
+      - name: category
+        description: Category/tag to add to email
+        multiline: false
+        example: processed,shuffle
+        required: true
+        schema:
+          type: string
+      - name: email_id
+        description: Id of the email to be moved
+        multiline: false
+        example: "<F96257F63EAEB94C890EA6CE1437145C013B01FA@example.com>"
+        required: true
+        schema:
+          type: string
+      - name: foldername
+        description: The destination folder to use, e.g. "inbox"
+        multiline: false
+        example: "inbox"
+        required: true
+        schema:
+          type: string
     returns:
       schema:
         type: string
