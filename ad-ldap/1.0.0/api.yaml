@@ -1,0 +1,79 @@
+app_version: 1.0.0
+name: AD LDAP 
+description: A simple app to query Active Directory and LDAP
+contact_info:
+  name: "@arnydo"
+  url: https://kyleparrish.com
+  email: arnydo@pm.me
+tags:
+  - activedirectory
+  - ldap 
+categories:
+  - IAM
+  - assets 
+authentication:
+  required: true
+  parameters:
+    - name: domain_name
+      description: "Domain Name"
+      example: "CONTOSO"
+      required: true
+      schema:
+        type: string
+    - name: server_name
+      description: "Server to connect to"
+      example: "server-1.contoso.com"
+      required: true
+      schema:
+        type: string
+    - name: user_name
+      description: "Username to BIND to AD/LDAP with"
+      example: "binduser"
+      required: true
+      schema:
+        type: string
+    - name: password
+      description: "Password to BIND with"
+      example: "Password1IsBad!"
+      required: true
+      schema:
+        type: string
+actions:
+  - name: search_samaccountname
+    description: Query AD for details about a specified user
+    parameters:
+      - name: samaccountname
+        description: user to query
+        required: true
+        multiline: false
+        example: 'smithj'
+        schema:
+          type: string
+      - name: search_base
+        description: "OU to search in."
+        required: true
+        multiline: false
+        example: "OU=users,DC=contoso,DC=com"
+        schema:
+          type: string
+      - name: port
+        description: Port to to BIND to
+        required: true
+        multiline: false
+        example: 3269 
+        schema:
+          type: string
+      - name: use_ssl
+        description: Use SSL to BIND to directory
+        required: true
+        options:
+          - False
+          - True
+        multiline: false
+        example: "false"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+large_image: data:image/jpg;base64,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
