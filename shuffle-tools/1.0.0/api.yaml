@@ -12,6 +12,25 @@ contact_info:
   url: https://shuffler.io
   email: frikky@shuffler.io
 actions:
+  - name: base64_conversion
+    description: Encode or decode a Base64 string
+    parameters:
+      - name: string
+        description: string to process
+        multiline: true
+        example: "This is a string to be encoded"
+        required: true
+        schema:
+          type: string
+      - name: operation
+        description: Choose to encode or decode the string
+        example: "encode"
+        required: true
+        options:
+          - encode
+          - decode
+        schema:
+          type: string
   - name: send_sms_shuffle
     description: Send an SMS from Shuffle
     parameters:

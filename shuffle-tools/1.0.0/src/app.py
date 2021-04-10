@@ -5,6 +5,7 @@ import re
 import subprocess
 import tempfile
 import zipfile
+import base64
 
 import py7zr
 import pyminizip
@@ -40,6 +41,18 @@ class Tools(AppBase):
         :param console_logger:
         """
         super().__init__(redis, logger, console_logger)
+        
+    async def base64_conversion(self, string, operation):
+
+        if operation == 'encode':
+            encoded_bytes = base64.b64encode(string.encode("utf-8"))
+            encoded_string = str(encoded_bytes, "utf-8")
+            return encoded_string
+
+        elif operation == 'decode':
+            decoded_bytes = base64.b64decode(string.encode("utf-8"))
+            decoded_string = str(decoded_bytes, "utf-8")
+            return decoded_string
 
     # This is an SMS function of Shuffle
     async def send_sms_shuffle(self, apikey, phone_numbers, body):
