@@ -180,7 +180,6 @@ class Owa(AppBase):
         if not foldername:
             foldername = "inbox"
 
-
         # Authenticate
         print(f"Marking {email_id} as read")
         auth = await self.authenticate(
@@ -199,10 +198,48 @@ class Owa(AppBase):
         folder = folder["folder"]
         email_id = email_id.strip()
 
-        #Authenticates to Exchange server
+        # Authenticates to Exchange server
         try:
             email = folder.get(message_id=email_id)
             email.is_read = True
+            email.save()
+            account.root.refresh()
+            return {"ok": True, "error": False}
+        except exchangelib.errors.DoesNotExist as e:
+            print("ERROR: %s" % e)
+            return {"ok": False, "error": "Email {} does not exists".format(email_id)}
+
+    async def add_category(
+        self, username, password, server, build, account, verifyssl, email_id, category, foldername="inbox"
+        ):
+
+        if not foldername:
+            foldername = "inbox"
+
+        category = [i.strip() for i in category.split(",")]
+
+        # Authenticate
+        print(f"Adding category {category} to {email_id}")
+        auth = await self.authenticate(
+            username, password, server, build, account, verifyssl
+        )
+
+        if auth["error"]:
+            return auth["error"]
+
+        account = auth["account"]
+
+        folder = await self.parse_folder(account, foldername)
+        if folder["error"]:
+            return folder["error"]
+
+        folder = folder["folder"]
+        email_id = email_id.strip()
+
+        # Authenticates to Exchange server
+        try:
+            email = folder.get(message_id=email_id)
+            email.categories.extend(category)
             email.save()
             account.root.refresh()
             return {"ok": True, "error": False}
@@ -273,6 +310,7 @@ class Owa(AppBase):
         account,
         verifyssl,
         foldername,
+        category,
         amount,
         unread,
         fields,
@@ -331,6 +369,7 @@ class Owa(AppBase):
 
         # Get input from gui
         unread = True if unread.lower().strip() == "true" else False
+        category = category.lower().strip()
         include_raw_body = True if include_raw_body.lower().strip() == "true" else False
         include_attachment_data = (
             True if include_attachment_data.lower().strip() == "true" else False
@@ -350,10 +389,17 @@ class Owa(AppBase):
         )
 
         try:
-            for email in folder.filter(is_read=not unread).order_by(
-                "-datetime_received"
-            )[:amount]:
 
+            if category:
+                folder_filter = folder.filter(is_read=not unread, categories__icontains=category).order_by(
+                    "-datetime_received"
+                )[:amount]
+            else:
+                folder_filter = folder.filter(is_read=not unread).order_by(
+                    "-datetime_received"
+                )[:amount]
+
+            for email in folder_filter:
                 output_dict = {}
                 parsed_eml = ep.decode_email_bytes(email.mime_content)
 
@@ -374,7 +420,8 @@ class Owa(AppBase):
                 output_dict["message_id"] = parsed_eml["header"]["header"]["message-id"][0]
 
                 if upload_email_shuffle:
-                    email_up = [{"filename": "email.msg", "data": email.mime_content}]
+                    email_up = [{"filename": "email.msg",
+                                 "data": email.mime_content}]
                     email_id = self.set_files(email_up)
                     output_dict["email_fileid"] = email_id[0]
 
