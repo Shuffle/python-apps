@@ -418,6 +418,9 @@ class Owa(AppBase):
 
                 # Add message_id as top returned field
                 output_dict["message_id"] = parsed_eml["header"]["header"]["message-id"][0]
+                
+                # Add categories to output dict
+                output_dict["categories"] = email.categories
 
                 if upload_email_shuffle:
                     email_up = [{"filename": "email.msg",
