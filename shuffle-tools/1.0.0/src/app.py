@@ -848,6 +848,105 @@ class Tools(AppBase):
         except Exception as e:
             return e
 
+    async def date_to_epoch(self, input_data, date_field, date_format):
+
+        print(
+            "Executing with {} on {} with format {}".format(
+                input_data, date_field, date_format
+            )
+        )
+
+        result = json.loads(input_data)
+
+        # https://docs.python.org/3/library/datetime.html#strftime-strptime-behavior
+        epoch = datetime.datetime.strptime(result[date_field], date_format).strftime(
+            "%s"
+        )
+        result["epoch"] = epoch
+        return result
+
+    async def compare_relative_date(
+        self, input_data, date_format, equality_test, offset, units, direction
+    ):
+
+        if input_data == "None":
+            return False
+
+        print("Converting input date.")
+
+        if date_format != "%s":
+            input_dt = datetime.datetime.strptime(input_data, date_format)
+        else:
+            input_dt = datetime.datetime.utcfromtimestamp(float(input_data))
+
+        offset = int(offset)
+        if units == "seconds":
+            delta = datetime.timedelta(seconds=offset)
+        elif units == "minutes":
+            delta = datetime.timedelta(minutes=offset)
+        elif units == "hours":
+            delta = datetime.timedelta(hours=offset)
+        elif units == "days":
+            delta = datetime.timedelta(days=offset)
+
+        utc_format = date_format
+        if utc_format.endswith("%z"):
+            utc_format = utc_format.replace("%z", "Z")
+
+        if date_format != "%s":
+            formatted_dt = datetime.datetime.strptime(
+                datetime.datetime.utcnow().strftime(utc_format), date_format
+            )
+        else:
+            formatted_dt = datetime.datetime.utcnow()
+
+        print("Formatted time is: {}".format(formatted_dt))
+        if direction == "ago":
+            comparison_dt = formatted_dt - delta
+        else:
+            comparison_dt = formatted_dt + delta
+        print("{} {} {} is {}".format(offset, units, direction, comparison_dt))
+
+        diff = (input_dt - comparison_dt).total_seconds()
+        print(
+            "Difference between {} and {} is {}".format(input_data, comparison_dt, diff)
+        )
+        result = False
+        if equality_test == ">":
+            result = 0 > diff
+            if direction == "ahead":
+                result = not (result)
+        elif equality_test == "<":
+            result = 0 < diff
+            if direction == "ahead":
+                result = not (result)
+        elif equality_test == "=":
+            result = diff == 0
+        elif equality_test == "!=":
+            result = diff != 0
+        elif equality_test == ">=":
+            result = 0 >= diff
+            if direction == "ahead" and diff != 0:
+                result = not (result)
+        elif equality_test == "<=":
+            result = 0 <= diff
+            if direction == "ahead" and diff != 0:
+                result = not (result)
+
+        print(
+            "At {}, is {} {} than {} {} {}? {}".format(
+                formatted_dt,
+                input_data,
+                equality_test,
+                offset,
+                units,
+                direction,
+                result,
+            )
+        )
+
+        return result
+
 
 if __name__ == "__main__":
     asyncio.run(Tools.run(), debug=True)
