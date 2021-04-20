@@ -1,15 +1,22 @@
-import os
 import asyncio
 import json
+import os
+import re
 import subprocess
-import requests
 import tempfile
+import zipfile
+import base64
 
 import py7zr
-import rarfile
-import zipfile
 import pyminizip
+import rarfile
+import requests
 import tarfile
+
+import dicttoxml
+import xmltodict
+from json2xml import json2xml
+from json2xml.utils import readfromurl, readfromstring, readfromjson
 
 from ioc_finder import find_iocs
 from walkoff_app_sdk.app_base import AppBase
@@ -34,6 +41,18 @@ class Tools(AppBase):
         :param console_logger:
         """
         super().__init__(redis, logger, console_logger)
+        
+    async def base64_conversion(self, string, operation):
+
+        if operation == 'encode':
+            encoded_bytes = base64.b64encode(string.encode("utf-8"))
+            encoded_string = str(encoded_bytes, "utf-8")
+            return encoded_string
+
+        elif operation == 'decode':
+            decoded_bytes = base64.b64decode(string.encode("utf-8"))
+            decoded_string = str(decoded_bytes, "utf-8")
+            return decoded_string
 
     # This is an SMS function of Shuffle
     async def send_sms_shuffle(self, apikey, phone_numbers, body):
@@ -217,6 +236,19 @@ class Tools(AppBase):
         print(f"Mapping {input_data} to {output_data}")
 
         return output_data
+
+
+    async def regex_replace(self, input_data, regex, replace_string="", ignore_case="False"):
+
+        print("="*80)
+        print(f"Regex: {regex}")
+        print(f"replace_string: {replace_string}")
+        print("="*80)
+
+        if ignore_case.lower().strip() == "true":
+            return re.sub(regex, replace_string, input_data, flags=re.IGNORECASE)
+        else:
+            return re.sub(regex, replace_string, input_data)
 
     async def execute_python(self, code, shuffle_input):
         print("Run with shuffle_data %s" % shuffle_input)
@@ -803,6 +835,117 @@ class Tools(AppBase):
 
         except Exception as excp:
             return {"success": False, "message": excp}
+    
+    async def xml_json_convertor(self, convertto, data):
+        try:
+            if convertto=='json':
+                ans=xmltodict.parse(data)
+                json_data = json.dumps(ans)
+                return json_data
+            else:
+                ans = readfromstring(data)
+                return json2xml.Json2xml(ans, wrapper="all", pretty=True).to_xml()
+        except Exception as e:
+            return e
+
+    async def date_to_epoch(self, input_data, date_field, date_format):
+
+        print(
+            "Executing with {} on {} with format {}".format(
+                input_data, date_field, date_format
+            )
+        )
+
+        result = json.loads(input_data)
+
+        # https://docs.python.org/3/library/datetime.html#strftime-strptime-behavior
+        epoch = datetime.datetime.strptime(result[date_field], date_format).strftime(
+            "%s"
+        )
+        result["epoch"] = epoch
+        return result
+
+    async def compare_relative_date(
+        self, input_data, date_format, equality_test, offset, units, direction
+    ):
+
+        if input_data == "None":
+            return False
+
+        print("Converting input date.")
+
+        if date_format != "%s":
+            input_dt = datetime.datetime.strptime(input_data, date_format)
+        else:
+            input_dt = datetime.datetime.utcfromtimestamp(float(input_data))
+
+        offset = int(offset)
+        if units == "seconds":
+            delta = datetime.timedelta(seconds=offset)
+        elif units == "minutes":
+            delta = datetime.timedelta(minutes=offset)
+        elif units == "hours":
+            delta = datetime.timedelta(hours=offset)
+        elif units == "days":
+            delta = datetime.timedelta(days=offset)
+
+        utc_format = date_format
+        if utc_format.endswith("%z"):
+            utc_format = utc_format.replace("%z", "Z")
+
+        if date_format != "%s":
+            formatted_dt = datetime.datetime.strptime(
+                datetime.datetime.utcnow().strftime(utc_format), date_format
+            )
+        else:
+            formatted_dt = datetime.datetime.utcnow()
+
+        print("Formatted time is: {}".format(formatted_dt))
+        if direction == "ago":
+            comparison_dt = formatted_dt - delta
+        else:
+            comparison_dt = formatted_dt + delta
+        print("{} {} {} is {}".format(offset, units, direction, comparison_dt))
+
+        diff = (input_dt - comparison_dt).total_seconds()
+        print(
+            "Difference between {} and {} is {}".format(input_data, comparison_dt, diff)
+        )
+        result = False
+        if equality_test == ">":
+            result = 0 > diff
+            if direction == "ahead":
+                result = not (result)
+        elif equality_test == "<":
+            result = 0 < diff
+            if direction == "ahead":
+                result = not (result)
+        elif equality_test == "=":
+            result = diff == 0
+        elif equality_test == "!=":
+            result = diff != 0
+        elif equality_test == ">=":
+            result = 0 >= diff
+            if direction == "ahead" and diff != 0:
+                result = not (result)
+        elif equality_test == "<=":
+            result = 0 <= diff
+            if direction == "ahead" and diff != 0:
+                result = not (result)
+
+        print(
+            "At {}, is {} {} than {} {} {}? {}".format(
+                formatted_dt,
+                input_data,
+                equality_test,
+                offset,
+                units,
+                direction,
+                result,
+            )
+        )
+
+        return result
 
 
 if __name__ == "__main__":

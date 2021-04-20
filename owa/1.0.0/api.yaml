@@ -102,6 +102,13 @@ actions:
         required: true
         schema:
           type: string
+      - name: category
+        description: The category/tag to filter by
+        multiline: false
+        example: "phishing"
+        required: false
+        schema:
+          type: string
       - name: amount
         description: Amount of emails to retrieve
         multiline: false
@@ -200,6 +207,30 @@ actions:
   - name: move_email
     description: Move an Exchange (OWA) email in specific folder
     parameters:
+      - name: email_id
+        description: Id of the email to be moved
+        multiline: false
+        example: "<F96257F63EAEB94C890EA6CE1437145C013B01FA@example.com>"
+        required: true
+        schema:
+          type: string
+      - name: foldername
+        description: The destination folder to use, e.g. "inbox"
+        multiline: false
+        example: "inbox"
+        required: true
+        schema:
+          type: string
+  - name: add_category
+    description: Add a category/tag to an email
+    parameters:
+      - name: category
+        description: Category/tag to add to email
+        multiline: false
+        example: processed,shuffle
+        required: true
+        schema:
+          type: string
       - name: email_id
         description: Id of the email to be moved
         multiline: false

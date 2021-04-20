@@ -1,0 +1,87 @@
+app_version: 1.0.0
+name: Google Chat 
+description: An app for Google Chat messaging service
+contact_info:
+  name: "nusantara-self"
+  url: https://github.com/nusantara-self
+tags:
+  - Alert 
+categories:
+  - Communication 
+authentication:
+  required: true 
+  parameters:
+    - name: webhook_url
+      description: webhook URL that also defines the room chat
+      example: "https://chat.googleapis.com/v1/spaces/AAAAAAAA/messages?key=AIzaSyDdI&token=ZDsd2531"
+      required: true
+      schema:
+        type: string
+actions:
+  - name: send_simple_message
+    description: Sends a message to Google Chat room.
+    parameters:
+      - name: webhook_url
+        description: Enter the webhook created in your Chat room 
+        required: true
+        multiline: false 
+        example: 'https://chat.googleapis.com/v1/spaces/AAAAAAAA/messages?key=AIzaSyDdI&token=ZDsd2531'
+        schema:
+          type: string
+      - name: message
+        description: Message to send
+        required: true
+        multiline: true
+        example: "Alert X has been remediated by Shuffle."
+        schema:
+          type: string
+      - name : threadKey
+        description: Write in the specified thread related to this key or create it. Optional.
+        required: false
+        multiline: false
+        example: "SplunkAlertThread"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: send_card_message
+    description: Sends a 'card-style' message to Google Chat room.
+    parameters:
+      - name: webhook_url
+        description: Enter the webhook created in your Chat room
+        required: true
+        multiline: false
+        example: 'https://chat.googleapis.com/v1/spaces/AAAAAAAA/messages?key=AIzaSyDdI&token=ZDsd2531'
+        schema:
+          type: string
+      - name: message
+        description: Message to send
+        required: true
+        multiline: true
+        example: "Alert X has been remediated by Shuffle."
+        schema:
+          type: string
+      - name: app
+        description: App for the header picture and name
+        required: false
+        schema:
+          type: string
+        options:
+          - Shuffle
+          - Splunk
+          - TheHive
+          - PrismaCloud 
+          - AWSWAF
+          - CVE
+      - name : threadKey                                                                                     
+        description: Write in the specified thread related to this key or create it. Optional.               
+        required: false                                                                                      
+        multiline: false                                                                                     
+        example: "SplunkAlertThread"                                                                         
+        schema:                                                                                              
+          type: string  
+    returns:
+      schema:
+        type: string
+large_image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAMAAADDpiTIAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAFfUExURQAAAACfQACvQFCvcGCvcGC/cACnSACvSFi3cGC3dwCqRQCvRVW6dWC6dQCrSFi3c1y3c167dACpRgCsRlm2dly5cwCsSFu5c1u5dgCqRQCqSACtSFq3dQCsR1y6c1y6dQCrR1m4dFu4cgCtRlq7dACrRgCrSFq3c1q5c1y3cwCtR1u5dFu7dACsR1q2c1q4c1q4dQCtR1q4c1u4c1u6cwCqRgCqSACsRlm3dFu5cwCsR1q5dVy5dQCrR1q4dACsR1u4dFu6dACrRwCsRlq5dFu5dACrRwCtR1q5c1u5c1u5dQCsRgCsR1u5dFu6c1y6cwCDLQCFLgCIMACNMwCSNgCSNwCVOACXOgCaOwCbOwCcPQCdPQCfPgCiQACkQgCnRACpRQCsRwWHMQaGMQuKNhGNOheQPx2TQyKXSCiaTCibTC6eUC6eUTShVTilWT+oXkSrYk+ya1Cya1W2cFu5dOyS+KEAAABQdFJOUwAQEBAQECAgICAwMDAwQEBAT1BQUFBfX19gYGBgb29vcHBwf3+AgICAgI+Pj5CQkJCfn5+foKCgoKCvr6+wsL+/v8/Pz8/f39/f3+/v7+/vAu6QyAAAB45JREFUeNrt3IlzE3UYx+FtrL2EcIocAkVQQK2AWA9UQqmkYgTaIocK1FVOFaXi/z/CjDMKTKFZmm36vs/nT9jvk9/upkdRSJIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSf81snXvkeO5O7h367qk4++duvC3Hnfh8+2jydYfPDBl9yea2j6YaX6f/Wc7+9Go+ZMTOJBh/w1nLb00gQ3hP/7vWfm5BT8ERs+Y+AWdifwksN7xv4zbQFwB6z39pRZg/9wCRp3/qQUM2r+L7wUDAvD+103vh9v/TaN21QYPAMkfA4L9bOgzk3bZoVgHgEG77dygA8AR4ABwBITosDkrtC8OAK8Aub8N2mjMSo1EAXDElrnvAadsWamTQfZ/1ZQV3wM8AngIiNBblqzYphgADloy91Pgp5as2FEvAbn7EAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACgn/vGkgAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAAgAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwBrpvCVzAzAkAAJAAAgAASAABIAAEAACQAAIAAGgfgYw/EQNANIAGN45caLdKV+m2TXfz7du3/tzMSGA5kS7fPlmg3Tz7oNUABr7p8sVaTZON+8vZgHQ2N8pSwCe7e5iCgCbZ8oSgCVOgfgAGq2yBGBpAovBATRnSgCe2/3QAHaXJQAv6PfAAPaXALy4Ow+jAljx/WMCmL31MCaAld8/KIDZuyEB7C4BWG6/BgQwXALQR+8CtQNozADQRb8sRgPwbglAN90OBqAnN4DIAHp9E6gbwAwA3d4EHkYCsKMEoNt+iwRgGoA+OwLqBdAsAeizI6BeAJMAVDkCwgBodACo0oMoALaUAFTpXhQAkwBU+/WgKABmAKjWXzEANEoAqvVHDABNAPrvIaBOAOMAVOxODAATAFTsVgwAkwD032tAnQBaAFQNAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKCepgHIDaANAAAAANCL5gEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUgPoAJAbQAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADL7CIAFTsYA8AlACq2LwaAKwBUbFMMAD8AULF1MQAsAFCtc0UMAOUcAJU6GQXAJQAq9UYUANcAqNRIFAA/zQFQoakiCoDyMgD9fgfoLYDrAHTf14NxAMT+NrhHAI4XgQBcB6DrA2AkEoDQR0BvABwqQgFYmAOguwOgiAWg/B6ArtoYDUDgm0CEG0ANABbmAVh2XxXxAJQ35gDo0zeAegCE/ZFAiP3rAFD+CEDf7l8LgPL6HAB9un89AGI+Ca7s/qdWZ/+aAJQLlwB4bkeLIjSARw8C8wAsffxvLMIDiHcIrNj85w+/UiQAEI5AhPnrBfCIwNV5AJ589tuzqvPXDeDxF4NXLwLw72f/iz0jxWpXrkY3rl25/N2a7/jL9MGe11d//FUDEKMiRHYEQAAIAAEgAASAABAAAkAACACFBtCwY24AQ3YEQAAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAAgAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsNb6FoDcnQYgdy0AcjcBQO7GAcjdGABeAgDI25cA5G4bALnvAAMApO5YAUDqhgBwAEToNVumPgCKpi1THwAAVKo9BIDvAABI20QBQOobwAAAHgAAsD8A9gfA/gBkqjVQAJC3znhRAJD44z9UAJD47r+5KADI++nfVhQApL33TzSLAoCkJ/+x3WNF4HoI4PTOtd6W5nARvd4BOD1QKDGA9pCLmxmA/XMDsH9uAPbPDcD+uQHYPzcA++cGYP/cAOyfG0DH/qkBdMZc0swA7J8bgP1zA7B/cgC7XM7UAOyfG4D9cwOwf24A4y5lagDvuJKpAdg/NwD75wZg/9wA7J8bgP1zA7B/bgD2zw3A/rkBfOwCpgZg/9wA7J8bgP1zAzjh4qUG4B+A5AZg/9wA7J8bgP1zA2jbPzUAfwCcG4D9cwOwf24A9o/VFvvnbof9AbA/APYHwP4A+AcgANgfAPsDYH8AnmqzS5UagH8AkxuA/cPWtH/uhuyfvI4/AM3dpP09BNjfPcD+aRu3f/Km7Z/8TbBj/9ztsj8B9k/dWNs/gE/+HPDJU/O3/Pw/HYH/nQKtpguSsObbJ1rtduvYTn/9LUmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmStGL9A/ydrfFzdVRsAAAAAElFTkSuQmCC
