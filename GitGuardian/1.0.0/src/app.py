@@ -4,7 +4,6 @@ import time
 import random
 import json
 from pygitguardian import GGClient
-from urllib.request import urlopen
 import requests
 
 from walkoff_app_sdk.app_base import AppBase
