@@ -14,7 +14,7 @@ contact_info:
   email: pclemenkoiii@gmail.com
 actions:
   - name: sentimentAnalysis
-    description:  Runs vader sentiment analysis on a string
+    description:  Runs vader sentiment analysis on a string. Gets the positive, compound, neutral, and negative sentiment to determine if a statement is positive or negative.
     parameters:
       - name: text
         description: Text to analyze
