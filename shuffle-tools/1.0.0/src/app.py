@@ -1,5 +1,7 @@
 import asyncio
+import datetime
 import json
+import markupsafe
 import os
 import re
 import subprocess
@@ -13,10 +15,9 @@ import rarfile
 import requests
 import tarfile
 
-import dicttoxml
 import xmltodict
 from json2xml import json2xml
-from json2xml.utils import readfromurl, readfromstring, readfromjson
+from json2xml.utils import readfromstring
 
 from ioc_finder import find_iocs
 from walkoff_app_sdk.app_base import AppBase
@@ -25,7 +26,8 @@ from walkoff_app_sdk.app_base import AppBase
 class Tools(AppBase):
     """
     An example of a Walkoff App.
-    Inherit from the AppBase class to have Redis, logging, and console logging set up behind the scenes.
+    Inherit from the AppBase class to have Redis, logging, and console
+    logging set up behind the scenes.
     """
 
     __version__ = "1.0.0"
@@ -41,15 +43,15 @@ class Tools(AppBase):
         :param console_logger:
         """
         super().__init__(redis, logger, console_logger)
-        
+
     async def base64_conversion(self, string, operation):
 
-        if operation == 'encode':
+        if operation == "encode":
             encoded_bytes = base64.b64encode(string.encode("utf-8"))
             encoded_string = str(encoded_bytes, "utf-8")
             return encoded_string
 
-        elif operation == 'decode':
+        elif operation == "decode":
             decoded_bytes = base64.b64decode(string.encode("utf-8"))
             decoded_string = str(decoded_bytes, "utf-8")
             return decoded_string
@@ -125,7 +127,7 @@ class Tools(AppBase):
             input_type = input_type.split(",")
 
         try:
-            file_ids = eval(file_ids)
+            file_ids = eval(file_ids)  # nosec
         except SyntaxError:
             file_ids = file_ids
         except NameError:
@@ -217,7 +219,6 @@ class Tools(AppBase):
 
     async def translate_value(self, input_data, translate_from, translate_to):
         splitdata = [translate_from]
-        splitvalue = ""
         if ", " in translate_from:
             splitdata = translate_from.split(", ")
         elif "," in translate_from:
@@ -239,13 +240,14 @@ class Tools(AppBase):
 
         return output_data
 
+    async def regex_replace(
+        self, input_data, regex, replace_string="", ignore_case="False"
+    ):
 
-    async def regex_replace(self, input_data, regex, replace_string="", ignore_case="False"):
-
-        print("="*80)
+        print("=" * 80)
         print(f"Regex: {regex}")
         print(f"replace_string: {replace_string}")
-        print("="*80)
+        print("=" * 80)
 
         if ignore_case.lower().strip() == "true":
             return re.sub(regex, replace_string, input_data, flags=re.IGNORECASE)
@@ -256,7 +258,7 @@ class Tools(AppBase):
         print("Run with shuffle_data %s" % shuffle_input)
         print("And python code %s" % code)
         # Write the code to a file, then jdjd
-        exec(code)
+        exec(code)  # nosec
 
         # 1. Take the data into a file
         # 2. Subprocess execute file?
@@ -268,7 +270,11 @@ class Tools(AppBase):
 
     async def execute_bash(self, code, shuffle_input):
         process = subprocess.Popen(
-            code, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True
+            code,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            shell=True,  # nosec
         )
         stdout = process.communicate()
         item = ""
@@ -282,7 +288,7 @@ class Tools(AppBase):
         try:
             ret = item.decode("utf-8")
             return ret
-        except:
+        except Exception:
             return item
 
         return item
@@ -295,19 +301,20 @@ class Tools(AppBase):
             flip = True
 
         try:
-            input_list = eval(input_list)
-        except:
+            input_list = eval(input_list)  # nosec
+        except Exception:
             try:
                 input_list = input_list.replace("'", '"', -1)
                 input_list = json.loads(input_list)
-            except Exception as e:
+            except Exception:
                 print("Error parsing string to array. Continuing anyway.")
 
         # Workaround D:
         if not isinstance(input_list, list):
             return {
                 "success": False,
-                "reason": "Error: input isnt a list. Remove # to use this app." % type(input_list),
+                "reason": "Error: input isnt a list. Remove # to use this app."
+                % type(input_list),
                 "valid": [],
                 "invalid": [],
             }
@@ -320,7 +327,7 @@ class Tools(AppBase):
             try:
                 try:
                     item = json.loads(item)
-                except:
+                except Exception:
                     pass
 
                 # Support for nested dict key
@@ -339,7 +346,7 @@ class Tools(AppBase):
                 # EQUALS JUST FOR STR
                 if check == "equals":
                     # Mostly for bools
-                    #value = tmp.lower()
+                    # value = tmp.lower()
 
                     if str(tmp).lower() == str(value).lower():
                         print("APPENDED BECAUSE %s %s %s" % (field, check, value))
@@ -443,7 +450,7 @@ class Tools(AppBase):
                                 file_list.append(file_id)
                             elif ext.lower().strip() != value.lower().strip() and flip:
                                 file_list.append(file_id)
-                            #else:
+                            # else:
                             #    failed_list.append(file_id)
 
                         tmp = item
@@ -454,7 +461,7 @@ class Tools(AppBase):
                             new_list.append(item)
                         else:
                             new_list = file_list
-                        #else:
+                        # else:
                         #    failed_list = file_list
 
                     elif type(tmp) == str:
@@ -468,23 +475,27 @@ class Tools(AppBase):
                             failed_list.append(item)
 
             except Exception as e:
-                #"Error: %s" % e
+                # "Error: %s" % e
                 print("FAILED WITH EXCEPTION: %s" % e)
                 failed_list.append(item)
-            #return
+            # return
 
         try:
-            return json.dumps({
-                "success": True,
-                "valid": new_list,
-                "invalid": failed_list,
-            })
-            #new_list = json.dumps(new_list)
+            return json.dumps(
+                {
+                    "success": True,
+                    "valid": new_list,
+                    "invalid": failed_list,
+                }
+            )
+            # new_list = json.dumps(new_list)
         except json.decoder.JSONDecodeError as e:
-            return json.dumps({
-                "success": False,
-                "reason": "Failed parsing filter list output" + e,
-            })
+            return json.dumps(
+                {
+                    "success": False,
+                    "reason": "Failed parsing filter list output" + e,
+                }
+            )
 
         return new_list
 
@@ -558,7 +569,6 @@ class Tools(AppBase):
 
         return ret.text
 
-
     # Use data from AppBase to talk to backend
     async def delete_file(self, file_id):
         headers = {
@@ -574,19 +584,23 @@ class Tools(AppBase):
         return ret.text
 
     async def get_file_value(self, filedata):
-        if filedata == None:
+        if filedata is None:
             return "File is empty?"
 
         print("INSIDE APP DATA: %s" % filedata)
         return "%s" % filedata["data"].decode()
 
     async def download_remote_file(self, url):
-        ret = requests.get(url, verify=False)
+        ret = requests.get(url, verify=False)  # nosec
         filename = url.split("/")[-1]
-        fileret = self.set_files([{
-            "filename": filename,
-            "data": ret.content,
-        }])
+        fileret = self.set_files(
+            [
+                {
+                    "filename": filename,
+                    "data": ret.content,
+                }
+            ]
+        )
 
         if len(fileret) > 0:
             value = {"success": True, "file_id": fileret[0]}
@@ -597,13 +611,10 @@ class Tools(AppBase):
 
     async def extract_archive(self, file_ids, fileformat="zip", password=None):
         try:
-            return_data = {
-                "success": False,
-                "files": []
-            }
+            return_data = {"success": False, "files": []}
 
             try:
-                file_ids = eval(file_ids)
+                file_ids = eval(file_ids)  # nosec
             except SyntaxError:
                 file_ids = file_ids
 
@@ -682,14 +693,18 @@ class Tools(AppBase):
 
                     elif fileformat.strip().lower() == "tar":
                         try:
-                            with tarfile.open(os.path.join(tmpdirname, "archive"),mode="r"
+                            with tarfile.open(
+                                os.path.join(tmpdirname, "archive"), mode="r"
                             ) as z_file:
                                 for member in z_file.getnames():
                                     member_files = z_file.extractfile(member)
                                     to_be_uploaded.append(
-                                            {"filename": member, "data":member_files.read() }
-                                        )                                   
-                                return_data["success"] = True 
+                                        {
+                                            "filename": member,
+                                            "data": member_files.read(),
+                                        }
+                                    )
+                                return_data["success"] = True
                         except Exception as e:
                             return_data["files"].append(
                                 {
@@ -699,17 +714,21 @@ class Tools(AppBase):
                                     "message": e,
                                 }
                             )
-                            continue  
+                            continue
                     elif fileformat.strip().lower() == "tar.gz":
                         try:
-                            with tarfile.open(os.path.join(tmpdirname, "archive" ),mode="r:gz"
+                            with tarfile.open(
+                                os.path.join(tmpdirname, "archive"), mode="r:gz"
                             ) as z_file:
                                 for member in z_file.getnames():
                                     member_files = z_file.extractfile(member)
                                     to_be_uploaded.append(
-                                            {"filename": member, "data":member_files.read() }
-                                        )                                   
-                                return_data["success"] = True 
+                                        {
+                                            "filename": member,
+                                            "data": member_files.read(),
+                                        }
+                                    )
+                                return_data["success"] = True
                         except Exception as e:
                             return_data["files"].append(
                                 {
@@ -733,7 +752,6 @@ class Tools(AppBase):
                                     filename = filename.split("/")[-1]
                                     to_be_uploaded.append(
                                         {
-                                            "filename": filename,
                                             "filename": item["filename"],
                                             "data": source.read(),
                                         }
@@ -858,11 +876,11 @@ class Tools(AppBase):
             #    list_one[i] += list_two[i] 
 
         return list_one
-    
+
     async def xml_json_convertor(self, convertto, data):
         try:
-            if convertto=='json':
-                ans=xmltodict.parse(data)
+            if convertto == "json":
+                ans = xmltodict.parse(data)
                 json_data = json.dumps(ans)
                 return json_data
             else:
@@ -969,6 +987,17 @@ class Tools(AppBase):
         )
 
         return result
+
+    async def html_escape(self, input_data, field_name):
+
+        mapping = json.loads(input_data)
+        print(f"Got mapping {json.dumps(mapping, indent=2)}")
+
+        result = markupsafe.escape(mapping[field_name])
+        print(f"Mapping {input_data} to {result}")
+
+        mapping[field_name] = result
+        return mapping
 
 
 if __name__ == "__main__":
