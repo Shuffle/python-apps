@@ -14,7 +14,7 @@ and once there go down to **App Registrations** a new window will pop up.
 
 ### Step 3: Register a New App
 - Set name of your choice.
-- Set **Supported account** types to Accounts in any organizational directory and personal Microsoft accounts.
+- Select supported account type
 - You don't have to set redirect URL.
 
 ### Step 4: Generate client secret
