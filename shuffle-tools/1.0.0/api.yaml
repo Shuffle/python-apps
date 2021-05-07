@@ -569,6 +569,22 @@ actions:
     returns:
       schema:
         type: strings
+  - name: merge_lists 
+    description: Merges two lists of same type AND length
+    parameters:
+      - name: list_one 
+        description: The first list
+        example: "This is string one"
+        required: true
+        schema:
+          type: string
+      - name: list_two
+        description: The second list to use
+        example: "encode"
+        required: true
+        example: "This is string two"
+        schema:
+          type: string
   - name: base64_conversion
     description: Encode or decode a Base64 string
     parameters:

@@ -128,6 +128,8 @@ class Tools(AppBase):
             file_ids = eval(file_ids)
         except SyntaxError:
             file_ids = file_ids
+        except NameError:
+            file_ids = file_ids
 
         return_value = None
         if type(file_ids) == str:
@@ -835,6 +837,27 @@ class Tools(AppBase):
 
         except Exception as excp:
             return {"success": False, "message": excp}
+
+    async def merge_lists(self, list_one, list_two):
+        try:
+            list_one = json.loads(list_one)
+            list_two = json.loads(list_two)
+
+            if len(list_one) != len(list_two):
+                return {"success": False, "message": "Lists length must be the same. %d vs %d" % (len(list_one), len(list_two))}
+        except json.decoder.JSONDecodeError as e:
+            print("Failed to parse lists as json: %s" % e)
+        #except json.encoder.J as e:
+
+        #result = json.loads(input_data)
+        for i in range(len(list_one)):
+            #if isinstance(list_two[i], dict): 
+            for key, value in list_two[i].items():
+                list_one[i][key] = value
+            #else:
+            #    list_one[i] += list_two[i] 
+
+        return list_one
     
     async def xml_json_convertor(self, convertto, data):
         try:
