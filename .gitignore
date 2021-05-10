@@ -1,3 +1,4 @@
 *.swo
 *.swp
 *test.py
+.DS_Store
