@@ -6,10 +6,10 @@ contact_info:
   url: https://shuffler.io
   email: frikky@shuffler.io
 tags:
-  - Network 
+  - Storage
   - Assets
 categories:
-  - Network 
+  - Storage 
   - Assets
 authentication:
   required: true
@@ -78,6 +78,58 @@ actions:
         type: string
   - name: list_buckets 
     description: Lists all buckets
+    returns:
+      schema:
+        type: string
+  - name: bucket_request_payment
+    description: Get payment request configuration of a bucket.
+    parameters:
+      - name: bucket_name 
+        description: The bucket name to use
+        required: true
+        multiline: false 
+        example: 'my-test-bucket-name'
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: bucket_replication
+    description: Get replication configuration of a bucket.
+    parameters:
+      - name: bucket_name 
+        description: The bucket name to use
+        required: true
+        multiline: false 
+        example: 'my-test-bucket-name'
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: bucket_policy_status
+    description: Get policy status of the bucket
+    parameters:
+      - name: bucket_name 
+        description: The bucket name to use
+        required: true
+        multiline: false 
+        example: 'my-test-bucket-name'
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: bucket_logging
+    description: Get logging status of a bucket and the permissions users have to view and modify that status.
+    parameters:
+      - name: bucket_name 
+        description: The bucket name to use
+        required: true
+        multiline: false 
+        example: 'my-test-bucket-name'
+        schema:
+          type: string
     returns:
       schema:
         type: string
