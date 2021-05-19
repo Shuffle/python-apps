@@ -102,13 +102,6 @@ actions:
         required: true
         schema:
           type: string
-      - name: category
-        description: The category/tag to filter by
-        multiline: false
-        example: "phishing"
-        required: false
-        schema:
-          type: string
       - name: amount
         description: Amount of emails to retrieve
         multiline: false
@@ -125,6 +118,13 @@ actions:
         required: true
         schema:
           type: bool
+      - name: category
+        description: The category/tag to filter by
+        multiline: false
+        example: "phishing"
+        required: false
+        schema:
+          type: string
       - name: fields
         description: The comma separated fields to export
         multiline: false
