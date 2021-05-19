@@ -588,6 +588,20 @@ class MSComplianceCenter(AppBase):
             return data
 
         return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code,"error_response":ret.text}
+
+    async def list_people(self, tenant_id, client_id, client_secret, user_principal_name):
+        graph_url = "https://graph.microsoft.com"
+        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        graph_url = f"https://graph.microsoft.com/v1.0/users/{user_principal_name}/people"
+
+        ret = session.get(graph_url)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code,"error_response":ret.text}    
     
     #https://protection.office.com/api/ComplianceSearch/StartSearch?id=Another+search&retry=False
 
