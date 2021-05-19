@@ -1,8 +1,9 @@
-## Microsoft Compliance Center
+## Microsoft Security and Compliance
+- An app to interact with Security and Compliance solutions from microsoft.
 
-## Register an App
+## How to register app in Active Directory on Azure portal ?
 
-### Step 1: Go to the Azure Portal
+### Step 1: Go to the Azure portal
 
  - You'll need to go to the [Azure Portal](https://portal.azure.com/) and login.
 
@@ -14,14 +15,19 @@ and once there go down to **App Registrations** a new window will pop up.
 
 ### Step 3: Register a New App
 - Set name of your choice.
-- Select supported account type
+- Select supported account type.
 - You don't have to set redirect URL.
 
 ### Step 4: Generate client secret
-- Go to your application &#8594; Certificates & Secrets &#8594; New client Secret
+- Go to your application &#8594; Certificates & Secrets &#8594; New client Secret.
 
 ## Note
 - You'll need Tenant ID, Client ID & client Secret for authentication (Tenant ID & Client ID are available under application overview and for Client Secret  go to Certificate & Secrets section).
 - Make sure your application has adequate permissions.
-- To add permission, Go to your application &#8594; API permission &#8594; Add permission (some of the permissions will require admin consent)
+- Each action may require different permission to run. To add permissions, Go to your application in azure portal &#8594; API permission &#8594; Add permission (some of the permissions will require admin consent).
 - After adding permission , Grant consent.
+- Be sure to use work / business account. Most of the actions are not supported on personal account.
+
+
+## References
+- To read more about required permission for each action you can refer to [Security](https://docs.microsoft.com/en-us/graph/api/resources/security-api-overview?view=graph-rest-1.0) & [compliance](https://docs.microsoft.com/en-us/graph/api/resources/complianceapioverview?view=graph-rest-beta)'s official documentation.
