@@ -9,9 +9,9 @@ from botocore.config import Config
 
 from walkoff_app_sdk.app_base import AppBase
 
-class AWSEC2(AppBase):
+class AWSS3(AppBase):
     __version__ = "1.0.0"
-    app_name = "AWS ec2"  
+    app_name = "AWS S3"  
 
     def __init__(self, redis, logger, console_logger=None):
         """
@@ -123,6 +123,41 @@ class AWSEC2(AppBase):
         print(putaction)
         return "Successfully blocked IP %s" % ip
 
+    async def bucket_request_payment(self, access_key, secret_key, region, bucket_name):
+        self.s3 = await self.auth_s3(access_key, secret_key, region)
+        client = self.s3.meta.client
+
+        try:
+            return client.get_bucket_request_payment(Bucket=bucket_name)
+        except botocore.exceptions.ClientError as e:
+            return "Error: %s" % e
+
+    async def bucket_replication(self, access_key, secret_key, region, bucket_name):
+        self.s3 = await self.auth_s3(access_key, secret_key, region)
+        client = self.s3.meta.client
+
+        try:
+            return client.get_bucket_replication(Bucket=bucket_name)
+        except botocore.exceptions.ClientError as e:
+            return "Error: %s" % e
+
+    async def bucket_policy_status(self, access_key, secret_key, region, bucket_name):
+        self.s3 = await self.auth_s3(access_key, secret_key, region)
+        client = self.s3.meta.client
+
+        try:
+            return client.get_bucket_policy_status(Bucket=bucket_name)
+        except botocore.exceptions.ClientError as e:
+            return "Error: %s" % e
+
+    async def bucket_logging(self, access_key, secret_key, region, bucket_name):
+        self.s3 = await self.auth_s3(access_key, secret_key, region)
+        client = self.s3.meta.client
+
+        try:
+            return client.get_bucket_logging(Bucket=bucket_name)
+        except botocore.exceptions.ClientError as e:
+            return "Error: %s" % e
 
 if __name__ == "__main__":
-    asyncio.run(AWSEC2.run(), debug=True)
+    asyncio.run(AWSS3.run(), debug=True)
