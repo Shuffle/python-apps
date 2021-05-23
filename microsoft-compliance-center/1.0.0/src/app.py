@@ -29,7 +29,7 @@ from walkoff_app_sdk.app_base import AppBase
 
 class MSComplianceCenter(AppBase):
     __version__ = "1.0.0"
-    app_name = "microsoft-compliance-center"
+    app_name = "Microsoft Security and Compliance"
 
     def __init__(self, redis, logger, console_logger=None):
         """
@@ -63,68 +63,8 @@ class MSComplianceCenter(AppBase):
 
         access_token = res.json().get("access_token")
         s.headers = {"Authorization": f"Bearer {access_token}", "cache-control": "no-cache"}
+        print(s)
         return s
-
-    async def block_sender_domain(self, csrf_token, session_token, domain, reporting_email):
-        scc_cookie = session_token
-        xsrf_token = csrf_token
-        # Enable-OrganizationCustomization
-    
-        bearerToken = "hello"
-        headers = {
-            "Content-Type": "application/json",
-            "X-XSRF-TOKEN": f"{xsrf_token}",
-            "Cookie":  f"sccauth={scc_cookie};",
-        }
-
-        policyName = "Shuffle Block Policy"
-        get_url = "https://protection.office.com/api/HostedContentFilterRule"
-        ret = requests.get(get_url, headers=headers)
-        print(ret.text)
-        print(ret.status_code)
-        #try:
-        #    return ret.json()
-        #except (json.JSONDecodeError, KeyError, NameError) as e:
-        #    #return {"success": True, "reason": 
-        #    return ret.text
-        our_rule = {"name": ""}
-        try:
-            for rule in ret.json():
-                if rule["name"] == policyName:
-                    our_rule = rule
-                    break
-        except json.decoder.JSONDecodeError as e:
-            print(f"[ERROR] Decoding {ret.text}: {e}") 
-            return {
-                "success": False,
-                "reason": e,
-            }
-
-        blockedDomains = [{"value": domain}]
-        redirectEmail = reporting_email
-        data = {"blockedSenderDomains":blockedDomains,"isShowingDetails":False,"policy":{"spamAction":0,"spamQuarantineTag":"","highConfidenceSpamAction":0,"highConfidenceSpamQuarantineTag":"","markAsSpamBulkMail":1,"markAsSpamBulkMailEnabled":True,"bulkThreshold":7,"quarantineRetentionPeriod":30,"allowedSenders":[],"allowedSenderDomains":[],"blockedSenders":[],"increaseScoreWithImageLinks":0,"increaseScoreWithBizOrInfoUrls":0,"increaseScoreWithNumericIps":0,"increaseScoreWithRedirectToOtherPort":0,"markAsSpamEmptyMessages":0,"markAsSpamJavaScriptInHtml":0,"markAsSpamObjectTagsInHtml":0,"markAsSpamFramesInHtml":0,"markAsSpamEmbedTagsInHtml":0,"markAsSpamFormTagsInHtml":0,"markAsSpamWebBugsInHtml":0,"markAsSpamSensitiveWordList":0,"markAsSpamSpfRecordHardFailOn":False,"markAsSpamFromAddressAuthFailOn":False,"markAsSpamNdrBackscatterOn":False,"testModeAction":0,"testModeBccToRecipients":[],"enableEndUserSpamNotifications":False,"endUserSpamNotificationLanguage":"0","endUserSpamNotificationFrequency":3,"regionBlockList":[],"enableRegionBlockList":False,"languageBlockList":[],"enableLanguageBlockList":False,"enableSafetyTipsLite":True,"bulkSpamAction":0,"bulkQuarantineTag":"","phishSpamAction":3,"phishQuarantineTag":"","spamZapEnabled":True,"phishZapEnabled":True,"applyPhishActionToIntraOrg":False,"highConfidencePhishAction":2,"highConfidencePhishQuarantineTag":"","recommendedPolicyType":"Custom","redirectToRecipientsString":redirectEmail,"addXHeaderValue":"","modifySubjectValue":"","markAsSpamSpfRecordHardFail":0,"markAsSpamFromAddressAuthFail":0,"markAsSpamNdrBackscatter":0},"recipientDomainIs":["shufflertest2.onmicrosoft.com"],"sentTo":None,"sentToMemberOf":None,"exceptIfRecipientDomainIs":None,"exceptIfSentTo":[redirectEmail],"exceptIfSentToMemberOf":None,"name":policyName}
-
-        if our_rule["name"] == "":
-            print("Rule %s not found!" % policyName)
-            our_rule = data
-        else:
-            print("Rule %s WAS FOUND!" % policyName)
-            for item in our_rule["blockedSenderDomains"]:
-                if domain in item["value"]:
-                    return {"success": True, "reason": "Domain is already blocked"}
-
-            our_rule["blockedSenderDomains"].append(domain)
-
-        create_url = "https://protection.office.com/api/HostedContentFilterRule"
-        ret = requests.post(create_url, json=our_rule, headers=headers)
-        print(ret.text)
-        print(ret.status_code)
-        try:
-            return ret.json()
-        except (json.JSONDecodeError, KeyError, NameError) as e:
-            #return {"success": True, "reason": 
-            return ret.text
-
 
         #graph_url = "https://graph.microsoft.com"
         #session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
@@ -158,152 +98,510 @@ class MSComplianceCenter(AppBase):
             return {"success": True, "alerts": data["value"]}
 
         return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code}
+
+    async def get_alerts_by_severity(self, tenant_id, client_id, client_secret, top, severity):
+        graph_url = "https://graph.microsoft.com"
+        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        if top:
+            graph_url = f"https://graph.microsoft.com/v1.0/security/alerts?$filter=Severity eq '{severity}'&$top={top}"
+        else:
+            graph_url = f"https://graph.microsoft.com/v1.0/security/alerts?$filter=Severity eq '{severity}'&$top=5"
+        ret = session.get(graph_url)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return {"success": True, "alerts": data["value"]}
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code}   
+
+    async def get_alerts_by_vendors(self, tenant_id, client_id, client_secret, vendor, top):
+        vendor_code = {
+            "Azure Advanced Threat Protection":"Azure Advanced Threat Protection",
+            "Azure Security Center":"ASC",
+            "Microsoft Cloud App Security":"MCAS",
+            "Azure Active Directory Identity Protection":"IPC",
+            "Azure Sentinel":"Azure Sentinel",
+            "Microsoft Defender Advanced Threat Protection":"Microsoft Defender ATP"
+        }
+        graph_url = "https://graph.microsoft.com"
+        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        if top:
+            graph_url = f"https://graph.microsoft.com/v1.0/security/alerts?$filter=vendorInformation/provider eq '{vendor_code[vendor]}'&$top={top}"
+        else:
+            graph_url = f"https://graph.microsoft.com/v1.0/security/alerts?$filter=vendorInformation/provider eq '{vendor_code[vendor]}'&$top=5" 
+        ret = session.get(graph_url)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return {"success": True, "alerts": data["value"]}
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code}     
     
-    async def run_content_search(self, sender_email, name, csrf_token, session_token):
-        #graph_url = "https://graph.microsoft.com/v1.0/search/query"
-        #incidents_url = f"{azure_url}/subscriptions/{kwargs['subscription_id']}/resourceGroups/{kwargs['resource_group_name']}/providers/Microsoft.OperationalInsights/workspaces/{kwargs['workspace_name']}/providers/Microsoft.SecurityInsights/incidents"
-        #params = {"api-version": "2020-01-01"}
+    async def get_alert_by_id(self, tenant_id, client_id, client_secret,alert_id):
+        graph_url = "https://graph.microsoft.com"
+        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+
+        graph_url = f"https://graph.microsoft.com/v1.0/security/alerts/{alert_id}"
+        ret = session.get(graph_url)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return {"success": True, "alerts": data["value"]}
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code, "error_response":ret.text}
+
+    async def update_alert(self, tenant_id, client_id, client_secret, alert_id, assigned_to, comments, tags, feedback, status, vendor, provider, sub_provider,provider_version):
+        """This function needs to be tested."""
+        
+        graph_url = "https://graph.microsoft.com"
+        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+
+        graph_url = f"https://graph.microsoft.com/v1.0/security/alerts/{alert_id}"
+
+        tags_list = []
+        if tags:
+            for tag in tags.split(","):
+                 tags_list.append(tag)         
+
+        request_body = {
+            "assignedTo": assigned_to,
+            "comments":[comments],
+            "tags":tags_list,
+            "feedback": feedback,
+            "status": status,
+            "vendorInformation": {
+                "provider": provider,
+                "providerVersion": provider_version,
+                "subProvider": sub_provider,
+                "vendor": vendor
+            }
+        }
+        filtered_request_body = {k:v for k,v in request_body.items() if len(v) > 0}
+        print(filtered_request_body)
+        ret = session.patch(graph_url, json=filtered_request_body)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code, "error_response":ret.text}
+
+    async def list_threat_assesment_requests(self, tenant_id, client_id, client_secret):
+        graph_url = "https://graph.microsoft.com"
+        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+
+        graph_url = "https://graph.microsoft.com/v1.0/informationProtection/threatAssessmentRequests"
+        ret = session.get(graph_url)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code,"error_response":ret.text}
+
+    async def get_threat_assesment_request(self, tenant_id, client_id, client_secret, request_id):
+        graph_url = "https://graph.microsoft.com"
+        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+
+        graph_url = f"https://graph.microsoft.com/v1.0/informationProtection/threatAssessmentRequests/{request_id}"        
+        ret = session.get(graph_url)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code,"error_response":ret.text}    
+
+    async def create_mail_threat_assessment(self, tenant_id, client_id, client_secret, reciepient_email, expected_assessment, category, message_uri, status):
+        graph_url = "https://graph.microsoft.com"
+        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        graph_url = f"https://graph.microsoft.com/v1.0/informationProtection/threatAssessmentRequests"
+        
+        headers = {
+            "Content-type": "application/json"
+        }
+
+        request_body = {
+            "@odata.type": "#microsoft.graph.mailAssessmentRequest",
+            "recipientEmail": reciepient_email,
+            "expectedAssessment": expected_assessment,
+            "category": category,
+            "messageUri": message_uri,
+            "status": status
+        }
+
+        ret = session.post(graph_url, headers=headers, json =request_body )
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code,"error_response":ret.text} 
+
+
+    async def create_url_threat_assessment(self, tenant_id, client_id, client_secret, url, expected_assessment, category, status):
+        graph_url = "https://graph.microsoft.com"
+        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        graph_url = "https://graph.microsoft.com/v1.0/informationProtection/threatAssessmentRequests"
+
+
+        request_body ={
+            "@odata.type": "#microsoft.graph.urlAssessmentRequest",
+            "url": url,
+            "expectedAssessment": expected_assessment,
+            "category": category,
+            "status": status
+            }
+
+        ret = session.post(graph_url,json =request_body )
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code,"error_response":ret.text}
+
+    async def create_file_threat_assessment(self, tenant_id, client_id, client_secret, filename, content_data, expected_assessment, category, status):
+        graph_url = "https://graph.microsoft.com"
+        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        graph_url = "https://graph.microsoft.com/v1.0/informationProtection/threatAssessmentRequests"
+
+        headers = {
+            "Content-type": "application/json"
+        }
+
+        request_body ={
+            "@odata.type": "#microsoft.graph.fileAssessmentRequest",
+            "expectedAssessment": expected_assessment,
+            "category": category,
+            "fileName": filename,
+            "contentData": content_data
+            }
+
+        ret = session.post(graph_url, headers= headers ,json =request_body )
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code,"error_response":ret.text}    
+
+    async def list_secure_score(self, tenant_id, client_id, client_secret,top):
+        graph_url = "https://graph.microsoft.com"
+        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        if top:
+            graph_url = f"https://graph.microsoft.com/v1.0/security/secureScores?$top={top}"
+        else:
+            graph_url = "https://graph.microsoft.com/v1.0/security/secureScores?$top=1"
+
+        ret = session.get(graph_url)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code,"error_response":ret.text}
     
-        # Request URL: https://compliance.microsoft.com/api/ComplianceSearch
+    async def list_cases(self, tenant_id, client_id, client_secret):
+        graph_url = "https://graph.microsoft.com"
+        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        graph_url = "https://graph.microsoft.com/beta/compliance/ediscovery/cases"
+
+        ret = session.get(graph_url)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code,"error_response":ret.text}
     
-        scc_cookie = session_token
-        xsrf_token = csrf_token
+    async def get_case(self, tenant_id, client_id, client_secret,case_id):
+        graph_url = "https://graph.microsoft.com"
+        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        graph_url = f"https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}"
+
+        ret = session.get(graph_url)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code,"error_response":ret.text}
+
+    async def create_case(self, tenant_id, client_id, client_secret, display_name):
+        graph_url = "https://graph.microsoft.com"
+        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        graph_url = "https://graph.microsoft.com/beta/compliance/ediscovery/cases"
+
+        headers = {
+            "Content-type": "application/json"
+        }
+
+        request_body = {
+            "displayName": display_name
+        }
+        ret = session.post(graph_url, headers = headers ,json = request_body)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code,"error_response":ret.text}    
     
-        bearerToken = "hello"
+    async def update_case(self, tenant_id, client_id, client_secret,case_id, display_name, description, external_id):
+        graph_url = "https://graph.microsoft.com"
+        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        graph_url = f"https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}"
+
+        headers = {
+            "Content-type": "application/json"
+        }
+
+        request_body = {
+            "displayName": "My Case 1 - Renamed",
+            "description": "Updated description",
+            "externalId": "Updated externalId"
+        }
+        ret = session.patch(graph_url, headers = headers ,json = request_body)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code,"error_response":ret.text}
+    
+    async def close_case(self, tenant_id, client_id, client_secret, case_id):
+        graph_url = "https://graph.microsoft.com"
+        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        graph_url = "https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}/close"
+
+        ret = session.post(graph_url)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code,"error_response":ret.text}
+
+    async def reopen_case(self, tenant_id, client_id, client_secret, case_id):
+        graph_url = "https://graph.microsoft.com"
+        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        graph_url = "https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}/reopen"
+
+        ret = session.post(graph_url)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code,"error_response":ret.text}
+
+    async def list_custodians(self, tenant_id, client_id, client_secret,case_id):
+        graph_url = "https://graph.microsoft.com"
+        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        graph_url = f"https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}/custodians"
+
+        ret = session.get(graph_url)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code,"error_response":ret.text}
+
+    async def get_custodian(self, tenant_id, client_id, client_secret, case_id, custodian_id):
+        graph_url = "https://graph.microsoft.com"
+        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        graph_url = f"https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}/custodians/{custodian_id}"
+
+        ret = session.get(graph_url)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code,"error_response":ret.text}
+
+
+    async def create_custodian(self, tenant_id, client_id, client_secret, case_id, email, apply_hold_to_sources):
+        graph_url = "https://graph.microsoft.com"
+        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        graph_url = f"https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}/custodians/"
+
         headers = {
             "Content-Type": "application/json",
-            "X-XSRF-TOKEN": f"{xsrf_token}",
-            "Cookie":  f"sccauth={scc_cookie};",
+            "Content-length": "279"
         }
+        request_body = {
+            "email": email,
+            "applyHoldToSources":apply_hold_to_sources
+        }
+
+        ret = session.post(graph_url, headers=headers ,json= request_body)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code,"error_response":ret.text}    
+
+    async def update_custodian(self, tenant_id, client_id, client_secret,case_id, custodian_id, apply_hold_to_sources):
+        graph_url = "https://graph.microsoft.com"
+        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        graph_url = f"https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}/custodians/{custodian_id}"
+
+        request_body = {
+            "applyHoldToSources": apply_hold_to_sources
+        }
+
+        ret = session.patch(graph_url, headers = headers ,json = request_body)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code,"error_response":ret.text}
+
+    async def activate_custodian(self, tenant_id, client_id, client_secret,case_id, custodian_id):
+        graph_url = "https://graph.microsoft.com"
+        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        graph_url = f"https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}/custodians/{custodian_id}/activate"
+
+        headers = {
+            "Content-Type": "application/json"
+        }
+
+        ret = session.post(graph_url)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code,"error_response":ret.text}
+
+    async def release_custodian(self, tenant_id, client_id, client_secret,case_id, custodian_id):
+        graph_url = "https://graph.microsoft.com"
+        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        graph_url = f"https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}/custodians/{custodian_id}/release"
+
+        headers = {
+            "Content-Type": "application/json"
+        }
+
+        ret = session.post(graph_url,headers= headers)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code,"error_response":ret.text}        
+
+    async def list_legalholds(self, tenant_id, client_id, client_secret,case_id):
+        graph_url = "https://graph.microsoft.com"
+        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        graph_url = f"https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}/legalholds"
+
+        ret = session.get(graph_url)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code,"error_response":ret.text}
+    
+    async def get_legalhold(self, tenant_id, client_id, client_secret, case_id, legalhold_id):
+        graph_url = "https://graph.microsoft.com"
+        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        graph_url = f"https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}/custodians/{legalhold_id}"
+
+        ret = session.get(graph_url)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code,"error_response":ret.text}
+
+    async def create_legalhold(self, tenant_id, client_id, client_secret, case_id, display_name, description, is_enabled, status, content_query,errors):
+        graph_url = "https://graph.microsoft.com"
+        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        graph_url = f"https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}/legalHolds"
         
-        #eyJ0e...Qa6wg
-        #"Authorization": f"Bearer {bearerToken}",
-        description = ""
-    
-        data = {
-            "identity":"",
-            "name": name,
-            description: description,
-            "language":"",
-            "contentQuery":{
-                "ShouldUseRawContent":False,
-                "RawContent":"",
-                "Root":{
-                    "$type":"Microsoft.Office.Compliance.Repository.ComplexCondition, Microsoft.Office.Compliance.Repository","Logic":"Or","Conditions":[{
-                        "$type":"Microsoft.Office.Compliance.Repository.SimpleCondition, Microsoft.Office.Compliance.Repository",
-                        "IsExclusive":False,
-                        "IsLeaf":True,
-                        "Operator":"EqualAnyof",
-                        "Property":"senderauthor",
-                        "Values":[sender_email],
-                        "ValueType":"String"
-                    }],"IsExclusive":False
-                }
-            },
-            "includeUserAppContent":True,
-            "searchAllHoldLocations":False,
-            "searchAllExchange":True,
-            "searchAllSharepoint":True,
-            "searchAllPublicFolders":True
+        error_list = [str(i) for i in errors.split(',')]
+        headers = {
+            "Content-Type": "application/json"
         }
-    
-        create_url = "https://compliance.microsoft.com/api/ComplianceSearch"
-        #create_url = "https://protection.office.com/api/ComplianceSearch"
-        ret = requests.post(create_url, json=data, headers=headers)
-        print("RET CONTENT: ")
-        print(ret.text)
-        if ret.status_code == 200:
-            print("SUCCESS: %d" % ret.status_code)
-        else:
-            failed = True
-            if "already exists within" in ret.text:
-                name = name+str(uuid.uuid4())
-                data["name"] = name
-                print("Failed, but added uuid to run unique search with same name. New search name: %s" % name)
-    
-                ret = requests.post(create_url, json=data, headers=headers)
-                if ret.status_code == 200:
-                    failed = False
-    
-            if failed:
-                print("Failed: %d!" % ret.status_code)
-                return {"success": False, "reason": f"Status code wasn't 200 for search creation, but {ret.status_code}"}
-    
-        print()
-    
-        time.sleep(3)
-        params = {
-            "id": name,
-            "retry": "False",
+        request_body = {
+            "@odata.type": "#microsoft.graph.ediscovery.legalHold",
+            "description": str(description),
+            "isEnabled": is_enabled,
+            "status": status,
+            "contentQuery": "String",
+            "errors": error_list,
+            "displayName": display_name
         }
-    
-        print("Starting the search")
-        run_url = "https://compliance.microsoft.com/api/ComplianceSearch/StartSearch"
-        ret = requests.put(run_url, params=params, headers=headers)
-        print("RET CONTENT: ")
+        filtered_request_body = {k:v for k,v in request_body.items() if v is not None}
+
+        ret = session.post(graph_url ,headers=headers ,json= filtered_request_body)
+        print(ret.status_code)
         print(ret.text)
-        if ret.status_code == 200:
-            print("SUCCESS (2): %d" % ret.status_code)
-        else:
-            print("Failed (2): %d!" % ret.status_code)
-            return {"success": False, "reason": f"Status code wasn't 200 for search start, but {ret.status_code}"}
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code,"error_response":ret.text}    
     
-        print()
-    
-        timeout = 120
-        while True:
-            params = {
-                "id": name,
-            }
-    
-            ret = requests.get(create_url, headers=headers, params=params)
-            print(ret.text)
-            if ret.status_code != 200:
-                print("Not finished (3): %d" % ret.status_code)
-                time.sleep(5)
-                continue
-    
-            #print(ret.status_code)
-            try:
-                data = ret.json()
-    
-                indexed_item_count = data["indexedItemsCount"]
-                item_size = data["indexedItemsSize"]
-    
-                print()
-                jobProgress = data["jobProgress"]
-                print("Items: %d, result size: %d" % (indexed_item_count, item_size))
-                print("Progress: %d, status: %d" % (jobProgress, data["status"]))
-    
-                if jobProgress == 100:
-                    print("SHOULD BREAK - HAVE RESULT!")
-    
-                    locations = []
-                    for item in data["searchStatistics"]["ExchangeBinding"]["Sources"]:
-                        try:
-                            if item["ContentItems"] > 0 or item["ContentSize"] != "0 B":
-                                locations.append(item)
-                        except (json.JSONDecodeError, KeyError, NameError) as e:
-                            print("Error for %s: %s" % (item, e))
-    
-                    #"sources": data["Sources"],
-                    # successResults
-                    return {
-                        "success": True,
-                        "search_name": name,
-                        "result": {
-                            "items": indexed_item_count,
-                            "size": item_size,
-                        },
-                        "locations": locations,
-                    }
-                    break
-    
-                print(f"COUNT: {indexed_item_count}, Size: {item_size}")
-            except (json.JSONDecodeError, KeyError, NameError) as e:
-                print(f"Outer Error: {e}")
-    
-            time.sleep(5)
+    async def list_source_collections(self, tenant_id, client_id, client_secret,case_id):
+        graph_url = "https://graph.microsoft.com"
+        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        graph_url = f"https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}/sourceCollections"
+
+        ret = session.get(graph_url)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code,"error_response":ret.text}
+
+    async def list_people(self, tenant_id, client_id, client_secret, user_principal_name):
+        graph_url = "https://graph.microsoft.com"
+        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        graph_url = f"https://graph.microsoft.com/v1.0/users/{user_principal_name}/people"
+
+        ret = session.get(graph_url)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code,"error_response":ret.text}    
     
     #https://protection.office.com/api/ComplianceSearch/StartSearch?id=Another+search&retry=False
 
