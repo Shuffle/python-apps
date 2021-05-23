@@ -1,0 +1,146 @@
+walkoff_version: 1.0.0
+app_version: 1.0.0
+name: servicenow 
+description: servicenow app 
+tags:
+  - tickets 
+categories:
+  - tickets 
+contact_info:
+  name: "@frikkylikeme"
+  url: https://github.com/frikky
+  email: "frikky@shuffler.io"
+authentication:
+  required: true
+  parameters:
+    - name: url 
+      description: The url your instance is at
+      multiline: false
+      example: "test.service-now.com"
+      required: true
+      schema:
+        type: string
+    - name: username 
+      description: The user to authenticate with
+      multiline: false
+      example: "username12345"
+      required: true
+      schema:
+        type: string
+    - name: password 
+      description: The password for the user to authenticate with
+      multiline: false
+      example: "pw1234"
+      required: true
+      schema:
+        type: string
+actions:
+  - name: get_ticket 
+    description: Get ticket ids 
+    parameters:
+      - name: table_name 
+        description: The type to get. Empty as default
+        multiline: false
+        example: "incident"
+        required: true
+        schema:
+          type: string
+      - name: sys_id 
+        description: The ID to get from the table
+        multiline: false
+        example: "INC123456"
+        required: true 
+        schema:
+          type: string
+      - name: number 
+        description: The number to get instead of record_id
+        multiline: false
+        example: "20"
+        required: false
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: create_ticket 
+    description: Create a ticket
+    parameters:
+      - name: table_name 
+        description: The table to create the ticket in
+        multiline: false
+        example: "incident"
+        required: true
+        schema:
+          type: string
+      - name: body 
+        description: The body of the ticket
+        multiline: true 
+        example: "{'short_description':'Unable to connect to office wifi','assignment_group':'287ebd7da9fe198100f92cc8d1d2154e','urgency':'2','impact':'2'}"
+        required: true 
+        schema:
+          type: string
+      - name: file_id 
+        description: Optional file to attach
+        multiline: false
+        example: "ca0c88a6-626e-4235-896f-ca18c96fd48e"
+        required: false 
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: update_ticket 
+    description: Update a ticket
+    parameters:
+      - name: table_name 
+        description: The table to create the ticket in
+        multiline: false
+        example: "incident"
+        required: true
+        schema:
+          type: string
+      - name: sys_id 
+        description: The ticket to edit
+        multiline: false
+        example: "incident"
+        required: true
+        schema:
+          type: string
+      - name: body 
+        description: JSON data of the data to replace 
+        multiline: true 
+        example: "{'short_description':'Unable to connect to office wifi','assignment_group':'287ebd7da9fe198100f92cc8d1d2154e','urgency':'2','impact':'2'}"
+        required: true 
+        schema:
+          type: string
+      - name: file_id 
+        description: Optional file to attach
+        multiline: false
+        example: "ca0c88a6-626e-4235-896f-ca18c96fd48e"
+        required: false 
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: list_table 
+    description: Get ticket ids 
+    parameters:
+      - name: table_name 
+        description: The type to get. Empty as default
+        multiline: false
+        example: "incident"
+        required: true
+        schema:
+          type: string
+      - name: limit 
+        description: The limit of items to get
+        multiline: false
+        example: "1"
+        required: false 
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+large_image: data:image/jpg;base64,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

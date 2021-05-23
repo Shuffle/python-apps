@@ -8,6 +8,7 @@ on:
 jobs:
   list_apps:
     runs-on: ubuntu-latest
+    continue-on-error: true
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
