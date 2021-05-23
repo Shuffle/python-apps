@@ -1,16 +1,16 @@
 app_version: 1.0.0
-name: AWS S3 
-description: An app to interact with Amazon S3
+name: AWS DynamoDB
+description: An app to interact with Amazon DynamoDB
 contact_info:
-  name: "@frikkylikeme"
+  name: "@gaurav-m92"
   url: https://shuffler.io
-  email: frikky@shuffler.io
+  email: gauravm@infopercept.com
 tags:
   - Storage
-  - Assets
+  - Database
 categories:
   - Storage 
-  - Assets
+  - Database
 authentication:
   required: true
   parameters:
@@ -33,103 +33,39 @@ authentication:
       schema:
         type: string
 actions:
-  - name: create_bucket 
-    description: Creates a bucket with the specified name
+  - name: get_global_table_setttings 
+    description: Get Global Table settings
     parameters:
-      - name: bucket_name 
-        description: The bucket name to use
+      - name: table_name
+        description: The table name to use
         required: true
         multiline: false 
-        example: 'my-test-bucket-name'
-        schema:
-          type: string
-      - name: access_type
-        description: The ACL id to edit
-        required: true
-        multiline: false 
-        example: 'private'
-        options:
-          - private
-          - public
+        example: 'my-test-table-name'
         schema:
           type: string
     returns:
       schema:
         type: string
-  - name: block_ip_access 
-    description: Blocks access from a specific IP to a bucket
+  - name: get_backups
+    description: Get backup details of the given table name
     parameters:
-      - name: bucket_name 
-        description: The bucket name to use
+      - name: table_name 
+        description: The table name to use
         required: true
         multiline: false 
-        example: 'my-test-bucket-name'
-        schema:
-          type: string
-      - name: ip 
-        description: The IP to block
-        required: true
-        multiline: false 
-        example: '1.2.3.5'
+        example: 'my-test-table-name'
         schema:
           type: string
     returns:
       schema:
         type: string
-  - name: list_buckets 
+  - name: list_tables
     description: Lists all buckets
     returns:
       schema:
         type: string
-  - name: bucket_request_payment
-    description: Get payment request configuration of a bucket.
-    parameters:
-      - name: bucket_name 
-        description: The bucket name to use
-        required: true
-        multiline: false 
-        example: 'my-test-bucket-name'
-        schema:
-          type: string
-    returns:
-      schema:
-        type: string
-  - name: bucket_replication
-    description: Get replication configuration of a bucket.
-    parameters:
-      - name: bucket_name 
-        description: The bucket name to use
-        required: true
-        multiline: false 
-        example: 'my-test-bucket-name'
-        schema:
-          type: string
-    returns:
-      schema:
-        type: string
-  - name: bucket_policy_status
-    description: Get policy status of the bucket
-    parameters:
-      - name: bucket_name 
-        description: The bucket name to use
-        required: true
-        multiline: false 
-        example: 'my-test-bucket-name'
-        schema:
-          type: string
-    returns:
-      schema:
-        type: string
-  - name: bucket_logging
-    description: Get logging status of a bucket and the permissions users have to view and modify that status.
-    parameters:
-      - name: bucket_name 
-        description: The bucket name to use
-        required: true
-        multiline: false 
-        example: 'my-test-bucket-name'
-        schema:
-          type: string
+  - name: list_global_tables
+    description: Get list of global tables
     returns:
       schema:
         type: string
