@@ -999,6 +999,40 @@ class Tools(AppBase):
         mapping[field_name] = result
         return mapping
 
+    async def get_cache_value(self, key):
+        org_id = self.full_execution["workflow"]["execution_org"]["id"]
+        url = "%s/api/v1/orgs/%s/get_cache" % (self.url, org_id)
+        data = {
+            "workflow_id": self.full_execution["workflow"]["id"],
+            "execution_id": self.current_execution_id,
+            "authorization": self.authorization,
+            "org_id": org_id,
+            "key": key,
+        }
+
+        value = requests.post(url, json=data)
+        try:
+            allvalues = value.json()
+            parsedvalue = json.loads(allvalues["value"])
+            allvalues["value"] = parsedvalue
+            return json.dumps(allvalues) 
+        except json.decoder.JSONDecodeError as e:
+            return value.text
+
+    async def set_cache_value(self, key, value):
+        org_id = self.full_execution["workflow"]["execution_org"]["id"]
+        url = "%s/api/v1/orgs/%s/set_cache" % (self.url, org_id)
+        data = {
+            "workflow_id": self.full_execution["workflow"]["id"],
+            "execution_id": self.current_execution_id,
+            "authorization": self.authorization,
+            "org_id": org_id,
+            "key": key,
+            "value": value
+        }
+
+        return requests.post(url, json=data).text
+
 
 if __name__ == "__main__":
     asyncio.run(Tools.run(), debug=True)

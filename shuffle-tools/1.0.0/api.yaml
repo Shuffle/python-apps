@@ -26,6 +26,39 @@ actions:
     returns:
       schema:
         type: string
+  - name: get_cache_value
+    description: Get a value saved to your organization in Shuffle
+    parameters:
+      - name: key 
+        description: The key to get
+        required: true
+        multiline: false
+        example: "timestamp"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: set_cache_value
+    description: Set a value to be saved to your organization in Shuffle. 
+    parameters:
+      - name: key 
+        description: The key to set the value for 
+        required: true
+        multiline: false
+        example: "timestamp"
+        schema:
+          type: string
+      - name: value 
+        description: The value to set
+        required: true
+        multiline: true 
+        example: "1621959545"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
   - name: send_sms_shuffle
     description: Send an SMS from Shuffle
     parameters:
