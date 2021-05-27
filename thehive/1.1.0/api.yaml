@@ -29,7 +29,7 @@ authentication:
     - name: organisation
       description: The Organisation
       example: "myorg"
-      required: False
+      required: false
       schema:
         type: string
 actions:

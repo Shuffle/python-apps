@@ -1013,10 +1013,20 @@ class Tools(AppBase):
         value = requests.post(url, json=data)
         try:
             allvalues = value.json()
-            parsedvalue = json.loads(allvalues["value"])
-            allvalues["value"] = parsedvalue
+            print("VAL1: ", allvalues)
+            allvalues["key"] = key 
+            print("VAL2: ", allvalues)
+
+            try:
+                parsedvalue = json.loads(allvalues["value"])
+                allvalues["value"] = parsedvalue
+            except:
+                print("Parsing of value as JSON failed")
+                pass
+
             return json.dumps(allvalues) 
-        except json.decoder.JSONDecodeError as e:
+        except:
+            print("Value couldn't be parsed, or json dump of value failed")
             return value.text
 
     async def set_cache_value(self, key, value):
@@ -1031,7 +1041,14 @@ class Tools(AppBase):
             "value": value
         }
 
-        return requests.post(url, json=data).text
+        value = requests.post(url, json=data)
+        try:
+            allvalues = value.json()
+            allvalues["key"] = key
+            return json.dumps(allvalues) 
+        except:
+            print("Value couldn't be parsed")
+            return value.text
 
 
 if __name__ == "__main__":
