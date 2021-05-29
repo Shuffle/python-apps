@@ -856,24 +856,68 @@ class Tools(AppBase):
         except Exception as excp:
             return {"success": False, "message": excp}
 
-    async def merge_lists(self, list_one, list_two):
+    async def add_list_to_list(self, list_one, list_two):
         try:
             list_one = json.loads(list_one)
-            list_two = json.loads(list_two)
-
-            if len(list_one) != len(list_two):
-                return {"success": False, "message": "Lists length must be the same. %d vs %d" % (len(list_one), len(list_two))}
         except json.decoder.JSONDecodeError as e:
-            print("Failed to parse lists as json: %s" % e)
-        #except json.encoder.J as e:
+            print("Failed to parse list1 as json: %s" % e)
+            return "List one is not a valid list: %s" % list_one
+
+        try:
+            list_two = json.loads(list_two)
+        except json.decoder.JSONDecodeError as e:
+            print("Failed to parse list2 as json: %s" % e)
+            return "List two is not a valid list: %s" % list_two
+
+        for item in list_two:
+            list_one.append(item)
+
+        return list_one
+
+    async def merge_lists(self, list_one, list_two, set_field="", sort_key_list_one="", sort_key_list_two=""):
+        try:
+            list_one = json.loads(list_one)
+        except json.decoder.JSONDecodeError as e:
+            print("Failed to parse list1 as json: %s" % e)
+
+        try:
+            list_two = json.loads(list_two)
+        except json.decoder.JSONDecodeError as e:
+            print("Failed to parse list2 as json: %s" % e)
+
+        if len(list_one) != len(list_two):
+            return {"success": False, "message": "Lists length must be the same. %d vs %d" % (len(list_one), len(list_two))}
 
         #result = json.loads(input_data)
+        #print(list_one)
+        #print(list_two)
+        #print(set_field)
+        #print("START: ")
+            
+        if len(sort_key_list_one) > 0:
+            print("Sort 1 %s by key: %s" % (list_one, sort_key_list_one))
+            try:
+                list_one = sorted(list_one, key=lambda k: k.get(sort_key_list_one), reverse=True)
+            except:
+                print("Failed to sort list one")
+                pass
+
+        if len(sort_key_list_two) > 0:
+            #print("Sort 2 %s by key: %s" % (list_two, sort_key_list_two))
+            try:
+                list_two = sorted(list_two, key=lambda k: k.get(sort_key_list_two), reverse=True)
+            except:
+                print("Failed to sort list one")
+                pass
+
+
         for i in range(len(list_one)):
-            #if isinstance(list_two[i], dict): 
-            for key, value in list_two[i].items():
-                list_one[i][key] = value
-            #else:
-            #    list_one[i] += list_two[i] 
+            #print(list_two[i])
+            if isinstance(list_two[i], dict): 
+                for key, value in list_two[i].items():
+                    list_one[i][key] = value
+            elif isinstance(list_two[i], str) or isinstance(list_two[i], int):
+                list_one[i][set_field] = list_two[i] 
 
         return list_one
 
@@ -988,7 +1032,12 @@ class Tools(AppBase):
 
         return result
 
-    async def html_escape(self, input_data, field_name):
+    async def run_math_operation(self, operation):
+        print("Operation: %s" % operation)
+        result = eval(operation)  
+        return result 
+
+    async def escape_html(self, input_data, field_name):
 
         mapping = json.loads(input_data)
         print(f"Got mapping {json.dumps(mapping, indent=2)}")
@@ -1038,17 +1087,18 @@ class Tools(AppBase):
             "authorization": self.authorization,
             "org_id": org_id,
             "key": key,
-            "value": value
+            "value": str(value),
         }
 
-        value = requests.post(url, json=data)
+        response = requests.post(url, json=data)
         try:
-            allvalues = value.json()
+            allvalues = response.json()
             allvalues["key"] = key
+            allvalues["value"] = str(value)
             return json.dumps(allvalues) 
         except:
             print("Value couldn't be parsed")
-            return value.text
+            return response.text
 
 
 if __name__ == "__main__":

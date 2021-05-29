@@ -605,23 +605,72 @@ actions:
     returns:
       schema:
         type: strings
-  - name: merge_lists 
-    description: Merges two lists of same type AND length
+  - name: add_list_to_list 
+    description: Adds items of second list (list_two) to the first one (list_one) 
     parameters:
       - name: list_one 
         description: The first list
-        example: "This is string one"
+        multiline: true
+        example: "{'key': 'value'}"
         required: true
         schema:
           type: string
       - name: list_two
         description: The second list to use
-        example: "encode"
+        multiline: true
         required: true
-        example: "This is string two"
+        example: "{'key2': 'value2'}"
         schema:
           type: string
-  - name: html_escape
+  - name: merge_lists 
+    description: Merges two lists of same type AND length. 
+    parameters:
+      - name: list_one 
+        description: The first list
+        multiline: true
+        example: "{'key': 'value'}"
+        required: true
+        schema:
+          type: string
+      - name: list_two
+        description: The second list to use
+        multiline: true
+        required: true
+        example: "{'key2': 'value2'}"
+        schema:
+          type: string
+      - name: set_field 
+        description: If items in list 2 are strings, but first is JSON, sets the values to the specified key. Defaults to key "new_shuffle_key"
+        required: false 
+        example: "json_key"
+        schema:
+          type: string
+      - name: sort_key_list_one
+        description: Sort by this key before using list one for merging 
+        required: false 
+        example: "json_key"
+        schema:
+          type: string
+      - name: sort_key_list_two
+        description: Sort by this key before using list two for merging 
+        required: false 
+        example: "json_key"
+        schema:
+          type: string
+  - name: run_math_operation 
+    description: Takes a math input and gives you the result
+    parameters:
+      - name: operation 
+        description: The operation to perform
+        required: true
+        multiline: true
+        example: "5+10"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: escape_html
     description: Performs HTML escaping on a field
     parameters:
       - name: input_data
