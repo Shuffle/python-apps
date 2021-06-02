@@ -294,7 +294,7 @@ class Tools(AppBase):
         return item
 
     async def filter_list(self, input_list, field, check, value, opposite):
-        print(f"Running function with list {input_list}")
+        print(f"\nRunning function with list {input_list}")
 
         flip = False
         if opposite.lower() == "true":
@@ -313,7 +313,7 @@ class Tools(AppBase):
         if not isinstance(input_list, list):
             return {
                 "success": False,
-                "reason": "Error: input isnt a list. Remove # to use this app."
+                "reason": "Error: input isnt a list. Remove # to use this action."
                 % type(input_list),
                 "valid": [],
                 "invalid": [],
@@ -321,6 +321,8 @@ class Tools(AppBase):
 
             input_list = [input_list]
 
+        print("\nRunning with check \"%s\" on list of length %d\n" % (check, len(input_list)))
+        found_items = []
         new_list = []
         failed_list = []
         for item in input_list:
@@ -342,6 +344,8 @@ class Tools(AppBase):
                     except json.decoder.JSONDecodeError as e:
                         print("FAILED DECODING: %s" % e)
                         pass
+
+                #print("PRE CHECKS FOR TMP: %")
 
                 # EQUALS JUST FOR STR
                 if check == "equals":
@@ -419,6 +423,76 @@ class Tools(AppBase):
                         new_list.append(item)
                     else:
                         failed_list.append(item)
+                elif check == "contains any of":
+                    print("Inside contains any of")
+                    checklist = value.split(",")
+                    print("Checklist and tmp: %s - %s" % (checklist, tmp))
+                    found = False
+                    for subcheck in checklist:
+                        subcheck = subcheck.strip().lower()
+                        #ext.lower().strip() == value.lower().strip()
+                        if type(tmp) == list and subcheck in tmp and not flip:
+                            new_list.append(item)
+                            found = True
+                            break
+                        elif type(tmp) == list and subcheck not in tmp and flip:
+                            new_list.append(item)
+                            found = True
+                            break
+                        elif (type(tmp) == str and tmp.lower().find(subcheck) != -1 and not flip):
+                            new_list.append(item)
+                            found = True
+                            break
+                        elif (type(tmp) == str and tmp.lower().find(subcheck) == -1 and flip):
+                            new_list.append(item)
+                            found = True
+                            break
+
+                    if not found:
+                        failed_list.append(item)
+
+                # CONTAINS FIND FOR LIST AND IN FOR STR
+                elif check == "field is unique":
+                    #print("FOUND: %s"
+                    if tmp.lower() not in found_items and not flip:
+                        new_list.append(item)
+                        found_items.append(tmp.lower())
+                    elif tmp.lower() in found_items and flip:
+                        new_list.append(item)
+                        found_items.append(tmp.lower())
+                    else:
+                        failed_list.append(item)
+
+                    #tmp = json.dumps(tmp)
+
+                    #for item in new_list:
+                    #if type(tmp) == list and value.lower() in tmp and not flip:
+                    #    new_list.append(item)
+                    #    found = True
+                    #    break
+                    #elif type(tmp) == list and value.lower() not in tmp and flip:
+                    #    new_list.append(item)
+                    #    found = True
+                    #    break
+
+                # CONTAINS FIND FOR LIST AND IN FOR STR
+                elif check == "contains any of":
+                    checklist = value.split(",")
+                    tmp = tmp.lower()
+                    print("CHECKLIST: %s. Value: %s" % (checklist, tmp))
+                    found = False
+                    for value in checklist:
+                        if value in tmp and not flip:
+                            new_list.append(item)
+                            found = True
+                            break
+                        elif value not in tmp and flip:
+                            new_list.append(item)
+                            found = True
+                            break
+
+                    if not found:
+                        failed_list.append(item)
 
                 elif check == "larger than":
                     if int(tmp) > int(value) and not flip:
@@ -476,7 +550,7 @@ class Tools(AppBase):
 
             except Exception as e:
                 # "Error: %s" % e
-                print("FAILED WITH EXCEPTION: %s" % e)
+                print("[WARNING] FAILED WITH EXCEPTION: %s" % e)
                 failed_list.append(item)
             # return
 
@@ -874,6 +948,22 @@ class Tools(AppBase):
 
         return list_one
 
+    async def diff_lists(self, list_one, list_two):
+        try:
+            list_one = json.loads(list_one)
+        except json.decoder.JSONDecodeError as e:
+            print("Failed to parse list1 as json: %s" % e)
+
+        try:
+            list_two = json.loads(list_two)
+        except json.decoder.JSONDecodeError as e:
+            print("Failed to parse list2 as json: %s" % e)
+
+        def diff(li1, li2):
+            return list(set(li1) - set(li2)) + list(set(li2) - set(li1))
+
+        return diff(list_one, list_two)
+
     async def merge_lists(self, list_one, list_two, set_field="", sort_key_list_one="", sort_key_list_two=""):
         try:
             list_one = json.loads(list_one)
@@ -889,10 +979,10 @@ class Tools(AppBase):
             return {"success": False, "message": "Lists length must be the same. %d vs %d" % (len(list_one), len(list_two))}
 
         #result = json.loads(input_data)
-        #print(list_one)
-        #print(list_two)
-        #print(set_field)
-        #print("START: ")
+        print(list_one)
+        print(list_two)
+        print(set_field)
+        print("START: ")
             
         if len(sort_key_list_one) > 0:
             print("Sort 1 %s by key: %s" % (list_one, sort_key_list_one))
@@ -910,13 +1000,16 @@ class Tools(AppBase):
                 print("Failed to sort list one")
                 pass
 
-
         for i in range(len(list_one)):
             #print(list_two[i])
             if isinstance(list_two[i], dict): 
                 for key, value in list_two[i].items():
                     list_one[i][key] = value
-            elif isinstance(list_two[i], str) or isinstance(list_two[i], int):
+            elif isinstance(list_two[i], str) or isinstance(list_two[i], int) or isinstance(list_two[i], bool):
+                print("IN SETTER FOR %s" % list_two[i])
+                if len(set_field) == 0:
+                    return "Define a JSON key to set (Set Field)"
+
                 list_one[i][set_field] = list_two[i] 
 
         return list_one

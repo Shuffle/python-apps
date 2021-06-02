@@ -148,8 +148,10 @@ actions:
           - 'less than'
           - is empty
           - contains
+          - contains any of 
           - starts with
           - ends with
+          - field is unique
           - files by extension
         schema:
           type: string
@@ -551,6 +553,7 @@ actions:
         example: '%Y-%m-%dT%H:%M:%S.%f%Z'
         options:
           - '%Y-%m-%dT%H:%M%z'
+          - '%Y-%m-%dT%H:%M:%SZ'
           - '%Y-%m-%dT%H:%M:%S%Z'
           - '%Y-%m-%dT%H:%M:%S%z'
           - '%Y-%m-%dT%H:%M:%S.%f%z'
@@ -657,6 +660,24 @@ actions:
         example: "json_key"
         schema:
           type: string
+  - name: diff_lists 
+    description: Diffs two lists of strings or integers and finds what's missing
+    parameters:
+      - name: list_one 
+        description: The first list
+        multiline: true
+        example: "{'key': 'value'}"
+        required: true
+        schema:
+          type: string
+      - name: list_two
+        description: The second list to use
+        multiline: true
+        required: true
+        example: "{'key2': 'value2'}"
+        schema:
+          type: string
+
   - name: run_math_operation 
     description: Takes a math input and gives you the result
     parameters:
