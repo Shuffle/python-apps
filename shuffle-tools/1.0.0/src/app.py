@@ -8,6 +8,7 @@ import subprocess
 import tempfile
 import zipfile
 import base64
+import ipaddress
 
 import py7zr
 import pyminizip
@@ -190,6 +191,11 @@ class Tools(AppBase):
         for item in newarray:
             if "ip" in item["data_type"]:
                 item["data_type"] = "ip"
+                try:
+                    item["is_private_ip"] = ipaddress.ip_address(item["data"]).is_private
+                except:
+                    print("Error parsing %s" % ip)
+                    pass
 
         try:
             newarray = json.dumps(newarray)
@@ -217,17 +223,50 @@ class Tools(AppBase):
 
         return str(len(item))
 
-    async def translate_value(self, input_data, translate_from, translate_to):
+    async def delete_json_keys(self, json_object, keys):
+        splitdata = [keys]
+        if ", " in keys:
+            splitdata = keys.split(", ")
+        elif "," in keys:
+            splitdata = keys.split(",")
+
+        for key in splitdata:
+            key = key.strip()
+            try:
+                del json_object[key]
+            except:
+                print("Key %s doesn't exist" % key)
+
+        return json_object
+
+    async def translate_value(self, input_data, translate_from, translate_to, else_value=""):
         splitdata = [translate_from]
         if ", " in translate_from:
             splitdata = translate_from.split(", ")
         elif "," in translate_from:
             splitdata = translate_from.split(",")
 
-        for item in splitdata:
-            input_data = input_data.replace(item, translate_to)
+        if isinstance(input_data, list) or isinstance(input_data, dict):
+            input_data = json.dumps(input_data)
 
-        return input_data
+        to_return = input_data
+        if isinstance(input_data, str):
+            found = False
+            for item in splitdata:
+                item = item.strip()
+                if item in input_data:
+                    input_data = input_data.replace(item, translate_to)
+                    found = True
+
+            if not found and len(else_value) > 0:
+                input_data = else_value
+
+        if input_data.lower() == "false":
+            return False
+        elif input_data.lower() == "true":
+            return True 
+
+        return input_data 
 
     async def map_value(self, input_data, mapping):
 
@@ -366,6 +405,9 @@ class Tools(AppBase):
 
                 # IS EMPTY FOR STR OR LISTS
                 elif check == "is empty":
+                    if tmp == "[]":
+                        tmp = []
+
                     if type(tmp) == list and len(tmp) == 0 and not flip:
                         new_list.append(item)
                     elif type(tmp) == list and len(tmp) > 0 and flip:
@@ -573,60 +615,60 @@ class Tools(AppBase):
 
         return new_list
 
-    async def multi_list_filter(self, input_list, field, check, value):
-        input_list = input_list.replace("'", '"', -1)
-        input_list = json.loads(input_list)
+    #async def multi_list_filter(self, input_list, field, check, value):
+    #    input_list = input_list.replace("'", '"', -1)
+    #    input_list = json.loads(input_list)
 
-        fieldsplit = field.split(",")
-        if ", " in field:
-            fieldsplit = field.split(", ")
+    #    fieldsplit = field.split(",")
+    #    if ", " in field:
+    #        fieldsplit = field.split(", ")
 
-        valuesplit = value.split(",")
-        if ", " in value:
-            valuesplit = value.split(", ")
+    #    valuesplit = value.split(",")
+    #    if ", " in value:
+    #        valuesplit = value.split(", ")
 
-        checksplit = check.split(",")
-        if ", " in check:
-            checksplit = check.split(", ")
+    #    checksplit = check.split(",")
+    #    if ", " in check:
+    #        checksplit = check.split(", ")
 
-        new_list = []
-        for list_item in input_list:
-            list_item = json.loads(list_item)
+    #    new_list = []
+    #    for list_item in input_list:
+    #        list_item = json.loads(list_item)
 
-            index = 0
-            for check in checksplit:
-                if check == "equals":
-                    print(
-                        "Checking %s vs %s"
-                        % (list_item[fieldsplit[index]], valuesplit[index])
-                    )
-                    if list_item[fieldsplit[index]] == valuesplit[index]:
-                        new_list.append(list_item)
+    #        index = 0
+    #        for check in checksplit:
+    #            if check == "equals":
+    #                print(
+    #                    "Checking %s vs %s"
+    #                    % (list_item[fieldsplit[index]], valuesplit[index])
+    #                )
+    #                if list_item[fieldsplit[index]] == valuesplit[index]:
+    #                    new_list.append(list_item)
 
-            index += 1
+    #        index += 1
 
-        # "=",
-        # "equals",
-        # "!=",
-        # "does not equal",
-        # ">",
-        # "larger than",
-        # "<",
-        # "less than",
-        # ">=",
-        # "<=",
-        # "startswith",
-        # "endswith",
-        # "contains",
-        # "re",
-        # "matches regex",
+    #    # "=",
+    #    # "equals",
+    #    # "!=",
+    #    # "does not equal",
+    #    # ">",
+    #    # "larger than",
+    #    # "<",
+    #    # "less than",
+    #    # ">=",
+    #    # "<=",
+    #    # "startswith",
+    #    # "endswith",
+    #    # "contains",
+    #    # "re",
+    #    # "matches regex",
 
-        try:
-            new_list = json.dumps(new_list)
-        except json.decoder.JSONDecodeError as e:
-            return "Failed parsing filter list output" % e
+    #    try:
+    #        new_list = json.dumps(new_list)
+    #    except json.decoder.JSONDecodeError as e:
+    #        return "Failed parsing filter list output" % e
 
-        return new_list
+    #    return new_list
 
     # Gets the file's metadata, e.g. md5
     async def get_file_meta(self, file_id):
@@ -1008,7 +1050,7 @@ class Tools(AppBase):
             elif isinstance(list_two[i], str) or isinstance(list_two[i], int) or isinstance(list_two[i], bool):
                 print("IN SETTER FOR %s" % list_two[i])
                 if len(set_field) == 0:
-                    return "Define a JSON key to set (Set Field)"
+                    return "Define a JSON key to set for List two (Set Field)"
 
                 list_one[i][set_field] = list_two[i] 
 
@@ -1171,6 +1213,7 @@ class Tools(AppBase):
             print("Value couldn't be parsed, or json dump of value failed")
             return value.text
 
+    # FIXME: Add option for org only & sensitive data (not to be listed)
     async def set_cache_value(self, key, value):
         org_id = self.full_execution["workflow"]["execution_org"]["id"]
         url = "%s/api/v1/orgs/%s/set_cache" % (self.url, org_id)

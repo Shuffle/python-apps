@@ -175,40 +175,40 @@ actions:
     returns:
       schema:
         type: string
-  - name: multi_list_filter
-    description: Takes a list and filters based on your data
-    skip_multicheck: true
-    parameters:
-      - name: input_list
-        description: The list to check
-        required: true
-        multiline: false
-        example: '[{"data": "1.2.3.4"}, {"data": "1.2.3.5"}]'
-        schema:
-          type: string
-      - name: field
-        description: The field to check
-        required: true
-        multiline: false
-        example: "data"
-        schema:
-          type: string
-      - name: check
-        description: Type of check
-        required: true
-        example: "equals,equals"
-        schema:
-          type: string
-      - name: value
-        description: The value to check with
-        required: true
-        multiline: false
-        example: "1.2.3.4"
-        schema:
-          type: string
-    returns:
-      schema:
-        type: string
+  #- name: multi_list_filter
+  #  description: Takes a list and filters based on your data
+  #  skip_multicheck: true
+  #  parameters:
+  #    - name: input_list
+  #      description: The list to check
+  #      required: true
+  #      multiline: false
+  #      example: '[{"data": "1.2.3.4"}, {"data": "1.2.3.5"}]'
+  #      schema:
+  #        type: string
+  #    - name: field
+  #      description: The field to check
+  #      required: true
+  #      multiline: false
+  #      example: "data"
+  #      schema:
+  #        type: string
+  #    - name: check
+  #      description: Type of check
+  #      required: true
+  #      example: "equals,equals"
+  #      schema:
+  #        type: string
+  #    - name: value
+  #      description: The value to check with
+  #      required: true
+  #      multiline: false
+  #      example: "1.2.3.4"
+  #      schema:
+  #        type: string
+  #  returns:
+  #    schema:
+  #      type: string
   - name: parse_ioc
     description: Parse IOC's based on https://github.com/fhightower/ioc-finder
     parameters:
@@ -272,6 +272,14 @@ actions:
         example: hash
         schema:
           type: string
+      - name: else_value 
+        description: The value to set if it DOESNT match. Default to nothing.
+        required: false
+        multiline: false 
+        example: 
+        schema:
+          type: string
+    returns:
     returns:
       schema:
         type: string
@@ -677,7 +685,23 @@ actions:
         example: "{'key2': 'value2'}"
         schema:
           type: string
-
+  - name: delete_json_keys
+    description: Deletes keys in a json object
+    parameters:
+      - name: json_object 
+        description: The object to edit
+        multiline: true
+        example: "{'key': 'value', 'key2': 'value2', 'key3': 'value3'}"
+        required: true
+        schema:
+          type: string
+      - name: keys
+        description: The key(s) to remove
+        multiline: true
+        required: true
+        example: "key, key3"
+        schema:
+          type: string
   - name: run_math_operation 
     description: Takes a math input and gives you the result
     parameters:

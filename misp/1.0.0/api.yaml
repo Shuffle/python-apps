@@ -30,14 +30,40 @@ authentication:
         type: string
 
 actions:
-  - name: attributes_search
-    description: Serch query in attributes
+  - name: simplified_attribute_search
+    description: Search query in attributes
     parameters:
       - name: data
-        description: The query to search for
-        example: '{"value": "example.com}'
+        description: The IP, domain, url etc to search for.
+        example: '1.2.3.4'
         required: true
-        multiline: false
+        multiline: false 
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: simplified_event_search
+    description: Search query in attributes
+    parameters:
+      - name: data
+        description: The IP, domain, url or other IOC to search for
+        example: '1.2.3.4'
+        required: true
+        multiline: false 
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: attributes_search
+    description: Search query in attributes with JSON based on https://www.circl.lu/doc/misp/automation/#post-attributesrestsearch
+    parameters:
+      - name: data
+        description: The full query to search for
+        example: '{"value": "example.com"}'
+        required: true
+        multiline: true 
         schema:
           type: string
     returns:
@@ -50,7 +76,7 @@ actions:
         description: The query to search for
         example: '{"value": "example.com}'
         required: true
-        multiline: false
+        multiline true:
         schema:
           type: string
     returns:
@@ -70,7 +96,7 @@ actions:
       schema:
         type: string
   - name: event_edit
-    description: Update event with json daa
+    description: Update event with json data
     parameters:
       - name: event_id
         description: Event id to update
