@@ -26,6 +26,8 @@ actions:
     returns:
       schema:
         type: string
+  - name: router 
+    description: Reroutes information between different nodes 
   - name: get_cache_value
     description: Get a value saved to your organization in Shuffle
     parameters:
@@ -700,6 +702,37 @@ actions:
         multiline: true
         required: true
         example: "key, key3"
+        schema:
+          type: string
+  - name: convert_json_to_tags 
+    description: Creates key:value pairs and
+    parameters:
+      - name: json_object 
+        description: The object to make into a key:value pair 
+        multiline: true
+        example: "{'key': 'value', 'key2': 'value2', 'key3': 'value3'}"
+        required: true
+        schema:
+          type: string
+      - name: split_value
+        description: The way to split the values. Defaults to comma.
+        multiline: false 
+        required: false 
+        example: ","
+        schema:
+          type: string
+      - name: include_key 
+        description: Whether it should include the key or not
+        options:
+          - true
+          - false
+        schema:
+          type: string
+      - name: lowercase 
+        description: Whether it should be lowercase or not
+        options:
+          - true
+          - false
         schema:
           type: string
   - name: run_math_operation 

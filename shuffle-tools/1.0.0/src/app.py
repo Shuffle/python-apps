@@ -45,6 +45,9 @@ class Tools(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
+    async def router(self):
+        return "This action should be skipped"
+
     async def base64_conversion(self, string, operation):
 
         if operation == "encode":
@@ -1236,6 +1239,38 @@ class Tools(AppBase):
             print("Value couldn't be parsed")
             return response.text
 
+    async def convert_json_to_tags(self, json_object, split_value=", ", include_key=True, lowercase=True):
+        try:
+            json_object = json.loads(json_object)
+        except json.decoder.JSONDecodeError as e:
+            print("Failed to parse list2 as json: %s. Type: %s" % (e, type(json_object)))
+
+        if isinstance(lowercase, str) and lowercase.lower() == "true":
+            lowercase = True
+        else:
+            lowercase = False
+
+        if isinstance(include_key, str) or include_key.lower() == "true":
+            include_key = True
+        else:
+            include_key = False
+
+        parsedstring = []
+        for key, value in json_object.items():
+            print("KV: %s:%s" % (key, value))
+            if isinstance(value, str) or isinstance(value, int) or isinstance(value, bool):
+                if include_key == True:
+                    parsedstring.append("%s:%s" % (key, value))
+                else:
+                    parsedstring.append("%s" % (value))
+            else:
+                print("Can't handle type %s" % type(value))
+
+        fullstring = split_value.join(parsedstring)
+        if lowercase == True:
+            fullstring = fullstring.lower()
+
+        return fullstring
 
 if __name__ == "__main__":
     asyncio.run(Tools.run(), debug=True)
