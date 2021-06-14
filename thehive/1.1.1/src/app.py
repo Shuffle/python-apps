@@ -432,6 +432,11 @@ class TheHive(AppBase):
             )
 
     # https://github.com/TheHive-Project/TheHiveDocs/tree/master/api/connectors/cortex
+    async def delete_alert_artifact(self, apikey, url, organisation, artifact_id):
+        self.__connect_thehive(url, apikey, organisation)
+        return self.thehive.delete_alert_artifact(artifact_id).text
+
+    # https://github.com/TheHive-Project/TheHiveDocs/tree/master/api/connectors/cortex
     async def run_analyzer(
         self, apikey, url, organisation, cortex_id, analyzer_id, artifact_id
     ):
