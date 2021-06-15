@@ -11,6 +11,7 @@ import thehive4py
 from thehive4py.api import TheHiveApi
 from thehive4py.query import *
 import thehive4py.models
+from thehive4py.models import *
 
 from walkoff_app_sdk.app_base import AppBase
 
@@ -554,6 +555,124 @@ class TheHive(AppBase):
             )
         else:
             return f"Failure: {response.status_code}/{response.text}"
+
+    # Update TheHive Case
+    async def update_case(
+        self,
+        apikey,
+        url,
+        organisation,
+        cur_id,
+        title,
+        description,
+        severity,
+        owner,
+        flag,
+        tlp,
+        pap,
+        tags,
+        status,
+        resolution_status,
+        impact_status,
+        summary,
+        custom_fields,
+        custom_json,
+    ):
+        self.__connect_thehive(url, apikey, organisation)
+
+        # Get current case data and update fields if new data exists
+        case = self.thehive.get_case(cur_id).json()
+        case_title = title if title else case["title"]
+        case_description = description if description else case["description"]
+        case_severity = int(severity) if severity else case["severity"]
+        case_owner = owner if owner else case["owner"]
+        case_flag = (
+            (False if flag.lower() == "false" else True) if flag else case["flag"]
+        )
+        case_tlp = int(tlp) if tlp else case["tlp"]
+        case_pap = int(pap) if pap else case["pap"]
+        case_tags = tags if tags else case["tags"]
+        case_status = status if status else case["status"]
+        case_resolutionStatus = (
+            resolution_status if resolution_status else case["resolutionStatus"]
+        )
+        case_impactStatus = impact_status if impact_status else case["impactStatus"]
+        case_summary = summary if summary else case["summary"]
+        case_customFields = case["customFields"]
+
+        # Prepare the customfields
+        customfields = CustomFieldHelper()
+        if case_customFields:
+            for key, value in case_customFields.items():
+                if list(value)[0] == "integer":
+                    customfields.add_integer(key, list(value.items())[0][1])
+                elif list(value)[0] == "string":
+                    customfields.add_string(key, list(value.items())[0][1])
+                elif list(value)[0] == "boolean":
+                    customfields.add_boolean(key, list(value.items())[0][1])
+                elif list(value)[0] == "float":
+                    customfields.add_float(key, list(value.items())[0][1])
+                else:
+                    print(
+                        f'The value type "{value}" of the field {key} is not suported by the function.'
+                    )
+
+        custom_fields = json.loads(custom_fields)
+        for key, value in custom_fields.items():
+            if type(value) == int:
+                customfields.add_integer(key, value)
+            elif type(value) == str:
+                customfields.add_string(key, value)
+            elif type(value) == bool:
+                customfields.add_boolean(key, value)
+            elif type(value) == float:
+                customfields.add_float(key, value)
+            else:
+                print(
+                    f'The value type "{value}" of the field {key} is not suported by the function.'
+                )
+
+        customfields = customfields.build()
+
+        # Prepare the fields to be updated
+        case = Case(
+            id=cur_id,
+            title=case_title,
+            description=case_description,
+            severity=case_severity,
+            owner=case_owner,
+            flag=case_flag,
+            tlp=case_tlp,
+            pap=case_pap,
+            tags=case_tags,
+            status=case_status,
+            resolutionStatus=case_resolutionStatus,
+            impactStatus=case_impactStatus,
+            summary=case_summary,
+            customFields=customfields,
+            json=custom_json,
+        )
+
+        result = self.thehive.update_case(
+            case,
+            fields=[
+                "title",
+                "description",
+                "severity",
+                "owner",
+                "flag",
+                "tlp",
+                "pap",
+                "tags",
+                "status",
+                "resolutionStatus",
+                "impactStatus",
+                "summary",
+                "customFields",
+            ],
+        )
+
+        return json.dumps(result.json(), indent=4, sort_keys=True)
 
 
 if __name__ == "__main__":
