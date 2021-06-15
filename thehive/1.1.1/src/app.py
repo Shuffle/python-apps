@@ -60,14 +60,15 @@ class TheHive(AppBase):
         self.__connect_thehive(url, apikey, organisation)
 
         try:
-            query = json.loads(custom_query)
+            custom_query = json.loads(custom_query)
         except:
-            raise IOError("Invalid JSON payload received.")
+            #raise IOError("Invalid JSON payload received.")
+            pass
 
         if search_for == "alert":
-            response = self.thehive.find_alerts(query=query, range="all", sort=[])
+            response = self.thehive.find_alerts(query=custom_query, range="all", sort=[])
         else:
-            response = self.thehive.find_cases(query=query, range="all", sort=[])
+            response = self.thehive.find_cases(query=custom_query, range="all", sort=[])
 
         if response.status_code == 200 or response.status_code == 201 or response.status_code == 202:
             return response.text
