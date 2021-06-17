@@ -563,20 +563,20 @@ class TheHive(AppBase):
         url,
         organisation,
         cur_id,
-        title,
-        description,
-        severity,
-        owner,
-        flag,
-        tlp,
-        pap,
-        tags,
-        status,
-        resolution_status,
-        impact_status,
-        summary,
-        custom_fields,
-        custom_json,
+        title="",
+        description="",
+        severity=None,
+        owner="",
+        flag=None,
+        tlp=None,
+        pap=None,
+        tags="",
+        status="",
+        resolution_status="",
+        impact_status="",
+        summary="",
+        custom_fields=None,
+        custom_json=None,
     ):
         self.__connect_thehive(url, apikey, organisation)
 
@@ -591,7 +591,7 @@ class TheHive(AppBase):
         )
         case_tlp = int(tlp) if tlp else case["tlp"]
         case_pap = int(pap) if pap else case["pap"]
-        case_tags = tags if tags else case["tags"]
+        case_tags = tags.split(",") if tags else case["tags"]
         case_status = status if status else case["status"]
         case_resolutionStatus = (
             resolution_status if resolution_status else case["resolutionStatus"]
@@ -617,7 +617,7 @@ class TheHive(AppBase):
                         f'The value type "{value}" of the field {key} is not suported by the function.'
                     )
 
-        custom_fields = json.loads(custom_fields)
+        custom_fields = json.loads(custom_fields) if custom_fields else {}
         for key, value in custom_fields.items():
             if type(value) == int:
                 customfields.add_integer(key, value)
@@ -633,6 +633,8 @@ class TheHive(AppBase):
                 )
 
         customfields = customfields.build()
+
+        custom_json = json.loads(custom_json) if custom_json else {}
 
         # Prepare the fields to be updated
         case = Case(
@@ -673,6 +675,82 @@ class TheHive(AppBase):
         )
 
         return json.dumps(result.json(), indent=4, sort_keys=True)
+
+    # Get TheHive Organisations
+    async def get_organisations(
+        self,
+        apikey,
+        url,
+        organisation,
+    ):
+        headers = {
+            "Authorization": f"Bearer {apikey}",
+            "Content-Type": "application/json",
+        }
+
+        response = requests.get(
+            f"{url}/api/organisation",
+            headers=headers,
+            verify=False,
+        )
+
+        return response.text
+
+    # Create TheHive Organisation
+    async def create_organisation(
+        self,
+        apikey,
+        url,
+        organisation,
+        name,
+        description,
+    ):
+        headers = {
+            "Authorization": f"Bearer {apikey}",
+            "Content-Type": "application/json",
+        }
+
+        data = {"name": f"{name}", "description": f"{description}"}
+
+        response = requests.post(
+            f"{url}/api/organisation",
+            headers=headers,
+            json=data,
+            verify=False,
+        )
+
+        return response.text
+
+    # Create User in TheHive
+    async def create_user(
+        self,
+        apikey,
+        url,
+        organisation,
+        login,
+        name,
+        profile,
+    ):
+        headers = {
+            "Authorization": f"Bearer {apikey}",
+            "Content-Type": "application/json",
+        }
+
+        data = {
+            "login": f"{login}",
+            "name": f"{name}",
+            "profile": f"{profile}",
+            "organisation": f"{organisation}",
+        }
+
+        response = requests.post(
+            f"{url}/api/v1/user",
+            headers=headers,
+            json=data,
+            verify=False,
+        )
+
+        return response.text
 
 
 if __name__ == "__main__":
