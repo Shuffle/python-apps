@@ -306,7 +306,7 @@ class TheHive(AppBase):
         ignoreSimilarity="False",
         tags=None,
     ):
-        self.__connect_thehive(url, apikey, organisation)
+        self.__connect_thehive(url, apikey, organisation, version=4)
 
         if tlp:
             tlp = int(tlp)
