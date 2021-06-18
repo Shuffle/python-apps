@@ -267,7 +267,7 @@ actions:
     parameters:
       - name: case_id 
         description: The case to add it to
-        example: ""
+        example: "~123456"
         required: true
         schema:
           type: string
@@ -287,6 +287,45 @@ actions:
         description: The tags to use
         example: "shuffle,is,cool"
         required: false
+        schema:
+          type: string
+      - name: tlp
+        description: "Case's TLP: 0, 1, 2, 3 for WHITE, GREEN, AMBER, RED"
+        example: 2
+        required: false
+        multiline: false
+        options:
+          - 0
+          - 1
+          - 2
+          - 3
+        schema:
+          type: integer
+      - name: ioc
+        description: If artifact is ioc or not
+        example: "False"
+        required: false
+        multiline: false
+        options:
+          - True
+          - False
+        schema:
+          type: boolean
+      - name: sighted
+        description: If artifact was sighted or not
+        example: "False"
+        required: false
+        multiline: false
+        options:
+          - True 
+          - False
+        schema:
+          type: boolean
+      - name: description
+        description: Artifact description
+        example: "One of the best Artifacts"
+        required: false
+        multiline: true
         schema:
           type: string
     returns:
