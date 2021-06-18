@@ -85,31 +85,42 @@ class TheHive(AppBase):
             raise IOError(response.text)
 
     async def add_case_artifact(
-        self, apikey, url, organisation, case_id, data, datatype, tags
+        self,
+        apikey,
+        url,
+        organisation,
+        case_id,
+        data,
+        datatype,
+        tags=None,
+        tlp=None,
+        ioc=None,
+        sighted=None,
+        description="",
     ):
         self.__connect_thehive(url, apikey, organisation)
 
-        if tags:
-            if ", " in tags:
-                tags = tags.split(", ")
-            elif "," in tags:
-                tags = tags.split(",")
-            else:
-                tags = [tags]
-        else:
-            tags = []
+        tlp = int(tlp) if tlp else 2
+        ioc = True if ioc.lower() == "true" else False
+        sighted = True if sighted.lower() == "true" else False
+        if not description:
+            description = "Created by shuffle"
+
+        tags = (
+            tags.split(", ") if ", " in tags else tags.split(",") if "," in tags else []
+        )
 
         item = thehive4py.models.CaseObservable(
             dataType=datatype,
             data=data,
-            tlp=1,
-            ioc=False,
-            sighted=False,
+            tlp=tlp,
+            ioc=ioc,
+            sighted=sighted,
             tags=tags,
-            message="Created by shuffle",
+            message=description,
         )
 
-        return self.thehive.create_case_observable(id, item).text
+        return self.thehive.create_case_observable(case_id, item).text
 
     async def search_alert_title(
         self, apikey, url, organisation, title_query, search_range="0-25"
@@ -565,15 +576,15 @@ class TheHive(AppBase):
         id,
         resolution_status="",
         impact_status="",
-        summary=""
+        summary="",
     ):
 
         self.__connect_thehive(url, apikey, organisation)
         case = self.thehive.case(id)
-        case.status = "Resolved" 
+        case.status = "Resolved"
         case.summary = summary
         case.resolutionStatus = resolution_status
-        case.impactStatus = impact_status 
+        case.impactStatus = impact_status
 
         result = self.thehive.update_case(
             case,
@@ -678,8 +689,8 @@ class TheHive(AppBase):
             customFields=customfields,
             json=custom_json,
         )
-            
-        #resolutionStatus=case_resolutionStatus,
+
+        # resolutionStatus=case_resolutionStatus,
 
         result = self.thehive.update_case(
             case,
@@ -696,7 +707,6 @@ class TheHive(AppBase):
                 "status",
             ],
         )
-
 
         return json.dumps(result.json(), indent=4, sort_keys=True)
 
