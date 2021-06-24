@@ -40,13 +40,13 @@ class TheHive(AppBase):
     #    response = self.thehive.find_cases(query=String("title:'%s'" % title_query), range='all', sort=[])
     #    return response.text
 
-    def __connect_thehive(self, url, apikey, organisation):
+    def __connect_thehive(self, url, apikey, organisation, version=3):
         if organisation:
             self.thehive = TheHiveApi(
-                url, apikey, cert=False, organisation=organisation
+                url, apikey, cert=False, organisation=organisation, version=version
             )
         else:
-            self.thehive = TheHiveApi(url, apikey, cert=False)
+            self.thehive = TheHiveApi(url, apikey, cert=False, version=version)
 
     async def search_case_title(self, apikey, url, organisation, title_query):
         self.__connect_thehive(url, apikey, organisation)
