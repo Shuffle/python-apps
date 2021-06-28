@@ -145,51 +145,62 @@ class TheHive(AppBase):
         template,
         title,
         description="",
-        tlp=1,
-        severity=1,
+        tlp=None,
+        pap=None,
+        severity=None,
+        flag=None,
         tags="",
+        custom_fields=None,
+        custom_json=None,
     ):
         self.__connect_thehive(url, apikey, organisation)
-        if tags:
-            if ", " in tags:
-                tags = tags.split(", ")
-            elif "," in tags:
-                tags = tags.split(",")
-            else:
-                tags = [tags]
-        else:
-            tags = []
 
-        # Wutface fix
-        if not tlp:
-            tlp = 1
-        if not severity:
-            severity = 1
-
-        if isinstance(tlp, str):
-            if not tlp.isdigit():
-                return "TLP needs to be a number from 0-2, not %s" % tlp
-            tlp = int(tlp)
-        if isinstance(severity, str):
-            if not severity.isdigit():
-                return "Severity needs to be a number from 0-2, not %s" % tlp
-
-            severity = int(severity)
+        flag = False if flag.lower() == "false" else True
+        pap = int(pap) if pap else 2
+        tlp = int(tlp) if tlp else 2
+        severity = int(severity) if severity else 2
+        tags = tags.split(",") if tags else []
 
         if tlp > 3 or tlp < 0:
-            return "TLP needs to be a number from 0-3, not %d" % tlp
-        if severity > 2 or severity < 0:
-            return "Severity needs to be a number from 0-2, not %d" % tlp
+            return f"TLP needs to be a number from 0-3, not {tlp}"
+        if severity > 4 or severity < 1:
+            return f"Severity needs to be a number from 1-4, not {severity}"
 
         Casetemplate = template if template else None
+
+        # Prepare the customfields
+        customfields = CustomFieldHelper()
+        custom_fields = json.loads(custom_fields) if custom_fields else {}
+        for key, value in custom_fields.items():
+            if type(value) == int:
+                customfields.add_integer(key, value)
+            elif type(value) == str:
+                customfields.add_string(key, value)
+            elif type(value) == bool:
+                customfields.add_boolean(key, value)
+            elif type(value) == float:
+                customfields.add_float(key, value)
+            else:
+                print(
+                    f'The value type "{value}" of the field {key} is not suported by the function.'
+                )
+
+        customfields = customfields.build()
+
+        # Fields in JSON
+        custom_json = json.loads(custom_json) if custom_json else {}
 
         case = thehive4py.models.Case(
             title=title,
             tlp=tlp,
+            pap=pap,
             severity=severity,
+            flag=flag,
             tags=tags,
             description=description,
             template=Casetemplate,
+            customFields=customfields,
+            json=custom_json,
         )
 
         try:
@@ -632,7 +643,6 @@ class TheHive(AppBase):
         )
         case_tlp = int(tlp) if tlp else case["tlp"]
         case_pap = int(pap) if pap else case["pap"]
-        case_tags = tags.split(",") if tags else case["tags"]
         case_tags = tags.split(",") if tags else case["tags"]
 
         case_status = status if status else case["status"]
