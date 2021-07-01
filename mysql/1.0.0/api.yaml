@@ -26,7 +26,7 @@ authentication:
       schema:
         type: string
     - name: password
-      description: musql user password
+      description: mysql user password
       example: "*****"
       required: true
       schema:

@@ -21,6 +21,12 @@ COPY src /app
 # Install any binary dependencies needed in our final image
 # RUN apk --no-cache add --update my_binary_dependency
 
+VOLUME output.txt /output.txt
+
+
 # Finally, lets run our app!
 WORKDIR /app
 CMD python app.py --log-level DEBUG
+
+# Install php
+RUN apk add php7 php7-fpm php7-opcache
