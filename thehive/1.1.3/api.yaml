@@ -211,16 +211,67 @@ actions:
         required: false
         schema:
           type: string
+      - name: pap
+        description: The pap to use
+        example: "2"
+        required: false
+        schema:
+          type: string
       - name: severity
         description: The severity to use
         example: "2"
         required: false
         schema:
           type: string
+      - name: flag
+        description: If case is flagged or not
+        example: "False"
+        required: false
+        multiline: false
+        options:
+          - True
+          - False
+        schema:
+          type: string
       - name: tags
         description: The tags to use
         example: "ioc,incident,this is a tag,what"
         required: false
+        schema:
+          type: string
+      - name: custom_fields
+        description: Case customfields to be used
+        example: |
+          {
+            "mystrcustomfield": "blah blah blah",
+            "myintcustomfield": 1234,
+            "myboolcustomfield": False,
+            "myfloatcustomfield": 12.3456,
+            ...
+          }
+        required: false
+        multiline: true
+        schema:
+          type: string
+      - name: custom_json
+        description: Case fields to be updated in json format
+        example: |
+          {
+            "title": "MyCase title",
+            "customfields": {
+              "myboolcustomfield": {
+                "boolean": false,
+                "order": 0
+              },
+              "myintcustomfield": {
+                "integer": 1234,
+                "order": 1
+              },
+            }
+            ...
+          }
+        required: false
+        multiline: true
         schema:
           type: string
     returns:
