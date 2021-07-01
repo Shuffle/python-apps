@@ -3,8 +3,6 @@ import json
 import mysql.connector
 from mysql.connector import errorcode
 
-# import mysql.connector
-
 from walkoff_app_sdk.app_base import AppBase
 
 
@@ -21,18 +19,28 @@ class MySQL(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
-    # Create Database
-    async def create_database(self, server, user, password, database=None, name=None, tables=None):
-        conn = mysql.connector.connect(
-            host=server, user=user, passwd=password)
-        cursor = conn.cursor()
+    # Write your data inside this function
+
+    async def create_database(self, server, user, password, database, name, tables=None):
+        try:
+            conn = mysql.connector.connect(
+                host=server, user=user, passwd=password)
+            cursor = conn.cursor()
+        except Exception as err:
+            error = {
+                "Error": "Couldn't import the data!"
+            }
+            return error
 
         # try to create the database
         try:
             cursor.execute(
-                f"CREATE DATABASE {name} DEFAULT CHARACTER SET 'utf8'")
+                f"CREATE DATABASE {name} CHARACTER SET = 'utf8' COLLATE = 'utf8_general_ci'")
         except mysql.connector.Error as err:
-            return f"Failed creating database: {err}"
+            error = {
+                "Error": f"Failed creating database: {err}"
+            }
+            return error
 
         # Try to use the database, if it does not exist it creates
         try:
@@ -44,6 +52,9 @@ class MySQL(AppBase):
                 print(f"Database {name} created successfully.")
                 conn.database = name
             else:
+                error = {
+                    "Error": f"Couldn't use the database {name}: {err}"
+                }
                 return err
         else:
             if tables:
@@ -54,15 +65,21 @@ class MySQL(AppBase):
                     try:
                         print(f"Creating table {table_name}: ", end='')
                         cursor.execute(table_description)
-                        print("created with success!")
+                        print(f"Table {table_name} created with success!")
                         t_count += 1
                     except mysql.connector.Error as err:
                         if err.errno == errorcode.ER_TABLE_EXISTS_ERROR:
-                            print("already exists.")
-                            return "already exists."
+                            print(f"Table {table_name} already exists.")
+                            error = {
+                                "Error": f"Table {table_name} already exists."
+                            }
+                            return error
                         else:
                             print(err.msg)
-                            return err.msg
+                            error = {
+                                "Error": f"Couldn't create table {table_name}: {err.msg}"
+                            }
+                            return error
 
                 response = {
                     "message": f"Database {name} and tables created with success!",
@@ -83,13 +100,22 @@ class MySQL(AppBase):
         except mysql.connector.Error as err:
             if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
                 print("Something is wrong with your user name or password")
-                return "Something is wrong with your user name or password"
+                error = {
+                    "Error": "Something is wrong with your user name or password"
+                }
+                return error
             elif err.errno == errorcode.ER_BAD_DB_ERROR:
                 print("Database does not exist")
-                return "Database does not exist"
+                error = {
+                    "Error": "Database does not exist"
+                }
+                return error
             else:
                 print(err)
-                return err
+                error = {
+                    "Error": f"{err}"
+                }
+                return error
         else:
             cursor = conn.cursor()
             t_count = 0
@@ -103,10 +129,16 @@ class MySQL(AppBase):
                 except mysql.connector.Error as err:
                     if err.errno == errorcode.ER_TABLE_EXISTS_ERROR:
                         print("already exists.")
-                        return "already exists."
+                        error = {
+                            "Error": f"Table {table_name} already exists."
+                        }
+                        return error
                     else:
                         print(err.msg)
-                        return err.msg
+                        error = {
+                            "Error": f"{err.msg}"
+                        }
+                        return error
             result = "Table(s) created with success!" if t_count > 1 else "Table created with success!"
             return result
 
@@ -123,13 +155,22 @@ class MySQL(AppBase):
         except mysql.connector.Error as err:
             if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
                 print("Something is wrong with your user name or password")
-                return "Something is wrong with your user name or password"
+                error = {
+                    "Error": "Something is wrong with your user name or password"
+                }
+                return error
             elif err.errno == errorcode.ER_BAD_DB_ERROR:
                 print("Database does not exist")
-                return "Database does not exist"
+                error = {
+                    "Error": "Database does not exist"
+                }
+                return error
             else:
                 print(err)
-                return err
+                error = {
+                    "Error": f"{err}"
+                }
+                return error
         else:
             cursor = conn.cursor()
             if isinstance(data, list):
@@ -155,7 +196,10 @@ class MySQL(AppBase):
                         conn.commit()
                     except mysql.connector.Error as err:
                         print(err)
-                        return err
+                        error = {
+                            "Error": f"{err}"
+                        }
+                        return error
             else:
                 fields = ""
                 value_fields = ""
@@ -178,12 +222,15 @@ class MySQL(AppBase):
                     conn.commit()
                 except mysql.connector.Error as err:
                     print(err)
-                    return err
+                    error = {
+                        "Error": f"{err}"
+                    }
+                    return error
 
             cursor.close()
             conn.close()
             response = {
-                "message": "Data inserted with success!",
+                "message": f"Data inserted with success into table {table}!",
                 "data": data
             }
 

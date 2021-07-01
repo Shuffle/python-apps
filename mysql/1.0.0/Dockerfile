@@ -21,6 +21,9 @@ COPY src /app
 # Install any binary dependencies needed in our final image
 # RUN apk --no-cache add --update my_binary_dependency
 
+
 # Finally, lets run our app!
 WORKDIR /app
 CMD python app.py --log-level DEBUG
+
+
