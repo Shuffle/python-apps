@@ -267,9 +267,9 @@ class Tools(AppBase):
         if input_data.lower() == "false":
             return False
         elif input_data.lower() == "true":
-            return True 
+            return True
 
-        return input_data 
+        return input_data
 
     async def map_value(self, input_data, mapping):
 
@@ -1028,7 +1028,7 @@ class Tools(AppBase):
         print(list_two)
         print(set_field)
         print("START: ")
-            
+
         if len(sort_key_list_one) > 0:
             print("Sort 1 %s by key: %s" % (list_one, sort_key_list_one))
             try:
@@ -1047,7 +1047,7 @@ class Tools(AppBase):
 
         for i in range(len(list_one)):
             #print(list_two[i])
-            if isinstance(list_two[i], dict): 
+            if isinstance(list_two[i], dict):
                 for key, value in list_two[i].items():
                     list_one[i][key] = value
             elif isinstance(list_two[i], str) or isinstance(list_two[i], int) or isinstance(list_two[i], bool):
@@ -1055,7 +1055,7 @@ class Tools(AppBase):
                 if len(set_field) == 0:
                     return "Define a JSON key to set for List two (Set Field)"
 
-                list_one[i][set_field] = list_two[i] 
+                list_one[i][set_field] = list_two[i]
 
         return list_one
 
@@ -1172,8 +1172,8 @@ class Tools(AppBase):
 
     async def run_math_operation(self, operation):
         print("Operation: %s" % operation)
-        result = eval(operation)  
-        return result 
+        result = eval(operation)
+        return result
 
     async def escape_html(self, input_data, field_name):
 
@@ -1201,7 +1201,7 @@ class Tools(AppBase):
         try:
             allvalues = value.json()
             print("VAL1: ", allvalues)
-            allvalues["key"] = key 
+            allvalues["key"] = key
             print("VAL2: ", allvalues)
 
             try:
@@ -1211,7 +1211,7 @@ class Tools(AppBase):
                 print("Parsing of value as JSON failed")
                 pass
 
-            return json.dumps(allvalues) 
+            return json.dumps(allvalues)
         except:
             print("Value couldn't be parsed, or json dump of value failed")
             return value.text
@@ -1234,7 +1234,7 @@ class Tools(AppBase):
             allvalues = response.json()
             allvalues["key"] = key
             allvalues["value"] = str(value)
-            return json.dumps(allvalues) 
+            return json.dumps(allvalues)
         except:
             print("Value couldn't be parsed")
             return response.text
@@ -1271,6 +1271,31 @@ class Tools(AppBase):
             fullstring = fullstring.lower()
 
         return fullstring
+
+    async def cidr_ip_match(self, ip, networks):
+        print("Executing with\nIP: {},\nNetworks: {}".format(ip, networks))
+
+        try:
+            networks = json.loads(networks)
+        except json.decoder.JSONDecodeError as e:
+            print("Failed to parse networks list as json: {}. Type: {}".format(
+                e, type(networks)
+            ))
+            return "Networks is not a valid list: {}".format(networks)
+
+        try:
+            ip_networks = list(map(ipaddress.ip_network, networks))
+            ip_address = ipaddress.ip_address(ip)
+        except ValueError as e:
+            return "IP or some networks are not in valid format.\nError: {}".format(e)
+
+        matched_networks = list(filter(lambda net: (ip_address in net), ip_networks))
+
+        result = {}
+        result['networks'] = list(map(str, matched_networks))
+        result['is_contained'] = True if len(result['networks']) > 0 else False
+
+        return json.dumps(result)
 
 if __name__ == "__main__":
     asyncio.run(Tools.run(), debug=True)
