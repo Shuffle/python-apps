@@ -96,8 +96,8 @@ actions:
       example: '{"data": "this is a test", "this_is_a_number": 1, "this_is_a_list": [{"item": [{"hello": "there", "how_is_this": {"sub_in_sub": [{"another": "list"}]}}]}, {"item": "2"}], "subobject": {"data": "subobject"}}'
       schema:
         type: string
-  - name: create_alert_artifact
-    description: Create an alert artifact (TheHive 4 ONLY)
+  - name: add_alert_artifact
+    description: Add an artifact to an alert  (TheHive 4 ONLY)
     parameters:
       - name: alert_id
         description: Alert identifier
@@ -536,7 +536,7 @@ actions:
     returns:
       schema:
         type: string
-  - name: create_task_log
+  - name: add_task_log
     description: Creates a task log in TheHive
     parameters:
       - name: task_id
@@ -553,10 +553,16 @@ actions:
           type: string
       - name: filedata
         description: The file ID from Shuffle
-        example: "adf5e3d0fd85633be17004735a0a119e"
+        example: "not working, leave it empty"
         required: false
         schema:
           type: file
+      - name: mime_type
+        description: The file mime type
+        example: "image/png"
+        required: false
+        schema:
+          type: string
   - name: delete_alert_artifact
     description: Deletes and artifact from a TheHive alert
     parameters:
@@ -569,7 +575,7 @@ actions:
     returns:
       schema:
         type: string
-  - name: create_case_file_observable
+  - name: create_case_file_artifact
     description: Creates a task log in TheHive
     parameters:
       - name: case_id
@@ -677,7 +683,6 @@ actions:
         multiline: true
         schema:
           type: string
-
   - name: update_case
     description: Update case in TheHive
     parameters:
@@ -926,6 +931,210 @@ actions:
             "manageAction"
           ],
           "profile": "org-admin"
+        }
+      schema:
+        type: string
+  - name: update_case_artifact
+    description: Update case artifact in TheHive
+    parameters:
+      - name: id 
+        description: The artifact id
+        example: "~123456"
+        required: true
+        multiline: false
+        schema:
+          type: string
+      - name: description
+        description: The artifact description to be used
+        example: "My artifact description"
+        required: false
+        multiline: true
+        schema:
+          type: string
+      - name: tlp
+        description: "Artifacts's TLP: 0, 1, 2, 3 for WHITE, GREEN, AMBER, RED"
+        example: 2
+        required: false
+        multiline: false
+        options:
+          - 0
+          - 1
+          - 2
+          - 3
+        schema:
+          type: integer
+      - name: ioc
+        description: If artifact is an IOC or not
+        example: "False"
+        required: false
+        multiline: false
+        options:
+          - True
+          - False
+        schema:
+          type: string
+      - name: sighted
+        description: If artifact was sighted or not
+        example: "False"
+        required: false
+        multiline: false
+        options:
+          - True
+          - False
+        schema:
+          type: string
+      - name: tags
+        description: List of tags to be used
+        example: "tag1,tag2,tag3"
+        required: false
+        multiline: false
+        schema:
+          type: string
+      - name: custom_json
+        description: Case fields to be updated in json format
+        example: |
+          {
+            "description": "MyCase title",
+            "ioc": True,
+            "sighted": False,
+            "tags": [
+              "tag1",
+              "tag2"
+            ],
+            ...
+          }
+        required: false
+        multiline: true
+        schema:
+          type: string
+    returns:
+      example: |
+        {
+          "_id": "~40972472",
+          "id": "~40972472",
+          "createdBy": "admin@thehive.local",
+          "updatedBy": "admin@thehive.local",
+          "createdAt": 1623882071591,
+          "updatedAt": 1625314869926,
+          "_type": "case_artifact",
+          "dataType": "hash",
+          "data": "65149e036fff06026d80ac9ad4d156332822dc93142cf1a122b1841ec8de34b5",
+          "startDate": 1623882071591,
+          "tlp": 1,
+          "tags": [],
+          "ioc": true,
+          "sighted": true,
+          "message": "Imported from MISP event\n\n**QRadar Offense:** [Got to](https://test.com)",
+          "reports": {},
+          "stats": {},
+          "ignoreSimilarity": false
+        }
+      schema:
+        type: string
+  - name: create_task
+    description: Create a new organisation in TheHive
+    parameters:
+      - name: case_id
+        description: Case ID to create task
+        example: "~123456"
+        required: true
+        schema:
+          type: string
+      - name: title
+        description: Task title
+        example: "MyTask title"
+        required: true
+        schema:
+          type: string
+      - name: description
+        description: Task description
+        example: "MyTask is the best!"
+        required: false
+        schema:
+          type: string
+      - name: status
+        description: If artifact was sighted or not
+        example: "Waiting"
+        required: false
+        multiline: false
+        options:
+          - "Waiting"
+          - "InProgress"
+        schema:
+          type: string
+      - name: flag
+        description: If case is flagged or not
+        example: "False"
+        required: false
+        multiline: false
+        options:
+          - True
+          - False
+        schema:
+          type: string
+      - name: group
+        description: Task group
+        example: "First Fase"
+        required: false
+        schema:
+          type: string
+      - name: custom_json
+        description: Case fields to be updated in json format
+        example: |
+          {
+            "Title": "MyTask title",
+            "flag": True,
+            "group": "Special",
+            ...
+          }
+    returns:
+      example: |
+        {
+          "id": "~82014416",
+          "_id": "~82014416",
+          "createdBy": "admin@thehive.local",
+          "updatedBy": "admin@thehive.local",
+          "createdAt": 1625355765365,
+          "_type": "case_task",
+          "title": "Test3",
+          "group": "Special",
+          "description": "description of task",
+          "owner": "admin@thehive.local",
+          "status": "Waiting",
+          "flag": true,
+          "startDate": 1625355765735,
+          "order": 0
+        }
+      schema:
+        type: string
+  - name: close_task
+    description: Create a new organisation in TheHive
+    parameters:
+      - name: task_id
+        description: Task ID
+        example: "~123456"
+        required: true
+        schema:
+          type: string
+    returns:
+      example: |
+        {
+          "id": "~82014416",
+          "_id": "~82014416",
+          "createdBy": "admin@thehive.local",
+          "updatedBy": "admin@thehive.local",
+          "createdAt": 1625355765365,
+          "updatedAt": 1625359007401,
+          "_type": "case_task",
+          "title": "Test3",
+          "group": "Special",
+          "description": "description of task",
+          "owner": "admin@thehive.local",
+          "status": "Completed",
+          "flag": true,
+          "startDate": 1625355765735,
+          "endDate": 1625359007738,
+          "order": 0
         }
       schema:
         type: string
