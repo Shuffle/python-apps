@@ -3,7 +3,6 @@
 
 import asyncio
 import time
-from datetime import datetime
 import random
 import json
 import requests
