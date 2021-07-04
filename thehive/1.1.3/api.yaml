@@ -553,7 +553,7 @@ actions:
           type: string
       - name: filedata
         description: The file ID from Shuffle
-        example: "not working, leave it empty"
+        example: "adf5e3d0fd85633be17004735a0a119e"
         required: false
         schema:
           type: file
