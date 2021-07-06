@@ -43,12 +43,6 @@ class Crowdstrike_Falcon(AppBase):
         return params
 
 
-    # Two generate token function, one async and one not. was done because
-    #  - oauth is not currently supported in shuffle
-    #  - the generate function still needs to be accessible as an action
-    #  - you apparently can't call an async function from inside another async
-    #  - wanted to avoid putting the generate code inside every function
-
     async def generate_oauth2_access_token(self, url, client_id, client_secret, headers="", queries="", body=""):
         params={}
         request_headers={}
