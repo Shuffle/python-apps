@@ -542,7 +542,41 @@ class TheHive(AppBase):
             verify=False,
         )
         return response.text
+    # Create an observable as a file for an alert
+    async def create_alert_file_observable(
+        self, apikey, url, organisation, alert_id, tags, filedata
+    ):
+        if filedata["success"] == False:
+            return "No file to upload. Skipping message."
 
+        headers = {
+            "Authorization": "Bearer %s" % apikey,
+        }
+
+        if tags:
+            if ", " in tags:
+                tags = tags.split(", ")
+            elif "," in tags:
+                tags = tags.split(",")
+            else:
+                tags = [tags]
+
+        files = {}
+        if len(filedata["data"]) > 0:
+            files = {
+                "attachment": (filedata["filename"], filedata["data"]),
+            }
+
+        outerarray = {"dataType": "file", "tags": tags}
+        data = {"_json": """%s""" % json.dumps(outerarray)}
+        response = requests.post(
+            "%s/api/alert/%s/artifact" % (url, alert_id),
+            headers=headers,
+            files=files,
+            data=data,
+            verify=False,
+        )
+        return response.text
     # Get all artifacts of a given case
     async def get_case_artifacts(
         self,

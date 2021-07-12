@@ -593,6 +593,30 @@ actions:
     returns:
       schema:
         type: string
+  - name: create_alert_file_observable
+    description: Add a file observable to alert
+    parameters:
+      - name: alert_id
+        description: The alert ID
+        example: "~29009"
+        required: true
+        schema:
+          type: string
+      - name: tags
+        description: Tags for the case artifact
+        example: "ioc,cool,artifact"
+        required: false
+        schema:
+          type: string
+      - name: filedata
+        description: The file ID from Shuffle
+        example: "adf5e3d0fd85633be17004735a0a119e"
+        required: true
+        schema:
+          type: file
+    returns:
+      schema:
+        type: string     
   - name: get_case_artifacts
     description: Get all artifacts of a given case
     parameters:
