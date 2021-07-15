@@ -5,7 +5,7 @@ FROM frikky/shuffle:app_sdk as base
 FROM base as builder
 
 # Install all alpine build tools needed for our pip installs
-RUN apk --no-cache add --update alpine-sdk libffi libffi-dev musl-dev openssl-dev
+RUN apk --no-cache add --update alpine-sdk libffi libffi-dev musl-dev openssl-dev git
 
 # Install all of our pip packages in a single directory that we can copy to our base image later
 RUN mkdir /install
@@ -20,7 +20,7 @@ COPY src /app
 
 # Install any binary dependencies needed in our final image
 # RUN apk --no-cache add --update my_binary_dependency
-RUN apk --no-cache add jq
+RUN apk --no-cache add jq git
 
 # Finally, lets run our app!
 WORKDIR /app

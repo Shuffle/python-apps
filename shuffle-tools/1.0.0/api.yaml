@@ -28,6 +28,9 @@ actions:
         type: string
   - name: router
     description: Reroutes information between different nodes
+    returns:
+      schema:
+        type: string
   - name: get_cache_value
     description: Get a value saved to your organization in Shuffle
     parameters:
