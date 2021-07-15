@@ -313,7 +313,7 @@ class TheHive(AppBase):
         except requests.exceptions.ConnectionError as e:
             return "ConnectionError: %s" % e
 
-    async def create_alert_artifact(
+    async def add_alert_artifact(
         self,
         apikey,
         url,
@@ -482,33 +482,42 @@ class TheHive(AppBase):
         return self.thehive.run_analyzer(cortex_id, artifact_id, analyzer_id).text
 
     # Creates a task log in TheHive with file
-    async def create_task_log(
-        self, apikey, url, organisation, task_id, message, filedata={}
+    async def add_task_log(
+        self,
+        apikey,
+        url,
+        organisation,
+        task_id,
+        message,
+        filedata={},
+        mime_type=None,
     ):
         if filedata["success"] == False:
             return "No file to upload. Skipping message."
 
         headers = {
-            "Authorization": "Bearer %s" % apikey,
+            "Authorization": f"Bearer {apikey}",
         }
+        if organisation:
+            headers["X-Organisation"] = organisation
 
         files = {}
         if len(filedata["data"]) > 0:
             files = {
-                "attachment": (filedata["filename"], filedata["data"]),
+                "attachment": (filedata["filename"], filedata["data"], mime_type),
             }
 
-        data = {"_json": """{"message": "%s"}""" % message}
+        data = {"message": f"{message}"}
         response = requests.post(
-            "%s/api/case/task/%s/log" % (url, task_id),
+            f"{url}/api/case/task/{task_id}/log",
             headers=headers,
             files=files,
             data=data,
         )
         return response.text
 
-    # Creates an observable as a file in a case
-    async def create_case_file_observable(
+    # Creates an artifact as a file in a case
+    async def create_case_file_artifact(
         self, apikey, url, organisation, case_id, tags, filedata
     ):
         if filedata["success"] == False:
@@ -827,6 +836,144 @@ class TheHive(AppBase):
             json=data,
             verify=False,
         )
+
+        return response.text
+
+    # Update TheHive case Artifact
+    async def update_case_artifact(
+        self,
+        apikey,
+        url,
+        organisation,
+        id,
+        description=None,
+        tlp=None,
+        ioc=None,
+        sighted=None,
+        tags=None,
+        custom_json=None,
+    ):
+        self.__connect_thehive(url, apikey, organisation)
+        # Get Artifact Data
+        artifact = self.thehive.get_case_observable(id).json()
+
+        # Prepare fields to be updated
+        ## Message (description):
+        artifact_message = (
+            (
+                artifact["message"] + " " + description[1:]
+                if "*" == description[0]
+                else description
+            )
+            if description
+            else artifact["message"]
+        )
+
+        ## TLP, PAP, IOC, Sighted
+        artifact_tlp = int(tlp) if tlp else artifact["tlp"]
+        artifact_ioc = (
+            (False if ioc.lower() == "false" else True) if ioc else artifact["ioc"]
+        )
+        artifact_sighted = (
+            (False if sighted.lower() == "false" else True)
+            if sighted
+            else artifact["sighted"]
+        )
+
+        ## Tags:
+        if tags:
+            if "*" == tags[0]:
+                artifact_tags = tags[1:].split(",")
+                artifact_tags.extend(artifact["tags"])
+            else:
+                artifact_tags = tags.split(",")
+        else:
+            artifact_tags = artifact["tags"]
+
+        ## Custom Json:
+        custom_json = json.loads(custom_json) if custom_json else {}
+
+        artifact = CaseObservable(
+            id=id,
+            message=artifact_message,
+            tlp=artifact_tlp,
+            ioc=artifact_ioc,
+            sighted=artifact_sighted,
+            tags=artifact_tags,
+            json=custom_json,
+        )
+
+        response = self.thehive.update_case_observables(
+            artifact, fields=["message", "tlp", "ioc", "sighted", "tags"]
+        )
+
+        return response.text
+
+    # Create TheHive case Task
+    async def create_task(
+        self,
+        apikey,
+        url,
+        organisation,
+        case_id,
+        title,
+        description=None,
+        status=None,
+        flag=None,
+        group=None,
+        custom_json=None,
+    ):
+        self.__connect_thehive(url, apikey, organisation)
+        # Prepare flag field
+        flag = False if flag.lower() == "false" else True
+        start_date = (
+            round(time.time() * 1000) if status.lower() == "inprogress" else None
+        )
+
+        case_task = CaseTask(
+            title=title,
+            description=description,
+            status=status,
+            startDate=start_date,
+            flag=flag,
+            group=group,
+            json=custom_json,
+        )
+
+        response = self.thehive.create_case_task(case_id, case_task)
+
+        return response.text
+
+    # Close TheHive case Task
+    async def close_task(
+        self,
+        apikey,
+        url,
+        organisation,
+        task_id,
+    ):
+        # Add EndDate Time before close
+        headers = {
+            "Authorization": f"Bearer {apikey}",
+        }
+        if organisation:
+            headers["X-Organisation"] = organisation
+
+        data = {"endDate": round(time.time() * 1000)}
+        requests.patch(
+            f"{url}/api/case/task/{task_id}",
+            headers=headers,
+            data=data,
+        )
+
+        self.__connect_thehive(url, apikey, organisation)
+
+        task = CaseTask(
+            id=task_id,
+            status="Completed",
+        )
+
+        response = self.thehive.update_case_task(task, fields=["status"])
 
         return response.text
 
