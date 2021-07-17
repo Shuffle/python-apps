@@ -42,6 +42,16 @@ class Misp(AppBase):
 
         return requests.post(url, headers=headers, json=data, verify=self.verify).text
 
+    async def simplified_warninglist_search(self, apikey, url, data):
+        url = "%s/warninglists/checkValue" % url
+        headers = {
+            "Accept": "application/json",
+            "Content-type": "application/json",
+            "Authorization": apikey,
+        }
+
+        return requests.post(url, headers=headers, json=data, verify=self.verify).text
+    
     async def simplified_event_search(self, apikey, url, data):
         url = "%s/events/restSearch" % url
         data = {"value": data}
@@ -63,6 +73,16 @@ class Misp(AppBase):
 
         return requests.post(url, headers=headers, data=data, verify=self.verify).text
 
+    async def warninglist_search(self, apikey, url, data):
+        url = "%s/warninglists/checkValue" % url
+        headers = {
+            "Accept": "application/json",
+            "Content-type": "application/json",
+            "Authorization": apikey,
+        }
+
+        return requests.post(url, headers=headers, data=data, verify=self.verify).text
+    
     async def events_search(self, apikey, url, data):
         url = "%s/events/restSearch" % url
         headers = {
