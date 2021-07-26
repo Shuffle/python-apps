@@ -2,7 +2,7 @@
 - An app to interact with Security and Compliance solutions from microsoft.
 
 ### Authentication
-To authenticate this app, you'll need an app registered in the Azure Portal. This app should use what's called **"application permissions"**, NOT "delegated permissions". More about this farther down.
+To authenticate this app, you'll need an app registered in the Azure Portal. This app should use what's called **"application permissions"**, NOT "delegated permissions". More about this farther down. **Make sure to have admin consent**.
 
 **Required**:
 - tenant_id
