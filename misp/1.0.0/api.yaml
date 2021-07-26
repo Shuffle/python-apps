@@ -43,6 +43,19 @@ actions:
     returns:
       schema:
         type: string
+  - name: simplified_warninglist_search
+    description: Search query in warninglists
+    parameters:
+      - name: data
+        description: The IP, domain, url etc to search for.
+        example: '1.2.3.4'
+        required: true
+        multiline: false 
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
   - name: simplified_event_search
     description: Search query in attributes
     parameters:
@@ -62,6 +75,19 @@ actions:
       - name: data
         description: The full query to search for
         example: '{"value": "example.com"}'
+        required: true
+        multiline: true 
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: warninglist_search
+    description: Search query in warninglist with JSON based on https://www.circl.lu/doc/misp/warninglists/#check-individual-values-for-warning-list-hits
+    parameters:
+      - name: data
+        description: The full query to search for
+        example: '["1.2.3.4", "10.0.0.1"]'
         required: true
         multiline: true 
         schema:
