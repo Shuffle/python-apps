@@ -1,6 +1,6 @@
 walkoff_version: 1.0.0
 app_version: 1.0.0
-name: owa
+name: outlook_owa
 description: Email app for Exchange (OWA)
 tags:
   - email

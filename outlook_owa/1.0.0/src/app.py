@@ -110,6 +110,7 @@ class Owa(AppBase):
 
         if folderroot.lower() not in ["inbox", "outbox", "sent", "trash", "draft"]:
             return {
+                "success": False,
                 "folder": None,
                 "error": "Root folder {} not supported. Valid values are: inbox, outbox, sent, trash, draft".format(
                     folderroot
@@ -130,7 +131,7 @@ class Owa(AppBase):
         for sub in foldersubs:
             folder = folder / sub
 
-        return {"folder": folder, "error": False}
+        return {"success": True, "folder": folder, "error": False}
 
     async def send_email(
         self,
@@ -149,8 +150,13 @@ class Owa(AppBase):
         auth = await self.authenticate(
             username, password, server, build, account, verifyssl
         )
+
         if auth["error"]:
-            return auth["error"]
+            return {
+                "success": False,
+                "reason": auth["error"],
+            }
+
         account = auth["account"]
 
         m = Message(
@@ -171,8 +177,15 @@ class Owa(AppBase):
                 )
                 m.attach(file)
 
-        m.send()
-        return {"ok": True, "error": False}
+        ret = m.send()
+        print(ret)
+
+        return {
+            "success": True, 
+            "error": False, 
+            "recipients": recipient, 
+            "subject": subject
+        }
 
     async def mark_email_as_read(
         self, username, password, server, build, account, verifyssl, email_id, foldername="inbox"
@@ -204,10 +217,10 @@ class Owa(AppBase):
             email.is_read = True
             email.save()
             account.root.refresh()
-            return {"ok": True, "error": False}
+            return {"success": True}
         except exchangelib.errors.DoesNotExist as e:
             print("ERROR: %s" % e)
-            return {"ok": False, "error": "Email {} does not exists".format(email_id)}
+            return {"success": False, "reason": "Email {} does not exists".format(email_id)}
 
     async def add_category(
         self, username, password, server, build, account, verifyssl, email_id, category, foldername="inbox"
@@ -242,10 +255,10 @@ class Owa(AppBase):
             email.categories.extend(category)
             email.save()
             account.root.refresh()
-            return {"ok": True, "error": False}
+            return {"success": True}
         except exchangelib.errors.DoesNotExist as e:
             print("ERROR: %s" % e)
-            return {"ok": False, "error": "Email {} does not exists".format(email_id)}
+            return {"success": False, "reason": "Email {} does not exists".format(email_id)}
 
     async def delete_email(
         self, username, password, server, build, account, verifyssl, email_id
@@ -263,9 +276,9 @@ class Owa(AppBase):
             email = account.inbox.get(message_id=email_id)
             email.delete()
             account.root.refresh()
-            return {"ok": True, "error": False}
+            return {"success": True}
         except exchangelib.errors.DoesNotExist:
-            return {"ok": False, "error": "Email {} does not exists".format(email_id)}
+            return {"success": False, "reason": "Email {} does not exists".format(email_id)}
 
     async def move_email(
         self,
@@ -283,13 +296,19 @@ class Owa(AppBase):
             username, password, server, build, account, verifyssl
         )
         if auth["error"]:
-            return auth["error"]
+            return {
+                "success": False,
+                "reason": auth["error"]
+            }
         account = auth["account"]
 
         # Parse email destination folder
         folder = await self.parse_folder(account, foldername)
         if folder["error"]:
-            return folder["error"]
+            return {
+                "success": False,
+                "reason": folder["error"]
+            }
         folder = folder["folder"]
 
         # Move email
@@ -297,9 +316,9 @@ class Owa(AppBase):
             email = account.inbox.get(message_id=email_id)
             email.move(to_folder=folder)
             account.root.refresh()
-            return {"ok": True, "error": False}
+            return {"success": True}
         except exchangelib.errors.DoesNotExist:
-            return {"ok": False, "error": "Email {} does not exists".format(email_id)}
+            return {"success": False, "reason": "Email {} does not exists".format(email_id)}
 
     async def get_emails(
         self,
@@ -418,6 +437,7 @@ class Owa(AppBase):
 
                 # Add message_id as top returned field
                 output_dict["message_id"] = parsed_eml["header"]["header"]["message-id"][0]
+                output_dict["message_id"] = output_dict["message_id"].replace("\t", "").strip()
                 
                 # Add categories to output dict
                 output_dict["categories"] = email.categories
