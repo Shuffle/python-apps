@@ -26,8 +26,8 @@ and once there go down to **App Registrations** a new window will pop up.
 - Make sure your application has adequate permissions.
 - Each action may require different permission to run. To add permissions, Go to your application in azure portal &#8594; API permission &#8594; Add permission (some of the permissions will require admin consent).
 - After adding permission , Grant consent.
-- Be sure to use work / business account. Most of the actions are not supported on personal account.
+- Some of the actions are not supported on personal account.
 
 
 ## References
-- To read more about required permission for each action you can refer to [Security](https://docs.microsoft.com/en-us/graph/api/resources/security-api-overview?view=graph-rest-1.0) & [compliance](https://docs.microsoft.com/en-us/graph/api/resources/complianceapioverview?view=graph-rest-beta)'s official documentation.
+- To read more about required permission for each action you can refer to [Identity & Access](https://docs.microsoft.com/en-us/graph/api/resources/azure-ad-overview?view=graph-rest-1.0)'s official documentation.
