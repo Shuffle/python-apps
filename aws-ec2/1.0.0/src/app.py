@@ -356,6 +356,52 @@ class AWSEC2(AppBase):
         except Exception as e:
             return e
 
+    async def create_an_instance(self, access_key, secret_key, region, dryrun, image_id, min_count, max_count, instance_type, user_data, key_name, security_group_ids):
+        client = boto3.resource('ec2', 
+                    aws_access_key_id=access_key,
+                    aws_secret_access_key=secret_key,
+                    region_name=region)
+        dryrun = True if dryrun in ["True", "true"] else False    
+        
+        try:
+            if security_group_ids:
+                security_group_ids_list = [i for i in security_group_ids.split(" ")]
+                instance =  client.create_instances(
+                                DryRun= dryrun,
+                                ImageId=image_id,
+                                MinCount=int(min_count),
+                                MaxCount=int(max_count),
+                                InstanceType=instance_type,
+                                KeyName=key_name,
+                                SecurityGroupIds= security_group_ids_list,
+                                UserData= user_data
+                                                               
+                            )
+                #parsing response         
+                total_instances = ["instance_id_"+str(i) for i in range(1,len(instance)+1)] 
+                instance_id_list = [i.id for i in instance]  
+                response = dict(zip(total_instances,instance_id_list))
+                response.update({"Success":"True"})
+                return response   
+            else:
+                instance =  client.create_instances(
+                                DryRun= dryrun,
+                                ImageId=image_id,
+                                MinCount=int(min_count),
+                                MaxCount=int(max_count),
+                                InstanceType=instance_type,
+                                KeyName=key_name,
+                                UserData= user_data
+                            )
+                #parsing response            
+                total_instances = ["instance_id_"+str(i) for i in range(1,len(instance)+1)] 
+                instance_id_list = [i.id for i in instance]  
+                response = dict(zip(total_instances,instance_id_list))
+                response.update({"Success":"True"})
+                return response
+        except Exception as e:
+            return f"Exception occured: {e}"        
+
 
 if __name__ == "__main__":
     asyncio.run(AWSEC2.run(), debug=True)
