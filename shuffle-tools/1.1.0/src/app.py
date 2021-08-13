@@ -31,7 +31,7 @@ class Tools(AppBase):
     logging set up behind the scenes.
     """
 
-    __version__ = "1.0.0"
+    __version__ = "1.1.0"
     app_name = (
         "Shuffle Tools"  # this needs to match "name" in api.yaml for WALKOFF to work
     )
@@ -60,8 +60,23 @@ class Tools(AppBase):
             decoded_string = str(decoded_bytes, "utf-8")
             return decoded_string
 
+    def parse_list(self, input_list):
+        try:
+            input_list = json.loads(input_list)
+            if isinstance(input_list, list):
+                input_list = ",".join(input_list)
+            else:
+                return json.dumps(input_list)
+        except:
+            pass
+
+        input_list = input_list.replace(", ", ",", -1)
+        return input_list
+
     # This is an SMS function of Shuffle
     async def send_sms_shuffle(self, apikey, phone_numbers, body):
+        phone_numbers = self.parse_list(phone_numbers)
+
         targets = [phone_numbers]
         if ", " in phone_numbers:
             targets = phone_numbers.split(", ")
@@ -76,6 +91,8 @@ class Tools(AppBase):
 
     # This is an email function of Shuffle
     async def send_email_shuffle(self, apikey, recipients, subject, body):
+        recipients = self.parse_list(recipients)
+
         targets = [recipients]
         if ", " in recipients:
             targets = recipients.split(", ")
@@ -227,6 +244,8 @@ class Tools(AppBase):
         return str(len(item))
 
     async def delete_json_keys(self, json_object, keys):
+        keys = self.parse_list(keys)
+
         splitdata = [keys]
         if ", " in keys:
             splitdata = keys.split(", ")
@@ -281,6 +300,36 @@ class Tools(AppBase):
         print(f"Mapping {input_data} to {output_data}")
 
         return output_data
+
+    async def regex_capture_group(self, input_data, regex):
+        try:
+            a = re.search(regex, input_data)
+        except re.error as e:
+            return {
+                "success": False,
+                "reason": "Bad pattern: %s" % e,
+            }
+            
+        if a == None:
+            return {
+                "success": False,
+                "reason": "Couldn't find matching pattern for \"%s\"" % regex 
+            }
+            
+        cnt = 1
+        data = {
+            "success": False,
+        }
+        while True:
+            try:
+                data[cnt] = a.group(cnt)
+                data["success"] = True
+            except IndexError: 
+                break
+
+            cnt += 1
+
+        return data
 
     async def regex_replace(
         self, input_data, regex, replace_string="", ignore_case="False"
@@ -522,6 +571,7 @@ class Tools(AppBase):
 
                 # CONTAINS FIND FOR LIST AND IN FOR STR
                 elif check == "contains any of":
+                    value = self.parse_list(value)
                     checklist = value.split(",")
                     tmp = tmp.lower()
                     print("CHECKLIST: %s. Value: %s" % (checklist, tmp))

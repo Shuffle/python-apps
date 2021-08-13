@@ -31,6 +31,38 @@ class Misp(AppBase):
         self.verify = False
         super().__init__(redis, logger, console_logger)
 
+    async def simplified_attribute_search(self, apikey, url, data):
+        url = "%s/attributes/restSearch" % url
+        data = {"value": data}
+        headers = {
+            "Accept": "application/json",
+            "Content-type": "application/json",
+            "Authorization": apikey,
+        }
+
+        return requests.post(url, headers=headers, json=data, verify=self.verify).text
+
+    async def simplified_warninglist_search(self, apikey, url, data):
+        url = "%s/warninglists/checkValue" % url
+        headers = {
+            "Accept": "application/json",
+            "Content-type": "application/json",
+            "Authorization": apikey,
+        }
+
+        return requests.post(url, headers=headers, json=data, verify=self.verify).text
+    
+    async def simplified_event_search(self, apikey, url, data):
+        url = "%s/events/restSearch" % url
+        data = {"value": data}
+        headers = {
+            "Accept": "application/json",
+            "Content-type": "application/json",
+            "Authorization": apikey,
+        }
+
+        return requests.post(url, headers=headers, json=data, verify=self.verify).text
+
     async def attributes_search(self, apikey, url, data):
         url = "%s/attributes/restSearch" % url
         headers = {
@@ -38,8 +70,19 @@ class Misp(AppBase):
             "Content-type": "application/json",
             "Authorization": apikey,
         }
+
         return requests.post(url, headers=headers, data=data, verify=self.verify).text
 
+    async def warninglist_search(self, apikey, url, data):
+        url = "%s/warninglists/checkValue" % url
+        headers = {
+            "Accept": "application/json",
+            "Content-type": "application/json",
+            "Authorization": apikey,
+        }
+
+        return requests.post(url, headers=headers, data=data, verify=self.verify).text
+    
     async def events_search(self, apikey, url, data):
         url = "%s/events/restSearch" % url
         headers = {
@@ -105,6 +148,7 @@ class Misp(AppBase):
                 )
             else:
                 return "Issue downloading {}".format(md5)
+
         if len(atts_up) > 0:
             uuids = self.set_files(atts_up)
             return uuids

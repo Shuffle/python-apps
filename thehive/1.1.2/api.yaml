@@ -1,0 +1,828 @@
+walkoff_version: 1.1.2
+app_version: 1.1.2
+name: thehive
+description: TheHive implementation for Shuffle
+tags:
+  - Ticketing
+  - Search
+categories:
+  - Cases
+  - Ticketing
+  - Search
+contact_info:
+  name: "@frikkylikeme"
+  url: https://github.com/frikky
+authentication:
+  required: true
+  parameters:
+    - name: apikey
+      description: The Apikey to use
+      example: "*****"
+      required: true
+      schema:
+        type: string
+    - name: url
+      description: The URL to use
+      example: "http://localhost:9000"
+      required: true
+      schema:
+        type: string
+    - name: organisation
+      description: The Organisation
+      example: "myorg"
+      required: false
+      schema:
+        type: string
+actions:
+  - name: create_alert
+    description: Create an alert in TheHive
+    parameters:
+      - name: type
+        description: The type to use for the alert
+        example: "incident"
+        required: true
+        schema:
+          type: string
+      - name: source
+        description: The source to use
+        example: "SIEM"
+        required: true
+        schema:
+          type: string
+      - name: sourceref
+        description: The source reference to use
+        example: "incident-1234"
+        required: true
+        schema:
+          type: string
+      - name: title
+        description: The title to use
+        example: "THIS IS AN INCIDENT, PANIC"
+        required: false
+        schema:
+          type: string
+      - name: description
+        description: The description to use
+        example: ""
+        required: false
+        multiline: true
+        schema:
+          type: string
+      - name: tlp
+        description: The tlp to use
+        example: "2"
+        required: false
+        schema:
+          type: string
+      - name: severity
+        description: The severity to use
+        example: "2"
+        required: false
+        schema:
+          type: string
+      - name: tags
+        description: The tags to use
+        example: "ioc,incident,this is a tag,what"
+        required: false
+        schema:
+          type: string
+      - name: artifacts 
+        description: The artifacts to add
+        example: "ioc,incident,this is a tag,what"
+        required: false
+        schema:
+          type: string
+    returns:
+      example: '{"data": "this is a test", "this_is_a_number": 1, "this_is_a_list": [{"item": [{"hello": "there", "how_is_this": {"sub_in_sub": [{"another": "list"}]}}]}, {"item": "2"}], "subobject": {"data": "subobject"}}'
+      schema:
+        type: string
+  - name: create_alert_artifact
+    description: Create an alert artifact (TheHive 4 ONLY)
+    parameters:
+      - name: alert_id
+        description: Alert identifier
+        example: "~1234"
+        required: true
+        schema:
+          type: string
+      - name: dataType
+        description: "Observable's type, must be a valid type, one of the defined data types in TheHive"
+        example: "ip"
+        required: true
+        schema:
+          type: string
+      - name: data
+        description: Observable's data/value
+        example: "8.8.8.8"
+        required: true
+        schema:
+          type: string
+      - name: message
+        description: Observable's description
+        example: "Extracted IP entity from product X"
+        required: false
+        schema:
+          type: string
+      - name: tlp
+        description: "Case's TLP: 0, 1, 2, 3 for WHITE, GREEN, AMBER, RED. Default: 2"
+        example: "2"
+        required: false
+        schema:
+          type: string
+      - name: ioc
+        description: "Observable's ioc flag, True to mark an observable as IOC. Default: False"
+        example: "False"
+        required: false
+        multiline: false
+        schema:
+          type: string
+      - name: sighted
+        description: "Observable's sighted flag, True to mark the observable as sighted. Default: False"
+        example: "False"
+        required: false
+        multiline: false
+        schema:
+          type: string
+      - name: ignoreSimilarity
+        description: "Observable's similarity ignore flag. Trueto ignore the observable during similarity computing"
+        example: "False"
+        required: false
+        multiline: false
+        schema:
+          type: string
+      - name: tags
+        description: List of observable tags
+        example: "ioc,alienvault,abuse.ch"
+        required: false
+        schema:
+          type: string
+    returns:
+      example: |
+        [
+            {
+                "_id": "~4321",
+                "id": "~4321",
+                "createdBy": "user.1@example.com",
+                "createdAt": 1616443009693,
+                "_type": "case_artifact",
+                "dataType": "ip",
+                "data": "8.8.8.8",
+                "startDate": 1616443009693,
+                "tlp": 2,
+                "tags": [
+                    "test1"
+                ],
+                "ioc": false,
+                "sighted": false,
+                "message": "Test IP entity",
+                "reports": {},
+                "stats": {}
+            }
+        ]
+      schema:
+        type: string
+  - name: create_case
+    description: Get an item from TheHive
+    parameters:
+      - name: template
+        description: The case template to be used
+        example: "MyCase Template"
+        required: false
+        multiline: true
+        schema:
+          type: string
+      - name: title
+        description: The title to use
+        example: ""
+        required: false
+        multiline: true
+        schema:
+          type: string
+      - name: description
+        description: The description to use
+        example: ""
+        required: false
+        multiline: true
+        schema:
+          type: string
+      - name: tlp
+        description: The tlp to use
+        example: "2"
+        required: false
+        schema:
+          type: string
+      - name: severity
+        description: The severity to use
+        example: "2"
+        required: false
+        schema:
+          type: string
+      - name: tags
+        description: The tags to use
+        example: "ioc,incident,this is a tag,what"
+        required: false
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: create_case_from_alert
+    description: Create a case from alert
+    parameters:
+      - name: alert_id
+        description: The alert to promote it
+        example: ""
+        required: true
+        schema:
+          type: string
+      - name: case_template
+        description: Case template name to apply when creating the case
+        example: ""
+        required: false
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: merge_alert_into_case
+    description: Merge alert into case. Each observable of the alert will be added to the case if it doesn't exist in the case. The description of the alert will be appended to the case's description.
+    parameters:
+      - name: alert_id
+        description: The alert to merge into case
+        example: ""
+        required: true
+        schema:
+          type: string
+      - name: case_id
+        description: The case to merge it to
+        example: ""
+        required: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: add_case_artifact
+    description: Add an observable to TheHive
+    parameters:
+      - name: case_id 
+        description: The case to add it to
+        example: ""
+        required: true
+        schema:
+          type: string
+      - name: data
+        description: The item to add itself
+        example: "shuffler.io"
+        required: true
+        schema:
+          type: string
+      - name: datatype
+        description: The type of the item to add
+        example: "domain"
+        required: true
+        schema:
+          type: string
+      - name: tags
+        description: The tags to use
+        example: "shuffle,is,cool"
+        required: false
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: get_item
+    description: Get an item from TheHive
+    parameters:
+      - name: field_type
+        description: The type to get (alert, case..)
+        example: "alert"
+        options:
+          - alert
+          - case
+          - case_observables
+          - case_task
+          - case_tasks
+          - linked_cases
+          - task_log
+          - task_logs
+        required: true
+        schema:
+          type: string
+      - name: cur_id
+        description: The ID of the item to retrieve
+        example: ""
+        required: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: update_field
+    description: Update an alert field
+    parameters:
+      - name: field_type
+        description: The type to modify (alert, case..)
+        options:
+          - alert
+          - case
+          - case_observables
+          - case_task
+          - case_tasks
+          - linked_cases
+          - task_log
+          - task_logs
+        required: true
+        schema:
+          type: string
+      - name: cur_id
+        description: The ID of the item to modify
+        required: true
+        schema:
+          type: string
+      - name: field
+        description: The field to modify
+        required: true
+        schema:
+          type: string
+      - name: data
+        description: The data to set the field to. If you want to append to what already exists, start with %s.
+        required: true
+        multiline: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: number
+  - name: search_case_title
+    description: Get an item from TheHive
+    parameters:
+      - name: title_query
+        description: The title to search for
+        example: "injection"
+        required: true
+        schema:
+          type: string
+  - name: custom_search
+    description: custom search Query
+    parameters:
+      - name: search_for
+        description: select case or alert
+        options:
+          - case
+          - alert
+        required: true
+        schema:
+          type: string
+      - name: custom_query
+        description: Custom query for search
+        example: "{\"_field\": \"title\", \"_value\": \"shuffle\"}"
+        multiline: true
+        required: true
+        schema:
+          type: string
+  - name: search_alert_title
+    description: Get an item from TheHive
+    parameters:
+      - name: title_query
+        description: The title to search for
+        example: "alert"
+        multiline: true
+        required: true
+        schema:
+          type: string
+      - name: search_range
+        description: The amount of alerts to get. Defaults to 0-25
+        example: "0-50"
+        required: false
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: close_alert
+    description: Close an alert in thehive
+    parameters:
+      - name: alert_id
+        description: The ID to close
+        example: "adf5e3d0fd85633be17004735a0a119e"
+        required: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: reopen_alert
+    description: Reopen an alert in TheHive
+    parameters:
+      - name: alert_id
+        description: The ID to close
+        example: "adf5e3d0fd85633be17004735a0a119e"
+        required: true
+        schema:
+          type: string
+  - name: run_analyzer
+    description: Reopen an alert in TheHive
+    parameters:
+      - name: cortex_id
+        description: The cortex ID
+        example: "MISP_2_0"
+        required: true
+        schema:
+          type: string
+      - name: analyzer_id
+        description: The analyzer to run
+        example: "MISP_2_0"
+        required: true
+        schema:
+          type: string
+      - name: artifact_id
+        description: The artifact ID
+        example: "adf5e3d0fd85633be17004735a0a119e"
+        required: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: create_task_log
+    description: Creates a task log in TheHive
+    parameters:
+      - name: task_id
+        description: The task ID
+        example: "AXX1SWs8Oc6KiwR-tT2f"
+        required: true
+        schema:
+          type: string
+      - name: message
+        description: The message to send
+        example: "A nice screenshot "
+        required: true
+        schema:
+          type: string
+      - name: filedata
+        description: The file ID from Shuffle
+        example: "adf5e3d0fd85633be17004735a0a119e"
+        required: false
+        schema:
+          type: file
+  - name: delete_alert_artifact
+    description: Deletes and artifact from a TheHive alert
+    parameters:
+      - name: artifact_id 
+        description: The artifact ID to delete
+        example: "adf5e3d0fd85633be17004735a0a119e"
+        required: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: create_case_file_observable
+    description: Creates a task log in TheHive
+    parameters:
+      - name: case_id
+        description: The case ID
+        example: "AXX1SWs8Oc6KiwR-tT2f"
+        required: true
+        schema:
+          type: string
+      - name: tags
+        description: Tags for the case artifact
+        example: "ioc,cool,artifact"
+        required: true
+        schema:
+          type: string
+      - name: filedata
+        description: The file ID from Shuffle
+        example: "adf5e3d0fd85633be17004735a0a119e"
+        required: true
+        schema:
+          type: file
+    returns:
+      schema:
+        type: string
+  - name: get_case_artifacts
+    description: Get all artifacts of a given case
+    parameters:
+      - name: case_id
+        description: Case ID
+        example: "~1282096"
+        required: true
+        schema:
+          type: string
+      - name: dataType
+        description: Data Type 
+        example: "ip"
+        required: false
+        schema:
+          type: string
+    returns:
+      example: |
+        [
+          {
+            "_id": "~1134608",
+            "_type": "case_artifact",
+            "createdAt": 1617032160728,
+            "createdBy": "soar_api@shuffle.local",
+            "data": "myuser",
+            "dataType": "other",
+            "id": "~1134608",
+            "ioc": true,
+            "message": "Offense source",
+            "reports": {},
+            "sighted": false,
+            "startDate": 1617032160728,
+            "stats": {},
+            "tags": [
+                "Offense Source",
+                "QRadar"
+            ],
+            "tlp": 2
+          }
+        ]
+      schema:
+        type: string
+  - name: update_case
+    description: Update case in TheHive
+    parameters:
+      - name: cur_id
+        description: The case id
+        example: "~123456"
+        required: true
+        multiline: false
+        schema:
+          type: string
+      - name: title
+        description: The case title to be used
+        example: "MyCase Title"
+        required: false
+        multiline: false
+        schema:
+          type: string
+      - name: description
+        description: The case description to be used
+        example: "MyCase description"
+        required: false
+        multiline: false
+        schema:
+          type: string
+      - name: severity
+        description: "Case's severity: 1, 2, 3, 4 for LOW, MEDIUM, HIGH, CRTICAL"
+        example: 2
+        required: false
+        multiline: false
+        options:
+          - 1
+          - 2
+          - 3
+          - 4
+        schema:
+          type: integer
+      - name: owner
+        description: The case owner to be used
+        example: "admin@thehive.local"
+        required: false
+        multiline: false
+        schema:
+          type: string
+      - name: flag
+        description: If case is flagged or not
+        example: "False"
+        required: false
+        multiline: false
+        options:
+          - True
+          - False
+        schema:
+          type: string
+      - name: tlp
+        description: "Case's TLP: 0, 1, 2, 3 for WHITE, GREEN, AMBER, RED"
+        example: 2
+        required: false
+        multiline: false
+        options:
+          - 0
+          - 1
+          - 2
+          - 3
+        schema:
+          type: integer
+      - name: pap
+        description: "Case's PAP: 0, 1, 2, 3 for WHITE, GREEN, AMBER, RED"
+        example: 2
+        required: false
+        multiline: false
+        options:
+          - 0
+          - 1
+          - 2
+          - 3
+        schema:
+          type: integer
+      - name: tags
+        description: List of tags to be used
+        example: "tag1,tag2,tag3"
+        required: false
+        multiline: false
+        schema:
+          type: string
+      - name: status
+        description: Case status to be used
+        example: "Open"
+        required: false
+        multiline: false
+        options:
+          - Open
+          - Resolved
+          - Duplicated
+          - Deleted
+        schema:
+          type: string
+      - name: resolution_status
+        description: Resolution status to be used
+        example: "FalsePositive"
+        required: false
+        multiline: false
+        options:
+          - FalsePositive
+          - TruePositive
+          - Indeterminate
+          - Duplicated
+          - Other
+        schema:
+          type: string
+      - name: impact_status
+        description: Case impact status to be used
+        example: "NotApplicable"
+        required: false
+        multiline: false
+        options:
+          - NotApplicable
+          - NoImpact
+          - WithImpact
+        schema:
+          type: string
+      - name: summary
+        description: Case summary to be updated
+        example: "MyCase summary"
+        required: false
+        multiline: true
+        schema:
+          type: string
+      - name: custom_fields
+        description: Case customfields to be used
+        example: |
+          {
+            "mystrcustomfield": "blah blah blah",
+            "myintcustomfield": 1234,
+            "myboolcustomfield": False,
+            "myfloatcustomfield": 12.3456,
+            ...
+          }
+        required: false
+        multiline: true
+        schema:
+          type: string
+      - name: custom_json
+        description: Case fields to be updated in json format
+        example: |
+          {
+            "title": "MyCase title",
+            "customfields": {
+              "myboolcustomfield": {
+                "boolean": false,
+                "order": 0
+              },
+              "myintcustomfield": {
+                "integer": 1234,
+                "order": 1
+              },
+            }
+            ...
+          }
+        required: false
+        multiline: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: get_organisations
+    description: Get all TheHive organisations
+    returns:
+      example: |
+        [
+          {
+            "_id": "~16504",
+            "_type": "organisation",
+            "createdAt": 1619086806515,
+            "createdBy": "system@thehive.local",
+            "description": "organisation for administration",
+            "id": "~16504",
+            "links": [],
+            "name": "admin"
+          },
+          {
+            "_id": "~3420280",
+            "_type": "organisation",
+            "createdAt": 1619086920858,
+            "createdBy": "admin@thehive.local",
+            "description": "demo organisation",
+            "id": "~3420280",
+            "links": [],
+            "name": "demo"
+          }
+        ]
+      schema:
+        type: string
+  - name: create_organisation
+    description: Create a new organisation in TheHive
+    parameters:
+      - name: name
+        description: Organisation name
+        example: "MyOrgName"
+        required: true
+        schema:
+          type: string
+      - name: description
+        description: Organisation description
+        example: "MyOrg is the best!"
+        required: true
+        schema:
+          type: string
+    returns:
+      example: |
+        {
+          "_id": "~40964112",
+          "_type": "organisation",
+          "createdAt": 1623885332433,
+          "createdBy": "admin@thehive.local",
+          "description": "inu",
+          "id": "~40964112",
+          "links": [],
+          "name": "bruh"
+        }
+      schema:
+        type: string
+  - name: create_user
+    description: Create a new user in TheHive
+    parameters:
+      - name: login
+        description: User login
+        example: "newuser@thehive.local"
+        required: true
+        schema:
+          type: string
+      - name: name
+        description: User Name
+        example: "FirstName LastName"
+        required: true
+        schema:
+          type: string
+      - name: profile
+        description: User profile
+        example: "read-only"
+        required: true
+        options:
+          - org-admin
+          - analyst
+          - read-only
+        schema:
+          type: string
+    returns:
+      example: |
+        {
+          "_createdAt": 1623887155861,
+          "_createdBy": "admin@thehive.local",
+          "_id": "~16488",
+          "hasKey": false,
+          "hasMFA": false,
+          "hasPassword": false,
+          "locked": false,
+          "login": "shuffle@thehive.local",
+          "name": "Shuffle Soar",
+          "organisation": "demo",
+          "organisations": [],
+          "permissions": [
+            "manageShare",
+            "manageAnalyse",
+            "manageTask",
+            "manageCaseTemplate",
+            "manageCase",
+            "manageUser",
+            "manageProcedure",
+            "managePage",
+            "manageObservable",
+            "manageTag",
+            "manageConfig",
+            "manageAlert",
+            "accessTheHiveFS",
+            "manageAction"
+          ],
+          "profile": "org-admin"
+        }
+      schema:
+        type: string
+large_image: data:image/png;base64,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

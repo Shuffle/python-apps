@@ -1,5 +1,5 @@
 ---
-app_version: 1.0.0
+app_version: 1.1.0
 name: Shuffle Tools
 description: A tool app for Shuffle
 tags:
@@ -313,6 +313,26 @@ actions:
     returns:
       schema:
         type: string
+  - name: regex_capture_group
+    description: Returns objects matching the capture group(s)
+    parameters:
+      - name: input_data
+        description: The input data to use
+        required: true
+        multiline: true
+        example: This is some text <with.com> a domain that is with.com
+        schema:
+          type: string
+      - name: regex
+        description: Your regular expression
+        multiline: false
+        example: "some text <[a-zA-Z0-9.]+> a domain"
+        required: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
   - name: regex_replace
     description: Replace all instances matching a regular expression
     parameters:
@@ -320,26 +340,29 @@ actions:
         description: The input data to use
         required: true
         multiline: true
-        example: $exec.http_headers
+        example: This is some text <with.com> a domain that is with.com
         schema:
           type: string
       - name: regex
         description: Your regular expression
         multiline: false
-        example: "(Content-\\w+): (.*)"
+        example: "some text <[a-zA-Z0-9.]+> a domain"
         required: true
         schema:
           type: string
       - name: replace_string
         description: Replacement string (capture groups with \1 \2)
         multiline: true
-        example: "Content header '\\1' = '\\2'"
+        example: "some text <domain was here> a domain"
         required: false
         schema:
           type: string
       - name: ignore_case
         description: "Make regex case insensitive (Default: False)"
         multiline: false
+        options:
+          - false
+          - true
         example: "False"
         required: false
         schema:
