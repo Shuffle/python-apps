@@ -1306,15 +1306,21 @@ class Tools(AppBase):
             include_key = False
 
         parsedstring = []
-        for key, value in json_object.items():
-            print("KV: %s:%s" % (key, value))
-            if isinstance(value, str) or isinstance(value, int) or isinstance(value, bool):
-                if include_key == True:
-                    parsedstring.append("%s:%s" % (key, value))
+        try:
+            for key, value in json_object.items():
+                print("KV: %s:%s" % (key, value))
+                if isinstance(value, str) or isinstance(value, int) or isinstance(value, bool):
+                    if include_key == True:
+                        parsedstring.append("%s:%s" % (key, value))
+                    else:
+                        parsedstring.append("%s" % (value))
                 else:
-                    parsedstring.append("%s" % (value))
-            else:
-                print("Can't handle type %s" % type(value))
+                    print("Can't handle type %s" % type(value))
+        except AttributeError as e:
+            return {
+                "success": False,
+                "reason": "Json Object is not a dictionary",
+            }
 
         fullstring = split_value.join(parsedstring)
         if lowercase == True:
