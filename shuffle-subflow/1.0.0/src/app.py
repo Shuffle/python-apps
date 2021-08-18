@@ -1,4 +1,3 @@
-import socket
 import asyncio
 import time
 import random
@@ -14,7 +13,7 @@ class Subflow(AppBase):
     Inherit from the AppBase class to have Redis, logging, and console logging set up behind the scenes.
     """
     __version__ = "1.0.0"
-    app_name = "hello_world"  # this needs to match "name" in api.yaml
+    app_name = "subflow"  # this needs to match "name" in api.yaml
 
     def __init__(self, redis, logger, console_logger=None):
         """
@@ -26,7 +25,7 @@ class Subflow(AppBase):
         super().__init__(redis, logger, console_logger)
 
     async def run_subflow(self, user_apikey, workflow, argument, source_workflow="", source_execution="", startnode=""):
-        print("STARTNODE: %s", startnode)
+        print("STARTNODE: %s" % startnode)
         url = "%s/api/v1/workflows/%s/execute" % (self.url, workflow)
 
         params = {}
@@ -40,7 +39,7 @@ class Subflow(AppBase):
         else:
             print("No source execution")
 
-        if len(source_workflow) > 0:
+        if len(startnode) > 0:
             params["start"] = startnode 
         else:
             print("No startnode")
