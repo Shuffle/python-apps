@@ -301,35 +301,28 @@ class Tools(AppBase):
 
         return output_data
 
+    # Changed with 1.1.0 to run with different returns 
     async def regex_capture_group(self, input_data, regex):
         try:
-            a = re.search(regex, input_data)
+            matches = re.findall(regex, input_data)
+            print(matches)
+
+            get_first_group = lambda y: list(map(lambda x: x, y))
+            emails = get_first_group(matches)
+            return {
+                "success": True,
+                "matches": emails,
+            }
         except re.error as e:
             return {
                 "success": False,
                 "reason": "Bad pattern: %s" % e,
             }
-            
-        if a == None:
+        except:
             return {
                 "success": False,
-                "reason": "Couldn't find matching pattern for \"%s\"" % regex 
+                "reason": "General error",
             }
-            
-        cnt = 1
-        data = {
-            "success": False,
-        }
-        while True:
-            try:
-                data[cnt] = a.group(cnt)
-                data["success"] = True
-            except IndexError: 
-                break
-
-            cnt += 1
-
-        return data
 
     async def regex_replace(
         self, input_data, regex, replace_string="", ignore_case="False"
