@@ -309,15 +309,22 @@ class Tools(AppBase):
             }
 
             matches = re.findall(regex, input_data)
+            print(matches)
             for item in matches:
-                for i in range(0, len(item)):
-                    name = "group_%d" % i
+                if isinstance(item, str):
+                    name = "group_0" 
                     try:
-                        returnvalues[name].append(item[i])
-                    except KeyError:
-                        returnvalues[name] = [item[i]]
-                    except IndexError:
-                        returnvalues[name] = [item[i]]
+                        returnvalues[name].append(item)
+                    except:
+                        returnvalues[name] = [item]
+
+                else:
+                    for i in range(0, len(item)):
+                        name = "group_%d" % i
+                        try:
+                            returnvalues[name].append(item[i])
+                        except:
+                            returnvalues[name] = [item[i]]
 
             return returnvalues
         except re.error as e:
