@@ -304,24 +304,26 @@ class Tools(AppBase):
     # Changed with 1.1.0 to run with different returns 
     async def regex_capture_group(self, input_data, regex):
         try:
-            matches = re.findall(regex, input_data)
-            print(matches)
-
-            get_first_group = lambda y: list(map(lambda x: x, y))
-            emails = get_first_group(matches)
-            return {
+            returnvalues = {
                 "success": True,
-                "matches": emails,
             }
+
+            matches = re.findall(regex, input_data)
+            for item in matches:
+                for i in range(0, len(item)):
+                    name = "group_%d" % i
+                    try:
+                        returnvalues[name].append(item[i])
+                    except KeyError:
+                        returnvalues[name] = [item[i]]
+                    except IndexError:
+                        returnvalues[name] = [item[i]]
+
+            return returnvalues
         except re.error as e:
             return {
                 "success": False,
-                "reason": "Bad pattern: %s" % e,
-            }
-        except:
-            return {
-                "success": False,
-                "reason": "General error",
+                "reason": "Bad regex pattern: %s" % e,
             }
 
     async def regex_replace(
