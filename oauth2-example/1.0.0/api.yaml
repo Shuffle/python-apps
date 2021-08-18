@@ -12,7 +12,8 @@ contact_info:
 authentication:
   required: true
   type: oauth2
-  redirect_uri: "https://graph.microsoft.com/beta/users/%s/authentication/passwordMethods/%s/resetPassword" 
+  redirect_uri: "https://login.microsoftonline.com/common/oauth2/authorize" 
+  token_uri: "https://login.microsoftonline.com/common/oauth2/v2.0/token"
   parameters:
     - name: client_id
       description: 
@@ -20,6 +21,8 @@ authentication:
       required: true
       schema:
         type: string
+  scope:
+    - UserAuthenticationMethod.ReadWrite.All
 actions:
   - name: reset_password 
     description: Change password of a user in Azure
