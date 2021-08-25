@@ -406,8 +406,7 @@ class Tools(AppBase):
         if not isinstance(input_list, list):
             return {
                 "success": False,
-                "reason": "Error: input isnt a list. Remove # to use this action."
-                % type(input_list),
+                "reason": "Error: input isnt a list. Remove # to use this action.", 
                 "valid": [],
                 "invalid": [],
             }
