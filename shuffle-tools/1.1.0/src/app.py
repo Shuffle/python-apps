@@ -394,13 +394,14 @@ class Tools(AppBase):
             flip = True
 
         try:
-            input_list = eval(input_list)  # nosec
+            #input_list = eval(input_list)  # nosec
+            input_list = json.loads(input_list)
         except Exception:
             try:
                 input_list = input_list.replace("'", '"', -1)
                 input_list = json.loads(input_list)
             except Exception:
-                print("Error parsing string to array. Continuing anyway.")
+                print("[WARNING] Error parsing string to array. Continuing anyway.")
 
         # Workaround D:
         if not isinstance(input_list, list):
