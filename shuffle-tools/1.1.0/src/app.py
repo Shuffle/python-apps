@@ -531,12 +531,28 @@ class Tools(AppBase):
                             new_list.append(item)
                             found = True
                             break
-                        elif type(tmp) == list and subcheck not in tmp and flip:
+                        elif type(tmp) == list and subcheck in tmp and flip:
+                            failed_list.append(item)
+                            found = True
+                            break
+                        elif type(tmp) == list and subcheck not in tmp and not flip:
                             new_list.append(item)
+                            found = True
+                            break
+                        elif type(tmp) == list and subcheck not in tmp and flip:
+                            failed_list.append(item)
                             found = True
                             break
                         elif (type(tmp) == str and tmp.lower().find(subcheck) != -1 and not flip):
                             new_list.append(item)
+                            found = True
+                            break
+                        elif (type(tmp) == str and tmp.lower().find(subcheck) != -1 and flip):
+                            failed_list.append(item)
+                            found = True
+                            break
+                        elif (type(tmp) == str and tmp.lower().find(subcheck) == -1 and not flip):
+                            failed_list.append(item)
                             found = True
                             break
                         elif (type(tmp) == str and tmp.lower().find(subcheck) == -1 and flip):
