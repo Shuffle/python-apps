@@ -394,20 +394,20 @@ class Tools(AppBase):
             flip = True
 
         try:
-            input_list = eval(input_list)  # nosec
+            #input_list = eval(input_list)  # nosec
+            input_list = json.loads(input_list)
         except Exception:
             try:
                 input_list = input_list.replace("'", '"', -1)
                 input_list = json.loads(input_list)
             except Exception:
-                print("Error parsing string to array. Continuing anyway.")
+                print("[WARNING] Error parsing string to array. Continuing anyway.")
 
         # Workaround D:
         if not isinstance(input_list, list):
             return {
                 "success": False,
-                "reason": "Error: input isnt a list. Remove # to use this action."
-                % type(input_list),
+                "reason": "Error: input isnt a list. Remove # to use this action.", 
                 "valid": [],
                 "invalid": [],
             }
@@ -531,12 +531,28 @@ class Tools(AppBase):
                             new_list.append(item)
                             found = True
                             break
-                        elif type(tmp) == list and subcheck not in tmp and flip:
+                        elif type(tmp) == list and subcheck in tmp and flip:
+                            failed_list.append(item)
+                            found = True
+                            break
+                        elif type(tmp) == list and subcheck not in tmp and not flip:
                             new_list.append(item)
+                            found = True
+                            break
+                        elif type(tmp) == list and subcheck not in tmp and flip:
+                            failed_list.append(item)
                             found = True
                             break
                         elif (type(tmp) == str and tmp.lower().find(subcheck) != -1 and not flip):
                             new_list.append(item)
+                            found = True
+                            break
+                        elif (type(tmp) == str and tmp.lower().find(subcheck) != -1 and flip):
+                            failed_list.append(item)
+                            found = True
+                            break
+                        elif (type(tmp) == str and tmp.lower().find(subcheck) == -1 and not flip):
+                            failed_list.append(item)
                             found = True
                             break
                         elif (type(tmp) == str and tmp.lower().find(subcheck) == -1 and flip):
