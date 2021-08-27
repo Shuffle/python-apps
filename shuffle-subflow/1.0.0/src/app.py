@@ -24,7 +24,7 @@ class Subflow(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
-    async def run_subflow(self, user_apikey, workflow, argument, source_workflow="", source_execution="", startnode=""):
+    async def run_subflow(self, user_apikey, workflow, argument, source_workflow="", source_execution="", source_node="", source_auth="", startnode=""):
         print("STARTNODE: %s" % startnode)
         url = "%s/api/v1/workflows/%s/execute" % (self.url, workflow)
 
@@ -33,6 +33,16 @@ class Subflow(AppBase):
             params["source_workflow"] = source_workflow
         else:
             print("No source workflow")
+
+        if len(source_auth) > 0:
+            params["source_auth"] = source_auth
+        else:
+            print("No source auth")
+
+        if len(source_node) > 0:
+            params["source_node"] = source_node
+        else:
+            print("No source node")
 
         if len(source_execution) > 0:
             params["source_execution"] = source_execution

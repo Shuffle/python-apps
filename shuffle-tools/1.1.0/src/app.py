@@ -1113,17 +1113,23 @@ class Tools(AppBase):
                 print("Failed to sort list one")
                 pass
 
+        # Loops for each item in sub array and merges items together
+        # List one is being overwritten
+        base_key = "shuffle_auto_merge"
         for i in range(len(list_one)):
             #print(list_two[i])
             if isinstance(list_two[i], dict):
                 for key, value in list_two[i].items():
                     list_one[i][key] = value
+            elif isinstance(list_two[i], str) and list_two[i] == "":
+                continue
             elif isinstance(list_two[i], str) or isinstance(list_two[i], int) or isinstance(list_two[i], bool):
                 print("IN SETTER FOR %s" % list_two[i])
                 if len(set_field) == 0:
-                    return "Define a JSON key to set for List two (Set Field)"
-
-                list_one[i][set_field] = list_two[i]
+                    print("Define a JSON key to set for List two (Set Field)")
+                    list_one[i][base_key] = list_two[i]
+                else:
+                    list_one[i][set_field] = list_two[i]
 
         return list_one
 
