@@ -68,9 +68,13 @@ class HelloWorld(AppBase):
             "filename": filename,
             "data": data,
         }
-        print("Done with function")
 
-        return ("Successfully put your data in a file", filedata)
+        fileret = self.set_files([filedata])
+        value = {"success": True, "file_ids": fileret}
+        return value 
+        #print("Done with upload function")
+
+        #return ("Successfully put your data in a file", filedata)
 
     async def download_file(self, url):
         ret = requests.get(url, verify=False)
@@ -82,7 +86,7 @@ class HelloWorld(AppBase):
         value = {"success": True, "file_ids": fileret}
         return value 
 
-        return ("Successfully put your data in a file", filedata)
+        #return ("Successfully put your data in a file", filedata)
 
     async def delete_file(self, file_id):
         headers = {
