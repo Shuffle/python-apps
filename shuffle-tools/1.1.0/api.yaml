@@ -289,7 +289,7 @@ actions:
       schema:
         type: string
   - name: map_value
-    description: Takes a mapping dictionary and translates the input data
+    description: Takes a mapping dictionary and translates the input data. This is a search and replace for multiple fields.
     parameters:
       - name: input_data
         description: The input data to use
@@ -645,7 +645,7 @@ actions:
       schema:
         type: strings
   - name: add_list_to_list
-    description: Adds items of second list (list_two) to the first one (list_one)
+    description: Adds items of second list (list_two) to the first one (list_one). Can also append a single item (dict) to a list.
     parameters:
       - name: list_one
         description: The first list
@@ -711,6 +711,30 @@ actions:
         multiline: true
         required: true
         example: "{'key2': 'value2'}"
+        schema:
+          type: string
+  - name: set_json_key
+    description: Adds a JSON key to an existing object
+    parameters:
+      - name: json_object
+        description: The object to edit
+        multiline: true
+        example: "recipients"
+        required: true
+        schema:
+          type: string
+      - name: key 
+        description: The object to add 
+        multiline: false
+        example: "recipients"
+        required: true
+        schema:
+          type: string
+      - name: value 
+        description: The value to set it to in the JSON object
+        multiline: true
+        required: true
+        example: "frikky@shuffler.io"
         schema:
           type: string
   - name: delete_json_keys
@@ -813,6 +837,21 @@ actions:
           - decode
         schema:
           type: string
+  - name: get_timestamp 
+    description: Gets a timestamp for right now. Default returns an epoch timestamp
+    parameters:
+      - name: time_format 
+        description: The format to use
+        multiline: false
+        required: True
+        options:
+          - epoch 
+          - unix
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
   - name: cidr_ip_match
     description: Check if an IP is contained in a CIDR defined network
     parameters:

@@ -1,6 +1,7 @@
 import asyncio
 import datetime
 import json
+import time
 import markupsafe
 import os
 import re
@@ -243,6 +244,67 @@ class Tools(AppBase):
 
         return str(len(item))
 
+    async def set_json_key(self, json_object, key, value):
+        print(f"OBJ: {json_object}\nKEY: {key}\nVAL: {value}")
+        if isinstance(json_object, str):
+            try:
+                json_object = json.loads(json_object)
+            except json.decoder.JSONDecodeError as e:
+                return {
+                    "success": False,
+                    "reason": "Item is not valid JSON"
+                }
+
+        if isinstance(json_object, list):
+            if len(json_object) == 1:
+                json_object = json_object[0]
+            else:
+                return {
+                    "success": False,
+                    "reason": "Item is valid JSON, but can't handle lists. Use .#"
+                }
+
+        print(f"2")
+        if not isinstance(json_object, object):
+            return {
+                "success": False,
+                "reason": "Item is not valid JSON (2)"
+            }
+
+        print(f"3")
+        try:
+            value = json.loads(value)
+        except json.decoder.JSONDecodeError as e:
+            pass
+
+        print(f"4")
+        # Handle JSON paths
+        if "." in key:
+            print(f"4")
+            base_object = json.loads(json.dumps(json_object))
+            #base_object.output.recipients.notificationEndpointIds = ... 
+
+            keys = key.split(".")
+            if len(keys) >= 1:
+                first_object = keys[0]
+
+            # This is awful :)
+            buildstring = "base_object"
+            for subkey in keys:
+                buildstring += f"[\"{subkey}\"]" 
+
+            buildstring += f" = {value}"
+            print("BUILD: %s" % buildstring)
+
+            #output = 
+            eval(buildstring)
+            json_object = base_object
+            #json_object[first_object] = base_object
+        else:
+            json_object[key] = value
+
+        return json_object
+
     async def delete_json_keys(self, json_object, keys):
         keys = self.parse_list(keys)
 
@@ -290,16 +352,22 @@ class Tools(AppBase):
 
         return input_data
 
-    async def map_value(self, input_data, mapping):
+    async def map_value(self, input_data, mapping, default_value=""):
+        try:
+            mapping = json.loads(mapping)
+        except json.decoder.JSONDecodeError as e:
+            return {
+                "success": False,
+                "reason": "Mapping is not valid JSON: %s" % e,
+            }
 
-        mapping = json.loads(mapping)
-        print(f"Got mapping {json.dumps(mapping, indent=2)}")
+        for key, value in mapping.items():
+            try:
+                input_data = input_data.replace(key, str(value), -1)
+            except:
+                print("Failed mapping output data for key %s" % key)
 
-        # Get value if input_data in map, otherwise return original input_data
-        output_data = mapping.get(input_data, input_data)
-        print(f"Mapping {input_data} to {output_data}")
-
-        return output_data
+        return input_data 
 
     # Changed with 1.1.0 to run with different returns 
     async def regex_capture_group(self, input_data, regex):
@@ -1044,17 +1112,33 @@ class Tools(AppBase):
             return {"success": False, "message": excp}
 
     async def add_list_to_list(self, list_one, list_two):
+        if not list_one or list_one == " ":
+            list_one = "[]"
+        if not list_two or list_two == " ":
+            list_two = "[]"
+
         try:
             list_one = json.loads(list_one)
         except json.decoder.JSONDecodeError as e:
             print("Failed to parse list1 as json: %s" % e)
-            return "List one is not a valid list: %s" % list_one
+            return {
+                "success": False,
+                "reason": "List one is not a valid list: %s" % list_one
+            }
 
         try:
             list_two = json.loads(list_two)
         except json.decoder.JSONDecodeError as e:
             print("Failed to parse list2 as json: %s" % e)
-            return "List two is not a valid list: %s" % list_two
+            return {
+                "success": False,
+                "reason": "List two is not a valid list: %s" % list_two
+            }
+
+        if isinstance(list_one, dict):
+            list_one = [list_one]
+        if isinstance(list_two, dict):
+            list_two = [list_two]
 
         for item in list_two:
             list_one.append(item)
@@ -1307,7 +1391,17 @@ class Tools(AppBase):
         try:
             allvalues = response.json()
             allvalues["key"] = key
-            allvalues["value"] = str(value)
+            #allvalues["value"] = json.loads(json.dumps(value))
+
+            if (value.startswith("{") and value.endswith("}")) or (value.startswith("[") and value.endswith("]")):
+                try:
+                    allvalues["value"] = json.loads(value)
+                except json.decoder.JSONDecodeError as e:
+                    print("Failed inner value parsing: %s" % e)
+                    allvalues["value"] = str(value)
+            else:
+                allvalues["value"] = str(value)
+
             return json.dumps(allvalues)
         except:
             print("Value couldn't be parsed")
@@ -1376,6 +1470,13 @@ class Tools(AppBase):
         result['is_contained'] = True if len(result['networks']) > 0 else False
 
         return json.dumps(result)
+
+    async def get_timestamp(self, time_format):
+        timestamp = int(time.time())
+        if time_format == "unix" or time_format == "epoch":
+            print("Running default timestamp %s" % timestamp)
+
+        return timestamp
 
 if __name__ == "__main__":
     asyncio.run(Tools.run(), debug=True)
