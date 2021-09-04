@@ -159,5 +159,51 @@ class AWSS3(AppBase):
         except botocore.exceptions.ClientError as e:
             return "Error: %s" % e
 
+    async def upload_file_to_bucket(self, access_key, secret_key, region, bucket_name, bucket_path, file_id):
+        self.s3 = await self.auth_s3(access_key, secret_key, region)
+        client = self.s3.meta.client
+
+        found_file = self.get_file(file_id)
+        print(found_file)
+
+        s3_response = client.put_object(Bucket=bucket_name, Key=bucket_path, Body=found_file["data"])
+
+        #s3_response = client.upload_file('LOCAL PATH', bucket_name, bucket_path)
+        return s3_response
+
+    async def delete_file_from_bucket(self, access_key, secret_key, region, bucket_name, bucket_path):
+        self.s3 = await self.auth_s3(access_key, secret_key, region)
+        client = self.s3.meta.client
+
+        s3_response = client.delete_object(Bucket=bucket_name, Key=bucket_path)
+        return s3_response
+
+    async def download_file_from_bucket(self, access_key, secret_key, region, bucket_name, filename):
+        self.s3 = await self.auth_s3(access_key, secret_key, region)
+        client = self.s3.meta.client
+
+        s3_response_object = client.get_object(Bucket=bucket_name, Key=filename)
+        object_content = s3_response_object['Body'].read()
+
+        filedata = {
+            "data": object_content,
+            "filename": filename,
+        }
+        ret = self.set_files(filedata)
+
+        if isinstance(ret, list):
+            if len(ret) == 1:
+                return {
+                    "success": True,
+                    "file_id": ret[0],
+                    "filename": filename,
+                    "length": len(object_content),
+                }
+
+        return {
+            "success": False,
+            "reason": "Bad return from file upload: %s" % ret
+        }
+
 if __name__ == "__main__":
     asyncio.run(AWSS3.run(), debug=True)

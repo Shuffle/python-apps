@@ -32,6 +32,19 @@ actions:
     returns:
       schema:
         type: string
+  - name: download_rules 
+    description: Downloading rule testing
+    parameters:
+      - name: namespace 
+        description: The File-namespace in Shuffle where you uploaded the rules 
+        required: true 
+        multiline: false 
+        example: yara
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
   - name: analyze_by_rule 
     description: Verifies if the file matches a certain rule
     parameters:

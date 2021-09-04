@@ -76,6 +76,73 @@ actions:
     returns:
       schema:
         type: string
+  - name: upload_file_to_bucket 
+    description: Uploads a file to a bucket
+    parameters:
+      - name: bucket_name 
+        description: The bucket to add the file to
+        required: true
+        multiline: false 
+        example: 'my bucket name'
+        schema:
+          type: string
+      - name: bucket_path 
+        description: The bucket path to upload to
+        required: true
+        multiline: false 
+        example: 'filename.txt'
+        schema:
+          type: string
+      - name: file_id
+        description: The file ID to upload
+        required: true
+        multiline: false 
+        example: 'filename.txt'
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: delete_file_from_bucket 
+    description: Deletes a file from a bucket
+    parameters:
+      - name: bucket_name 
+        description: The bucket  to get
+        required: true
+        multiline: false 
+        example: 'my bucket name'
+        schema:
+          type: string
+      - name: bucket_path 
+        description: The file to get
+        required: true
+        multiline: false 
+        example: '/path/filename.txt'
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: download_file_from_bucket 
+    description: Downloads a file from s3 and adds it to Shuffle
+    parameters:
+      - name: bucket_name 
+        description: The bucket  to get
+        required: true
+        multiline: false 
+        example: 'my bucket name'
+        schema:
+          type: string
+      - name: filename 
+        description: The file to get
+        required: true
+        multiline: false 
+        example: 'filename.txt'
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
   - name: list_buckets 
     description: Lists all buckets
     returns:
