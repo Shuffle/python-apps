@@ -413,10 +413,10 @@ actions:
       - name: filedata
         description: The files
         required: true
-        multiline: true
-        example: "REPEATING: Hello world"
+        multiline: false 
+        example: "a2f89576-a9ec-479e-8c83-da69f468c90a"
         schema:
-          type: file
+          type: string 
     returns:
       schema:
         type: string

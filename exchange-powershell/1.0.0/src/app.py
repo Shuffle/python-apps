@@ -4,7 +4,7 @@ import time
 import random
 import json
 import subprocess
-
+import base64
 
 from walkoff_app_sdk.app_base import AppBase
 
@@ -93,28 +93,51 @@ class exchange_powershell(AppBase):
 
     # Write your data inside this function
     async def release_quarantine_message(self, username, password, message_id):
-        parsed_command = f"Release-QuarantineMessage {message_id} | ConvertTo-Json"
+        parsed_command = f"Release-QuarantineMessage -Identity {message_id} | ConvertTo-Json"
 
         ret = await self.replace_and_run(username, password, parsed_command)
         return ret 
 
     # Write your data inside this function
     async def preview_quarantine_message(self, username, password, message_id):
-        parsed_command = f"Preview-QuarantineMessage {message_id} | ConvertTo-Json"
+        parsed_command = f"Preview-QuarantineMessage -Identity {message_id} | ConvertTo-Json"
 
         ret = await self.replace_and_run(username, password, parsed_command)
         return ret 
 
     # Write your data inside this function
-    async def export_quarantine_message(self, username, password, message_id):
-        parsed_command = f"Export-QuarantineMessage {message_id} | ConvertTo-Json"
+    async def export_quarantine_message(self, username, password, message_id, skip_upload="false"):
+        parsed_command = f"Export-QuarantineMessage -Identity {message_id} | ConvertTo-Json"
 
         ret = await self.replace_and_run(username, password, parsed_command)
-        return ret 
+        print("RET: %s" % ret)
+        try:
+            ret = json.loads(ret)
+        except json.decoder.JSONDecodeError:
+            return ret
+
+        file_eml = ret["Eml"]
+        if skip_upload == "true":
+            return file_eml
+
+        message_bytes = base64.b64decode(file_eml)
+        
+        fileinfo = self.set_files({
+            "filename": f"{message_id}.eml", 
+            "data": message_bytes 
+        })
+
+        if len(fileinfo) == 1:
+            return {
+                "success": True,
+                "file_id": fileinfo[0]
+            }
+
+        return fileinfo
 
     # Write your data inside this function
     async def delete_quarantine_message(self, username, password, message_id):
-        parsed_command = f"Delete-QuarantineMessage {message_id} | ConvertTo-Json"
+        parsed_command = f"Delete-QuarantineMessage -Identity {message_id} | ConvertTo-Json"
 
         ret = await self.replace_and_run(username, password, parsed_command)
         return ret 

@@ -838,12 +838,19 @@ class Tools(AppBase):
         )
         return ret.text
 
+    # Input is WAS a file, hence it didn't get the files 
     async def get_file_value(self, filedata):
+        #try:
+        #    return filedata["data"].decode()
+        #except:
+        #    pass
+
+        filedata = self.get_file(filedata)
         if filedata is None:
             return "File is empty?"
 
         print("INSIDE APP DATA: %s" % filedata)
-        return "%s" % filedata["data"].decode()
+        return filedata["data"].decode()
 
     async def download_remote_file(self, url):
         ret = requests.get(url, verify=False)  # nosec
