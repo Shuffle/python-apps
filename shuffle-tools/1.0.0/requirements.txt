@@ -5,5 +5,4 @@ pyminizip==0.2.4
 requests==2.25.1
 xmltodict==0.11.0
 json2xml==3.6.0
-MarkupSafe==1.1.1
-ipaddress
+ipaddress==1.0.23
