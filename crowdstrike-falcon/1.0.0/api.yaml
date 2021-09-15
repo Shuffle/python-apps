@@ -29,6 +29,58 @@ foldermount:
   destinationfolder: ""
 actions:
 - description: ""
+  name: generate_oauth2_access_token
+  label: OAuth2 - Generate an OAuth2 access token
+  nodetype: action
+  environment: Shuffle
+  sharing: false
+  privateid: ""
+  publicid: ""
+  appid: ""
+  tags: []
+  tested: false
+  parameters:
+  - description: Add or edit headers
+    name: headers
+    example: ""
+    value: |-
+      Accept: application/json
+      Content-Type: application/x-www-form-urlencoded
+    multiline: true
+    options: []
+    required: false
+    configuration: false
+    tags: []
+    schema:
+      type: string
+    skip_multicheck: false
+    unique_toggled: false
+  - description: Add or edit queries
+    name: queries
+    example: view=basic&redirect=test
+    multiline: true
+    options: []
+    required: false
+    configuration: false
+    tags: []
+    schema:
+      type: string
+    skip_multicheck: false
+    unique_toggled: false
+  executionvariable:
+    description: ""
+    id: ""
+    name: ""
+    value: ""
+  returns:
+    example: ""
+    schema:
+      type: string
+  authenticationid: ""
+  example: ""
+  auth_not_required: false
+  source_workflow: ""
+- description: ""
   name: get_detect_aggregates
   label: Detects - Get detect aggregates
   nodetype: action
@@ -7672,60 +7724,6 @@ actions:
     name: headers
     example: ""
     value: |-
-      Authorization: Bearer $auth.access_token
-      Accept-Encoding: application/json
-      Content-Type: application/x-www-form-urlencoded
-    multiline: true
-    options: []
-    required: false
-    configuration: false
-    tags: []
-    schema:
-      type: string
-    skip_multicheck: false
-    unique_toggled: false
-  - description: Add or edit queries
-    name: queries
-    example: view=basic&redirect=test
-    multiline: true
-    options: []
-    required: false
-    configuration: false
-    tags: []
-    schema:
-      type: string
-    skip_multicheck: false
-    unique_toggled: false
-  executionvariable:
-    description: ""
-    id: ""
-    name: ""
-    value: ""
-  returns:
-    example: ""
-    schema:
-      type: string
-  authenticationid: ""
-  example: ""
-  auth_not_required: false
-  source_workflow: ""
-- description: ""
-  name: generate_oauth2_access_token
-  label: OAuth2 - Generate an OAuth2 access token
-  nodetype: action
-  environment: Shuffle
-  sharing: false
-  privateid: ""
-  publicid: ""
-  appid: ""
-  tags: []
-  tested: false
-  parameters:
-  - description: Add or edit headers
-    name: headers
-    example: ""
-    value: |-
-      Authorization: Bearer $auth.access_token
       Accept-Encoding: application/json
       Content-Type: application/x-www-form-urlencoded
     multiline: true
