@@ -10,7 +10,7 @@ from ldap3 import (
 from walkoff_app_sdk.app_base import AppBase
 
 class ActiveDirectory(AppBase):
-    __version__ = "1.0.0"
+    __version__ = "1.0.1"
     app_name = "Active Directory"  # this needs to match "name" in api.yaml
 
     def __init__(self, redis, logger, console_logger=None):
@@ -23,7 +23,7 @@ class ActiveDirectory(AppBase):
         super().__init__(redis, logger, console_logger)
 
     def __ldap_connection(self, server, port, domain, login_user, password, use_ssl):
-        use_SSL = False if use_ssl.lower() == "false" else True
+        use_SSL = False if use_ssl.lower() == "false" else False
         login_dn = domain + "\\" + login_user
 
         s = Server(server, port=int(port), use_ssl=use_SSL)
@@ -163,7 +163,9 @@ class ActiveDirectory(AppBase):
                 server, port, domain, login_user, password, use_ssl
             )
 
-            user_dn = "CN=" + samaccountname + "," + base_dn
+            result = json.loads( await self.user_attributes( server, port, domain, login_user, password, base_dn, use_ssl, samaccountname, search_base,))
+
+            user_dn = result["dn"]
             c.extend.microsoft.modify_password(user_dn, new_password)
 
             return json.dumps(c.result)
@@ -186,7 +188,7 @@ class ActiveDirectory(AppBase):
 
         c = self.__ldap_connection(server, port, domain, login_user, password, use_ssl)
 
-        userAccountControl = json.loads(
+        result = json.loads(
             await self.user_attributes(
                 server,
                 port,
@@ -198,12 +200,13 @@ class ActiveDirectory(AppBase):
                 samaccountname,
                 search_base,
             )
-        )["attributes"]["userAccountControl"]
+        )
+        userAccountControl = result["attributes"]["userAccountControl"]
 
         if "DONT_EXPIRE_PASSWORD" in userAccountControl:
             return "Error: Flag DONT_EXPIRE_PASSWORD is set."
         else:
-            user_dn = "CN=" + samaccountname + "," + base_dn
+            user_dn = result["dn"]
             password_expire = {"pwdLastSet": (MODIFY_REPLACE, [0])}
             c.modify(dn=user_dn, changes=password_expire)
             c.result["samAccountName"] = samaccountname
@@ -229,7 +232,7 @@ class ActiveDirectory(AppBase):
 
         c = self.__ldap_connection(server, port, domain, login_user, password, use_ssl)
 
-        userAccountControl = json.loads(
+        result = json.loads(
             await self.user_attributes(
                 server,
                 port,
@@ -241,7 +244,8 @@ class ActiveDirectory(AppBase):
                 samaccountname,
                 search_base,
             )
-        )["attributes"]["userAccountControl"]
+        )
+        userAccountControl = result["attributes"]["userAccountControl"]
 
         if "ACCOUNTDISABLED" in userAccountControl:
             userAccountControl.remove("ACCOUNTDISABLED")
@@ -251,7 +255,7 @@ class ActiveDirectory(AppBase):
             new_userAccountControl = {
                 "userAccountControl": (MODIFY_REPLACE, userAccountControl_code)
             }
-            user_dn = "CN=" + samaccountname + "," + base_dn
+            user_dn = result["dn"]
             c.modify(dn=user_dn, changes=new_userAccountControl)
             c.result["samAccountName"] = samaccountname
 
@@ -283,7 +287,7 @@ class ActiveDirectory(AppBase):
 
         c = self.__ldap_connection(server, port, domain, login_user, password, use_ssl)
 
-        userAccountControl = json.loads(
+        result = json.loads(
             await self.user_attributes(
                 server,
                 port,
@@ -295,7 +299,8 @@ class ActiveDirectory(AppBase):
                 samaccountname,
                 search_base,
             )
-        )["attributes"]["userAccountControl"]
+        )
+        userAccountControl = result["attributes"]["userAccountControl"]
 
         if "ACCOUNTDISABLED" in userAccountControl:
             result = {}
@@ -312,7 +317,7 @@ class ActiveDirectory(AppBase):
             new_userAccountControl = {
                 "userAccountControl": (MODIFY_REPLACE, userAccountControl_code)
             }
-            user_dn = "CN=" + samaccountname + "," + base_dn
+            user_dn = result["dn"]
             c.modify(dn=user_dn, changes=new_userAccountControl)
             c.result["samAccountName"] = samaccountname
 
