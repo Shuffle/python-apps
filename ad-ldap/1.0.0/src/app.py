@@ -6,7 +6,7 @@ from walkoff_app_sdk.app_base import AppBase
 
 
 class ADLDAP(AppBase):
-    __version__ = "1.0.0"
+    __version__ = "1.0.1"
     app_name = "AD LDAP"  # this needs to match "name" in api.yaml
 
     def __init__(self, redis, logger, console_logger=None):
@@ -23,6 +23,7 @@ class ADLDAP(AppBase):
 
         user = '{}\\{}'.format(domain_name, user_name)
         port = int(port)
+        use_ssl = False if use_ssl.lower() == "false" else True
 
         conn = Connection(Server(server_name, port=port, use_ssl=use_ssl), auto_bind=AUTO_BIND_NO_TLS, user=user, password=password)
 
