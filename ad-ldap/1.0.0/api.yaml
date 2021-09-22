@@ -1,4 +1,4 @@
-app_version: 1.0.0
+app_version: 1.0.1
 name: AD LDAP 
 description: A simple app to query Active Directory and LDAP
 contact_info:
