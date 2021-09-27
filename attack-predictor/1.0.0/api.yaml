@@ -17,7 +17,7 @@ actions:
         description: The data to predict
         required: true
         multiline: true
-        example: '{"data": "testing"}'
+        example: 'REDBALDKNIGHT, also known as BRONZE BUTLER and Tick, is a cyberespionage group known to target Japanese organizations such as government agencies (including defense) as well as those in biotechnology, electronics manufacturing, and industrial chemistry. Their campaigns employ the Daserf backdoor (detected by Trend Micro as BKDR_DASERF, otherwise known as Muirim and Nioupale) that has four main capabilities: execute shell commands, download and upload data, take screenshots, and log keystrokes.'
         schema:
           type: string
     returns:
@@ -26,11 +26,11 @@ actions:
   - name: predict_file_content
     description: Predicts the 
     parameters:
-      - name: data 
-        description: The data to predict
+      - name: file_id 
+        description: The file to predict
         required: true
-        multiline: true
-        example: '{"data": "testing"}'
+        multiline: false
+        example: '24b5f1e8-3165-4af4-96ab-877d3581242e'
         schema:
           type: string
     returns:

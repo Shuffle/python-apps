@@ -6,7 +6,7 @@ from walkoff_app_sdk.app_base import AppBase
 
 
 class ADLDAP(AppBase):
-    __version__ = "1.0.1"
+    __version__ = "1.0.0"
     app_name = "AD LDAP"  # this needs to match "name" in api.yaml
 
     def __init__(self, redis, logger, console_logger=None):
