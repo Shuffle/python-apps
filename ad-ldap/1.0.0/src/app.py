@@ -23,6 +23,7 @@ class ADLDAP(AppBase):
 
         user = '{}\\{}'.format(domain_name, user_name)
         port = int(port)
+        use_ssl = False if use_ssl.lower() == "false" else True
 
         conn = Connection(Server(server_name, port=port, use_ssl=use_ssl), auto_bind=AUTO_BIND_NO_TLS, user=user, password=password)
 
