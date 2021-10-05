@@ -10,6 +10,7 @@ import tempfile
 import zipfile
 import base64
 import ipaddress
+import hashlib
 
 import py7zr
 import pyminizip
@@ -1484,6 +1485,29 @@ class Tools(AppBase):
             print("Running default timestamp %s" % timestamp)
 
         return timestamp
+
+    async def get_hash_sum(self, value):
+        md5_value = ""
+        sha256_value = ""
+
+        try:
+            md5_value = hashlib.md5(str(value).encode('utf-8')).hexdigest()
+        except Exception as e:
+            print(f"Error in md5sum: {e}")
+
+        try:
+            sha256_value = hashlib.sha256(str(value).encode('utf-8')).hexdigest()
+        except Exception as e:
+            print(f"Error in sha256: {e}")
+
+        parsedvalue = {
+            "success": True,
+            "original_value": value,
+            "md5": md5_value,
+            "sha256": sha256_value,
+        }
+
+        return parsedvalue 
 
 if __name__ == "__main__":
     asyncio.run(Tools.run(), debug=True)

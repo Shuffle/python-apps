@@ -852,6 +852,19 @@ actions:
     returns:
       schema:
         type: string
+  - name: get_hash_sum
+    description: Returns multiple formats of hashes based on the input value
+    parameters:
+      - name: value
+        description: The value to hash
+        multiline: false
+        example: "1.1.1.1"
+        required: True
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
   - name: cidr_ip_match
     description: Check if an IP is contained in a CIDR defined network
     parameters:
