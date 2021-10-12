@@ -1,6 +1,6 @@
 app_version: 1.0.0
 name: Testing
-description: Debugging  app for Shuffle 
+description: Debugging app for Shuffle 
 tags:
   - Testing 
 categories:
