@@ -188,7 +188,7 @@ actions:
         description: The case template to be used
         example: "MyCase Template"
         required: false
-        multiline: true
+        multiline: false 
         schema:
           type: string
       - name: title
@@ -549,6 +549,7 @@ actions:
         description: The message to send
         example: "A nice screenshot "
         required: true
+        multiline: true
         schema:
           type: string
       - name: filedata

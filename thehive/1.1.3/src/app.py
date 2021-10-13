@@ -492,20 +492,28 @@ class TheHive(AppBase):
         filedata={},
         mime_type=None,
     ):
-        if filedata["success"] == False:
-            return "No file to upload. Skipping message."
+        try:
+            if filedata["success"] == False:
+                return "No file to upload. Skipping message."
+        except Exception as e:
+            print(f"[WARNING] Error in filedata handler for {filedata}: {e}")
 
         headers = {
             "Authorization": f"Bearer {apikey}",
         }
+
+        organisation = organisation.strip()
         if organisation:
             headers["X-Organisation"] = organisation
 
         files = {}
-        if len(filedata["data"]) > 0:
-            files = {
-                "attachment": (filedata["filename"], filedata["data"], mime_type),
-            }
+        try:
+            if len(filedata["data"]) > 0:
+                files = {
+                    "attachment": (filedata["filename"], filedata["data"], mime_type),
+                }
+        except Exception as e:
+            print(f"[WARNING] Error in file handler for {filedata} (2): {e}")
 
         data = {"message": f"{message}"}
         response = requests.post(
