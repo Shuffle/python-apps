@@ -11,6 +11,10 @@ import zipfile
 import base64
 import ipaddress
 import hashlib
+from io import StringIO
+from contextlib import redirect_stdout
+from liquid import Liquid
+import liquid
 
 import py7zr
 import pyminizip
@@ -416,19 +420,50 @@ class Tools(AppBase):
         else:
             return re.sub(regex, replace_string, input_data)
 
-    async def execute_python(self, code, shuffle_input):
-        print("Run with shuffle_data %s" % shuffle_input)
-        print("And python code %s" % code)
-        # Write the code to a file, then jdjd
-        exec(code)  # nosec
+    async def execute_python(self, code):
+        print(f"Python code {len(code)} {code}. If uuid, we'll try to download and use the file.")
 
+        if len(code) == 36 and "-" in code:
+            filedata = self.get_file(code)
+            if filedata["success"] == False:
+                return {
+                    "success": False,
+                    "message": f"Failed to get file for ID {code}",
+                }
+
+            if ".py" not in filedata["filename"]:
+                return {
+                    "success": False,
+                    "message": f"Filename needs to contain .py",
+                }
+
+
+        print(f"Decoded: {code}")
+
+        # Write the code to a file
         # 1. Take the data into a file
         # 2. Subprocess execute file?
+        try:
+            f = StringIO()
+            with redirect_stdout(f):
+                exec(code)  # nosec :(
 
-        # May be necessary
-        # compile()
+            s = f.getvalue()
 
-        return "Some return: %s" % shuffle_input
+            #try:
+            #    s = s.encode("utf-8")
+            #except Exception as e:
+            #    print(f"Failed utf-8 encoding response: {e}")
+
+            return {
+                "success": True,
+                "message": s,
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "message": f"exception: {e}",
+            }
 
     async def execute_bash(self, code, shuffle_input):
         process = subprocess.Popen(

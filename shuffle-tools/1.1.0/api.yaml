@@ -391,7 +391,7 @@ actions:
       schema:
         type: string
   - name: execute_bash
-    description: Runs bash with the data inputted available (TBD)
+    description: Runs bash with the data input
     parameters:
       - name: code
         description: The code to run
@@ -405,6 +405,16 @@ actions:
         required: false
         multiline: true
         example: '{"data": "Hello world"}'
+        schema:
+          type: string
+  - name: execute_python
+    description: Runs python with the data input. Any prints will be returned.
+    parameters:
+      - name: code
+        description: The code to run. Can be a file ID from within Shuffle.
+        required: true
+        multiline: true
+        example: print("hello world")
         schema:
           type: string
   - name: get_file_value
