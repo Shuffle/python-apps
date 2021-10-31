@@ -302,7 +302,7 @@ class Tools(AppBase):
             print("BUILD: %s" % buildstring)
 
             #output = 
-            eval(buildstring)
+            exec(buildstring)
             json_object = base_object
             #json_object[first_object] = base_object
         else:
