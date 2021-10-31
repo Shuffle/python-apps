@@ -147,7 +147,7 @@ class Owa(AppBase):
         attachments,
     ):
         # Authenticate
-        auth = await self.authenticate(
+        auth = self.authenticate(
             username, password, server, build, account, verifyssl
         )
 
@@ -195,7 +195,7 @@ class Owa(AppBase):
 
         # Authenticate
         print(f"Marking {email_id} as read")
-        auth = await self.authenticate(
+        auth = self.authenticate(
             username, password, server, build, account, verifyssl
         )
 
@@ -204,7 +204,7 @@ class Owa(AppBase):
 
         account = auth["account"]
 
-        folder = await self.parse_folder(account, foldername)
+        folder = self.parse_folder(account, foldername)
         if folder["error"]:
             return folder["error"]
 
@@ -233,7 +233,7 @@ class Owa(AppBase):
 
         # Authenticate
         print(f"Adding category {category} to {email_id}")
-        auth = await self.authenticate(
+        auth = self.authenticate(
             username, password, server, build, account, verifyssl
         )
 
@@ -242,7 +242,7 @@ class Owa(AppBase):
 
         account = auth["account"]
 
-        folder = await self.parse_folder(account, foldername)
+        folder = self.parse_folder(account, foldername)
         if folder["error"]:
             return folder["error"]
 
@@ -264,7 +264,7 @@ class Owa(AppBase):
         self, username, password, server, build, account, verifyssl, email_id
     ):
         # Authenticate
-        auth = await self.authenticate(
+        auth = self.authenticate(
             username, password, server, build, account, verifyssl
         )
         if auth["error"]:
@@ -292,7 +292,7 @@ class Owa(AppBase):
         foldername,
     ):
         # Authenticate
-        auth = await self.authenticate(
+        auth = self.authenticate(
             username, password, server, build, account, verifyssl
         )
         if auth["error"]:
@@ -303,7 +303,7 @@ class Owa(AppBase):
         account = auth["account"]
 
         # Parse email destination folder
-        folder = await self.parse_folder(account, foldername)
+        folder = self.parse_folder(account, foldername)
         if folder["error"]:
             return {
                 "success": False,
@@ -356,7 +356,7 @@ class Owa(AppBase):
                     d1[k] = d2[k]
 
         # Authenticate
-        auth = await self.authenticate(
+        auth = self.authenticate(
             username, password, server, build, account, verifyssl
         )
         if auth["error"]:
@@ -368,7 +368,7 @@ class Owa(AppBase):
         account = auth["account"]
 
         # Parse email folder
-        folder = await self.parse_folder(account, foldername)
+        folder = self.parse_folder(account, foldername)
         if folder["error"]:
             return json.dumps({
                 "success": False,

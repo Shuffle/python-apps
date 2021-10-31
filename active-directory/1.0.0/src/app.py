@@ -163,7 +163,7 @@ class ActiveDirectory(AppBase):
                 server, port, domain, login_user, password, use_ssl
             )
 
-            result = json.loads( await self.user_attributes( server, port, domain, login_user, password, base_dn, use_ssl, samaccountname, search_base,))
+            result = json.loads( self.user_attributes( server, port, domain, login_user, password, base_dn, use_ssl, samaccountname, search_base,))
 
             user_dn = result["dn"]
             c.extend.microsoft.modify_password(user_dn, new_password)
@@ -189,7 +189,7 @@ class ActiveDirectory(AppBase):
         c = self.__ldap_connection(server, port, domain, login_user, password, use_ssl)
 
         result = json.loads(
-            await self.user_attributes(
+            self.user_attributes(
                 server,
                 port,
                 domain,
@@ -233,7 +233,7 @@ class ActiveDirectory(AppBase):
         c = self.__ldap_connection(server, port, domain, login_user, password, use_ssl)
 
         result = json.loads(
-            await self.user_attributes(
+            self.user_attributes(
                 server,
                 port,
                 domain,
@@ -288,7 +288,7 @@ class ActiveDirectory(AppBase):
         c = self.__ldap_connection(server, port, domain, login_user, password, use_ssl)
 
         result = json.loads(
-            await self.user_attributes(
+            self.user_attributes(
                 server,
                 port,
                 domain,

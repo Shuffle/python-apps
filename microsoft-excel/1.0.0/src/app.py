@@ -49,28 +49,28 @@ class MSExcel(AppBase):
 
     def get_user_id(self, tenant_id, client_id, client_secret):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = "https://graph.microsoft.com/v1.0/users"
         ret = session.get(graph_url)
         return ret.text
 
     def get_files(self, tenant_id, client_id, client_secret, user_id):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = f"https://graph.microsoft.com/v1.0/users/{user_id}/drive/root/children"
         ret = session.get(graph_url)
         return ret.text
 
     def list_worksheets(self, tenant_id, client_id, client_secret, user_id, file_id):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = f"https://graph.microsoft.com/v1.0/users/{user_id}/drive/items/{file_id}/workbook/worksheets"
         ret = session.get(graph_url)
         return ret.text
 
     def add_worksheet(self, tenant_id, client_id, client_secret, user_id, file_id, name):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = f"https://graph.microsoft.com/v1.0/users/{user_id}/drive/items/{file_id}/workbook/worksheets"
         if len(name)!=0:
             body = {
@@ -83,7 +83,7 @@ class MSExcel(AppBase):
 
     def delete_worksheet(self, tenant_id, client_id, client_secret, user_id, file_id, name):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = f"https://graph.microsoft.com/v1.0/users/{user_id}/drive/items/{file_id}/workbook/worksheets/{name}"
         ret = session.delete(graph_url)
         if ret.status_code != 200:
@@ -93,7 +93,7 @@ class MSExcel(AppBase):
         
     def insert_or_update_data(self, tenant_id, client_id, client_secret, user_id, file_id, sheet_name, address, value):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = f"https://graph.microsoft.com/v1.0/users/{user_id}/drive/items/{file_id}/workbook/worksheets/{sheet_name}/range(address='{address}')"
         lt = []
         for i in value.split(';'):
@@ -109,7 +109,7 @@ class MSExcel(AppBase):
 
     def clear_data(self, tenant_id, client_id, client_secret, user_id, file_id, sheet_name, address):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = f"https://graph.microsoft.com/v1.0/users/{user_id}/drive/items/{file_id}/workbook/worksheets/{sheet_name}/range(address='{address}')/clear"
         ret = session.post(graph_url)
         if ret.status_code != 200:

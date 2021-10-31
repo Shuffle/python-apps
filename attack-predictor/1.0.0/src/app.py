@@ -127,12 +127,12 @@ class rcATT(AppBase):
     def predict_file_content(self, file_id):
         file_data = self.get_file(file_id)
 
-        prediction = await self.get_prediction(file_data["data"])
+        prediction = self.get_prediction(file_data["data"])
         return prediction
 
     # Write your data inside this function
     def predict(self, data):
-        prediction = await self.get_prediction(data)
+        prediction = self.get_prediction(data)
         return prediction
 
 if __name__ == "__main__":

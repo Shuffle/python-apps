@@ -41,7 +41,7 @@ class AWSEC2(AppBase):
 
     # Write your data inside this function
     def enable_security_hub(self, access_key, secret_key, region):
-        client = await self.auth(access_key, secret_key, region)
+        client = self.auth(access_key, secret_key, region)
         response = client.enable_security_hub(
             Tags={},
             EnableDefaultStandards=True,
@@ -54,7 +54,7 @@ class AWSEC2(AppBase):
 
     # Write your data inside this function
     def get_findings(self, access_key, secret_key, region, filters):
-        client = await self.auth(access_key, secret_key, region)
+        client = self.auth(access_key, secret_key, region)
 
         try:
             filters = json.loads(filters)
@@ -72,7 +72,7 @@ class AWSEC2(AppBase):
 
     # Write your data inside this function
     def get_insights(self, access_key, secret_key, region, arn):
-        client = await self.auth(access_key, secret_key, region)
+        client = self.auth(access_key, secret_key, region)
 
         response = client.get_insights(
             InsightArns=[insight_arn]
@@ -87,7 +87,7 @@ class AWSEC2(AppBase):
 
     # Write your data inside this function
     def update_finding(self, access_key, secret_key, region, id, productArn, status):
-        client = await self.auth(access_key, secret_key, region)
+        client = self.auth(access_key, secret_key, region)
         response = client.batch_update_findings(
             FindingIdentifiers=[
                 {
@@ -109,7 +109,7 @@ class AWSEC2(AppBase):
 
     # Write your data inside this function
     def create_finding(self, access_key, secret_key, region, productArn, id, title, description):
-        client = await self.auth(access_key, secret_key, region)
+        client = self.auth(access_key, secret_key, region)
 
         shuffle_id = "SOMETHING_%s" % id
         findings = [{

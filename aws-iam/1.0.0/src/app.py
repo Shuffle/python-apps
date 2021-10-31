@@ -51,7 +51,7 @@ class AWSIAM(AppBase):
         return self.iam
 
     def change_password(self, access_key, secret_key, region, username, password):
-        self.iam = await self.auth_iam(access_key, secret_key, region)
+        self.iam = self.auth_iam(access_key, secret_key, region)
         client = self.iam.meta.client
 
         try:
@@ -61,7 +61,7 @@ class AWSIAM(AppBase):
             return "%s" % e
 
     def attach_user_policy(self, access_key, secret_key, region, username, policy_arn):
-        self.iam = await self.auth_iam(access_key, secret_key, region)
+        self.iam = self.auth_iam(access_key, secret_key, region)
         client = self.iam.meta.client
 
         try:
@@ -75,7 +75,7 @@ class AWSIAM(AppBase):
             return f'{e}'
 
     def list_access_keys(self, access_key, secret_key, region, username, marker, max_items):
-        self.iam = await self.auth_iam(access_key, secret_key, region)
+        self.iam = self.auth_iam(access_key, secret_key, region)
         client = self.iam.meta.client
 
         try:
@@ -103,7 +103,7 @@ class AWSIAM(AppBase):
             return f'{e}'
 
     def list_ssh_public_keys(self, access_key, secret_key, region, username, marker, max_items):
-        self.iam = await self.auth_iam(access_key, secret_key, region)
+        self.iam = self.auth_iam(access_key, secret_key, region)
         client = self.iam.meta.client
 
         try:
@@ -132,7 +132,7 @@ class AWSIAM(AppBase):
             return f'{e}'     
 
     def get_instance_profile(self, access_key, secret_key, region, instance_profile_name):
-        self.iam = await self.auth_iam(access_key, secret_key, region)
+        self.iam = self.auth_iam(access_key, secret_key, region)
         client = self.iam.meta.client
 
         try:
@@ -145,7 +145,7 @@ class AWSIAM(AppBase):
             return f'{e}'
 
     def get_user(self, access_key, secret_key, region, user_name):
-        self.iam = await self.auth_iam(access_key, secret_key, region)
+        self.iam = self.auth_iam(access_key, secret_key, region)
         client = self.iam.meta.client
 
         try:
@@ -158,7 +158,7 @@ class AWSIAM(AppBase):
             return f'{e}'
 
     def list_attached_user_policies(self, access_key, secret_key, region, user_name, marker, max_items):
-        self.iam = await self.auth_iam(access_key, secret_key, region)
+        self.iam = self.auth_iam(access_key, secret_key, region)
         client = self.iam.meta.client
 
         try:
@@ -187,7 +187,7 @@ class AWSIAM(AppBase):
             return f'{e}' 
 
     def list_users(self, access_key, secret_key, region, path_prefix, marker, max_items):
-        self.iam = await self.auth_iam(access_key, secret_key, region)
+        self.iam = self.auth_iam(access_key, secret_key, region)
         client = self.iam.meta.client
 
         try:
@@ -216,7 +216,7 @@ class AWSIAM(AppBase):
             return f'{e}'                
 
     def list_user_tags(self, access_key, secret_key, region, user_name, marker, max_items):
-        self.iam = await self.auth_iam(access_key, secret_key, region)
+        self.iam = self.auth_iam(access_key, secret_key, region)
         client = self.iam.meta.client
 
         try:

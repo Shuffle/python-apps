@@ -67,7 +67,7 @@ class MSComplianceCenter(AppBase):
         return s
 
         #graph_url = "https://graph.microsoft.com"
-        #session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        #session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         #create_url = "https://protection.office.com/api/ComplianceSearch"
         #create_url = "https://compliance.microsoft.com/api/ComplianceSearch"
         ##https://protection.office.com/api/HostedContentFilterRule
@@ -87,7 +87,7 @@ class MSComplianceCenter(AppBase):
 
     def get_alerts(self, tenant_id, client_id, client_secret, top):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         if top:
             graph_url = f"https://graph.microsoft.com/v1.0/security/alerts?$top={top}"
         else:
@@ -103,7 +103,7 @@ class MSComplianceCenter(AppBase):
 
     def get_alerts_by_severity(self, tenant_id, client_id, client_secret, top, severity):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         if top:
             graph_url = f"https://graph.microsoft.com/v1.0/security/alerts?$filter=Severity eq '{severity}'&$top={top}"
         else:
@@ -127,7 +127,7 @@ class MSComplianceCenter(AppBase):
             "Microsoft Defender Advanced Threat Protection":"Microsoft Defender ATP"
         }
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         if top:
             graph_url = f"https://graph.microsoft.com/v1.0/security/alerts?$filter=vendorInformation/provider eq '{vendor_code[vendor]}'&$top={top}"
         else:
@@ -143,7 +143,7 @@ class MSComplianceCenter(AppBase):
     
     def get_alert_by_id(self, tenant_id, client_id, client_secret,alert_id):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
         graph_url = f"https://graph.microsoft.com/v1.0/security/alerts/{alert_id}"
         ret = session.get(graph_url)
@@ -159,7 +159,7 @@ class MSComplianceCenter(AppBase):
         """This function needs to be tested."""
         
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
         graph_url = f"https://graph.microsoft.com/v1.0/security/alerts/{alert_id}"
 
@@ -194,7 +194,7 @@ class MSComplianceCenter(AppBase):
 
     def list_threat_assesment_requests(self, tenant_id, client_id, client_secret):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
         graph_url = "https://graph.microsoft.com/v1.0/informationProtection/threatAssessmentRequests"
         ret = session.get(graph_url)
@@ -208,7 +208,7 @@ class MSComplianceCenter(AppBase):
 
     def get_threat_assesment_request(self, tenant_id, client_id, client_secret, request_id):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
         graph_url = f"https://graph.microsoft.com/v1.0/informationProtection/threatAssessmentRequests/{request_id}"        
         ret = session.get(graph_url)
@@ -222,7 +222,7 @@ class MSComplianceCenter(AppBase):
 
     def create_mail_threat_assessment(self, tenant_id, client_id, client_secret, reciepient_email, expected_assessment, category, message_uri, status):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = f"https://graph.microsoft.com/v1.0/informationProtection/threatAssessmentRequests"
         
         headers = {
@@ -250,7 +250,7 @@ class MSComplianceCenter(AppBase):
 
     def create_url_threat_assessment(self, tenant_id, client_id, client_secret, url, expected_assessment, category, status):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = "https://graph.microsoft.com/v1.0/informationProtection/threatAssessmentRequests"
 
 
@@ -273,7 +273,7 @@ class MSComplianceCenter(AppBase):
 
     def create_file_threat_assessment(self, tenant_id, client_id, client_secret, filename, content_data, expected_assessment, category, status):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = "https://graph.microsoft.com/v1.0/informationProtection/threatAssessmentRequests"
 
         headers = {
@@ -299,7 +299,7 @@ class MSComplianceCenter(AppBase):
 
     def list_secure_score(self, tenant_id, client_id, client_secret, top):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         if top:
             graph_url = f"https://graph.microsoft.com/v1.0/security/secureScores?$top={top}"
         else:
@@ -316,7 +316,7 @@ class MSComplianceCenter(AppBase):
     
     def list_cases(self, tenant_id, client_id, client_secret):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = "https://graph.microsoft.com/beta/compliance/ediscovery/cases"
 
         ret = session.get(graph_url)
@@ -330,7 +330,7 @@ class MSComplianceCenter(AppBase):
     
     def get_case(self, tenant_id, client_id, client_secret,case_id):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = f"https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}"
 
         ret = session.get(graph_url)
@@ -344,7 +344,7 @@ class MSComplianceCenter(AppBase):
 
     def create_case(self, tenant_id, client_id, client_secret, display_name):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = "https://graph.microsoft.com/beta/compliance/ediscovery/cases"
 
         headers = {
@@ -365,7 +365,7 @@ class MSComplianceCenter(AppBase):
     
     def update_case(self, tenant_id, client_id, client_secret,case_id, display_name, description, external_id):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = f"https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}"
 
         headers = {
@@ -388,7 +388,7 @@ class MSComplianceCenter(AppBase):
     
     def close_case(self, tenant_id, client_id, client_secret, case_id):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = "https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}/close"
 
         ret = session.post(graph_url)
@@ -402,7 +402,7 @@ class MSComplianceCenter(AppBase):
 
     def reopen_case(self, tenant_id, client_id, client_secret, case_id):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = "https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}/reopen"
 
         ret = session.post(graph_url)
@@ -416,7 +416,7 @@ class MSComplianceCenter(AppBase):
 
     def list_custodians(self, tenant_id, client_id, client_secret,case_id):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = f"https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}/custodians"
 
         ret = session.get(graph_url)
@@ -430,7 +430,7 @@ class MSComplianceCenter(AppBase):
 
     def get_custodian(self, tenant_id, client_id, client_secret, case_id, custodian_id):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = f"https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}/custodians/{custodian_id}"
 
         ret = session.get(graph_url)
@@ -445,7 +445,7 @@ class MSComplianceCenter(AppBase):
 
     def create_custodian(self, tenant_id, client_id, client_secret, case_id, email, apply_hold_to_sources):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = f"https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}/custodians/"
 
         headers = {
@@ -468,7 +468,7 @@ class MSComplianceCenter(AppBase):
 
     def update_custodian(self, tenant_id, client_id, client_secret,case_id, custodian_id, apply_hold_to_sources):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = f"https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}/custodians/{custodian_id}"
 
         request_body = {
@@ -486,7 +486,7 @@ class MSComplianceCenter(AppBase):
 
     def activate_custodian(self, tenant_id, client_id, client_secret,case_id, custodian_id):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = f"https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}/custodians/{custodian_id}/activate"
 
         headers = {
@@ -504,7 +504,7 @@ class MSComplianceCenter(AppBase):
 
     def release_custodian(self, tenant_id, client_id, client_secret,case_id, custodian_id):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = f"https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}/custodians/{custodian_id}/release"
 
         headers = {
@@ -522,7 +522,7 @@ class MSComplianceCenter(AppBase):
 
     def list_legalholds(self, tenant_id, client_id, client_secret,case_id):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = f"https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}/legalholds"
 
         ret = session.get(graph_url)
@@ -536,7 +536,7 @@ class MSComplianceCenter(AppBase):
     
     def get_legalhold(self, tenant_id, client_id, client_secret, case_id, legalhold_id):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = f"https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}/custodians/{legalhold_id}"
 
         ret = session.get(graph_url)
@@ -550,7 +550,7 @@ class MSComplianceCenter(AppBase):
 
     def create_legalhold(self, tenant_id, client_id, client_secret, case_id, display_name, description, is_enabled, status, content_query,errors):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = f"https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}/legalHolds"
         
         error_list = [str(i) for i in errors.split(',')]
@@ -579,7 +579,7 @@ class MSComplianceCenter(AppBase):
     
     def list_source_collections(self, tenant_id, client_id, client_secret,case_id):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = f"https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}/sourceCollections"
 
         ret = session.get(graph_url)
@@ -593,7 +593,7 @@ class MSComplianceCenter(AppBase):
 
     def list_people(self, tenant_id, client_id, client_secret, user_principal_name):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = f"https://graph.microsoft.com/v1.0/users/{user_principal_name}/people"
 
         ret = session.get(graph_url)

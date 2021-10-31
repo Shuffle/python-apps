@@ -42,7 +42,7 @@ class AWSS3(AppBase):
         return self.s3
 
     def list_buckets(self, access_key, secret_key, region):
-        self.s3 = await self.auth_s3(access_key, secret_key, region)
+        self.s3 = self.auth_s3(access_key, secret_key, region)
         client = self.s3.meta.client
         try:
             newlist = client.list_buckets()
@@ -51,7 +51,7 @@ class AWSS3(AppBase):
             return "Error: %s" % e
 
     def create_bucket(self, access_key, secret_key, region, bucket_name, access_type):
-        self.s3 = await self.auth_s3(access_key, secret_key, region)
+        self.s3 = self.auth_s3(access_key, secret_key, region)
         client = self.s3.meta.client
         try:
             creation = client.create_bucket(
@@ -67,7 +67,7 @@ class AWSS3(AppBase):
             return "Error: %s" % e
 
     def block_ip_access(self, access_key, secret_key, region, bucket_name, ip):
-        self.s3 = await self.auth_s3(access_key, secret_key, region)
+        self.s3 = self.auth_s3(access_key, secret_key, region)
         client = self.s3.meta.client
 
         ip_policy = {
@@ -124,7 +124,7 @@ class AWSS3(AppBase):
         return "Successfully blocked IP %s" % ip
 
     def bucket_request_payment(self, access_key, secret_key, region, bucket_name):
-        self.s3 = await self.auth_s3(access_key, secret_key, region)
+        self.s3 = self.auth_s3(access_key, secret_key, region)
         client = self.s3.meta.client
 
         try:
@@ -133,7 +133,7 @@ class AWSS3(AppBase):
             return "Error: %s" % e
 
     def bucket_replication(self, access_key, secret_key, region, bucket_name):
-        self.s3 = await self.auth_s3(access_key, secret_key, region)
+        self.s3 = self.auth_s3(access_key, secret_key, region)
         client = self.s3.meta.client
 
         try:
@@ -142,7 +142,7 @@ class AWSS3(AppBase):
             return "Error: %s" % e
 
     def bucket_policy_status(self, access_key, secret_key, region, bucket_name):
-        self.s3 = await self.auth_s3(access_key, secret_key, region)
+        self.s3 = self.auth_s3(access_key, secret_key, region)
         client = self.s3.meta.client
 
         try:
@@ -151,7 +151,7 @@ class AWSS3(AppBase):
             return "Error: %s" % e
 
     def bucket_logging(self, access_key, secret_key, region, bucket_name):
-        self.s3 = await self.auth_s3(access_key, secret_key, region)
+        self.s3 = self.auth_s3(access_key, secret_key, region)
         client = self.s3.meta.client
 
         try:
@@ -160,7 +160,7 @@ class AWSS3(AppBase):
             return "Error: %s" % e
 
     def upload_file_to_bucket(self, access_key, secret_key, region, bucket_name, bucket_path, file_id):
-        self.s3 = await self.auth_s3(access_key, secret_key, region)
+        self.s3 = self.auth_s3(access_key, secret_key, region)
         client = self.s3.meta.client
 
         found_file = self.get_file(file_id)
@@ -172,14 +172,14 @@ class AWSS3(AppBase):
         return s3_response
 
     def delete_file_from_bucket(self, access_key, secret_key, region, bucket_name, bucket_path):
-        self.s3 = await self.auth_s3(access_key, secret_key, region)
+        self.s3 = self.auth_s3(access_key, secret_key, region)
         client = self.s3.meta.client
 
         s3_response = client.delete_object(Bucket=bucket_name, Key=bucket_path)
         return s3_response
 
     def download_file_from_bucket(self, access_key, secret_key, region, bucket_name, filename):
-        self.s3 = await self.auth_s3(access_key, secret_key, region)
+        self.s3 = self.auth_s3(access_key, secret_key, region)
         client = self.s3.meta.client
 
         s3_response_object = client.get_object(Bucket=bucket_name, Key=filename)

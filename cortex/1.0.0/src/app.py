@@ -51,7 +51,7 @@ class Cortex(AppBase):
             return "No values to handle []"
 
         self.api = Api(url, apikey, cert=False)
-        analyzers = await self.get_available_analyzers(apikey, url, datatype)
+        analyzers = self.get_available_analyzers(apikey, url, datatype)
 
         alljobs = []
         for analyzer in analyzers:

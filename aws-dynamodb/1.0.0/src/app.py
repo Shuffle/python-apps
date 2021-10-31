@@ -42,7 +42,7 @@ class AWSDynamoDB(AppBase):
         return self.dynamodb
 
     def list_tables(self, access_key, secret_key, region):
-        self.dynamodb = await self.auth_dynamodb(access_key, secret_key, region)
+        self.dynamodb = self.auth_dynamodb(access_key, secret_key, region)
         client = self.dynamodb.meta.client
         try:
             return client.list_tables()
@@ -50,7 +50,7 @@ class AWSDynamoDB(AppBase):
             return "Error: %s" % e
 
     def list_global_tables(self, access_key, secret_key, region):
-        self.dynamodb = await self.auth_dynamodb(access_key, secret_key, region)
+        self.dynamodb = self.auth_dynamodb(access_key, secret_key, region)
         client = self.dynamodb.meta.client
         try:
             return client.list_global_tables()
@@ -58,7 +58,7 @@ class AWSDynamoDB(AppBase):
             return "Error: %s" % e
 
     def get_global_table_setttings(self, access_key, secret_key, region, table_name):
-        self.dynamodb = await self.auth_dynamodb(access_key, secret_key, region)
+        self.dynamodb = self.auth_dynamodb(access_key, secret_key, region)
         client = self.dynamodb.meta.client
 
         try:
@@ -67,7 +67,7 @@ class AWSDynamoDB(AppBase):
             return "Error: %s" % e
 
     def get_backups(self, access_key, secret_key, region, table_name):
-        self.dynamodb = await self.auth_dynamodb(access_key, secret_key, region)
+        self.dynamodb = self.auth_dynamodb(access_key, secret_key, region)
         client = self.dynamodb.meta.client
 
         try:

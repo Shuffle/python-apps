@@ -68,14 +68,14 @@ class snort3(AppBase):
 
     def simple_analyze_file(self, config_file, rules_file, pcap_file):
 
-        rules_path = await self.create_snort_file(rules_file)
-        pcap_path = await self.create_snort_file(pcap_file)
+        rules_path = self.create_snort_file(rules_file)
+        pcap_path = self.create_snort_file(pcap_file)
 
         config_path = "/usr/local/etc/snort/snort.lua"
         if len(config_file) > 0:
-            config_path = await self.create_snort_file(config_file)
+            config_path = self.create_snort_file(config_file)
 
-        return_data = await self.run_snort_scan(config_path, rules_path, pcap_path)
+        return_data = self.run_snort_scan(config_path, rules_path, pcap_path)
 
         try:
             return json.dumps(return_data)
@@ -102,18 +102,18 @@ class snort3(AppBase):
 
     def custom_rule_scan(self, config_file, custom_rule, pcap_file):
 
-        pcap_path = await self.create_snort_file(pcap_file)
+        pcap_path = self.create_snort_file(pcap_file)
 
         config_path = "/usr/local/etc/snort/snort.lua"
         if len(config_file) > 0:
-            config_path = await self.create_snort_file(config_file)
+            config_path = self.create_snort_file(config_file)
 
         rules_path = "/app/my.rules"
         with open(rules_path, "xb") as tmp_file:
             tmp_file.write(custom_rule.encode("utf-8"))
             tmp_file.close()
 
-        return_data = await self.run_snort_scan(config_path, rules_path, pcap_path)
+        return_data = self.run_snort_scan(config_path, rules_path, pcap_path)
 
         try:
             return json.dumps(return_data)

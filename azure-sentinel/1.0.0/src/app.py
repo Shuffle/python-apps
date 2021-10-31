@@ -72,7 +72,7 @@ class AzureSentinel(AppBase):
     def get_incidents(self, **kwargs):
 
         # Get a client credential access token
-        await self.authenticate(kwargs["tenant_id"], kwargs["client_id"], kwargs["client_secret"])
+        self.authenticate(kwargs["tenant_id"], kwargs["client_id"], kwargs["client_secret"])
 
         incidents_url = f"{self.azure_url}/subscriptions/{kwargs['subscription_id']}/resourceGroups/{kwargs['resource_group_name']}/providers/Microsoft.OperationalInsights/workspaces/{kwargs['workspace_name']}/providers/Microsoft.SecurityInsights/incidents"
         params = {"api-version": "2020-01-01"}
@@ -123,13 +123,13 @@ class AzureSentinel(AppBase):
         if kwargs.get("get_entities", "").lower() == "true":
             for incident in incidents:
                 self.logger.warning(f"Getting entities for {incident['id']}")
-                incident["entities"] = await self.extract_entities(incident["id"])
+                incident["entities"] = self.extract_entities(incident["id"])
 
         # Get incident comments
         if kwargs.get("get_comments", "").lower() == "true":
             for incident in incidents:
                 self.logger.warning(f"Getting entities for {incident['id']}")
-                incident["comments"] = await self.extract_comments(incident["id"])
+                incident["comments"] = self.extract_comments(incident["id"])
 
         return json.dumps(incidents)
 
@@ -139,7 +139,7 @@ class AzureSentinel(AppBase):
             return '{"success": false, "error": "No incident ID supplied"}'
 
         # Get a client credential access token
-        auth = await self.authenticate(
+        auth = self.authenticate(
             kwargs["tenant_id"], kwargs["client_id"], kwargs["client_secret"]
         )
 
@@ -153,17 +153,17 @@ class AzureSentinel(AppBase):
 
         # Get incident entities
         if kwargs.get("get_entities", "").lower() == "true":
-            incident["entities"] = await self.extract_entities(incident["id"])
+            incident["entities"] = self.extract_entities(incident["id"])
 
         # Get incident comments
         if kwargs.get("get_comments", "").lower() == "true":
-            incident["comments"] = await self.extract_comments(incident["id"])
+            incident["comments"] = self.extract_comments(incident["id"])
 
         return json.dumps(incident)
 
     def close_incident(self, **kwargs):
 
-        incident = json.loads(await self.get_incident(**kwargs))
+        incident = json.loads(self.get_incident(**kwargs))
         if "error" in incident:
             return json.dumps(incident)
 
@@ -194,7 +194,7 @@ class AzureSentinel(AppBase):
 
     def update_incident(self, **kwargs):
 
-        incident = json.loads(await self.get_incident(**kwargs))
+        incident = json.loads(self.get_incident(**kwargs))
         if "error" in incident:
             return json.dumps(incident)
 
@@ -226,7 +226,7 @@ class AzureSentinel(AppBase):
     def add_comment(self, **kwargs):
 
         # Get a client credential access token
-        auth = await self.authenticate(
+        auth = self.authenticate(
             kwargs["tenant_id"], kwargs["client_id"], kwargs["client_secret"]
         )
         if not auth["success"]:

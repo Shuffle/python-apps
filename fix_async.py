@@ -16,10 +16,12 @@ for folder in folders:
             with open(f"{filename}", "r") as tmp:
                 data = tmp.read()
                 data = data.replace("async def", "def", -1)
+                data = data.replace("await ", "", -1)
 
             if len(data) > 0:
                 with open(f"{filename}", "w+") as tmp:
                     tmp.write(data)
+
             print("Fixed: %s" % filename)
         except:
             print("Skipped: %s" % filename)

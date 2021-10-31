@@ -50,7 +50,7 @@ class MsIdentityAccess(AppBase):
 
     def list_administrative_units(self, tenant_id, client_id, client_secret):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
         graph_url = "https://graph.microsoft.com/v1.0/directory/administrativeUnits"
         ret = session.get(graph_url)
@@ -65,7 +65,7 @@ class MsIdentityAccess(AppBase):
     
     def get_administrative_units(self, tenant_id, client_id, client_secret,id):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
         graph_url = f"https://graph.microsoft.com/v1.0/directory/administrativeUnits/{id}"
         ret = session.get(graph_url)
@@ -79,7 +79,7 @@ class MsIdentityAccess(AppBase):
 
     def create_administrative_unit(self, tenant_id, client_id, client_secret, display_name, description, visibility):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
         graph_url = f"https://graph.microsoft.com/v1.0/directory/administrativeUnits"
         
@@ -100,7 +100,7 @@ class MsIdentityAccess(AppBase):
 
     def list_administrative_unit_members(self, tenant_id, client_id, client_secret,administrative_unit_id):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
         graph_url = f"https://graph.microsoft.com/v1.0/directory/administrativeUnits/{administrative_unit_id}/members"
         ret = session.get(graph_url)
@@ -114,7 +114,7 @@ class MsIdentityAccess(AppBase):
 
     def get_administrative_unit_member(self, tenant_id, client_id, client_secret, administrative_unit_id, member_id):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
         graph_url = f"https://graph.microsoft.com/v1.0/directory/administrativeUnits/{administrative_unit_id}/members/{member_id}"
         ret = session.get(graph_url)
@@ -129,7 +129,7 @@ class MsIdentityAccess(AppBase):
         ## add member
     def remove_administrative_unit_member(self, tenant_id, client_id, client_secret, administrative_unit_id, user_or_group_id):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
         graph_url = f"https://graph.microsoft.com/v1.0/directory/administrativeUnits/{administrative_unit_id}/members/{user_or_group_id}/$ref"
         ret = session.delete(graph_url)
@@ -141,7 +141,7 @@ class MsIdentityAccess(AppBase):
 
     def list_risky_users(self, tenant_id, client_id, client_secret):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
         graph_url = f"https://graph.microsoft.com/v1.0/identityProtection/riskyUsers"
         ret = session.get(graph_url)
@@ -155,7 +155,7 @@ class MsIdentityAccess(AppBase):
 
     def get_risky_user(self, tenant_id, client_id, client_secret, risky_user_id):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
         graph_url = f"https://graph.microsoft.com/v1.0/identityProtection/riskyUsers{risky_user_id}"
         ret = session.get(graph_url)
@@ -169,7 +169,7 @@ class MsIdentityAccess(AppBase):
 
     def confirm_compromised_users(self, tenant_id, client_id, client_secret, risky_user_ids):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
         graph_url = "https://graph.microsoft.com/v1.0/identityProtection/riskyUsers/confirmCompromised"
 
@@ -190,7 +190,7 @@ class MsIdentityAccess(AppBase):
 
     def dismiss_compromised_users(self, tenant_id, client_id, client_secret, risky_user_ids):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
         graph_url = "https://graph.microsoft.com/v1.0/identityProtection/riskyUsers/dismiss"
 
@@ -211,7 +211,7 @@ class MsIdentityAccess(AppBase):
 
     def list_directory_role(self, tenant_id, client_id, client_secret):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
         graph_url = "https://graph.microsoft.com/v1.0/directoryRoles"
         ret = session.get(graph_url)
@@ -225,7 +225,7 @@ class MsIdentityAccess(AppBase):
 
     def list_directory_role_members(self, tenant_id, client_id, client_secret, directory_role_id):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
         graph_url = f"https://graph.microsoft.com/v1.0/directoryRoles/{directory_role_id}/members"
         ret = session.get(graph_url)
@@ -239,7 +239,7 @@ class MsIdentityAccess(AppBase):
 
     def add_directory_role_members(self, tenant_id, client_id, client_secret, directory_role_id, user_id):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
         graph_url = f"https://graph.microsoft.com/v1.0/directoryRoles/{directory_role_id}/members/$ref"
 
@@ -258,7 +258,7 @@ class MsIdentityAccess(AppBase):
 
     def remove_directory_role_members(self, tenant_id, client_id, client_secret, directory_role_id, user_id):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
         graph_url = f"https://graph.microsoft.com/v1.0/directoryRoles/{directory_role_id}/members/$ref"
 
@@ -277,7 +277,7 @@ class MsIdentityAccess(AppBase):
 
     def list_password_methods(self, tenant_id, client_id, client_secret, user_email_or_id):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
         graph_url = f"https://graph.microsoft.com/beta/users/{user_email_or_id}/authentication/passwordMethods"
 
@@ -292,7 +292,7 @@ class MsIdentityAccess(AppBase):
     
     def reset_user_password(self, tenant_id, client_id, client_secret, user_email_or_id , registered_password_id, new_password):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
         graph_url = f"https://graph.microsoft.com/beta/users/{user_email_or_id}/authentication/passwordMethods/{registered_password_id}/resetPassword"
 

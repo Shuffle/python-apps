@@ -52,14 +52,14 @@ class AWSEC2(AppBase):
 
     # Write your data inside this function
     def get_rules(self, access_key, secret_key, region, NetworkAclId):
-        self.ec2 = await self.auth_ec2(access_key, secret_key, region)
+        self.ec2 = self.auth_ec2(access_key, secret_key, region)
 
         network_acl = self.ec2.NetworkAcl(NetworkAclId)
         return network_acl.entries
 
     # Write your data inside this function
     def block_ip(self, access_key, secret_key, region, NetworkAclId, ip, direction):
-        self.ec2 = await self.auth_ec2(access_key, secret_key, region)
+        self.ec2 = self.auth_ec2(access_key, secret_key, region)
         network_acl = self.ec2.NetworkAcl(NetworkAclId)
 
         if "/" not in ip:
@@ -117,7 +117,7 @@ class AWSEC2(AppBase):
 
     # Write your data inside this function
     def create_acl_entry(self, access_key, secret_key, region, NetworkAclId , cidr_block, dryrun, direction, portrange_from, portrange_to, protocol, rule_action, rule_number):
-        self.ec2 = await self.auth_ec2(access_key, secret_key, region)
+        self.ec2 = self.auth_ec2(access_key, secret_key, region)
 
         network_acl = self.ec2.NetworkAcl(NetworkAclId)
         if protocol.lower() == "tcp":
@@ -159,7 +159,7 @@ class AWSEC2(AppBase):
 
     #Terminate, Start and Stop Instance
     def instance_state_change(self, access_key, secret_key, region, instance_id, action, dryrun):
-        self.ec2 = await self.auth_ec2(access_key, secret_key, region)
+        self.ec2 = self.auth_ec2(access_key, secret_key, region)
         instance = self.ec2.Instance(instance_id)
         dryrun = True if dryrun in ["True", "true"] else False
 
@@ -176,7 +176,7 @@ class AWSEC2(AppBase):
     
     #Create Network Interface
     def create_network_interface(self, access_key, secret_key, region, subnetid, description, dryrun ):
-        self.ec2 = await self.auth_ec2(access_key, secret_key, region)
+        self.ec2 = self.auth_ec2(access_key, secret_key, region)
         client = self.ec2.meta.client
         dryrun = True if dryrun in ["True", "true"] else False
         try:
@@ -190,7 +190,7 @@ class AWSEC2(AppBase):
 
     #Create Image
     def create_image(self, access_key, secret_key, region, description, instance_id, name, dryrun, noreboot):
-        self.ec2 = await self.auth_ec2(access_key, secret_key, region)
+        self.ec2 = self.auth_ec2(access_key, secret_key, region)
         client = self.ec2.meta.client
         dryrun = True if dryrun in ["True", "true"] else False
         noreboot = True if dryrun in ["True", "true"] else False
@@ -207,7 +207,7 @@ class AWSEC2(AppBase):
 
     #Deregister Image
     def deregister_an_image(self, access_key, secret_key, region, image_id, dryrun):
-        self.ec2 = await self.auth_ec2(access_key, secret_key, region)
+        self.ec2 = self.auth_ec2(access_key, secret_key, region)
         client = self.ec2.meta.client
         dryrun = True if dryrun in ["True", "true"] else False
         try:
@@ -220,7 +220,7 @@ class AWSEC2(AppBase):
     
     #Create Snapshot
     def create_snapshot(self, access_key, secret_key, region, description, volume_id, dryrun):
-        self.ec2 = await self.auth_ec2(access_key, secret_key, region)
+        self.ec2 = self.auth_ec2(access_key, secret_key, region)
         client = self.ec2.meta.client
         dryrun = True if dryrun in ["True", "true"] else False
         try:
@@ -235,7 +235,7 @@ class AWSEC2(AppBase):
     
     #Delete Snapshot
     def delete_snapshot(self, access_key, secret_key, region, snapshot_id, dryrun):
-        self.ec2 = await self.auth_ec2(access_key, secret_key, region)
+        self.ec2 = self.auth_ec2(access_key, secret_key, region)
         client = self.ec2.meta.client
         dryrun = True if dryrun in ["True", "true"] else False
         try:
@@ -248,7 +248,7 @@ class AWSEC2(AppBase):
 
     #Delete Network Interface
     def delete_network_interface(self, access_key, secret_key, region, networkinterface_id, dryrun):
-        self.ec2 = await self.auth_ec2(access_key, secret_key, region)
+        self.ec2 = self.auth_ec2(access_key, secret_key, region)
         client = self.ec2.meta.client
         dryrun = True if dryrun in ["True", "true"] else False
         try:
@@ -261,7 +261,7 @@ class AWSEC2(AppBase):
 
     #Describing address
     def describe_address(self, access_key, secret_key, region, publicips, dryrun):
-        self.ec2=await self.auth_ec2(access_key, secret_key, region)
+        self.ec2=self.auth_ec2(access_key, secret_key, region)
         client = self.ec2.meta.client
         dryrun = True if dryrun in ["True", "true"] else False
         try:
@@ -278,7 +278,7 @@ class AWSEC2(AppBase):
 
     #Describing key pair
     def describe_keypair(self, access_key, secret_key, region,  dryrun, option, value):
-        self.ec2=await self.auth_ec2(access_key, secret_key, region)
+        self.ec2=self.auth_ec2(access_key, secret_key, region)
         client = self.ec2.meta.client
         dryrun = True if dryrun in ["True", "true"] else False
         try:
@@ -305,7 +305,7 @@ class AWSEC2(AppBase):
 
     #Describing network acls
     def describe_networkacls(self, access_key, secret_key, region, dryrun, networkAcl_Id):
-        self.ec2=await self.auth_ec2(access_key, secret_key, region)
+        self.ec2=self.auth_ec2(access_key, secret_key, region)
         client = self.ec2.meta.client
         dryrun = True if dryrun in ["True", "true"] else False
         try:                
@@ -324,7 +324,7 @@ class AWSEC2(AppBase):
 
     #Describing Security groups
     def describe_securitygroups(self, access_key, secret_key, region, dryrun, option, value):
-        self.ec2=await self.auth_ec2(access_key, secret_key, region)
+        self.ec2=self.auth_ec2(access_key, secret_key, region)
         client = self.ec2.meta.client
         dryrun = True if dryrun in ["True", "true"] else False
         try:
@@ -351,7 +351,7 @@ class AWSEC2(AppBase):
 
     #Describing vpcs
     def describe_vpc(self, access_key, secret_key, region, dryrun, vpcid):
-        self.ec2=await self.auth_ec2(access_key, secret_key, region)
+        self.ec2=self.auth_ec2(access_key, secret_key, region)
         client = self.ec2.meta.client
         dryrun = True if dryrun in ["True", "true"] else False
         try:

@@ -40,7 +40,7 @@ class Oauth2Example(AppBase):
     # UserAuthenticationMethod.ReadWrite.All
     def reset_password(self, access_token, refresh_token, userId, passwordId, newPassword=""):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(access_token, refresh_token)
+        session = self.authenticate(access_token, refresh_token)
 
         url = "https://graph.microsoft.com/beta/users/%s/authentication/passwordMethods/%s/resetPassword" % (userId, passwordId)
         response = session.post(url)
@@ -50,7 +50,7 @@ class Oauth2Example(AppBase):
     # UserAuthenticationMethod.ReadWrite.All
     def get_password_methods(self, access_token, refresh_token):
         graph_url = "https://graph.microsoft.com"
-        session = await self.authenticate(access_token, refresh_token)
+        session = self.authenticate(access_token, refresh_token)
 
         url = "https://graph.microsoft.com/beta/me/authentication/passwordMethods"
         response = session.get(url)
