@@ -118,4 +118,4 @@ class MSExcel(AppBase):
             return "Action successfully completed"
         
 if __name__ == "__main__":
-    asyncio.run(MSExcel.run(), debug=True)
+    MSExcel.run()

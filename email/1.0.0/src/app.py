@@ -241,11 +241,11 @@ def run(request):
     current_execution_id = action.get("execution_id")
 
     if action and "name" in action and "app_name" in action:
-        asyncio.run(Email.run(action), debug=True)
+        Email.run(action)
         return f'Attempting to execute function {action["name"]} in app {action["app_name"]}'
     else:
         return f"Invalid action"
 
 
 if __name__ == "__main__":
-    asyncio.run(Email.run(), debug=True)
+    Email.run()

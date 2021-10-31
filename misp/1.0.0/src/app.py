@@ -155,4 +155,4 @@ class Misp(AppBase):
 
 
 if __name__ == "__main__":
-    asyncio.run(Misp.run(), debug=True)
+    Misp.run()

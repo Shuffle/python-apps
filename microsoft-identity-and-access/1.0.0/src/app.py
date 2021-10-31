@@ -313,4 +313,4 @@ class MsIdentityAccess(AppBase):
         return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code, "error_response":ret.text}        
 
 if __name__ == "__main__":
-    asyncio.run(MsIdentityAccess.run(), debug=True)
+    MsIdentityAccess.run()

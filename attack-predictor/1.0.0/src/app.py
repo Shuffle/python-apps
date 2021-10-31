@@ -136,4 +136,4 @@ class rcATT(AppBase):
         return prediction
 
 if __name__ == "__main__":
-    asyncio.run(rcATT.run(), debug=True)
+    rcATT.run()

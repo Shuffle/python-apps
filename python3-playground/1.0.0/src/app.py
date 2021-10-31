@@ -47,4 +47,4 @@ class PythonPlayground(AppBase):
         return func(json_data)
 
 if __name__ == "__main__":
-    asyncio.run(PythonPlayground.run(), debug=True)
+    PythonPlayground.run()

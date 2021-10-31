@@ -206,4 +206,4 @@ class AWSS3(AppBase):
         }
 
 if __name__ == "__main__":
-    asyncio.run(AWSS3.run(), debug=True)
+    AWSS3.run()

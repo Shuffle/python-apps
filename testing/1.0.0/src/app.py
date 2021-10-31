@@ -98,4 +98,4 @@ class HelloWorld(AppBase):
         return ret.text
 
 if __name__ == "__main__":
-    asyncio.run(HelloWorld.run(), debug=True)
+    HelloWorld.run()

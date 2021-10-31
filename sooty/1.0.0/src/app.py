@@ -94,4 +94,4 @@ class Sooty(AppBase):
 
 
 if __name__ == "__main__":
-    asyncio.run(Sooty.run(), debug=True)
+    Sooty.run()

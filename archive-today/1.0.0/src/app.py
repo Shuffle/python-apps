@@ -36,4 +36,4 @@ class ArchiveToday(AppBase):
 #        return target
 
 if __name__ == "__main__":
-    asyncio.run(ArchiveToday.run(), debug=True)
+    ArchiveToday.run()

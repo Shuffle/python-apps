@@ -40,4 +40,4 @@ class ADLDAP(AppBase):
         return json.loads(conn.response_to_json())['entries']
 
 if __name__ == "__main__":
-    asyncio.run(ADLDAP.run(), debug=True)
+    ADLDAP.run()

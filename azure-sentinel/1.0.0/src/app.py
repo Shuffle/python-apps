@@ -246,4 +246,4 @@ class AzureSentinel(AppBase):
 
 
 if __name__ == "__main__":
-    asyncio.run(AzureSentinel.run(), debug=False)
+    AzureSentinel.run()

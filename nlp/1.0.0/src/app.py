@@ -74,4 +74,4 @@ class NLP(AppBase):
         return func(data)
 
 if __name__ == "__main__":
-    asyncio.run(NLP.run(), debug=True)
+    NLP.run()

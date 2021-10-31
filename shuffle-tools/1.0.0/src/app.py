@@ -1298,4 +1298,4 @@ class Tools(AppBase):
         return json.dumps(result)
 
 if __name__ == "__main__":
-    asyncio.run(Tools.run(), debug=True)
+    Tools.run()

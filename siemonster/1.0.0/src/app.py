@@ -39,4 +39,4 @@ class Siemonster(AppBase):
         return requests.request(method, url + path, auth=(username, password), data=body, headers=headers, verify=False).text
 
 if __name__ == "__main__":
-    asyncio.run(Siemonster.run(), debug=True)
+    Siemonster.run()

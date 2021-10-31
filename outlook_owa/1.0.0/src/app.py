@@ -508,11 +508,11 @@ def run(request):
     current_execution_id = action.get("execution_id")
 
     if action and "name" in action and "app_name" in action:
-        asyncio.run(Owa.run(action), debug=True)
+        Owa.run(action)
         return f'Attempting to execute function {action["name"]} in app {action["app_name"]}'
     else:
         return f"Invalid action"
 
 
 if __name__ == "__main__":
-    asyncio.run(Owa.run(), debug=True)
+    Owa.run()

@@ -67,4 +67,4 @@ class EmailAnalyzer(AppBase):
             raise Exception(e)
         
 if __name__ == "__main__":
-    asyncio.run(EmailAnalyzer.run(), debug=True)
+    EmailAnalyzer.run()

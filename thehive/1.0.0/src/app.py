@@ -431,4 +431,4 @@ class TheHive(AppBase):
 
 
 if __name__ == "__main__":
-    asyncio.run(TheHive.run(), debug=True)
+    TheHive.run()

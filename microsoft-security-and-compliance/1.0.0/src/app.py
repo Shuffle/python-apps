@@ -608,4 +608,4 @@ class MSComplianceCenter(AppBase):
     #https://protection.office.com/api/ComplianceSearch/StartSearch?id=Another+search&retry=False
 
 if __name__ == "__main__":
-    asyncio.run(MSComplianceCenter.run(), debug=True)
+    MSComplianceCenter.run()

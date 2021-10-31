@@ -325,4 +325,4 @@ class ActiveDirectory(AppBase):
 
 
 if __name__ == "__main__":
-    asyncio.run(ActiveDirectory.run(), debug=True)
+    ActiveDirectory.run()

@@ -57,4 +57,4 @@ class VulnDB(AppBase):
 
 
 if __name__ == "__main__":
-    asyncio.run(VulnDB.run(), debug=True)
+    VulnDB.run()

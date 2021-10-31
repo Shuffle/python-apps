@@ -43,4 +43,4 @@ class GitGuardian(AppBase):
                 return f"Exception occured: {e}"
 
 if __name__ == "__main__":
-    asyncio.run(GitGuardian.run(), debug=True)
+    GitGuardian.run()

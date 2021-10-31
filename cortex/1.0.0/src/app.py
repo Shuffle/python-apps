@@ -107,4 +107,4 @@ class Cortex(AppBase):
         return report 
 
 if __name__ == "__main__":
-    asyncio.run(Cortex.run(), debug=True)
+    Cortex.run()

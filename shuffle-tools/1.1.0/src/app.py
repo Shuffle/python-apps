@@ -1545,4 +1545,4 @@ class Tools(AppBase):
         return parsedvalue 
 
 if __name__ == "__main__":
-    asyncio.run(Tools.run(), debug=True)
+    Tools.run()

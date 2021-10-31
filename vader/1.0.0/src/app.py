@@ -39,6 +39,6 @@ class Vader(AppBase):
         return str(vs)
 
 if __name__ == "__main__":
-    asyncio.run(Vader.run(), debug=True)
+    Vader.run()
 
 

@@ -81,4 +81,4 @@ class BreachSense(AppBase):
             return "Exception occured: %s" % e
 
 if __name__ == "__main__":
-    asyncio.run(BreachSense.run(), debug=True)
+    BreachSense.run()

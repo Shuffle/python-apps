@@ -76,4 +76,4 @@ class AWSDynamoDB(AppBase):
             return "Error: %s" % e
 
 if __name__ == "__main__":
-    asyncio.run(AWSDynamoDB.run(), debug=True)
+    AWSDynamoDB.run()

@@ -245,4 +245,4 @@ class AWSIAM(AppBase):
             return f'{e}'
 
 if __name__ == "__main__":
-    asyncio.run(AWSIAM.run(), debug=True)
+    AWSIAM.run()

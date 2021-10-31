@@ -121,4 +121,4 @@ class Splunk(AppBase):
         #return "No results"
         
 if __name__ == "__main__":
-    asyncio.run(Splunk.run(), debug=True)
+    Splunk.run()

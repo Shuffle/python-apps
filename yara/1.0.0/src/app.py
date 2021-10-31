@@ -188,4 +188,4 @@ class Yara(AppBase):
             return return_data 
 
 if __name__ == "__main__":
-    asyncio.run(Yara.run(), debug=True)
+    Yara.run()

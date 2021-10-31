@@ -42,4 +42,4 @@ class Twitter(AppBase):
         return twitter.destroy_status(id=tweet_id)
 
 if __name__ == "__main__":
-    asyncio.run(Twitter.run(), debug=True)
+    Twitter.run()

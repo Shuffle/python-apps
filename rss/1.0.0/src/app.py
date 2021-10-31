@@ -48,4 +48,4 @@ class PythonPlayground(AppBase):
     #    return entry.keys()
 
 if __name__ == "__main__":
-    asyncio.run(PythonPlayground.run(), debug=True)
+    PythonPlayground.run()

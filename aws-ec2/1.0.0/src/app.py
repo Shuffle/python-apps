@@ -418,4 +418,4 @@ class AWSEC2(AppBase):
 
 
 if __name__ == "__main__":
-    asyncio.run(AWSEC2.run(), debug=True)
+    AWSEC2.run()

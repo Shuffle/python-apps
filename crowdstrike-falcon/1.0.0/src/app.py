@@ -3746,4 +3746,4 @@ class Crowdstrike_Falcon(AppBase):
 
 if __name__ == "__main__":
 
-    asyncio.run(Crowdstrike_Falcon.run(), debug=True)
+    Crowdstrike_Falcon.run()

@@ -83,4 +83,4 @@ class Subflow(AppBase):
         return message
 
 if __name__ == "__main__":
-    asyncio.run(Subflow.run(), debug=True)
+    Subflow.run()

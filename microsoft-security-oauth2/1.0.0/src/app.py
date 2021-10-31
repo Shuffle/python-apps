@@ -57,4 +57,4 @@ class MicrosoftSecurity(AppBase):
         return response.text
     
 if __name__ == "__main__":
-    asyncio.run(MicrosoftSecurity.run(), debug=True)
+    MicrosoftSecurity.run()

@@ -106,4 +106,4 @@ class Gpg(AppBase):
 
 
 if __name__ == "__main__":
-    asyncio.run(Gpg.run(), debug=True)
+    Gpg.run()

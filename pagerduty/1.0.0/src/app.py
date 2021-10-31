@@ -136,4 +136,4 @@ class Pagerduty(AppBase):
 
 
 if __name__ == "__main__":
-    asyncio.run(Pagerduty.run(), debug=True)
+    Pagerduty.run()

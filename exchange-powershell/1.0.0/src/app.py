@@ -164,4 +164,4 @@ class exchange_powershell(AppBase):
         return ret 
 
 if __name__ == "__main__":
-    asyncio.run(exchange_powershell.run(), debug=True)
+    exchange_powershell.run()

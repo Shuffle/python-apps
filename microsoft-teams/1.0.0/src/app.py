@@ -116,4 +116,4 @@ class MsTeams(AppBase):
         return f'Message Sent'
 
 if __name__ == "__main__":
-    asyncio.run(MsTeams.run(), debug=True)
+    MsTeams.run()

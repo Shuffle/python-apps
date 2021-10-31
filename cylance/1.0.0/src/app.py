@@ -231,4 +231,4 @@ class Cylance(AppBase):
     
 
 if __name__ == "__main__":
-    asyncio.run(Cylance.run(), debug=True)
+    Cylance.run()

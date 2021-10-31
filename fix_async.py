@@ -17,6 +17,11 @@ for folder in folders:
                 data = tmp.read()
                 data = data.replace("async def", "def", -1)
                 data = data.replace("await ", "", -1)
+                data = data.replace("asyncio.run(", "", -1)
+                data = data.replace(", debug=True)", "", -1)
+                data = data.replace(", debug=False)", "", -1)
+                data = data.replace(",debug=True)", "", -1)
+                data = data.replace(",debug=False)", "", -1)
 
             if len(data) > 0:
                 with open(f"{filename}", "w+") as tmp:
@@ -25,5 +30,6 @@ for folder in folders:
             print("Fixed: %s" % filename)
         except:
             print("Skipped: %s" % filename)
+
 
     #break

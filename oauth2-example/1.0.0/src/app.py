@@ -58,4 +58,4 @@ class Oauth2Example(AppBase):
         return response.text
     
 if __name__ == "__main__":
-    asyncio.run(Oauth2Example.run(), debug=True)
+    Oauth2Example.run()

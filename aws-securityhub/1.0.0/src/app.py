@@ -133,4 +133,4 @@ class AWSEC2(AppBase):
         response = client.batch_import_findings(Findings=findings)
 
 if __name__ == "__main__":
-    asyncio.run(AWSEC2.run(), debug=True)
+    AWSEC2.run()

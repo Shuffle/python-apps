@@ -122,4 +122,4 @@ class snort3(AppBase):
 
 
 if __name__ == "__main__":
-    asyncio.run(snort3.run(), debug=True)
+    snort3.run()
