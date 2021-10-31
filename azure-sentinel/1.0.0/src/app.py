@@ -22,7 +22,7 @@ class AzureSentinel(AppBase):
         super().__init__(redis, logger, console_logger)
         self.azure_url = "https://management.azure.com"
 
-    async def authenticate(self, tenant_id, client_id, client_secret):
+    def authenticate(self, tenant_id, client_id, client_secret):
 
         self.s = requests.Session()
         auth_url = f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token"
@@ -47,7 +47,7 @@ class AzureSentinel(AppBase):
         access_token = res.json().get("access_token")
         self.s.headers = {"Authorization": f"Bearer {access_token}", "cache-control": "no-cache"}
 
-    async def extract_entities(self, incident_uri):
+    def extract_entities(self, incident_uri):
 
         entities_url = f"{self.azure_url}{incident_uri}/entities"
         params = {"api-version": "2019-01-01-preview"}
@@ -58,7 +58,7 @@ class AzureSentinel(AppBase):
 
         return res.json().get("entities", [])
 
-    async def extract_comments(self, incident_uri):
+    def extract_comments(self, incident_uri):
 
         comments_url = f"{self.azure_url}{incident_uri}/comments"
         params = {"api-version": "2020-01-01"}
@@ -69,7 +69,7 @@ class AzureSentinel(AppBase):
 
         return res.json().get("value", [])
 
-    async def get_incidents(self, **kwargs):
+    def get_incidents(self, **kwargs):
 
         # Get a client credential access token
         await self.authenticate(kwargs["tenant_id"], kwargs["client_id"], kwargs["client_secret"])
@@ -133,7 +133,7 @@ class AzureSentinel(AppBase):
 
         return json.dumps(incidents)
 
-    async def get_incident(self, **kwargs):
+    def get_incident(self, **kwargs):
 
         if not kwargs.get("incident_id"):
             return '{"success": false, "error": "No incident ID supplied"}'
@@ -161,7 +161,7 @@ class AzureSentinel(AppBase):
 
         return json.dumps(incident)
 
-    async def close_incident(self, **kwargs):
+    def close_incident(self, **kwargs):
 
         incident = json.loads(await self.get_incident(**kwargs))
         if "error" in incident:
@@ -192,7 +192,7 @@ class AzureSentinel(AppBase):
 
         return res.text
 
-    async def update_incident(self, **kwargs):
+    def update_incident(self, **kwargs):
 
         incident = json.loads(await self.get_incident(**kwargs))
         if "error" in incident:
@@ -223,7 +223,7 @@ class AzureSentinel(AppBase):
 
         return res.text
 
-    async def add_comment(self, **kwargs):
+    def add_comment(self, **kwargs):
 
         # Get a client credential access token
         auth = await self.authenticate(

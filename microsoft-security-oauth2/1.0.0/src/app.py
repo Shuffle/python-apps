@@ -27,7 +27,7 @@ class MicrosoftSecurity(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
-    async def authenticate(self, access_token, refresh_token):
+    def authenticate(self, access_token, refresh_token):
         s = requests.Session()
         s.headers = {
             "Content-Type": "application/json",
@@ -37,7 +37,7 @@ class MicrosoftSecurity(AppBase):
         return s
 
     # UserAuthenticationMethod.ReadWrite.All
-    async def reset_password(self, access_token, refresh_token, userId, passwordId, newPassword=""):
+    def reset_password(self, access_token, refresh_token, userId, passwordId, newPassword=""):
         graph_url = "https://graph.microsoft.com"
         session = await self.authenticate(access_token, refresh_token)
 
@@ -47,7 +47,7 @@ class MicrosoftSecurity(AppBase):
         return response.text
 
     # UserAuthenticationMethod.ReadWrite.All
-    async def get_password_methods(self, access_token, refresh_token):
+    def get_password_methods(self, access_token, refresh_token):
         graph_url = "https://graph.microsoft.com"
         session = await self.authenticate(access_token, refresh_token)
 

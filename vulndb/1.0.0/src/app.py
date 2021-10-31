@@ -39,7 +39,7 @@ class VulnDB(AppBase):
         self.headers = {'Content-Type': 'application/json',
                         'Authorization': f'Bearer {token}'}
 
-    async def latest_20_vulns(self, ClientID, ClientSecret):
+    def latest_20_vulns(self, ClientID, ClientSecret):
         if self.headers == "":
             self.get_auth_headers(ClientID, ClientSecret)
 

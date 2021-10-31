@@ -22,7 +22,7 @@ class MsIdentityAccess(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
-    async def authenticate(self, tenant_id, client_id, client_secret, graph_url):
+    def authenticate(self, tenant_id, client_id, client_secret, graph_url):
         s = requests.Session()
         auth_url = f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token"
         auth_data = {
@@ -48,7 +48,7 @@ class MsIdentityAccess(AppBase):
         return s
 
 
-    async def list_administrative_units(self, tenant_id, client_id, client_secret):
+    def list_administrative_units(self, tenant_id, client_id, client_secret):
         graph_url = "https://graph.microsoft.com"
         session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
@@ -63,7 +63,7 @@ class MsIdentityAccess(AppBase):
         return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code}
 
     
-    async def get_administrative_units(self, tenant_id, client_id, client_secret,id):
+    def get_administrative_units(self, tenant_id, client_id, client_secret,id):
         graph_url = "https://graph.microsoft.com"
         session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
@@ -77,7 +77,7 @@ class MsIdentityAccess(AppBase):
 
         return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code, "error_response":ret.text}
 
-    async def create_administrative_unit(self, tenant_id, client_id, client_secret, display_name, description, visibility):
+    def create_administrative_unit(self, tenant_id, client_id, client_secret, display_name, description, visibility):
         graph_url = "https://graph.microsoft.com"
         session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
@@ -98,7 +98,7 @@ class MsIdentityAccess(AppBase):
 
         return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code, "error_response":ret.text, "error_response":ret.text}
 
-    async def list_administrative_unit_members(self, tenant_id, client_id, client_secret,administrative_unit_id):
+    def list_administrative_unit_members(self, tenant_id, client_id, client_secret,administrative_unit_id):
         graph_url = "https://graph.microsoft.com"
         session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
@@ -112,7 +112,7 @@ class MsIdentityAccess(AppBase):
 
         return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code}
 
-    async def get_administrative_unit_member(self, tenant_id, client_id, client_secret, administrative_unit_id, member_id):
+    def get_administrative_unit_member(self, tenant_id, client_id, client_secret, administrative_unit_id, member_id):
         graph_url = "https://graph.microsoft.com"
         session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
@@ -127,7 +127,7 @@ class MsIdentityAccess(AppBase):
         return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code, "error_response":ret.text}
     
         ## add member
-    async def remove_administrative_unit_member(self, tenant_id, client_id, client_secret, administrative_unit_id, user_or_group_id):
+    def remove_administrative_unit_member(self, tenant_id, client_id, client_secret, administrative_unit_id, user_or_group_id):
         graph_url = "https://graph.microsoft.com"
         session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
@@ -139,7 +139,7 @@ class MsIdentityAccess(AppBase):
 
         return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code,"error_response":ret.text}
 
-    async def list_risky_users(self, tenant_id, client_id, client_secret):
+    def list_risky_users(self, tenant_id, client_id, client_secret):
         graph_url = "https://graph.microsoft.com"
         session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
@@ -153,7 +153,7 @@ class MsIdentityAccess(AppBase):
 
         return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code}
 
-    async def get_risky_user(self, tenant_id, client_id, client_secret, risky_user_id):
+    def get_risky_user(self, tenant_id, client_id, client_secret, risky_user_id):
         graph_url = "https://graph.microsoft.com"
         session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
@@ -167,7 +167,7 @@ class MsIdentityAccess(AppBase):
 
         return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code, "error_response":ret.text}
 
-    async def confirm_compromised_users(self, tenant_id, client_id, client_secret, risky_user_ids):
+    def confirm_compromised_users(self, tenant_id, client_id, client_secret, risky_user_ids):
         graph_url = "https://graph.microsoft.com"
         session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
@@ -188,7 +188,7 @@ class MsIdentityAccess(AppBase):
 
         return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code, "error_response":ret.text}
 
-    async def dismiss_compromised_users(self, tenant_id, client_id, client_secret, risky_user_ids):
+    def dismiss_compromised_users(self, tenant_id, client_id, client_secret, risky_user_ids):
         graph_url = "https://graph.microsoft.com"
         session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
@@ -209,7 +209,7 @@ class MsIdentityAccess(AppBase):
 
         return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code, "error_response":ret.text}            
 
-    async def list_directory_role(self, tenant_id, client_id, client_secret):
+    def list_directory_role(self, tenant_id, client_id, client_secret):
         graph_url = "https://graph.microsoft.com"
         session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
@@ -223,7 +223,7 @@ class MsIdentityAccess(AppBase):
 
         return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code, "error_response":ret.text}
 
-    async def list_directory_role_members(self, tenant_id, client_id, client_secret, directory_role_id):
+    def list_directory_role_members(self, tenant_id, client_id, client_secret, directory_role_id):
         graph_url = "https://graph.microsoft.com"
         session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
@@ -237,7 +237,7 @@ class MsIdentityAccess(AppBase):
 
         return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code, "error_response":ret.text}    
 
-    async def add_directory_role_members(self, tenant_id, client_id, client_secret, directory_role_id, user_id):
+    def add_directory_role_members(self, tenant_id, client_id, client_secret, directory_role_id, user_id):
         graph_url = "https://graph.microsoft.com"
         session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
@@ -256,7 +256,7 @@ class MsIdentityAccess(AppBase):
 
         return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code, "error_response":ret.text}
 
-    async def remove_directory_role_members(self, tenant_id, client_id, client_secret, directory_role_id, user_id):
+    def remove_directory_role_members(self, tenant_id, client_id, client_secret, directory_role_id, user_id):
         graph_url = "https://graph.microsoft.com"
         session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
@@ -275,7 +275,7 @@ class MsIdentityAccess(AppBase):
 
         return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code, "error_response":ret.text}
 
-    async def list_password_methods(self, tenant_id, client_id, client_secret, user_email_or_id):
+    def list_password_methods(self, tenant_id, client_id, client_secret, user_email_or_id):
         graph_url = "https://graph.microsoft.com"
         session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
@@ -290,7 +290,7 @@ class MsIdentityAccess(AppBase):
 
         return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code, "error_response":ret.text}
     
-    async def reset_user_password(self, tenant_id, client_id, client_secret, user_email_or_id , registered_password_id, new_password):
+    def reset_user_password(self, tenant_id, client_id, client_secret, user_email_or_id , registered_password_id, new_password):
         graph_url = "https://graph.microsoft.com"
         session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
 

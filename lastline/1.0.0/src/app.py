@@ -38,7 +38,7 @@ class Lastline(AppBase):
         
         return session.get(url)
 
-    async def get_event(self, url, user, password, event_id):
+    def get_event(self, url, user, password, event_id):
         session = self.login(url, user, password)
     
         params = {
@@ -51,7 +51,7 @@ class Lastline(AppBase):
         self.logout(url, session)
         return ret.text
     
-    async def get_mail_attachments(self, url, user, password, start_time, end_time, limit=1):
+    def get_mail_attachments(self, url, user, password, start_time, end_time, limit=1):
         session = self.login(url, user, password)
     
         params = {
@@ -66,7 +66,7 @@ class Lastline(AppBase):
         self.logout(url, session)
         return ret.text
     
-    async def get_mail_urls(self, url, user, password, start_time, end_time, limit=1):
+    def get_mail_urls(self, url, user, password, start_time, end_time, limit=1):
         session = self.login(url, user, password)
     
         params = {
@@ -81,7 +81,7 @@ class Lastline(AppBase):
         self.logout(url, session)
         return ret.text
     
-    async def get_network_events(self, url, user, password, start_time, end_time, limit=1, src_ip="", dst_ip="", port="", event_id="", incident_id="", priority=""):
+    def get_network_events(self, url, user, password, start_time, end_time, limit=1, src_ip="", dst_ip="", port="", event_id="", incident_id="", priority=""):
         session = self.login(url, user, password)
     
         params = {
@@ -111,7 +111,7 @@ class Lastline(AppBase):
         self.logout(url, session)
         return ret.text
     
-    async def get_endpoint_events(self, url, user, password, start_time, end_time, limit=1, file_md5="", malscape_task_uuid="", ioc_task_uuid=""):
+    def get_endpoint_events(self, url, user, password, start_time, end_time, limit=1, file_md5="", malscape_task_uuid="", ioc_task_uuid=""):
         session = self.login(url, user, password)
     
         params = {
@@ -136,7 +136,7 @@ class Lastline(AppBase):
         return ret.text
     
     
-    async def get_history(self, url, user, password, limit=1):
+    def get_history(self, url, user, password, limit=1):
         session = self.login(url, user, password)
     
         params = {
@@ -149,7 +149,7 @@ class Lastline(AppBase):
         self.logout(url, session)
         return ret.text
     
-    async def submit_url(self, url, user, password, url_to_submit):
+    def submit_url(self, url, user, password, url_to_submit):
         session = self.login(url, user, password)
     
         params = {

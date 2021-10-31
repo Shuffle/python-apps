@@ -19,7 +19,7 @@ class ADLDAP(AppBase):
         super().__init__(redis, logger, console_logger)
 
     # Write your data inside this function
-    async def search_samaccountname(self, domain_name, server_name, user_name, password, samaccountname, search_base, port, use_ssl):
+    def search_samaccountname(self, domain_name, server_name, user_name, password, samaccountname, search_base, port, use_ssl):
 
         user = '{}\\{}'.format(domain_name, user_name)
         port = int(port)

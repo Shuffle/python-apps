@@ -22,7 +22,7 @@ class AWSEC2(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
-    async def auth(self, access_key, secret_key, region):
+    def auth(self, access_key, secret_key, region):
         my_config = Config(
             region_name = region,
             signature_version = 'v4',
@@ -40,7 +40,7 @@ class AWSEC2(AppBase):
         )
 
     # Write your data inside this function
-    async def enable_security_hub(self, access_key, secret_key, region):
+    def enable_security_hub(self, access_key, secret_key, region):
         client = await self.auth(access_key, secret_key, region)
         response = client.enable_security_hub(
             Tags={},
@@ -53,7 +53,7 @@ class AWSEC2(AppBase):
             return response
 
     # Write your data inside this function
-    async def get_findings(self, access_key, secret_key, region, filters):
+    def get_findings(self, access_key, secret_key, region, filters):
         client = await self.auth(access_key, secret_key, region)
 
         try:
@@ -71,7 +71,7 @@ class AWSEC2(AppBase):
         return response
 
     # Write your data inside this function
-    async def get_insights(self, access_key, secret_key, region, arn):
+    def get_insights(self, access_key, secret_key, region, arn):
         client = await self.auth(access_key, secret_key, region)
 
         response = client.get_insights(
@@ -86,7 +86,7 @@ class AWSEC2(AppBase):
         return response
 
     # Write your data inside this function
-    async def update_finding(self, access_key, secret_key, region, id, productArn, status):
+    def update_finding(self, access_key, secret_key, region, id, productArn, status):
         client = await self.auth(access_key, secret_key, region)
         response = client.batch_update_findings(
             FindingIdentifiers=[
@@ -108,7 +108,7 @@ class AWSEC2(AppBase):
         return response
 
     # Write your data inside this function
-    async def create_finding(self, access_key, secret_key, region, productArn, id, title, description):
+    def create_finding(self, access_key, secret_key, region, productArn, id, title, description):
         client = await self.auth(access_key, secret_key, region)
 
         shuffle_id = "SOMETHING_%s" % id

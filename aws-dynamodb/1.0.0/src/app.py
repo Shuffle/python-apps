@@ -22,7 +22,7 @@ class AWSDynamoDB(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
-    async def auth_dynamodb(self, access_key, secret_key, region):
+    def auth_dynamodb(self, access_key, secret_key, region):
         my_config = Config(
             region_name = region,
             signature_version = "dynamodbv4",
@@ -41,7 +41,7 @@ class AWSDynamoDB(AppBase):
 
         return self.dynamodb
 
-    async def list_tables(self, access_key, secret_key, region):
+    def list_tables(self, access_key, secret_key, region):
         self.dynamodb = await self.auth_dynamodb(access_key, secret_key, region)
         client = self.dynamodb.meta.client
         try:
@@ -49,7 +49,7 @@ class AWSDynamoDB(AppBase):
         except botocore.exceptions.ClientError as e:
             return "Error: %s" % e
 
-    async def list_global_tables(self, access_key, secret_key, region):
+    def list_global_tables(self, access_key, secret_key, region):
         self.dynamodb = await self.auth_dynamodb(access_key, secret_key, region)
         client = self.dynamodb.meta.client
         try:
@@ -57,7 +57,7 @@ class AWSDynamoDB(AppBase):
         except botocore.exceptions.ClientError as e:
             return "Error: %s" % e
 
-    async def get_global_table_setttings(self, access_key, secret_key, region, table_name):
+    def get_global_table_setttings(self, access_key, secret_key, region, table_name):
         self.dynamodb = await self.auth_dynamodb(access_key, secret_key, region)
         client = self.dynamodb.meta.client
 
@@ -66,7 +66,7 @@ class AWSDynamoDB(AppBase):
         except botocore.exceptions.ClientError as e:
             return "Error: %s" % e
 
-    async def get_backups(self, access_key, secret_key, region, table_name):
+    def get_backups(self, access_key, secret_key, region, table_name):
         self.dynamodb = await self.auth_dynamodb(access_key, secret_key, region)
         client = self.dynamodb.meta.client
 

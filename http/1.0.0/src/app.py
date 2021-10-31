@@ -26,7 +26,7 @@ class HTTP(AppBase):
 
     # This is dangerously fun :)
     # Do we care about arbitrary code execution here?
-    async def curl(self, statement):
+    def curl(self, statement):
         process = subprocess.Popen(statement, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
         stdout = process.communicate()
         item = ""
@@ -112,42 +112,42 @@ class HTTP(AppBase):
         else:
             return body
 
-    async def GET(self, url, headers="", verify=True):
+    def GET(self, url, headers="", verify=True):
         parsed_headers = self.splitheaders(headers)
         verify = self.checkverify(verify)
         return requests.get(url, headers=parsed_headers, verify=verify).text
 
-    async def POST(self, url, headers="", body="", verify=True):
+    def POST(self, url, headers="", body="", verify=True):
         parsed_headers = self.splitheaders(headers)
         verify = self.checkverify(verify)
         body = self.checkbody(body)
         return requests.post(url, headers=parsed_headers, data=body, verify=verify).text
 
     # UNTESTED BELOW HERE
-    async def PUT(self, url, headers="", body="", verify=True):
+    def PUT(self, url, headers="", body="", verify=True):
         parsed_headers = self.splitheaders(headers)
         verify = self.checkverify(verify)
         body = self.checkbody(body)
         return requests.put(url, headers=parsed_headers, data=body, verify=verify).text
 
-    async def PATCH(self, url, headers="", body="", verify=True):
+    def PATCH(self, url, headers="", body="", verify=True):
         parsed_headers = self.splitheaders(headers)
         verify = self.checkverify(verify)
         body = self.checkbody(body)
         return requests.patch(url, headers=parsed_headers, data=body, verify=verify).text
 
-    async def DELETE(self, url, headers="", body="", verify=True):
+    def DELETE(self, url, headers="", body="", verify=True):
         parsed_headers = self.splitheaders(headers)
         verify = self.checkverify(verify)
         return requests.delete(url, headers=parsed_headers, verify=verify).text
 
-    async def HEAD(self, url, headers="", body="", verify=True):
+    def HEAD(self, url, headers="", body="", verify=True):
         parsed_headers = self.splitheaders(headers)
         verify = self.checkverify(verify)
         body = self.checkbody(body)
         return requests.head(url, headers=parsed_headers, verify=verify).text
 
-    async def OPTIONS(self, url, headers="", body="", verify=True):
+    def OPTIONS(self, url, headers="", body="", verify=True):
         parsed_headers = self.splitheaders(headers)
         verify = self.checkverify(verify)
         body = self.checkbody(body)

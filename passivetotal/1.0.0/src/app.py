@@ -20,7 +20,7 @@ class Passivetotal(AppBase):
         self.headers = {"Content-Type": "application/json"}
         super().__init__(redis, logger, console_logger)
 
-    async def update_project(self, username, apikey, data):
+    def update_project(self, username, apikey, data):
         url = "https://api.passivetotal.org/v2/project"
         auth = (username, apikey)
         print(data)
@@ -33,7 +33,7 @@ class Passivetotal(AppBase):
         else:
             return tags.split(",")
 
-    async def add_artifact(self, username, apikey, project, artifact, tags=""):
+    def add_artifact(self, username, apikey, project, artifact, tags=""):
         url = "https://api.passivetotal.org/v2/artifact"
         auth = (username, apikey)
 
@@ -55,7 +55,7 @@ class Passivetotal(AppBase):
         else:
             return True 
 
-    async def update_artifact(self, username, apikey, artifact_id, monitor=False, tags=""):
+    def update_artifact(self, username, apikey, artifact_id, monitor=False, tags=""):
         url = "https://api.passivetotal.org/v2/artifact"
         auth = (username, apikey)
 
@@ -67,7 +67,7 @@ class Passivetotal(AppBase):
         
         return requests.post(url, headers=self.headers, auth=auth, json=data).text
 
-    async def get_artifact(self, username, apikey, query=""):
+    def get_artifact(self, username, apikey, query=""):
         url = "https://api.passivetotal.org/v2/artifact"
         auth = (username, apikey)
 
@@ -77,7 +77,7 @@ class Passivetotal(AppBase):
         
         return requests.get(url, headers=self.headers, auth=auth, params=params).text
 
-    async def get_alerts(self, username, apikey, project_id="", artifact_id="", start="", end=""):
+    def get_alerts(self, username, apikey, project_id="", artifact_id="", start="", end=""):
         url = "https://api.passivetotal.org/v2/artifact?"
         auth = (username, apikey)
 

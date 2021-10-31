@@ -22,7 +22,7 @@ class AWSS3(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
-    async def auth_s3(self, access_key, secret_key, region):
+    def auth_s3(self, access_key, secret_key, region):
         my_config = Config(
             region_name = region,
             signature_version = "s3v4",
@@ -41,7 +41,7 @@ class AWSS3(AppBase):
 
         return self.s3
 
-    async def list_buckets(self, access_key, secret_key, region):
+    def list_buckets(self, access_key, secret_key, region):
         self.s3 = await self.auth_s3(access_key, secret_key, region)
         client = self.s3.meta.client
         try:
@@ -50,7 +50,7 @@ class AWSS3(AppBase):
         except botocore.exceptions.ClientError as e:
             return "Error: %s" % e
 
-    async def create_bucket(self, access_key, secret_key, region, bucket_name, access_type):
+    def create_bucket(self, access_key, secret_key, region, bucket_name, access_type):
         self.s3 = await self.auth_s3(access_key, secret_key, region)
         client = self.s3.meta.client
         try:
@@ -66,7 +66,7 @@ class AWSS3(AppBase):
         except botocore.exceptions.ClientError as e:
             return "Error: %s" % e
 
-    async def block_ip_access(self, access_key, secret_key, region, bucket_name, ip):
+    def block_ip_access(self, access_key, secret_key, region, bucket_name, ip):
         self.s3 = await self.auth_s3(access_key, secret_key, region)
         client = self.s3.meta.client
 
@@ -123,7 +123,7 @@ class AWSS3(AppBase):
         print(putaction)
         return "Successfully blocked IP %s" % ip
 
-    async def bucket_request_payment(self, access_key, secret_key, region, bucket_name):
+    def bucket_request_payment(self, access_key, secret_key, region, bucket_name):
         self.s3 = await self.auth_s3(access_key, secret_key, region)
         client = self.s3.meta.client
 
@@ -132,7 +132,7 @@ class AWSS3(AppBase):
         except botocore.exceptions.ClientError as e:
             return "Error: %s" % e
 
-    async def bucket_replication(self, access_key, secret_key, region, bucket_name):
+    def bucket_replication(self, access_key, secret_key, region, bucket_name):
         self.s3 = await self.auth_s3(access_key, secret_key, region)
         client = self.s3.meta.client
 
@@ -141,7 +141,7 @@ class AWSS3(AppBase):
         except botocore.exceptions.ClientError as e:
             return "Error: %s" % e
 
-    async def bucket_policy_status(self, access_key, secret_key, region, bucket_name):
+    def bucket_policy_status(self, access_key, secret_key, region, bucket_name):
         self.s3 = await self.auth_s3(access_key, secret_key, region)
         client = self.s3.meta.client
 
@@ -150,7 +150,7 @@ class AWSS3(AppBase):
         except botocore.exceptions.ClientError as e:
             return "Error: %s" % e
 
-    async def bucket_logging(self, access_key, secret_key, region, bucket_name):
+    def bucket_logging(self, access_key, secret_key, region, bucket_name):
         self.s3 = await self.auth_s3(access_key, secret_key, region)
         client = self.s3.meta.client
 
@@ -159,7 +159,7 @@ class AWSS3(AppBase):
         except botocore.exceptions.ClientError as e:
             return "Error: %s" % e
 
-    async def upload_file_to_bucket(self, access_key, secret_key, region, bucket_name, bucket_path, file_id):
+    def upload_file_to_bucket(self, access_key, secret_key, region, bucket_name, bucket_path, file_id):
         self.s3 = await self.auth_s3(access_key, secret_key, region)
         client = self.s3.meta.client
 
@@ -171,14 +171,14 @@ class AWSS3(AppBase):
         #s3_response = client.upload_file('LOCAL PATH', bucket_name, bucket_path)
         return s3_response
 
-    async def delete_file_from_bucket(self, access_key, secret_key, region, bucket_name, bucket_path):
+    def delete_file_from_bucket(self, access_key, secret_key, region, bucket_name, bucket_path):
         self.s3 = await self.auth_s3(access_key, secret_key, region)
         client = self.s3.meta.client
 
         s3_response = client.delete_object(Bucket=bucket_name, Key=bucket_path)
         return s3_response
 
-    async def download_file_from_bucket(self, access_key, secret_key, region, bucket_name, filename):
+    def download_file_from_bucket(self, access_key, secret_key, region, bucket_name, filename):
         self.s3 = await self.auth_s3(access_key, secret_key, region)
         client = self.s3.meta.client
 

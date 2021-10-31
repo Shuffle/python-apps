@@ -22,7 +22,7 @@ class MSExcel(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
-    async def authenticate(self, tenant_id, client_id, client_secret, graph_url):
+    def authenticate(self, tenant_id, client_id, client_secret, graph_url):
         s = requests.Session()
         auth_url = f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token"
         auth_data = {
@@ -47,28 +47,28 @@ class MSExcel(AppBase):
         s.headers = {"Authorization": f"Bearer {access_token}", "cache-control": "no-cache"}
         return s
 
-    async def get_user_id(self, tenant_id, client_id, client_secret):
+    def get_user_id(self, tenant_id, client_id, client_secret):
         graph_url = "https://graph.microsoft.com"
         session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = "https://graph.microsoft.com/v1.0/users"
         ret = session.get(graph_url)
         return ret.text
 
-    async def get_files(self, tenant_id, client_id, client_secret, user_id):
+    def get_files(self, tenant_id, client_id, client_secret, user_id):
         graph_url = "https://graph.microsoft.com"
         session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = f"https://graph.microsoft.com/v1.0/users/{user_id}/drive/root/children"
         ret = session.get(graph_url)
         return ret.text
 
-    async def list_worksheets(self, tenant_id, client_id, client_secret, user_id, file_id):
+    def list_worksheets(self, tenant_id, client_id, client_secret, user_id, file_id):
         graph_url = "https://graph.microsoft.com"
         session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = f"https://graph.microsoft.com/v1.0/users/{user_id}/drive/items/{file_id}/workbook/worksheets"
         ret = session.get(graph_url)
         return ret.text
 
-    async def add_worksheet(self, tenant_id, client_id, client_secret, user_id, file_id, name):
+    def add_worksheet(self, tenant_id, client_id, client_secret, user_id, file_id, name):
         graph_url = "https://graph.microsoft.com"
         session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = f"https://graph.microsoft.com/v1.0/users/{user_id}/drive/items/{file_id}/workbook/worksheets"
@@ -81,7 +81,7 @@ class MSExcel(AppBase):
         ret = session.post(graph_url, json = body)
         return ret.text
 
-    async def delete_worksheet(self, tenant_id, client_id, client_secret, user_id, file_id, name):
+    def delete_worksheet(self, tenant_id, client_id, client_secret, user_id, file_id, name):
         graph_url = "https://graph.microsoft.com"
         session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = f"https://graph.microsoft.com/v1.0/users/{user_id}/drive/items/{file_id}/workbook/worksheets/{name}"
@@ -91,7 +91,7 @@ class MSExcel(AppBase):
         else:
             return "Action successfully completed"
         
-    async def insert_or_update_data(self, tenant_id, client_id, client_secret, user_id, file_id, sheet_name, address, value):
+    def insert_or_update_data(self, tenant_id, client_id, client_secret, user_id, file_id, sheet_name, address, value):
         graph_url = "https://graph.microsoft.com"
         session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = f"https://graph.microsoft.com/v1.0/users/{user_id}/drive/items/{file_id}/workbook/worksheets/{sheet_name}/range(address='{address}')"
@@ -107,7 +107,7 @@ class MSExcel(AppBase):
         ret = session.patch(graph_url, json=body)
         return ret.text
 
-    async def clear_data(self, tenant_id, client_id, client_secret, user_id, file_id, sheet_name, address):
+    def clear_data(self, tenant_id, client_id, client_secret, user_id, file_id, sheet_name, address):
         graph_url = "https://graph.microsoft.com"
         session = await self.authenticate(tenant_id, client_id, client_secret, graph_url)
         graph_url = f"https://graph.microsoft.com/v1.0/users/{user_id}/drive/items/{file_id}/workbook/worksheets/{sheet_name}/range(address='{address}')/clear"

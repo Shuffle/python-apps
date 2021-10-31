@@ -55,7 +55,7 @@ class rcATT(AppBase):
 
         report_to_predict = ""
 
-    async def get_prediction(self, data):
+    def get_prediction(self, data):
         report_to_predict = prp.remove_u(data)
 	
         # load postprocessingand min-max confidence score for both tactics and techniques predictions
@@ -124,14 +124,14 @@ class rcATT(AppBase):
 
 
     # Write your data inside this function
-    async def predict_file_content(self, file_id):
+    def predict_file_content(self, file_id):
         file_data = self.get_file(file_id)
 
         prediction = await self.get_prediction(file_data["data"])
         return prediction
 
     # Write your data inside this function
-    async def predict(self, data):
+    def predict(self, data):
         prediction = await self.get_prediction(data)
         return prediction
 

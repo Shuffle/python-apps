@@ -24,7 +24,7 @@ class HelloWorld(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
-    async def hello_world(self):
+    def hello_world(self):
         """
         Returns Hello World from the hostname the action is run on
         :return: Hello World from your hostname
@@ -36,33 +36,33 @@ class HelloWorld(AppBase):
 
         return message
 
-    async def repeat_back_to_me(self, call):
+    def repeat_back_to_me(self, call):
         return call
 
-    async def repeat_back_to_me_multi(self, call, call2, call3):
+    def repeat_back_to_me_multi(self, call, call2, call3):
         return {"call1": call, "call2": call2, "call3": call3} 
 
-    async def return_plus_one(self, number):
+    def return_plus_one(self, number):
         return int(number) + 1
 
-    async def pause(self, seconds):
+    def pause(self, seconds):
         time.sleep(seconds)
         return "Waited %d seconds" % seconds
 
-    async def get_type(self, value):
+    def get_type(self, value):
         return "Type: %s" % type(value)
 
-    async def input_options_test(self, call):
+    def input_options_test(self, call):
         return "Value: %s" % call 
 
-    async def get_file_value(self, filedata):
+    def get_file_value(self, filedata):
         if filedata == None:
             return "File is empty?"
         
         print("INSIDE APP DATA: %s" % filedata)
         return "%s" % filedata["data"].decode()
 
-    async def create_file(self, filename, data):
+    def create_file(self, filename, data):
         print("Inside function")
         filedata = {
             "filename": filename,
@@ -76,7 +76,7 @@ class HelloWorld(AppBase):
 
         #return ("Successfully put your data in a file", filedata)
 
-    async def download_file(self, url):
+    def download_file(self, url):
         ret = requests.get(url, verify=False)
         fileret = self.set_files([{
             "filename": "downloaded",
@@ -88,7 +88,7 @@ class HelloWorld(AppBase):
 
         #return ("Successfully put your data in a file", filedata)
 
-    async def delete_file(self, file_id):
+    def delete_file(self, file_id):
         headers = {
             "Authorization": "Bearer %s" % self.authorization,
         }

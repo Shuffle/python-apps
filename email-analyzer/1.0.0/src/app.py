@@ -31,7 +31,7 @@ class EmailAnalyzer(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
-    async def parse_email_file(self, file_id, file_extension):
+    def parse_email_file(self, file_id, file_extension):
 
         if file_extension.lower() == 'eml':
             print('working with .eml file')
@@ -57,7 +57,7 @@ class EmailAnalyzer(AppBase):
             except Exception as e:
                 return {"Success":"False","Message":f"Exception occured: {e}"}    
 
-    async def parse_email_headers(self, email_headers):
+    def parse_email_headers(self, email_headers):
         try:
             email_headers = bytes(email_headers,'utf-8')
             ep = eml_parser.EmlParser()

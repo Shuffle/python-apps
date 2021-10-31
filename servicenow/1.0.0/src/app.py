@@ -85,7 +85,7 @@ class Servicenow(AppBase):
         #print("TEXT: %s" % res.text)
         return res.text
     
-    async def get_ticket(self, url, username, password, table_name, sys_id, number=None):
+    def get_ticket(self, url, username, password, table_name, sys_id, number=None):
         path = None
         query_params = {}  # type: Dict
         if sys_id:
@@ -102,7 +102,7 @@ class Servicenow(AppBase):
         print("PATH: %s" % path)
         return self.send_request(url, username, password, path, 'get', params=query_params)
     
-    async def list_table(self, url, username, password, table_name, limit=1):
+    def list_table(self, url, username, password, table_name, limit=1):
         query_params = {
             "sysparm_limit": limit,     
         }  
@@ -112,7 +112,7 @@ class Servicenow(AppBase):
 
         return self.send_request(url, username, password, path, 'get', params=query_params)
 
-    async def create_ticket(self, url, username, password, table_name, body, file_id=""):
+    def create_ticket(self, url, username, password, table_name, body, file_id=""):
         try:
             data = json.loads(body)
         except json.decoder.JSONDecodeError as e:
@@ -146,7 +146,7 @@ class Servicenow(AppBase):
 
         return base_request
 
-    async def update_ticket(self, url, username, password, table_name, sys_id, body, file_id=""):
+    def update_ticket(self, url, username, password, table_name, sys_id, body, file_id=""):
         try:
             data = json.loads(body)
         except json.decoder.JSONDecodeError as e:

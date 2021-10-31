@@ -22,7 +22,7 @@ class ArchiveToday(AppBase):
         super().__init__(redis, logger, console_logger)
 
 
-    async def archive_target(self, target):
+    def archive_target(self, target):
         archive_url = archiveis.capture(target)
         """
         Returns log of what was archived

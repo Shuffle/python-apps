@@ -31,7 +31,7 @@ class AWSIAM(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
-    async def auth_iam(self, access_key, secret_key, region):
+    def auth_iam(self, access_key, secret_key, region):
         my_config = Config(
             region_name = region,
             signature_version = 'v4',
@@ -50,7 +50,7 @@ class AWSIAM(AppBase):
 
         return self.iam
 
-    async def change_password(self, access_key, secret_key, region, username, password):
+    def change_password(self, access_key, secret_key, region, username, password):
         self.iam = await self.auth_iam(access_key, secret_key, region)
         client = self.iam.meta.client
 
@@ -60,7 +60,7 @@ class AWSIAM(AppBase):
             print("Error: %s" % e)
             return "%s" % e
 
-    async def attach_user_policy(self, access_key, secret_key, region, username, policy_arn):
+    def attach_user_policy(self, access_key, secret_key, region, username, policy_arn):
         self.iam = await self.auth_iam(access_key, secret_key, region)
         client = self.iam.meta.client
 
@@ -74,7 +74,7 @@ class AWSIAM(AppBase):
             print(f"Error: {e}")
             return f'{e}'
 
-    async def list_access_keys(self, access_key, secret_key, region, username, marker, max_items):
+    def list_access_keys(self, access_key, secret_key, region, username, marker, max_items):
         self.iam = await self.auth_iam(access_key, secret_key, region)
         client = self.iam.meta.client
 
@@ -102,7 +102,7 @@ class AWSIAM(AppBase):
         except botocore.exceptions.ClientError as e:
             return f'{e}'
 
-    async def list_ssh_public_keys(self, access_key, secret_key, region, username, marker, max_items):
+    def list_ssh_public_keys(self, access_key, secret_key, region, username, marker, max_items):
         self.iam = await self.auth_iam(access_key, secret_key, region)
         client = self.iam.meta.client
 
@@ -131,7 +131,7 @@ class AWSIAM(AppBase):
         except botocore.exceptions.ClientError as e:
             return f'{e}'     
 
-    async def get_instance_profile(self, access_key, secret_key, region, instance_profile_name):
+    def get_instance_profile(self, access_key, secret_key, region, instance_profile_name):
         self.iam = await self.auth_iam(access_key, secret_key, region)
         client = self.iam.meta.client
 
@@ -144,7 +144,7 @@ class AWSIAM(AppBase):
             print(f"Error: {e}")
             return f'{e}'
 
-    async def get_user(self, access_key, secret_key, region, user_name):
+    def get_user(self, access_key, secret_key, region, user_name):
         self.iam = await self.auth_iam(access_key, secret_key, region)
         client = self.iam.meta.client
 
@@ -157,7 +157,7 @@ class AWSIAM(AppBase):
             print(f"Error: {e}")
             return f'{e}'
 
-    async def list_attached_user_policies(self, access_key, secret_key, region, user_name, marker, max_items):
+    def list_attached_user_policies(self, access_key, secret_key, region, user_name, marker, max_items):
         self.iam = await self.auth_iam(access_key, secret_key, region)
         client = self.iam.meta.client
 
@@ -186,7 +186,7 @@ class AWSIAM(AppBase):
         except botocore.exceptions.ClientError as e:
             return f'{e}' 
 
-    async def list_users(self, access_key, secret_key, region, path_prefix, marker, max_items):
+    def list_users(self, access_key, secret_key, region, path_prefix, marker, max_items):
         self.iam = await self.auth_iam(access_key, secret_key, region)
         client = self.iam.meta.client
 
@@ -215,7 +215,7 @@ class AWSIAM(AppBase):
         except botocore.exceptions.ClientError as e:
             return f'{e}'                
 
-    async def list_user_tags(self, access_key, secret_key, region, user_name, marker, max_items):
+    def list_user_tags(self, access_key, secret_key, region, user_name, marker, max_items):
         self.iam = await self.auth_iam(access_key, secret_key, region)
         client = self.iam.meta.client
 

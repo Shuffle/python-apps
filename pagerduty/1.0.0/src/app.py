@@ -20,7 +20,7 @@ class Pagerduty(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
-    async def list_all_incidents(self, api_key):
+    def list_all_incidents(self, api_key):
         url = 'https://api.pagerduty.com/incidents'
         headers = {
         'Accept': 'application/vnd.pagerduty+json;version=2',
@@ -32,7 +32,7 @@ class Pagerduty(AppBase):
         except Exception as e:
             return e.__class__
 
-    async def get_incident_details(self, api_key, incident_id):
+    def get_incident_details(self, api_key, incident_id):
         url = f'https://api.pagerduty.com/incidents/{incident_id}'
         headers = {
         'Accept': 'application/vnd.pagerduty+json;version=2',
@@ -45,7 +45,7 @@ class Pagerduty(AppBase):
         except Exception as e:
             return e.__class__        
     
-    async def create_incident(self, api_key, email, title, service_id, urgency, details):
+    def create_incident(self, api_key, email, title, service_id, urgency, details):
         url = 'https://api.pagerduty.com/incidents/'
         headers = {
             'Accept': 'application/vnd.pagerduty+json;version=2',
@@ -76,7 +76,7 @@ class Pagerduty(AppBase):
         except Exception as e:
             return e.__class__  
 
-    async def get_past_incidents(self, api_key, incident_id):
+    def get_past_incidents(self, api_key, incident_id):
         url = f'https://api.pagerduty.com/incidents/{incident_id}/past_incidents'
         
         headers = {
@@ -90,7 +90,7 @@ class Pagerduty(AppBase):
         except Exception as e:
             return e.__class__
 
-    async def update_incident_status(self, api_key, email, incident_id, status):
+    def update_incident_status(self, api_key, email, incident_id, status):
         url = f'https://api.pagerduty.com/incidents/{incident_id}'
         
         headers = {
@@ -113,7 +113,7 @@ class Pagerduty(AppBase):
         except Exception as e:
             return e.__class__
 
-    async def create_incident_note(self, api_key, email, incident_id, content):
+    def create_incident_note(self, api_key, email, incident_id, content):
         url = f'https://api.pagerduty.com/incidents/{incident_id}/notes'
 
         headers = {

@@ -21,7 +21,7 @@ class MsTeams(AppBase):
         super().__init__(redis, logger, console_logger)
 
     # Write your data inside this function
-    async def send_simple_text(self, webhook_url, message):
+    def send_simple_text(self, webhook_url, message):
         try:
             myTeamsMessage = teams.connectorcard(str(webhook_url))    # You must create the connectorcard object with the Microsoft Webhook URL
             myTeamsMessage.text(message)     # Add text to the message.
@@ -31,7 +31,7 @@ class MsTeams(AppBase):
         
         return f'Message Sent'
 
-    async def send_rich_text(self, webhook_url, title, message, link_button_text, link_button_url):
+    def send_rich_text(self, webhook_url, title, message, link_button_text, link_button_url):
         try:
             myTeamsMessage = teams.connectorcard(webhook_url)    # You must create the connectorcard object with the Microsoft Webhook URL
             myTeamsMessage.title(title) # title for your card
@@ -43,7 +43,7 @@ class MsTeams(AppBase):
         
         return f'Message Sent'        
 
-    async def send_actionable_msg(self, webhook_url, title, message, added_information, choices, callback_url):
+    def send_actionable_msg(self, webhook_url, title, message, added_information, choices, callback_url):
         try:
             myTeamsMessage = teams.connectorcard(webhook_url)    # You must create the connectorcard object with the Microsoft Webhook URL
             myTeamsMessage.title(title) # title for your card
@@ -100,7 +100,7 @@ class MsTeams(AppBase):
         
         return f'Message Sent'        
 
-    async def get_user_input(self, webhook_url, title, message, callback_url):
+    def get_user_input(self, webhook_url, title, message, callback_url):
         try:
             myTeamsMessage = teams.connectorcard(webhook_url)  # You must create the connectorcard object with the Microsoft Webhook URL
             myTeamsMessage.title(title) # Title for your card

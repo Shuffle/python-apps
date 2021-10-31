@@ -51,7 +51,7 @@ class Owa(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
-    async def authenticate(self, username, password, server, build, account, verifyssl):
+    def authenticate(self, username, password, server, build, account, verifyssl):
         """
         Authenticates to Exchange server
         """
@@ -97,7 +97,7 @@ class Owa(AppBase):
 
         return {"account": account, "error": False}
 
-    async def parse_folder(self, account, foldername):
+    def parse_folder(self, account, foldername):
         """
         Parses specific folder and returns proper object
         """
@@ -133,7 +133,7 @@ class Owa(AppBase):
 
         return {"success": True, "folder": folder, "error": False}
 
-    async def send_email(
+    def send_email(
         self,
         username,
         password,
@@ -187,7 +187,7 @@ class Owa(AppBase):
             "subject": subject
         }
 
-    async def mark_email_as_read(
+    def mark_email_as_read(
         self, username, password, server, build, account, verifyssl, email_id, foldername="inbox"
     ):
         if not foldername:
@@ -222,7 +222,7 @@ class Owa(AppBase):
             print("ERROR: %s" % e)
             return {"success": False, "reason": "Email {} does not exists".format(email_id)}
 
-    async def add_category(
+    def add_category(
         self, username, password, server, build, account, verifyssl, email_id, category, foldername="inbox"
         ):
 
@@ -260,7 +260,7 @@ class Owa(AppBase):
             print("ERROR: %s" % e)
             return {"success": False, "reason": "Email {} does not exists".format(email_id)}
 
-    async def delete_email(
+    def delete_email(
         self, username, password, server, build, account, verifyssl, email_id
     ):
         # Authenticate
@@ -280,7 +280,7 @@ class Owa(AppBase):
         except exchangelib.errors.DoesNotExist:
             return {"success": False, "reason": "Email {} does not exists".format(email_id)}
 
-    async def move_email(
+    def move_email(
         self,
         username,
         password,
@@ -320,7 +320,7 @@ class Owa(AppBase):
         except exchangelib.errors.DoesNotExist:
             return {"success": False, "reason": "Email {} does not exists".format(email_id)}
 
-    async def get_emails(
+    def get_emails(
         self,
         username,
         password,

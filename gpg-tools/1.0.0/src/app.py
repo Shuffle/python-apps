@@ -31,7 +31,7 @@ class Gpg(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
-    async def decrypt_file(
+    def decrypt_file(
         self, gpg_home, always_trust, filedata, output_name, passphrase
     ):
         if filedata["success"] == False:
@@ -54,7 +54,7 @@ class Gpg(AppBase):
             file_id = file_id[0]
         return {"success": True, "id": file_id}
 
-    async def encrypt_file(
+    def encrypt_file(
         self,
         gpg_home,
         always_trust,

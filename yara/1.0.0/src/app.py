@@ -24,7 +24,7 @@ class Yara(AppBase):
 
     # Write your data inside this function
     #https://yara.readthedocs.io/en/latest/yarapython.html
-    async def download_rules(self, namespace):
+    def download_rules(self, namespace):
         zipfiles = self.get_file_namespace(namespace)
         if zipfiles == None:
             return {
@@ -42,7 +42,7 @@ class Yara(AppBase):
 
     # Write your data inside this function
     #https://yara.readthedocs.io/en/latest/yarapython.html
-    async def analyze_by_rule(self, file_id, rule, timeout=15):
+    def analyze_by_rule(self, file_id, rule, timeout=15):
         if timeout == 0 or not timeout:
             timeout = 15
         else:
@@ -113,7 +113,7 @@ class Yara(AppBase):
 
     # Write your data inside this function
     #https://yara.readthedocs.io/en/latest/yarapython.html
-    async def analyze_file(self, file_id, timeout=15):
+    def analyze_file(self, file_id, timeout=15):
         if timeout == 0 or not timeout:
             timeout = 15
         else:

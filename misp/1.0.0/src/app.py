@@ -31,7 +31,7 @@ class Misp(AppBase):
         self.verify = False
         super().__init__(redis, logger, console_logger)
 
-    async def simplified_attribute_search(self, apikey, url, data):
+    def simplified_attribute_search(self, apikey, url, data):
         url = "%s/attributes/restSearch" % url
         data = {"value": data}
         headers = {
@@ -42,7 +42,7 @@ class Misp(AppBase):
 
         return requests.post(url, headers=headers, json=data, verify=self.verify).text
 
-    async def simplified_warninglist_search(self, apikey, url, data):
+    def simplified_warninglist_search(self, apikey, url, data):
         url = "%s/warninglists/checkValue" % url
         headers = {
             "Accept": "application/json",
@@ -52,7 +52,7 @@ class Misp(AppBase):
 
         return requests.post(url, headers=headers, json=data, verify=self.verify).text
     
-    async def simplified_event_search(self, apikey, url, data):
+    def simplified_event_search(self, apikey, url, data):
         url = "%s/events/restSearch" % url
         data = {"value": data}
         headers = {
@@ -63,7 +63,7 @@ class Misp(AppBase):
 
         return requests.post(url, headers=headers, json=data, verify=self.verify).text
 
-    async def attributes_search(self, apikey, url, data):
+    def attributes_search(self, apikey, url, data):
         url = "%s/attributes/restSearch" % url
         headers = {
             "Accept": "application/json",
@@ -73,7 +73,7 @@ class Misp(AppBase):
 
         return requests.post(url, headers=headers, data=data, verify=self.verify).text
 
-    async def warninglist_search(self, apikey, url, data):
+    def warninglist_search(self, apikey, url, data):
         url = "%s/warninglists/checkValue" % url
         headers = {
             "Accept": "application/json",
@@ -83,7 +83,7 @@ class Misp(AppBase):
 
         return requests.post(url, headers=headers, data=data, verify=self.verify).text
     
-    async def events_search(self, apikey, url, data):
+    def events_search(self, apikey, url, data):
         url = "%s/events/restSearch" % url
         headers = {
             "Accept": "application/json",
@@ -92,7 +92,7 @@ class Misp(AppBase):
         }
         return requests.post(url, headers=headers, data=data, verify=self.verify).text
 
-    async def events_index(self, apikey, url, data):
+    def events_index(self, apikey, url, data):
         url = "%s/events/index" % url
         headers = {
             "Accept": "application/json",
@@ -101,7 +101,7 @@ class Misp(AppBase):
         }
         return requests.post(url, headers=headers, data=data, verify=self.verify).text
 
-    async def event_edit(self, apikey, url, event_id, data):
+    def event_edit(self, apikey, url, event_id, data):
         url = "{}/events/edit/{}".format(url, event_id)
         headers = {
             "Accept": "application/json",
@@ -110,7 +110,7 @@ class Misp(AppBase):
         }
         return requests.post(url, headers=headers, data=data, verify=self.verify).text
 
-    async def attributes_downloadsample(self, apikey, url, md5_list):
+    def attributes_downloadsample(self, apikey, url, md5_list):
         atts_up = []
         items = md5_list if type(md5_list) == list else md5_list.split(",")
         for md5 in items:

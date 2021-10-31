@@ -20,7 +20,7 @@ class Hoxhunt(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
-    async def get_incident(self, apikey, organization_id, incident_id):
+    def get_incident(self, apikey, organization_id, incident_id):
         url = "https://app.hoxhunt.com/graphql"
         headers = {
             "authorization": apikey,
@@ -35,7 +35,7 @@ class Hoxhunt(AppBase):
     
         return requests.post(url, headers=headers, json=data)
     
-    async def change_incident_status(self, apikey, organization_id, incident_id, state):
+    def change_incident_status(self, apikey, organization_id, incident_id, state):
         url = "https://app.hoxhunt.com/graphql"
         headers = {
             "authorization": apikey,
@@ -50,7 +50,7 @@ class Hoxhunt(AppBase):
     
         return requests.post(url, headers=headers, json=data)
     
-    async def list_incidents(self, apikey, organization_id, state="OPEN", limit=50):
+    def list_incidents(self, apikey, organization_id, state="OPEN", limit=50):
         url = "https://app.hoxhunt.com/graphql"
         headers = {
             "authorization": apikey,
@@ -65,7 +65,7 @@ class Hoxhunt(AppBase):
     
         return requests.post(url, headers=headers, json=data)
     
-    async def list_threats(self, apikey, organization_id, state="OPEN", limit=50):
+    def list_threats(self, apikey, organization_id, state="OPEN", limit=50):
         url = "https://app.hoxhunt.com/graphql"
         headers = {
             "authorization": apikey,
@@ -81,7 +81,7 @@ class Hoxhunt(AppBase):
         return requests.post(url, headers=headers, json=data)
     
     # This one doesn't work currently. 
-    async def get_threat(self, apikey, organization_id, id):
+    def get_threat(self, apikey, organization_id, id):
         url = "https://app.hoxhunt.com/graphql"
         headers = {
             "authorization": apikey,
@@ -96,7 +96,7 @@ class Hoxhunt(AppBase):
     
         return requests.post(url, headers=headers, json=data)
     
-    async def list_threats(self, apikey, incident_id, organization_id, limit=50):
+    def list_threats(self, apikey, incident_id, organization_id, limit=50):
         url = "https://app.hoxhunt.com/graphql"
         headers = {
             "authorization": apikey,

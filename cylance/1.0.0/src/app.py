@@ -51,7 +51,7 @@ class Cylance(AppBase):
         auth_token = resp.json()["access_token"]
         return auth_token
 
-    async def get_threat(self, app_id, app_secret, tenant_id, threat_id):
+    def get_threat(self, app_id, app_secret, tenant_id, threat_id):
         auth_token = self.auth(app_id, app_secret, tenant_id)
         url = f"https://protectapi.cylance.com/threats/v2/{threat_id}"
         params = {}
@@ -63,7 +63,7 @@ class Cylance(AppBase):
         resp = requests.get(url, headers=headers, params=params)
         return resp.text
 
-    async def get_detection(self, app_id, app_secret, tenant_id, detection_id):
+    def get_detection(self, app_id, app_secret, tenant_id, detection_id):
         auth_token = self.auth(app_id, app_secret, tenant_id)
         url = f"https://protectapi.cylance.com/detections/v2/{detection_id}"
         params = {}
@@ -75,7 +75,7 @@ class Cylance(AppBase):
         resp = requests.get(url, headers=headers, params=params)
         return resp.text
 
-    async def list_threats(self, app_id, app_secret, tenant_id, page=1, page_size=20):
+    def list_threats(self, app_id, app_secret, tenant_id, page=1, page_size=20):
         auth_token = self.auth(app_id, app_secret, tenant_id)
 
         if page == 0 or page == "":
@@ -97,7 +97,7 @@ class Cylance(AppBase):
         resp = requests.get(url, headers=headers, params=params)
         return resp.text
 
-    async def list_detections(self, app_id, app_secret, tenant_id, page=1, page_size=20):
+    def list_detections(self, app_id, app_secret, tenant_id, page=1, page_size=20):
         auth_token = self.auth(app_id, app_secret, tenant_id)
 
         if page == 0 or page == "":
@@ -121,7 +121,7 @@ class Cylance(AppBase):
         print(resp.text)
         print(resp.status_code)
 
-    async def get_global_list(self, app_id, app_secret, tenant_id, list_type="GlobalSafe", page=1):
+    def get_global_list(self, app_id, app_secret, tenant_id, list_type="GlobalSafe", page=1):
         auth_token = self.auth(app_id, app_secret, tenant_id)
 
 
@@ -146,7 +146,7 @@ class Cylance(AppBase):
         resp = requests.get(url, headers=headers, params=params)
         return resp.text
 
-    async def add_to_global_list(self, app_id, app_secret, tenant_id, list_type, sha256):
+    def add_to_global_list(self, app_id, app_secret, tenant_id, list_type, sha256):
         auth_token = self.auth(app_id, app_secret, tenant_id)
 
         data = {
@@ -165,7 +165,7 @@ class Cylance(AppBase):
         resp = requests.post(url, headers=headers, json=data)
         return resp.text
 
-    async def delete_from_global_list(self, app_id, app_secret, tenant_id, list_type, sha256):
+    def delete_from_global_list(self, app_id, app_secret, tenant_id, list_type, sha256):
         auth_token = self.auth(app_id, app_secret, tenant_id)
 
         data = {
@@ -181,7 +181,7 @@ class Cylance(AppBase):
         resp = requests.delete(url, headers=headers, json=data)
         return resp.text
 
-    async def get_searches(self, app_id, app_secret, tenant_id, page=1):
+    def get_searches(self, app_id, app_secret, tenant_id, page=1):
         auth_token = self.auth(app_id, app_secret, tenant_id)
 
         page_size = 50
@@ -199,7 +199,7 @@ class Cylance(AppBase):
         resp = requests.get(url, headers=headers, params=params)
         return resp.text
 
-    async def create_search(self, app_id, app_secret, tenant_id, search):
+    def create_search(self, app_id, app_secret, tenant_id, search):
         auth_token = self.auth(app_id, app_secret, tenant_id)
 
         data = search
@@ -211,7 +211,7 @@ class Cylance(AppBase):
         resp = requests.post(url, headers=headers, json=data)
         return resp.text
 
-    async def get_search_results(self, app_id, app_secret, tenant_id, search_id):
+    def get_search_results(self, app_id, app_secret, tenant_id, search_id):
         auth_token = self.auth(app_id, app_secret, tenant_id)
 
         page_size = 50

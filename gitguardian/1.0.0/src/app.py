@@ -21,7 +21,7 @@ class GitGuardian(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
-    async def content_scan(self, api_key, content, file_id):
+    def content_scan(self, api_key, content, file_id):
         client = GGClient(api_key=api_key)  
         
         if file_id and content:

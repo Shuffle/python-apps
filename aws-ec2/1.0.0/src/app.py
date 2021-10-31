@@ -31,7 +31,7 @@ class AWSEC2(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
-    async def auth_ec2(self, access_key, secret_key, region):
+    def auth_ec2(self, access_key, secret_key, region):
         my_config = Config(
             region_name = region,
             signature_version = 'v4',
@@ -51,14 +51,14 @@ class AWSEC2(AppBase):
         return self.ec2
 
     # Write your data inside this function
-    async def get_rules(self, access_key, secret_key, region, NetworkAclId):
+    def get_rules(self, access_key, secret_key, region, NetworkAclId):
         self.ec2 = await self.auth_ec2(access_key, secret_key, region)
 
         network_acl = self.ec2.NetworkAcl(NetworkAclId)
         return network_acl.entries
 
     # Write your data inside this function
-    async def block_ip(self, access_key, secret_key, region, NetworkAclId, ip, direction):
+    def block_ip(self, access_key, secret_key, region, NetworkAclId, ip, direction):
         self.ec2 = await self.auth_ec2(access_key, secret_key, region)
         network_acl = self.ec2.NetworkAcl(NetworkAclId)
 
@@ -116,7 +116,7 @@ class AWSEC2(AppBase):
 
 
     # Write your data inside this function
-    async def create_acl_entry(self, access_key, secret_key, region, NetworkAclId , cidr_block, dryrun, direction, portrange_from, portrange_to, protocol, rule_action, rule_number):
+    def create_acl_entry(self, access_key, secret_key, region, NetworkAclId , cidr_block, dryrun, direction, portrange_from, portrange_to, protocol, rule_action, rule_number):
         self.ec2 = await self.auth_ec2(access_key, secret_key, region)
 
         network_acl = self.ec2.NetworkAcl(NetworkAclId)
@@ -158,7 +158,7 @@ class AWSEC2(AppBase):
             return "%s" % e
 
     #Terminate, Start and Stop Instance
-    async def instance_state_change(self, access_key, secret_key, region, instance_id, action, dryrun):
+    def instance_state_change(self, access_key, secret_key, region, instance_id, action, dryrun):
         self.ec2 = await self.auth_ec2(access_key, secret_key, region)
         instance = self.ec2.Instance(instance_id)
         dryrun = True if dryrun in ["True", "true"] else False
@@ -175,7 +175,7 @@ class AWSEC2(AppBase):
             return "%s" % e
     
     #Create Network Interface
-    async def create_network_interface(self, access_key, secret_key, region, subnetid, description, dryrun ):
+    def create_network_interface(self, access_key, secret_key, region, subnetid, description, dryrun ):
         self.ec2 = await self.auth_ec2(access_key, secret_key, region)
         client = self.ec2.meta.client
         dryrun = True if dryrun in ["True", "true"] else False
@@ -189,7 +189,7 @@ class AWSEC2(AppBase):
             return e
 
     #Create Image
-    async def create_image(self, access_key, secret_key, region, description, instance_id, name, dryrun, noreboot):
+    def create_image(self, access_key, secret_key, region, description, instance_id, name, dryrun, noreboot):
         self.ec2 = await self.auth_ec2(access_key, secret_key, region)
         client = self.ec2.meta.client
         dryrun = True if dryrun in ["True", "true"] else False
@@ -206,7 +206,7 @@ class AWSEC2(AppBase):
             return e
 
     #Deregister Image
-    async def deregister_an_image(self, access_key, secret_key, region, image_id, dryrun):
+    def deregister_an_image(self, access_key, secret_key, region, image_id, dryrun):
         self.ec2 = await self.auth_ec2(access_key, secret_key, region)
         client = self.ec2.meta.client
         dryrun = True if dryrun in ["True", "true"] else False
@@ -219,7 +219,7 @@ class AWSEC2(AppBase):
             return e
     
     #Create Snapshot
-    async def create_snapshot(self, access_key, secret_key, region, description, volume_id, dryrun):
+    def create_snapshot(self, access_key, secret_key, region, description, volume_id, dryrun):
         self.ec2 = await self.auth_ec2(access_key, secret_key, region)
         client = self.ec2.meta.client
         dryrun = True if dryrun in ["True", "true"] else False
@@ -234,7 +234,7 @@ class AWSEC2(AppBase):
             return e
     
     #Delete Snapshot
-    async def delete_snapshot(self, access_key, secret_key, region, snapshot_id, dryrun):
+    def delete_snapshot(self, access_key, secret_key, region, snapshot_id, dryrun):
         self.ec2 = await self.auth_ec2(access_key, secret_key, region)
         client = self.ec2.meta.client
         dryrun = True if dryrun in ["True", "true"] else False
@@ -247,7 +247,7 @@ class AWSEC2(AppBase):
             return e
 
     #Delete Network Interface
-    async def delete_network_interface(self, access_key, secret_key, region, networkinterface_id, dryrun):
+    def delete_network_interface(self, access_key, secret_key, region, networkinterface_id, dryrun):
         self.ec2 = await self.auth_ec2(access_key, secret_key, region)
         client = self.ec2.meta.client
         dryrun = True if dryrun in ["True", "true"] else False
@@ -260,7 +260,7 @@ class AWSEC2(AppBase):
             return e
 
     #Describing address
-    async def describe_address(self, access_key, secret_key, region, publicips, dryrun):
+    def describe_address(self, access_key, secret_key, region, publicips, dryrun):
         self.ec2=await self.auth_ec2(access_key, secret_key, region)
         client = self.ec2.meta.client
         dryrun = True if dryrun in ["True", "true"] else False
@@ -277,7 +277,7 @@ class AWSEC2(AppBase):
             return e
 
     #Describing key pair
-    async def describe_keypair(self, access_key, secret_key, region,  dryrun, option, value):
+    def describe_keypair(self, access_key, secret_key, region,  dryrun, option, value):
         self.ec2=await self.auth_ec2(access_key, secret_key, region)
         client = self.ec2.meta.client
         dryrun = True if dryrun in ["True", "true"] else False
@@ -304,7 +304,7 @@ class AWSEC2(AppBase):
             return e
 
     #Describing network acls
-    async def describe_networkacls(self, access_key, secret_key, region, dryrun, networkAcl_Id):
+    def describe_networkacls(self, access_key, secret_key, region, dryrun, networkAcl_Id):
         self.ec2=await self.auth_ec2(access_key, secret_key, region)
         client = self.ec2.meta.client
         dryrun = True if dryrun in ["True", "true"] else False
@@ -323,7 +323,7 @@ class AWSEC2(AppBase):
             return e
 
     #Describing Security groups
-    async def describe_securitygroups(self, access_key, secret_key, region, dryrun, option, value):
+    def describe_securitygroups(self, access_key, secret_key, region, dryrun, option, value):
         self.ec2=await self.auth_ec2(access_key, secret_key, region)
         client = self.ec2.meta.client
         dryrun = True if dryrun in ["True", "true"] else False
@@ -350,7 +350,7 @@ class AWSEC2(AppBase):
             return e
 
     #Describing vpcs
-    async def describe_vpc(self, access_key, secret_key, region, dryrun, vpcid):
+    def describe_vpc(self, access_key, secret_key, region, dryrun, vpcid):
         self.ec2=await self.auth_ec2(access_key, secret_key, region)
         client = self.ec2.meta.client
         dryrun = True if dryrun in ["True", "true"] else False
@@ -370,7 +370,7 @@ class AWSEC2(AppBase):
         except Exception as e:
             return e
 
-    async def create_an_instance(self, access_key, secret_key, region, dryrun, image_id, min_count, max_count, instance_type, user_data, key_name, security_group_ids):
+    def create_an_instance(self, access_key, secret_key, region, dryrun, image_id, min_count, max_count, instance_type, user_data, key_name, security_group_ids):
         client = boto3.resource('ec2', 
                     aws_access_key_id=access_key,
                     aws_secret_access_key=secret_key,

@@ -20,7 +20,7 @@ class Twitter(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
-    async def send_tweet(self, consumer_key, consumer_secret, access_token, access_token_secret, message): 
+    def send_tweet(self, consumer_key, consumer_secret, access_token, access_token_secret, message): 
         twitter = Twython(
             consumer_key,
             consumer_secret,
@@ -31,7 +31,7 @@ class Twitter(AppBase):
         tweet = twitter.update_status(status=message)
         return json.dumps(tweet)
 
-    async def delete_tweet(self, consumer_key, consumer_secret, access_token, access_token_secret, tweet_id): 
+    def delete_tweet(self, consumer_key, consumer_secret, access_token, access_token_secret, tweet_id): 
         twitter = Twython(
             consumer_key,
             consumer_secret,

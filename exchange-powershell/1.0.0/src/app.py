@@ -28,7 +28,7 @@ class exchange_powershell(AppBase):
         self.filename = "replacementfile.ps1"
         super().__init__(redis, logger, console_logger)
 
-    async def cleanup(self, item):
+    def cleanup(self, item):
         newlines = []
         record = False
         skipped = 0
@@ -47,7 +47,7 @@ class exchange_powershell(AppBase):
         item = "\n".join(newlines)
         return item
 
-    async def replace_and_run(self, username, password, parsed_command):
+    def replace_and_run(self, username, password, parsed_command):
         data = ""
         with open(self.filename, "r") as tmp:
             data = tmp.read()
@@ -92,21 +92,21 @@ class exchange_powershell(AppBase):
         return item 
 
     # Write your data inside this function
-    async def release_quarantine_message(self, username, password, message_id):
+    def release_quarantine_message(self, username, password, message_id):
         parsed_command = f"Release-QuarantineMessage -Identity {message_id} | ConvertTo-Json"
 
         ret = await self.replace_and_run(username, password, parsed_command)
         return ret 
 
     # Write your data inside this function
-    async def preview_quarantine_message(self, username, password, message_id):
+    def preview_quarantine_message(self, username, password, message_id):
         parsed_command = f"Preview-QuarantineMessage -Identity {message_id} | ConvertTo-Json"
 
         ret = await self.replace_and_run(username, password, parsed_command)
         return ret 
 
     # Write your data inside this function
-    async def export_quarantine_message(self, username, password, message_id, skip_upload="false"):
+    def export_quarantine_message(self, username, password, message_id, skip_upload="false"):
         parsed_command = f"Export-QuarantineMessage -Identity {message_id} | ConvertTo-Json"
 
         ret = await self.replace_and_run(username, password, parsed_command)
@@ -136,28 +136,28 @@ class exchange_powershell(AppBase):
         return fileinfo
 
     # Write your data inside this function
-    async def delete_quarantine_message(self, username, password, message_id):
+    def delete_quarantine_message(self, username, password, message_id):
         parsed_command = f"Delete-QuarantineMessage -Identity {message_id} | ConvertTo-Json"
 
         ret = await self.replace_and_run(username, password, parsed_command)
         return ret 
 
     # Write your data inside this function
-    async def get_quarantine_message(self, username, password, message_id):
+    def get_quarantine_message(self, username, password, message_id):
         parsed_command = f"Get-QuarantineMessage {message_id} | ConvertTo-Json"
 
         ret = await self.replace_and_run(username, password, parsed_command)
         return ret 
 
     # Write your data inside this function
-    async def get_quarantine_messages(self, username, password, time_from, time_to):
+    def get_quarantine_messages(self, username, password, time_from, time_to):
         parsed_command = f"Get-QuarantineMessage -StartReceivedDate {time_from} -EndReceivedDate {time_to} | ConvertTo-Json"
 
         ret = await self.replace_and_run(username, password, parsed_command)
         return ret 
 
     # Write your data inside this function
-    async def get_quarantine_messageheaders(self, username, password, message_id):
+    def get_quarantine_messageheaders(self, username, password, message_id):
         parsed_command = f"Get-QuarantineMessageHeader {message_id} | ConvertTo-Json"
 
         ret = await self.replace_and_run(username, password, parsed_command)

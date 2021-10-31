@@ -29,7 +29,7 @@ class Splunk(AppBase):
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
         super().__init__(redis, logger, console_logger)
 
-    async def echo(self, input_data):
+    def echo(self, input_data):
         return input_data 
 
     def run_search(self, auth, url, query):
@@ -82,7 +82,7 @@ class Splunk(AppBase):
 
         return ret
 
-    async def SplunkQuery(self, url, username, password, query, result_limit=100, earliest_time="-24h", latest_time="now"):
+    def SplunkQuery(self, url, username, password, query, result_limit=100, earliest_time="-24h", latest_time="now"):
         auth = (username, password)
 
         # "latest_time": "now"

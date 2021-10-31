@@ -13,7 +13,7 @@ class snort3(AppBase):
     def __init__(self, redis, logger, console_logger=None):
         super().__init__(redis, logger, console_logger)
 
-    async def create_snort_file(self, file_ref):
+    def create_snort_file(self, file_ref):
 
         print(f"Retrieving file {file_ref}.")
 
@@ -31,7 +31,7 @@ class snort3(AppBase):
 
         return target_path
 
-    async def run_snort_scan(self, config_path, rules_path, pcap_path):
+    def run_snort_scan(self, config_path, rules_path, pcap_path):
 
         cmd = [
             "snort",
@@ -66,7 +66,7 @@ class snort3(AppBase):
         }
         return return_data
 
-    async def simple_analyze_file(self, config_file, rules_file, pcap_file):
+    def simple_analyze_file(self, config_file, rules_file, pcap_file):
 
         rules_path = await self.create_snort_file(rules_file)
         pcap_path = await self.create_snort_file(pcap_file)
@@ -82,7 +82,7 @@ class snort3(AppBase):
         except (json.JSONDecodeError, TypeError):
             return return_data
 
-    async def version_check(self):
+    def version_check(self):
 
         result = subprocess.run(
             ["snort", "-V", "-u", "snort3"], capture_output=True, text=True
@@ -100,7 +100,7 @@ class snort3(AppBase):
         except (json.JSONDecodeError, TypeError):
             return return_data
 
-    async def custom_rule_scan(self, config_file, custom_rule, pcap_file):
+    def custom_rule_scan(self, config_file, custom_rule, pcap_file):
 
         pcap_path = await self.create_snort_file(pcap_file)
 

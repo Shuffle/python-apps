@@ -107,7 +107,7 @@ class ActiveDirectory(AppBase):
         return code
 
     # Get User Attributes
-    async def user_attributes(
+    def user_attributes(
         self,
         server,
         port,
@@ -139,7 +139,7 @@ class ActiveDirectory(AppBase):
         return json.dumps(result)
 
     # Change User Password
-    async def set_password(
+    def set_password(
         self,
         server,
         port,
@@ -171,7 +171,7 @@ class ActiveDirectory(AppBase):
             return json.dumps(c.result)
 
     # Change User Password at Next Logon
-    async def change_password_at_next_logon(
+    def change_password_at_next_logon(
         self,
         server,
         port,
@@ -214,7 +214,7 @@ class ActiveDirectory(AppBase):
             return json.dumps(c.result)
 
     # Enable User
-    async def enable_user(
+    def enable_user(
         self,
         server,
         port,
@@ -269,7 +269,7 @@ class ActiveDirectory(AppBase):
             return json.dumps(result)
 
     # Disable User
-    async def disable_user(
+    def disable_user(
         self,
         server,
         port,

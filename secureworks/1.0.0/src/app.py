@@ -21,7 +21,7 @@ class Secureworks(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
-    async def get_ticket_ids(self, username, password, tickettype="", groupingtype="", limit="10"):
+    def get_ticket_ids(self, username, password, tickettype="", groupingtype="", limit="10"):
         url = "https://api.secureworks.com/api/ticket/v3/tickets/ids" 
         headers = {
             "Authorization": "APIKEY %s:%s" % (username, password),
@@ -42,7 +42,7 @@ class Secureworks(AppBase):
         ret = requests.post(url, params=params, headers=headers)
         return ret.text
     
-    async def get_ticket(self, username, password, ticketId, includeWorklogs=False):
+    def get_ticket(self, username, password, ticketId, includeWorklogs=False):
         url = "https://api.secureworks.com/api/ticket/v3/tickets/%s" % (ticketId)
         headers = {
             "Authorization": "APIKEY %s:%s" % (username, password),
@@ -58,7 +58,7 @@ class Secureworks(AppBase):
         ret = requests.get(url, params=params, headers=headers)
         return ret.text
     
-    async def close_ticket(self, username, password, ticketId, closeCode, worklogContent):
+    def close_ticket(self, username, password, ticketId, closeCode, worklogContent):
         url = "https://api.secureworks.com/api/ticket/v3/tickets/%s/close" % (ticketId)
         headers = {
             "Authorization": "APIKEY %s:%s" % (username, password),
@@ -75,7 +75,7 @@ class Secureworks(AppBase):
         ret = requests.post(url, headers=headers, json=data)
         return ret.text
     
-    async def add_worklog(self, username, password, ticketId, body):
+    def add_worklog(self, username, password, ticketId, body):
         url = "https://api.secureworks.com/api/ticket/v3/tickets/%s/worklogs" % (ticketId)
         headers = {
             "Authorization": "APIKEY %s:%s" % (username, password),
@@ -91,7 +91,7 @@ class Secureworks(AppBase):
         ret = requests.post(url, headers=headers, json=data)
         return ret.text
     
-    async def assign_ticket(self, username, password, ticketId, body):
+    def assign_ticket(self, username, password, ticketId, body):
         url = "https://api.secureworks.com/api/ticket/v3/tickets/%s/assign" % (ticketId)
         headers = {
             "Authorization": "APIKEY %s:%s" % (username, password),
@@ -108,7 +108,7 @@ class Secureworks(AppBase):
         return ret.text
     
     # Supposed to take multiple, but can be looped outside instead (:
-    async def acknowledge_ticket(self, username, password, ticketId, version):
+    def acknowledge_ticket(self, username, password, ticketId, version):
         url = "https://api.secureworks.com/api/ticket/v3/tickets/acknowledge" 
         headers = {
             "Authorization": "APIKEY %s:%s" % (username, password),

@@ -20,7 +20,7 @@ class Netcraft(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
-    async def report_attack(self, user, password, attack, comment):
+    def report_attack(self, user, password, attack, comment):
         url = "https://takedown.netcraft.com/apis/authorise.php"
         headers = {
             "Content-Type": "application/json"
@@ -35,7 +35,7 @@ class Netcraft(AppBase):
         return requests.post(url, auth=auth, headers=headers, data=data).text
 
     # Can add a lot more to this
-    async def get_takedowns(self, user, password, id="", group_id="", url="", ip="", attack_url="", domain_attack="", statuses="", phishkit_only=""): 
+    def get_takedowns(self, user, password, id="", group_id="", url="", ip="", attack_url="", domain_attack="", statuses="", phishkit_only=""): 
         url = "https://takedown.netcraft.com/apis/get-info.php"
         headers = {
             "Content-Type": "application/json"
@@ -66,7 +66,7 @@ class Netcraft(AppBase):
         auth = (user, password)
         return requests.get(url, auth=auth, headers=headers, params=params).text
 
-    async def get_takedown(self, user, password, id="", group_id=""): 
+    def get_takedown(self, user, password, id="", group_id=""): 
         url = "https://takedown.netcraft.com/apis/get-info.php"
         headers = {
             "Content-Type": "application/json"
@@ -80,7 +80,7 @@ class Netcraft(AppBase):
         auth = (user, password)
         return requests.get(url, auth=auth, headers=headers, params=params).text
 
-    async def escalate_takedown(self, user, password, id):
+    def escalate_takedown(self, user, password, id):
         url = "https://takedown.netcraft.com/apis/escalate.php"
         headers = {
             "Content-Type": "application/json"
@@ -94,7 +94,7 @@ class Netcraft(AppBase):
         return requests.post(url, auth=auth, headers=headers, data=data).text
 
     # This is a workaround lmao
-    async def screenshot(self, user, password, takedownurl, proxies="dk"):
+    def screenshot(self, user, password, takedownurl, proxies="dk"):
         if not isinstance(proxies, list) or len(proxies) == 0:
             if ", " in proxies:
                 proxies = proxies.split(", ")

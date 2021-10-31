@@ -21,7 +21,7 @@ class PythonPlayground(AppBase):
         super().__init__(redis, logger, console_logger)
 
     # Write your data inside this function
-    async def get_rss(self, url):
+    def get_rss(self, url):
         # It comes in as a string, so needs to be set to JSON
         NewsFeed = feedparser.parse(url)
         try:
@@ -39,7 +39,7 @@ class PythonPlayground(AppBase):
         return entry.keys()
 
     # Write your data inside this function
-    #async def get_rss_feed(self, url):
+    #def get_rss_feed(self, url):
     #    # It comes in as a string, so needs to be set to JSON
     #    NewsFeed = feedparser.parse(url)
     #    NewsFeed.entries[1]

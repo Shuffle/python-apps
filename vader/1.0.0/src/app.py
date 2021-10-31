@@ -21,7 +21,7 @@ class Vader(AppBase):
         super().__init__(redis, logger, console_logger)
 
 
-    async def sentimentAnalysis(self, text):
+    def sentimentAnalysis(self, text):
 
 
 

@@ -22,7 +22,7 @@ class ArchiveOrg(AppBase):
         super().__init__(redis, logger, console_logger)
 
 
-    async def archive_target(self, target):
+    def archive_target(self, target):
 
         archive_url = savepagenow.capture_or_cache(target)
         """

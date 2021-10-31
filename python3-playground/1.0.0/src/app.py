@@ -29,7 +29,7 @@ class PythonPlayground(AppBase):
         return "Ran function 3"
 
     # Write your data inside this function
-    async def run_python_script(self, json_data, function_to_execute):
+    def run_python_script(self, json_data, function_to_execute):
         # It comes in as a string, so needs to be set to JSON
         try:
             json_data = json.loads(json_data)

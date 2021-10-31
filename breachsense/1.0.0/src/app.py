@@ -20,7 +20,7 @@ class BreachSense(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
-    async def Basic_search(self, api_key, search_term, date):
+    def Basic_search(self, api_key, search_term, date):
         if date:
             url = f"https://breachsense.io/api?lic={api_key}&s={search_term}&date={date}&json"   
         else:
@@ -31,7 +31,7 @@ class BreachSense(AppBase):
         except Exception as e:
             return "Exception occured: %s" % e
 
-    async def Display_Description(self, api_key, search_term, date):
+    def Display_Description(self, api_key, search_term, date):
         if date:
             url = f"https://breachsense.io/api?lic={api_key}&s={search_term}&date={date}&attr&json"   
         else:
@@ -42,7 +42,7 @@ class BreachSense(AppBase):
         except Exception as e:
             return "Exception occured: %s" % e
 
-    async def Strict_search(self, api_key, search_term, date):
+    def Strict_search(self, api_key, search_term, date):
         if date:
             url = f"https://breachsense.io/api?lic={api_key}&s={search_term}&date={date}&strict&json"   
         else:
@@ -53,7 +53,7 @@ class BreachSense(AppBase):
         except Exception as e:
             return "Exception occured: %s" % e
 
-    async def Check_credits(self, api_key):
+    def Check_credits(self, api_key):
         url = f"https://breachsense.io/api?lic={api_key}&r&json"
         try:  
             response = requests.get(url)
@@ -61,7 +61,7 @@ class BreachSense(AppBase):
         except Exception as e:
             return "Exception occured: %s" % e
 
-    async def Domain_Monitor(self, api_key, action, domain):
+    def Domain_Monitor(self, api_key, action, domain):
         url = f"https://breachsense.io/api?lic={api_key}&action={action}&dom={domain}&json"
         try:  
             response = requests.get(url)
@@ -69,7 +69,7 @@ class BreachSense(AppBase):
         except Exception as e:
             return "Exception occured: %s" % e
 
-    async def Custom_search(self, api_key, search_term, date, extra_Params):
+    def Custom_search(self, api_key, search_term, date, extra_Params):
         if date:
             url = f"https://breachsense.io/api?lic={api_key}&s={search_term}&date={date}&{extra_Params}&json"   
         else:

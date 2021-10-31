@@ -43,7 +43,7 @@ class Email(AppBase):
         super().__init__(redis, logger, console_logger)
 
     # This is an email function of Shuffle
-    async def send_email_shuffle(self, apikey, recipients, subject, body):
+    def send_email_shuffle(self, apikey, recipients, subject, body):
         targets = [recipients]
         if ", " in recipients:
             targets = recipients.split(", ")
@@ -56,7 +56,7 @@ class Email(AppBase):
         headers = {"Authorization": "Bearer %s" % apikey}
         return requests.post(url, headers=headers, json=data).text
 
-    async def send_email(
+    def send_email(
         self, username, password, smtp_host, recipient, subject, body, smtp_port
     ):
         if type(smtp_port) == str:
@@ -88,7 +88,7 @@ class Email(AppBase):
         print("Successfully sent email with subject %s to %s" % (subject, recipient))
         return "Email sent to %s!" % recipient
 
-    async def get_emails_imap(
+    def get_emails_imap(
         self,
         username,
         password,

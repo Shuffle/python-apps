@@ -62,7 +62,7 @@ class NLP(AppBase):
         except:
             return "Error parsing content"
 
-    async def extract(self, data, extract):
+    def extract(self, data, extract):
         switcher = {
             "get_ipv4s" : self.get_ipv4s,
             "get_urls" : self.get_urls,

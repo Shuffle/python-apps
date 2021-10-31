@@ -16,7 +16,7 @@ class Sooty(AppBase):
     app_name = "Sooty"  # this needs to match "name" in api.yaml
 
     # Write your data inside this function
-    async def Urlsanitise(self, url):
+    def Urlsanitise(self, url):
         # It comes in as a string, so needs to be set to JSON
         try:
             x = re.sub(r"\.", "[.]", url)
@@ -26,24 +26,24 @@ class Sooty(AppBase):
         except Exception as e:
             raise Exception(e)
     
-    async def UrlDecoder(self, url):
+    def UrlDecoder(self, url):
         url = url.strip()
         decodedUrl = urllib.parse.unquote(url)
         return {"Success":"True",'DecodedUrl':decodedUrl}
 
 
-    async def SafelinksDecoder(self, url):
+    def SafelinksDecoder(self, url):
         url = url.strip()
         dcUrl = urllib.parse.unquote(url)
         dcUrl = dcUrl.replace('https://nam02.safelinks.protection.outlook.com/?url=', '')
         return {"Success":"True",'DcUrl':dcUrl}
 
-    async def UnshortenUrl(self, url):
+    def UnshortenUrl(self, url):
         link = url.strip()
         req = requests.get(str('https://unshorten.me/s/' + link))
         return {"Success":"True",'UnshortenUrl':req.text}
 
-    async def Cisco7Decoder(self, password):
+    def Cisco7Decoder(self, password):
         pw = password.strip()
 
         key = [0x64, 0x73, 0x66, 0x64, 0x3b, 0x6b, 0x66, 0x6f, 0x41,
@@ -63,7 +63,7 @@ class Sooty(AppBase):
         except Exception as e:
             raise Exception(e)
 
-    # async def ReverseDnsLookup(self, ip):
+    # def ReverseDnsLookup(self, ip):
     #     ip=ip.strip()
     #     try:
     #         s = socket.gethostbyaddr(ip)
@@ -71,7 +71,7 @@ class Sooty(AppBase):
     #     except:
     #         return("Hostname not found")
 
-    async def DnsLookup(self, domainname):
+    def DnsLookup(self, domainname):
         d = domainname.strip()
         d = re.sub("http://", "", d)
         d = re.sub("https://", "", d)
@@ -81,10 +81,10 @@ class Sooty(AppBase):
         except:
             return("Website not found")
 
-    async def HashText(self, text):
+    def HashText(self, text):
         return hashlib.md(text.encode("utf-8")).hexdigest()
 
-    async def WhoIs(self, ip):
+    def WhoIs(self, ip):
         try:
             w = IPWhois(ip)
             w = w.lookup_whois()

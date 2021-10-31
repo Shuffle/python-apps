@@ -21,7 +21,7 @@ class GoogleChat(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
-    async def send_simple_message(self, webhook_url, message, threadKey=""):
+    def send_simple_message(self, webhook_url, message, threadKey=""):
         headers = {'Content-Type': 'application/json'}
         payload = {'text': str(message)}
         # If a thread is specified, add the threakKey query parameter
@@ -34,7 +34,7 @@ class GoogleChat(AppBase):
             return {"success": True, "results": data}
         return {"success": False, "reason": "Bad status code  - expecting 200.", "status_code": r.status_code, "response": r.json()}
 
-    async def send_card_message(self, webhook_url, message, app="Shuffle", threadKey=""):
+    def send_card_message(self, webhook_url, message, app="Shuffle", threadKey=""):
         headers = {'Content-Type': 'application/json'}
         # If a thread is specified, add the threakKey query parameter
         if threadKey != "":

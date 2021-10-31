@@ -33,7 +33,7 @@ class TheHive(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
-    # async def run_analyzer(self, apikey, url, title_query):
+    # def run_analyzer(self, apikey, url, title_query):
     #    self.thehive = TheHiveApi(url, apikey, cert=False)
 
     #    response = self.thehive.find_cases(query=String("title:'%s'" % title_query), range='all', sort=[])
@@ -47,7 +47,7 @@ class TheHive(AppBase):
         else:
             self.thehive = TheHiveApi(url, apikey, cert=False)
 
-    async def search_cases(self, apikey, url, organisation, title_query):
+    def search_cases(self, apikey, url, organisation, title_query):
         self.__connect_thehive(url, apikey, organisation)
 
         response = self.thehive.find_cases(
@@ -56,7 +56,7 @@ class TheHive(AppBase):
 
         return response.text
 
-    async def search_query(self, apikey, url, organisation, search_for, custom_query):
+    def search_query(self, apikey, url, organisation, search_for, custom_query):
         self.__connect_thehive(url, apikey, organisation)
 
         try:
@@ -74,7 +74,7 @@ class TheHive(AppBase):
         else:
             raise IOError(response.text)
 
-    async def add_observable(
+    def add_observable(
         self, apikey, url, organisation, case_id, data, datatype, tags
     ):
         self.__connect_thehive(url, apikey, organisation)
@@ -101,7 +101,7 @@ class TheHive(AppBase):
 
         return self.thehive.create_case_observable(case_id, item).text
 
-    async def search_alerts(
+    def search_alerts(
         self, apikey, url, organisation, title_query, search_range="0-25"
     ):
         self.__connect_thehive(url, apikey, organisation)
@@ -115,7 +115,7 @@ class TheHive(AppBase):
         )
         return response.text
 
-    async def create_case(
+    def create_case(
         self,
         apikey,
         url,
@@ -172,7 +172,7 @@ class TheHive(AppBase):
         except requests.exceptions.ConnectionError as e:
             return "ConnectionError: %s" % e
 
-    async def create_alert(
+    def create_alert(
         self,
         apikey,
         url,
@@ -236,7 +236,7 @@ class TheHive(AppBase):
         except requests.exceptions.ConnectionError as e:
             return "ConnectionError: %s" % e
 
-    async def create_alert_artifact(
+    def create_alert_artifact(
         self,
         apikey,
         url,
@@ -288,7 +288,7 @@ class TheHive(AppBase):
         return ret.text
 
     # Gets an item based on input. E.g. field_type = Alert
-    async def get_item(self, apikey, url, organisation, field_type, cur_id):
+    def get_item(self, apikey, url, organisation, field_type, cur_id):
         self.__connect_thehive(url, apikey, organisation)
 
         newstr = ""
@@ -319,15 +319,15 @@ class TheHive(AppBase):
 
         return ret.text
 
-    async def close_alert(self, apikey, url, organisation, alert_id):
+    def close_alert(self, apikey, url, organisation, alert_id):
         self.__connect_thehive(url, apikey, organisation)
         return self.thehive.mark_alert_as_read(alert_id).text
 
-    async def reopen_alert(self, apikey, url, organisation, alert_id):
+    def reopen_alert(self, apikey, url, organisation, alert_id):
         self.__connect_thehive(url, apikey, organisation)
         return self.thehive.mark_alert_as_unread(alert_id).text
 
-    async def create_case_from_alert(
+    def create_case_from_alert(
         self, apikey, url, organisation, alert_id, case_template=None
     ):
         self.__connect_thehive(url, apikey, organisation)
@@ -336,14 +336,14 @@ class TheHive(AppBase):
         )
         return response.text
 
-    async def merge_alert_into_case(self, apikey, url, organisation, alert_id, case_id):
+    def merge_alert_into_case(self, apikey, url, organisation, alert_id, case_id):
         self.__connect_thehive(url, apikey, organisation)
         req = url + f"/api/alert/{alert_id}/merge/{case_id}"
         ret = requests.post(req, auth=self.thehive.auth)
         return ret.text
 
     # Not sure what the data should be
-    async def update_field(
+    def update_field(
         self, apikey, url, organisation, field_type, cur_id, field, data
     ):
         # This is kinda silly but..
@@ -392,14 +392,14 @@ class TheHive(AppBase):
             )
 
     # https://github.com/TheHive-Project/TheHiveDocs/tree/master/api/connectors/cortex
-    async def run_analyzer(
+    def run_analyzer(
         self, apikey, url, organisation, cortex_id, analyzer_id, artifact_id
     ):
         self.__connect_thehive(url, apikey, organisation)
         return self.thehive.run_analyzer(cortex_id, artifact_id, analyzer_id).text
 
     # Creates a task log in TheHive with file
-    async def create_task_log(
+    def create_task_log(
         self, apikey, url, organisation, task_id, message, filedata={}
     ):
         if filedata["success"] == False:
@@ -425,7 +425,7 @@ class TheHive(AppBase):
         return response.text
 
     # Creates an observable as a file in a case
-    async def create_case_file_observable(
+    def create_case_file_observable(
         self, apikey, url, organisation, case_id, tags, filedata
     ):
         if filedata["success"] == False:
