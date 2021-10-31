@@ -51,10 +51,10 @@ class Tools(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
-    async def router(self):
+    def router(self):
         return "This action should be skipped"
 
-    async def base64_conversion(self, string, operation):
+    def base64_conversion(self, string, operation):
 
         if operation == "encode":
             encoded_bytes = base64.b64encode(string.encode("utf-8"))
@@ -80,7 +80,7 @@ class Tools(AppBase):
         return input_list
 
     # This is an SMS function of Shuffle
-    async def send_sms_shuffle(self, apikey, phone_numbers, body):
+    def send_sms_shuffle(self, apikey, phone_numbers, body):
         phone_numbers = self.parse_list(phone_numbers)
 
         targets = [phone_numbers]
@@ -96,7 +96,7 @@ class Tools(AppBase):
         return requests.post(url, headers=headers, json=data).text
 
     # This is an email function of Shuffle
-    async def send_email_shuffle(self, apikey, recipients, subject, body):
+    def send_email_shuffle(self, apikey, recipients, subject, body):
         recipients = self.parse_list(recipients)
 
         targets = [recipients]
@@ -111,11 +111,11 @@ class Tools(AppBase):
         headers = {"Authorization": "Bearer %s" % apikey}
         return requests.post(url, headers=headers, json=data).text
 
-    async def repeat_back_to_me(self, call):
+    def repeat_back_to_me(self, call):
         return call
 
     # https://github.com/fhightower/ioc-finder
-    async def parse_file_ioc(self, file_ids, input_type="all"):
+    def parse_file_ioc(self, file_ids, input_type="all"):
         def parse(data):
             try:
                 iocs = find_iocs(str(data))
@@ -181,7 +181,7 @@ class Tools(AppBase):
         return return_value
 
     # https://github.com/fhightower/ioc-finder
-    async def parse_ioc(self, input_string, input_type="all"):
+    def parse_ioc(self, input_string, input_type="all"):
         if input_type == "":
             input_type = "all"
         else:
@@ -230,7 +230,7 @@ class Tools(AppBase):
 
         return newarray
 
-    async def parse_list(self, items, splitter="\n"):
+    def parse_list(self, items, splitter="\n"):
         if splitter == "":
             splitter = "\n"
 
@@ -238,7 +238,7 @@ class Tools(AppBase):
 
         return str(splititems)
 
-    async def get_length(self, item):
+    def get_length(self, item):
         if item.startswith("[") and item.endswith("]"):
             try:
                 item = item.replace("'", '"', -1)
@@ -249,7 +249,7 @@ class Tools(AppBase):
 
         return str(len(item))
 
-    async def set_json_key(self, json_object, key, value):
+    def set_json_key(self, json_object, key, value):
         print(f"OBJ: {json_object}\nKEY: {key}\nVAL: {value}")
         if isinstance(json_object, str):
             try:
@@ -310,7 +310,7 @@ class Tools(AppBase):
 
         return json_object
 
-    async def delete_json_keys(self, json_object, keys):
+    def delete_json_keys(self, json_object, keys):
         keys = self.parse_list(keys)
 
         splitdata = [keys]
@@ -328,7 +328,7 @@ class Tools(AppBase):
 
         return json_object
 
-    async def translate_value(self, input_data, translate_from, translate_to, else_value=""):
+    def translate_value(self, input_data, translate_from, translate_to, else_value=""):
         splitdata = [translate_from]
         if ", " in translate_from:
             splitdata = translate_from.split(", ")
@@ -357,7 +357,7 @@ class Tools(AppBase):
 
         return input_data
 
-    async def map_value(self, input_data, mapping, default_value=""):
+    def map_value(self, input_data, mapping, default_value=""):
         try:
             mapping = json.loads(mapping)
         except json.decoder.JSONDecodeError as e:
@@ -375,7 +375,7 @@ class Tools(AppBase):
         return input_data 
 
     # Changed with 1.1.0 to run with different returns 
-    async def regex_capture_group(self, input_data, regex):
+    def regex_capture_group(self, input_data, regex):
         try:
             returnvalues = {
                 "success": True,
@@ -406,7 +406,7 @@ class Tools(AppBase):
                 "reason": "Bad regex pattern: %s" % e,
             }
 
-    async def regex_replace(
+    def regex_replace(
         self, input_data, regex, replace_string="", ignore_case="False"
     ):
 
@@ -420,7 +420,7 @@ class Tools(AppBase):
         else:
             return re.sub(regex, replace_string, input_data)
 
-    async def execute_python(self, code):
+    def execute_python(self, code):
         print(f"Python code {len(code)} {code}. If uuid, we'll try to download and use the file.")
 
         if len(code) == 36 and "-" in code:
@@ -465,7 +465,7 @@ class Tools(AppBase):
                 "message": f"exception: {e}",
             }
 
-    async def execute_bash(self, code, shuffle_input):
+    def execute_bash(self, code, shuffle_input):
         process = subprocess.Popen(
             code,
             stdout=subprocess.PIPE,
@@ -490,7 +490,7 @@ class Tools(AppBase):
 
         return item
 
-    async def filter_list(self, input_list, field, check, value, opposite):
+    def filter_list(self, input_list, field, check, value, opposite):
         print(f"\nRunning function with list {input_list}")
 
         flip = False
@@ -790,7 +790,7 @@ class Tools(AppBase):
 
         return new_list
 
-    #async def multi_list_filter(self, input_list, field, check, value):
+    #def multi_list_filter(self, input_list, field, check, value):
     #    input_list = input_list.replace("'", '"', -1)
     #    input_list = json.loads(input_list)
 
@@ -846,7 +846,7 @@ class Tools(AppBase):
     #    return new_list
 
     # Gets the file's metadata, e.g. md5
-    async def get_file_meta(self, file_id):
+    def get_file_meta(self, file_id):
         headers = {
             "Authorization": "Bearer %s" % self.authorization,
         }
@@ -861,7 +861,7 @@ class Tools(AppBase):
         return ret.text
 
     # Use data from AppBase to talk to backend
-    async def delete_file(self, file_id):
+    def delete_file(self, file_id):
         headers = {
             "Authorization": "Bearer %s" % self.authorization,
         }
@@ -875,7 +875,7 @@ class Tools(AppBase):
         return ret.text
 
     # Input is WAS a file, hence it didn't get the files 
-    async def get_file_value(self, filedata):
+    def get_file_value(self, filedata):
         #try:
         #    return filedata["data"].decode()
         #except:
@@ -888,7 +888,7 @@ class Tools(AppBase):
         print("INSIDE APP DATA: %s" % filedata)
         return filedata["data"].decode()
 
-    async def download_remote_file(self, url):
+    def download_remote_file(self, url):
         ret = requests.get(url, verify=False)  # nosec
         filename = url.split("/")[-1]
         fileret = self.set_files(
@@ -907,7 +907,7 @@ class Tools(AppBase):
 
         return value
 
-    async def extract_archive(self, file_ids, fileformat="zip", password=None):
+    def extract_archive(self, file_ids, fileformat="zip", password=None):
         try:
             return_data = {"success": False, "files": []}
 
@@ -1093,7 +1093,7 @@ class Tools(AppBase):
         except Exception as excp:
             return {"success": False, "message": "%s" % excp}
 
-    async def inflate_archive(self, file_ids, fileformat, name, password=None):
+    def inflate_archive(self, file_ids, fileformat, name, password=None):
 
         try:
             # TODO: will in future support multiple files instead of string ids?
@@ -1154,7 +1154,7 @@ class Tools(AppBase):
         except Exception as excp:
             return {"success": False, "message": excp}
 
-    async def add_list_to_list(self, list_one, list_two):
+    def add_list_to_list(self, list_one, list_two):
         if not list_one or list_one == " ":
             list_one = "[]"
         if not list_two or list_two == " ":
@@ -1188,7 +1188,7 @@ class Tools(AppBase):
 
         return list_one
 
-    async def diff_lists(self, list_one, list_two):
+    def diff_lists(self, list_one, list_two):
         try:
             list_one = json.loads(list_one)
         except json.decoder.JSONDecodeError as e:
@@ -1204,7 +1204,7 @@ class Tools(AppBase):
 
         return diff(list_one, list_two)
 
-    async def merge_lists(self, list_one, list_two, set_field="", sort_key_list_one="", sort_key_list_two=""):
+    def merge_lists(self, list_one, list_two, set_field="", sort_key_list_one="", sort_key_list_two=""):
         try:
             list_one = json.loads(list_one)
         except json.decoder.JSONDecodeError as e:
@@ -1260,7 +1260,7 @@ class Tools(AppBase):
 
         return list_one
 
-    async def xml_json_convertor(self, convertto, data):
+    def xml_json_convertor(self, convertto, data):
         try:
             if convertto == "json":
                 ans = xmltodict.parse(data)
@@ -1272,7 +1272,7 @@ class Tools(AppBase):
         except Exception as e:
             return e
 
-    async def date_to_epoch(self, input_data, date_field, date_format):
+    def date_to_epoch(self, input_data, date_field, date_format):
 
         print(
             "Executing with {} on {} with format {}".format(
@@ -1289,7 +1289,7 @@ class Tools(AppBase):
         result["epoch"] = epoch
         return result
 
-    async def compare_relative_date(
+    def compare_relative_date(
         self, input_data, date_format, equality_test, offset, units, direction
     ):
 
@@ -1371,12 +1371,12 @@ class Tools(AppBase):
 
         return result
 
-    async def run_math_operation(self, operation):
+    def run_math_operation(self, operation):
         print("Operation: %s" % operation)
         result = eval(operation)
         return result
 
-    async def escape_html(self, input_data, field_name):
+    def escape_html(self, input_data, field_name):
 
         mapping = json.loads(input_data)
         print(f"Got mapping {json.dumps(mapping, indent=2)}")
@@ -1387,7 +1387,7 @@ class Tools(AppBase):
         mapping[field_name] = result
         return mapping
 
-    async def get_cache_value(self, key):
+    def get_cache_value(self, key):
         org_id = self.full_execution["workflow"]["execution_org"]["id"]
         url = "%s/api/v1/orgs/%s/get_cache" % (self.url, org_id)
         data = {
@@ -1418,7 +1418,7 @@ class Tools(AppBase):
             return value.text
 
     # FIXME: Add option for org only & sensitive data (not to be listed)
-    async def set_cache_value(self, key, value):
+    def set_cache_value(self, key, value):
         org_id = self.full_execution["workflow"]["execution_org"]["id"]
         url = "%s/api/v1/orgs/%s/set_cache" % (self.url, org_id)
         data = {
@@ -1450,7 +1450,7 @@ class Tools(AppBase):
             print("Value couldn't be parsed")
             return response.text
 
-    async def convert_json_to_tags(self, json_object, split_value=", ", include_key=True, lowercase=True):
+    def convert_json_to_tags(self, json_object, split_value=", ", include_key=True, lowercase=True):
         try:
             json_object = json.loads(json_object)
         except json.decoder.JSONDecodeError as e:
@@ -1489,7 +1489,7 @@ class Tools(AppBase):
 
         return fullstring
 
-    async def cidr_ip_match(self, ip, networks):
+    def cidr_ip_match(self, ip, networks):
         print("Executing with\nIP: {},\nNetworks: {}".format(ip, networks))
 
         try:
@@ -1514,14 +1514,14 @@ class Tools(AppBase):
 
         return json.dumps(result)
 
-    async def get_timestamp(self, time_format):
+    def get_timestamp(self, time_format):
         timestamp = int(time.time())
         if time_format == "unix" or time_format == "epoch":
             print("Running default timestamp %s" % timestamp)
 
         return timestamp
 
-    async def get_hash_sum(self, value):
+    def get_hash_sum(self, value):
         md5_value = ""
         sha256_value = ""
 
