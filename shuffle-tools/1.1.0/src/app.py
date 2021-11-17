@@ -1392,6 +1392,160 @@ class Tools(AppBase):
         mapping[field_name] = result
         return mapping
 
+    def check_cache_contains(self, key, value, append):
+        org_id = self.full_execution["workflow"]["execution_org"]["id"]
+        url = "%s/api/v1/orgs/%s/get_cache" % (self.url, org_id)
+        data = {
+            "workflow_id": self.full_execution["workflow"]["id"],
+            "execution_id": self.current_execution_id,
+            "authorization": self.authorization,
+            "org_id": org_id,
+            "key": key,
+        }
+
+        if append.lower() == "true":
+            append = True
+        else:
+            append = False 
+
+        get_response = requests.post(url, json=data)
+        try:
+            allvalues = get_response.json()
+            if allvalues["value"] == None or allvalues["value"] == "null":
+                allvalues["value"] = "[]"
+
+            #return allvalues
+
+            if allvalues["success"] == False:
+                if append == True:
+                    new_value = [str(value)]
+                    data["value"] = json.dumps(new_value)
+
+                    set_url = "%s/api/v1/orgs/%s/set_cache" % (self.url, org_id)
+                    set_response = requests.post(set_url, json=data)
+                    try:
+                        allvalues = set_response.json()
+                        #allvalues["key"] = key
+                        #return allvalues
+
+                        return {
+                            "success": True,
+                            "found": False,
+                            "key": key,
+                            "value": new_value,
+                        }
+                    except Exception as e:
+                        return {
+                            "success": False,
+                            "found": False,
+                            "key": key,
+                            "reason": "Failed to find key, and failed to append",
+                        }
+                else:
+                    return {
+                        "success": True,
+                        "found": False,
+                        "key": key,
+                        "reason": "Not appended, not found",
+                    }
+            else:
+                if allvalues["value"] == None or allvalues["value"] == "null":
+                    allvalues["value"] = "[]"
+
+                #return allvalues
+                try:
+                    parsedvalue = json.loads(allvalues["value"])
+                except json.decoder.JSONDecodeError as e:
+                    parsedvalue = []
+                    
+                for item in parsedvalue:
+                    if item == value:
+                        if not append:
+                            return {
+                                "success": True,
+                                "found": True,
+                                "reason": "Found and not appending!",
+                                "key": key,
+                                "value": json.loads(allvalues["value"]),
+                            }
+                        else:
+                            return {
+                                "success": True,
+                                "found": True,
+                                "reason": "Found and should append (already exists!)",
+                                "key": key,
+                                "value": json.loads(allvalues["value"]),
+                            }
+                            
+                        # Lol    
+                        break
+
+                if not append:
+                    return {
+                        "success": True,
+                        "found": False,
+                        "reason": "Not found, not appending (2)!",
+                        "key": key,
+                        "value": json.loads(allvalues["value"]),
+                    }
+
+                #parsedvalue = json.loads(allvalues["value"])
+                #if parsedvalue == None:
+                #    parsedvalue = []
+
+                #return parsedvalue
+                new_value = parsedvalue.append(value)
+                if new_value == None:
+                    new_value = [value]
+
+                #return new_value
+                data = {
+                    "workflow_id": self.full_execution["workflow"]["id"],
+                    "execution_id": self.current_execution_id,
+                    "authorization": self.authorization,
+                    "org_id": org_id,
+                    "key": key,
+                    "value": new_value,
+                }
+
+                set_url = "%s/api/v1/orgs/%s/set_cache" % (self.url, org_id)
+                response = requests.post(set_url, json=data)
+                exception = ""
+                try:
+                    allvalues = response.json()
+
+                    return {
+                        "success": True,
+                        "found": False,
+                        "reason": "Appended as it didn't exist",
+                        "key": key,
+                        "value": new_value,
+                    }
+                except Exception as e:
+                    exception = e
+                    pass
+
+                return {
+                    "success": False,
+                    "found": True,
+                    "reason": f"Failed to set append the value: {exception}. This should never happen",
+                    "key": key
+                }
+                            
+                print("Handle all values!") 
+
+            #return allvalues
+
+        except Exception as e:
+            return {
+                "success": False,
+                "key": key,
+                "reason": f"Failed to get cache: {e}",
+                "found": False,
+            }
+
+        return value.text 
+
     def get_cache_value(self, key):
         org_id = self.full_execution["workflow"]["execution_org"]["id"]
         url = "%s/api/v1/orgs/%s/get_cache" % (self.url, org_id)

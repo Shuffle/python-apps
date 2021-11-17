@@ -31,6 +31,33 @@ actions:
     returns:
       schema:
         type: string
+  - name: check_cache_contains 
+    description: Checks Shuffle cache whether a key contains a value in list 
+    parameters:
+      - name: key
+        description: The key to get
+        required: true
+        multiline: false
+        example: "alert_ids"
+        schema:
+          type: string
+      - name: value 
+        description: The value to check for and append if applicable
+        required: true
+        multiline: false
+        example: "1208301599081"
+        schema:
+          type: string
+      - name: append 
+        description: Whether to auto-append the value if it doesn't exist in the cache
+        required: true
+        options:
+          - true
+          - false 
+        multiline: false
+        example: "timestamp"
+        schema:
+          type: string
   - name: get_cache_value
     description: Get a value saved to your organization in Shuffle
     parameters:
