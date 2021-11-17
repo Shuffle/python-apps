@@ -1411,10 +1411,11 @@ class Tools(AppBase):
         get_response = requests.post(url, json=data)
         try:
             allvalues = get_response.json()
-            if allvalues["value"] == None or allvalues["value"] == "null":
-                allvalues["value"] = "[]"
-
-            #return allvalues
+            try:
+                if allvalues["value"] == None or allvalues["value"] == "null":
+                    allvalues["value"] = "[]"
+            except:
+                pass
 
             if allvalues["success"] == False:
                 if append == True:
@@ -1452,13 +1453,15 @@ class Tools(AppBase):
                 if allvalues["value"] == None or allvalues["value"] == "null":
                     allvalues["value"] = "[]"
 
-                #return allvalues
                 try:
                     parsedvalue = json.loads(allvalues["value"])
                 except json.decoder.JSONDecodeError as e:
                     parsedvalue = []
+
+                #return parsedvalue
                     
                 for item in parsedvalue:
+                    #return "%s %s" % (item, value)
                     if item == value:
                         if not append:
                             return {
@@ -1494,25 +1497,23 @@ class Tools(AppBase):
                 #    parsedvalue = []
 
                 #return parsedvalue
-                new_value = parsedvalue.append(value)
+                new_value = parsedvalue
                 if new_value == None:
                     new_value = [value]
 
-                #return new_value
-                data = {
-                    "workflow_id": self.full_execution["workflow"]["id"],
-                    "execution_id": self.current_execution_id,
-                    "authorization": self.authorization,
-                    "org_id": org_id,
-                    "key": key,
-                    "value": new_value,
-                }
+                new_value.append(value)
+
+                #return new_value 
+
+                data["value"] = json.dumps(new_value)
+                #return allvalues
 
                 set_url = "%s/api/v1/orgs/%s/set_cache" % (self.url, org_id)
                 response = requests.post(set_url, json=data)
                 exception = ""
                 try:
                     allvalues = response.json()
+                    #return allvalues
 
                     return {
                         "success": True,
