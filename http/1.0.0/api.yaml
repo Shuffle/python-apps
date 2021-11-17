@@ -46,6 +46,9 @@ actions:
       - name: verify 
         description: Check certificate
         multiline: false 
+        options:
+          - false 
+          - true
         required: false 
         example: "false"
         schema:
@@ -82,6 +85,9 @@ actions:
         description: Whether to check the certificate or not
         multiline: false 
         required: false 
+        options:
+          - false 
+          - true
         example: "false"
         schema:
           type: bool 
@@ -117,6 +123,9 @@ actions:
         description: Whether to check the certificate or not
         multiline: false 
         required: false 
+        options:
+          - false 
+          - true
         example: "false"
         schema:
           type: bool 
@@ -152,6 +161,9 @@ actions:
         description: Whether to check the certificate or not
         multiline: false 
         required: false 
+        options:
+          - false 
+          - true
         example: "false"
         schema:
           type: bool 
@@ -180,6 +192,9 @@ actions:
         description: Whether to check the certificate or not
         multiline: false 
         required: false 
+        options:
+          - true
+          - false 
         example: "false"
         schema:
           type: bool 
@@ -208,6 +223,9 @@ actions:
         description: Whether to check the certificate or not
         multiline: false 
         required: false 
+        options:
+          - false 
+          - true
         example: "false"
         schema:
           type: bool 
@@ -236,6 +254,9 @@ actions:
         description: Whether to check the certificate or not
         multiline: false 
         required: false 
+        options:
+          - false 
+          - true
         example: "false"
         schema:
           type: bool 
