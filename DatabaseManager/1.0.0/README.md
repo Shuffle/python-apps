@@ -13,7 +13,7 @@ An app for interacting with databases (currently only supports MySQL). Support f
   __Action parameters :-__
   - __Username__ : username of database account
   - __Password__ : password of database account
-  - __Host__ : databse host address
+  - __Host__ : database host address
   - __port__ : Port number of database
   - __database name__ : database name you want to use
   - __query__ : query you want to run ( SELECT * FROM example_table; )
