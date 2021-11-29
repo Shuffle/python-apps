@@ -49,5 +49,3 @@ and once there go down to **App Registrations** a new window will pop up.
 - After adding permission , Grant consent.
 - Be sure to use work / business account. Most of the actions are not supported on personal account.
 
-## References
-- To read more about required permission for each action you can refer to [Security](https://docs.microsoft.com/en-us/graph/api/resources/security-api-overview?view=graph-rest-1.0) & [compliance](https://docs.microsoft.com/en-us/graph/api/resources/complianceapioverview?view=graph-rest-beta)'s official documentation.
