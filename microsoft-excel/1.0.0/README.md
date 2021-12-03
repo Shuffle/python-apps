@@ -2,7 +2,7 @@
 - An app to interact with an excel file from Shuffle using Microsoft Graph Api.
 - This app will help to insert, update and clear data of an excel workbook.
 
-![App_image](https://github.com/frikky/Shuffle-apps/blob/master/Docs/Microsoft_excel.png?raw=true)
+![App_image](https://github.com/Shuffle/python-apps/blob/master/microsoft-excel/1.0.0/Microsoft_excel.png?raw=true)
 
 ## Actions
 - #### Get_user_id
