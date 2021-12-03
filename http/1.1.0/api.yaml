@@ -54,7 +54,7 @@ actions:
         description: The password to use
         multiline: false 
         required: false 
-        example: "Password"
+        example: "*****"
         schema:
           type: string
       - name: verify 
@@ -106,7 +106,7 @@ actions:
         description: The password to use
         multiline: false 
         required: false 
-        example: "Password"
+        example: "*****"
         schema:
           type: string
       - name: verify 
@@ -158,7 +158,7 @@ actions:
         description: The password to use
         multiline: false 
         required: false 
-        example: "Password"
+        example: "*****"
         schema:
           type: string
       - name: verify 
@@ -210,7 +210,7 @@ actions:
         description: The password to use
         multiline: false 
         required: false 
-        example: "Password"
+        example: "*****"
         schema:
           type: string
       - name: verify 
@@ -255,7 +255,7 @@ actions:
         description: The password to use
         multiline: false 
         required: false 
-        example: "Password"
+        example: "*****"
         schema:
           type: string
       - name: verify 
@@ -300,7 +300,7 @@ actions:
         description: The password to use
         multiline: false 
         required: false 
-        example: "Password"
+        example: "*****"
         schema:
           type: string
       - name: verify 
@@ -345,7 +345,7 @@ actions:
         description: The password to use
         multiline: false 
         required: false 
-        example: "Password"
+        example: "*****"
         schema:
           type: string
       - name: verify 
