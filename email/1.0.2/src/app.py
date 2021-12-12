@@ -87,7 +87,14 @@ class Email(AppBase):
         msg["Subject"] = subject
         msg.attach(MIMEText(body, "html"))
 
-        s.send_message(msg)
+        try:
+            s.send_message(msg)
+        except smtplib.SMTPDataError as e: 
+            return {
+                "success": False,
+                "reason": f"Failed to send mail: {e}"
+            }
+
         print("Successfully sent email with subject %s to %s" % (subject, recipient))
         return "Email sent to %s!" % recipient
 

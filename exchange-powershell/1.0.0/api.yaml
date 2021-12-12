@@ -1,6 +1,6 @@
 app_version: 1.0.0
 name: Exchange Powershell 
-description: An app to predict Attack Techniques and Tactics from plain text. Based on rcATT
+description: An app to interact with emails to be downloaded and release quarantined emails from office365 using Powershell
 contact_info:
   name: "@frikkylikeme"
   url: https://github.com/vlegoy/rcATT

@@ -24,6 +24,11 @@ class Subflow(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
+    #def run_userinput(self, sms, email, subflow, argument):
+    #    url = "%s/api/v1/workflows/%s/execute" % (self.url, workflow)
+
+    #    if len(sms) > 0:
+
     def run_subflow(self, user_apikey, workflow, argument, source_workflow="", source_execution="", source_node="", source_auth="", startnode=""):
         print("STARTNODE: %s" % startnode)
         url = "%s/api/v1/workflows/%s/execute" % (self.url, workflow)
@@ -63,7 +68,7 @@ class Subflow(AppBase):
         else:
             try:
                 ret = requests.post(url, headers=headers, params=params, json=json.loads(argument))
-                print("Successfully sent as JSON")
+                print(f"Successfully sent argument of length {len(argument)} as JSON")
             except:
                 try:
                     ret = requests.post(url, headers=headers, json=argument, params=params)

@@ -112,12 +112,34 @@ class HTTP(AppBase):
         else:
             return body
 
+    def fix_url(self, url):
+        # Random bugs seen by users
+        if "hhttp" in url:
+            url = url.replace("hhttp", "http")
+
+        if "http:/" in url and not "http://" in url:
+            url = url.replace("http:/", "http://", -1)
+        if "https:/" in url and not "https://" in url:
+            url = url.replace("https:/", "https://", -1)
+        if "http:///" in url:
+            url = url.replace("http:///", "http://", -1)
+        if "https:///" in url:
+            url = url.replace("https:///", "https://", -1)
+        if not "http://" in url and not "http" in url:
+            url = f"http://{url}" 
+
+        return url
+
     def GET(self, url, headers="", username="", password="", verify=True):
+        url = self.fix_url(url)
+
         parsed_headers = self.splitheaders(headers)
         verify = self.checkverify(verify)
         return requests.get(url, headers=parsed_headers, auth=requests.auth.HTTPBasicAuth(username, password), verify=verify).text
 
     def POST(self, url, headers="", body="", username="", password="", verify=True):
+        url = self.fix_url(url)
+
         parsed_headers = self.splitheaders(headers)
         verify = self.checkverify(verify)
         body = self.checkbody(body)
@@ -125,29 +147,39 @@ class HTTP(AppBase):
 
     # UNTESTED BELOW HERE
     def PUT(self, url, headers="", body="", username="", password="", verify=True):
+        url = self.fix_url(url)
+
         parsed_headers = self.splitheaders(headers)
         verify = self.checkverify(verify)
         body = self.checkbody(body)
         return requests.put(url, headers=parsed_headers, auth=requests.auth.HTTPBasicAuth(username, password), data=body, verify=verify).text
 
     def PATCH(self, url, headers="", body="", username="", password="", verify=True):
+        url = self.fix_url(url)
+
         parsed_headers = self.splitheaders(headers)
         verify = self.checkverify(verify)
         body = self.checkbody(body)
         return requests.patch(url, headers=parsed_headers, data=body, verify=verify).text
 
     def DELETE(self, url, headers="", body="", username="", password="", verify=True):
+        url = self.fix_url(url)
+
         parsed_headers = self.splitheaders(headers)
         verify = self.checkverify(verify)
         return requests.delete(url, headers=parsed_headers, auth=requests.auth.HTTPBasicAuth(username, password), verify=verify).text
 
     def HEAD(self, url, headers="", body="", username="", password="", verify=True):
+        url = self.fix_url(url)
+
         parsed_headers = self.splitheaders(headers)
         verify = self.checkverify(verify)
         body = self.checkbody(body)
         return requests.head(url, headers=parsed_headers, auth=requests.auth.HTTPBasicAuth(username, password), verify=verify).text
 
     def OPTIONS(self, url, headers="", body="", username="", password="", verify=True):
+        url = self.fix_url(url)
+
         parsed_headers = self.splitheaders(headers)
         verify = self.checkverify(verify)
         body = self.checkbody(body)

@@ -1160,28 +1160,34 @@ class Tools(AppBase):
             return {"success": False, "message": excp}
 
     def add_list_to_list(self, list_one, list_two):
-        if not list_one or list_one == " ":
+        if not list_one or list_one == " " or list_one == "None" or list_one == "null":
             list_one = "[]"
-        if not list_two or list_two == " ":
+        if not list_two or list_two == " " or list_two == "None" or list_two == "null":
             list_two = "[]"
 
         try:
             list_one = json.loads(list_one)
         except json.decoder.JSONDecodeError as e:
             print("Failed to parse list1 as json: %s" % e)
-            return {
-                "success": False,
-                "reason": "List one is not a valid list: %s" % list_one
-            }
+            if list_one == None:
+                list_one = []
+            else:
+                return {
+                    "success": False,
+                    "reason": f"List one is not a valid list: {list_one}" 
+                }
 
         try:
             list_two = json.loads(list_two)
         except json.decoder.JSONDecodeError as e:
             print("Failed to parse list2 as json: %s" % e)
-            return {
-                "success": False,
-                "reason": "List two is not a valid list: %s" % list_two
-            }
+            if list_one == None:
+                list_one = []
+            else:
+                return {
+                    "success": False,
+                    "reason": f"List two is not a valid list: {list_two}"
+                }
 
         if isinstance(list_one, dict):
             list_one = [list_one]
@@ -1286,6 +1292,9 @@ class Tools(AppBase):
         )
 
         result = json.loads(input_data)
+        #try:
+        #except json.decoder.JSONDecodeError as e:
+        #    result = input_data
 
         # https://docs.python.org/3/library/datetime.html#strftime-strptime-behavior
         epoch = datetime.datetime.strptime(result[date_field], date_format).strftime(
