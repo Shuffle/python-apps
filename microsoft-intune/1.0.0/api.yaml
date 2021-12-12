@@ -1,0 +1,82 @@
+app_version: 1.0.0
+name: intune 
+description: An app for Microsoft Intune using Graph Api
+contact_info:
+  name: "ShalinBhavsar"
+  url: https://www.shuffler.io
+  email: shalinb@infopercept.com
+authentication:
+  required: true
+  parameters:
+    - name: tenant_id
+      description: The tenant of the OAuth client
+      example: "***"
+      multiline: false
+      required: true
+      schema:
+        type: string
+    - name: client_id
+      description: The client id to use
+      example: "***"
+      multiline: false
+      required: true
+      schema:
+        type: string
+    - name: client_secret
+      description: The secret value to use
+      multiline: false
+      example: "***"
+      required: true
+      schema:
+        type: string 
+actions:
+  - name: list_devices
+    description: List devices 
+  - name: list_apps
+    description: A managed or unmanaged app that is installed on a managed device. Unmanaged apps will only appear for devices marked as corporate owned.
+  - name: managed_device_overview
+    description: show overview
+  - name: managed_device
+    description: List properties and relationships of the managedDevice objects.
+  - name: get_managed_device
+    description: Read properties and relationships of the managedDevice object.
+    parameters:
+      - name: managedDeviceId
+        description: The id 
+        multiline: false
+        required: true
+        schema:
+          type: string
+  - name: delete_managed_device
+    description: Deletes a managedDevice.
+    parameters:
+      - name: managedDeviceId
+        description: The id 
+        multiline: false
+        required: true
+        schema:
+          type: string
+  - name: remotelock
+    description: remote locks a device
+    parameters:
+      - name: managedDeviceId
+        description: The id 
+        multiline: false
+        required: true
+        schema:
+          type: string
+  - name: shutdown
+    description: Shut down device
+    parameters:
+      - name: managedDeviceId
+        description: The device id 
+        multiline: false
+        required: true
+        schema:
+          type: string
+  - name: list_managedAppConfigurations
+    description: List properties and relationships of the managedAppConfiguration objects.
+    returns:
+      schema:
+        type: string
+large_image: data:image/png;base64,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

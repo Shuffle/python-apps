@@ -955,38 +955,36 @@ class TheHive(AppBase):
         response = self.thehive.create_case_task(case_id, case_task)
 
         return response.text
-
+    
     # Close TheHive case Task
-    def close_task(
-        self,
-        apikey,
-        url,
-        organisation,
-        task_id,
-    ):
-        # Add EndDate Time before close
-        headers = {
-            "Authorization": f"Bearer {apikey}",
-        }
-        if organisation:
-            headers["X-Organisation"] = organisation
-
-        data = {"endDate": round(time.time() * 1000)}
-        requests.patch(
-            f"{url}/api/case/task/{task_id}",
-            headers=headers,
-            data=data,
+    def update_task(self,apikey,url,organisation,task_id,status):
+        if status == "Completed":
+            
+            # Add EndDate Time before close
+            headers = {
+                "Authorization": f"Bearer {apikey}",
+            }
+            if organisation:
+                headers["X-Organisation"] = organisation
+ 
+            data = {"endDate": round(time.time() * 1000)}
+            requests.patch(
+                f"{url}/api/case/task/{task_id}",
+                headers=headers,
+                data=data,
+            )
+            task = CaseTask(
+                id=task_id,
+                status="Completed",
+            )
+        else:
+            task = CaseTask(
+            id = task_id,
+            status = status,
         )
-
-        self.__connect_thehive(url, apikey, organisation)
-
-        task = CaseTask(
-            id=task_id,
-            status="Completed",
-        )
-
+ 
         response = self.thehive.update_case_task(task, fields=["status"])
-
+ 
         return response.text
 
 

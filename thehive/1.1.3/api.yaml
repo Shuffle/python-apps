@@ -1141,6 +1141,18 @@ actions:
         required: true
         schema:
           type: string
+      - name: status
+        description: The status of the task you want to change
+        required: true
+        multiline: false 
+        example: '{"status": "Completed"}'
+        options:
+          - Waiting
+          - Completed
+          - InProgress
+          - Cancel
+        schema:
+          type: string          
     returns:
       example: |
         {
