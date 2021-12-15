@@ -1,4 +1,4 @@
-app_version: 1.0.1
+app_version: 1.0.0
 name: Active Directory
 description: Active Directory and LDAP/LDAPS. For full usage of the action configure using LDAPS.
 contact_info:

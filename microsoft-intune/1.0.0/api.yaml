@@ -1,5 +1,5 @@
 app_version: 1.0.0
-name: intune 
+name: Microsoft Intune 
 description: An app for Microsoft Intune using Graph Api
 contact_info:
   name: "ShalinBhavsar"
