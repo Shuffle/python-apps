@@ -5,7 +5,7 @@ FROM frikky/shuffle:app_sdk as base
 FROM base as builder
 
 # Install all alpine build tools needed for our pip installs
-RUN apk py3-numpy py3-pandas@testing
+RUN apk add py3-numpy py3-pandas@testing
 RUN apk --no-cache add --update alpine-sdk libffi libffi-dev musl-dev openssl-dev
 
 # Install all of our pip packages in a single directory that we can copy to our base image later

@@ -24,7 +24,7 @@ RUN echo 'https://dl-cdn.alpinelinux.org/alpine/edge/community' >> /etc/apk/repo
     pcre-dev \
     libtirpc-dev \
     flatbuffers-dev \ 
-    hyperscan-dev \
+    vectorscan-dev \
     flex-dev
 
 ENV SRC_HOME=/snort_src
