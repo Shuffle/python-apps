@@ -1484,7 +1484,7 @@ class Tools(AppBase):
                             return {
                                 "success": True,
                                 "found": True,
-                                "reason": "Found and should append (already exists!)",
+                                "reason": "Found, was appending, but item already exists",
                                 "key": key,
                                 "value": json.loads(allvalues["value"]),
                             }
@@ -1574,9 +1574,16 @@ class Tools(AppBase):
             allvalues["key"] = key
             print("VAL2: ", allvalues)
 
+            if allvalues["success"] == True:
+                allvalues["found"] = True
+            else:
+                allvalues["success"] = True 
+                allvalues["found"] = False 
+
             try:
                 parsedvalue = json.loads(allvalues["value"])
                 allvalues["value"] = parsedvalue
+
             except:
                 print("Parsing of value as JSON failed")
                 pass
