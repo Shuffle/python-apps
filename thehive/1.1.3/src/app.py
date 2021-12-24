@@ -722,19 +722,20 @@ class TheHive(AppBase):
         try:
             custom_fields = json.loads(custom_fields) if custom_fields else {}
         except json.decoder.JSONDecodeError:
-            for key, value in custom_fields.items():
-                if type(value) == int:
-                    customfields.add_integer(key, value)
-                elif type(value) == str:
-                    customfields.add_string(key, value)
-                elif type(value) == bool:
-                    customfields.add_boolean(key, value)
-                elif type(value) == float:
-                    customfields.add_float(key, value)
-                else:
-                    print(
-                        f'The value type "{value}" of the field {key} is not suported by the function.'
-                    )
+            return "Custom fields need to be valid json"
+        for key, value in custom_fields.items():
+            if type(value) == int:
+                customfields.add_integer(key, value)
+            elif type(value) == str:
+                customfields.add_string(key, value)
+            elif type(value) == bool:
+                customfields.add_boolean(key, value)
+            elif type(value) == float:
+                customfields.add_float(key, value)
+            else:
+                print(
+                    f'The value type "{value}" of the field {key} is not suported by the function.'
+                )
 
         customfields = customfields.build()
 
