@@ -1,36 +1,26 @@
-## AWS EC2 App
-AWS EC2 (Elastic Compute Cloud) app to interact with Amazon EC2 from Shuffle.
-
-![alt_text](https://github.com/frikky/Shuffle-apps/blob/master/aws-ec2/1.0.0/ec2.png?raw=true)
+## AWS Cloudwatch logs
+AWS Cloudwatch app to interact with Amazon CLoudswatch from Shuffle. For more information check out [Cloudwatch logs documentation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/WhatIsCloudWatchLogs.html) 
 
 ## Actions
+Parameters written in **Bold** are required. <br /> 
+access_key, secret_key and region are used for authentication.
 
 | No. | Action | Description | Parameters |
 |-----|--------|-------------|------------|
-|1 | Create Image | Creates an Amazon EBS-backed AMI from an Amazon EBS-backed instance that is either running or stopped. | access_key, secret_key, region, **InstanceId**, Description, **Name**, NoReboot, **DryRun**
-|2 | Deregister Image | Deregisters the specified AMI (Amazon Machine Image). | access_key, secret_key, region, **ImageId**, **DryRun**
-|3 | Create snapshot | Creates a snapshot of an EBS volume and stores it in Amazon S3. | access_key, secret_key, region, Description, **VolumeId**, **DryRun**
-|4 | Delete snapshot | Deletes the specified snapshot. | access_key, secret_key, region, user_name, **SnapshotId**, **DryRun**
-|5 | Create network interface | Creates a network interface in the specified subnet. | access_key, secret_key, region, Description, **Subnetid**, **DryRun**
-|6 | Delete network interface | Deletes the specified network interface. | access_key, secret_key, region, user_name, **NetworkInterfaceId**, **DryRun**
-|7 | Describe address | Describes the specified Elastic IP addresses or all of your Elastic IP addresses. | access_key, secret_key, region, *PublicIps*, **DryRun**
-|8 | Describe keypair | Describes the specified key pairs or all of your key pairs. | access_key, secret_key, region, *KeyNames*, *KeyPairIds*, **DryRun**
-|9 | Describe networkacls | Describes one or more of your network ACLs. | access_key, secret_key, region, ***NetworkAclIds***, **DryRun**
-|10 | Describe securitygroups | Describes the specified security groups or all of your security groups. | access_key, secret_key, region, *GroupIds*, **DryRun**
-|11 | Describe_vpc | Describes one or more of your VPCs | access_key, secret_key, region, *VpcIds*, **DryRun**
-|12 | Get rules | Gets the rules for an ACL ID, A resource representing an EC2 NetworkAcl | access_key, secret_key, region, **NetworkAclId**, **DryRun**
-|13 | Block ip | Creates a new firewall entry to block an IP | access_key, secret_key, region, **NetworkAclId**, **ip**, **direction**, **DryRun**
-|14 | instance state change | Termiante/Start/Stop an EC2 Instance | access_key, secret_key, region, **instance_id**, **action**, **DryRun**
-|15 | Create acl_entry| Creates an ACL entry |access_key, secret_key, region, **NetworkAclId** , **cidr_block**, **direction**, **portrange_from**, **portrange_to**, **protocol**, **rule_action**, **rule_number**, **DryRun**
+|1 | create_log_group | Creates a log group with the specified name |  **log_group_name**, kms_key_id, tags
+|2 | delete_log_group | Delete a log group with the specified name |  **log_group_name**
+|3 | get_log_events | Lists log events from the specified log stream | **log_group_name**, **log_stream_name**, limit, **start_time**, **end_time**, **start_from_head**,next_token
+|4 | start_query | Schedules a query of a log group using CloudWatch Logs Insights. You specify the log group and time range to query and the query string to use. | log_group_name, log_group_list, limit, **start_time**, **end_time**, **query**
+|5 | get_query_results | Only the fields requested in the query are returned, along with a @ptr field, which is the identifier for the log record. You can use the value of @ptr in a GetLogRecord operation to get the full log record. | **query_id**
+|6 | get_log_record | Retrieves all of the fields and values of a single log event. | **log_record_pointer**
+|7 | assign_retention_policy | Sets the retention of the specified log group. A retention policy allows you to configure the number of days for which to retain log events in the specified log group. | **log_group_name**, **retention_days**
+|8 | create_export_task | Creates an export task, which allows you to efficiently export data from a log group to an Amazon S3 bucket. | **log_group_name**, log_stream_name_prefix, task_name, **from_time**, **to_time**, **destination**,destination_prefix
 
-__Note__:
-- access_key, secret_key and region are used for authentication.
-- **Bold** Parameters are compulsory required.
-- *Italic* Parameters can take single value as well as multiple values in comma separated manner (E.g. value1,value2,value3 )
 ## Requirements
 
-1. AWS account
-2. Access key, Secret key and region of the user. 
+1. AWS account.
+2. Make sure you have edequate permissions. Refer [this](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/permissions-reference-cwl.html) for more information on persmissions required. 
+3. Access key, Secret key and region of the user. 
 
 - __How to find access key & secret key ?__
 1. Open https://console.aws.amazon.com/
