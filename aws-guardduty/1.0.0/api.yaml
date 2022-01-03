@@ -1,0 +1,373 @@
+app_version: 1.0.0
+name: AWS GaurdDuty
+description: An app to interact with Amazon web service GaurdDuty
+contact_info:
+  name: "@shalinbhavsar"
+  url: https://shuffler.io
+  email: shalinbhavsar17@gmail.com
+tags:
+  - Eradication
+  - AWS
+  - Threat Intelligence
+categories:
+  - Eradication
+authentication:
+  required: true
+  parameters:
+    - name: access_key 
+      description: The access key to use
+      example: "*****"
+      required: true
+      schema:
+        type: string
+    - name: secret_key
+      description: The secret key to use 
+      example: "*****"
+      required: true
+      schema:
+        type: string
+    - name: region 
+      description: The region to use
+      example: "ap-south-1"
+      required: true
+      schema:
+        type: string
+actions:
+  - name: create_detector
+    description: Creates a single Amazon GaurdDuty detector
+    parameters:
+      - name: enable
+        description: Value that specifies whether the detector is to be enabled
+        required: true
+        options:
+        - True
+        - False
+    returns:
+      schema:
+        type: string
+
+  - name: delete_detector
+    description: Deletes a detector that is specified by the detector ID.
+    parameters:
+      - name: detectorId
+        description: The unique ID of the detector
+        required: true
+    returns:
+      schema:
+        type: string
+
+  - name: get_detector
+    description: Retrieves a detector
+    parameters:
+      - name: detectorId
+        description: The unique ID of the detector
+        required: true
+    returns:
+      schema:
+        type: string
+
+  - name: update_detector
+    description: Retrieves a detector
+    parameters:
+      - name: detectorId
+        description: The unique ID of the detector
+        required: true
+      - name: enable
+        description: Value that specifies whether the detector is to be enabled
+        required: true
+        options:
+        - True
+        - False
+    returns:
+      schema:
+        type: string
+
+  - name: create_ip_set
+    description: Create a new IPSet.
+    parameters:
+      - name: detectorId
+        description: The unique ID of the detector
+        required: true
+      - name: name
+        description: The user-friendly name to identify the IPSet
+        required: true
+      - name: fileformat
+        description: The format of the file that contains the IPSet.
+        required: true
+        options:
+        - TXT 
+        - STIX 
+        - OTX_CSV 
+        - ALIEN_VAULT 
+        - PROOF_POINT 
+        - FIRE_EYE
+      - name: location
+        description: The URI of the file that contains the IPSet.
+        required: true
+        example: 'https://s3.eu-central-1.amazonaws.com/test/ipset.txt'
+      - name: activate
+        description: Value that indicates whether GuardDuty is to start using the uploaded IPSet.
+        required: true
+        options:
+        - True
+        - False
+    returns:
+      schema:
+        type: string
+  
+  - name: delete_ip_set
+    description: Deletes the IPSet specified by the ipsetID
+    parameters:
+      - name: detectorId
+        description: The unique ID of the detector
+        required: true
+      - name: ipSetId
+        description: The unique ID of the IPSet to delete
+        required: true
+    returns:
+      schema:
+        type: string
+
+  - name: list_detectors
+    description: Lists detectorIds 
+    returns:
+      schema:
+        type: string
+
+  - name: update_ip_set
+    description: Updates the IPSet.
+    parameters:
+      - name: detectorId
+        description: The unique ID of the detector
+        required: true
+      - name: ipSetId
+        description: The unique ID of the IPSet
+        required: true
+      - name: name
+        description: The user-friendly name to identify the IPSet
+        required: true
+      - name: location
+        description: The URI of the file that contains the IPSet.
+        required: true
+        example: 'https://s3.eu-central-1.amazonaws.com/test/ipset.txt'
+      - name: activate
+        description: Value that indicates whether GuardDuty is to start using the uploaded IPSet.
+        required: true
+        options:
+        - True
+        - False
+    returns:
+      schema:
+        type: string
+    
+  - name: get_ip_set
+    description: Retrieves the IPSet.
+    parameters:
+      - name: detectorId
+        description: The unique ID of the detector
+        required: true
+      - name: ipSetId
+        description: The unique ID of the IPSet
+        required: true
+    returns:
+      schema:
+        type: string
+
+  - name: list_ip_sets
+    description: Lists the IPSets of the GuardDuty
+    parameters:
+      - name: detectorId
+        description: The unique ID of the detector
+        required: true
+    returns:
+      schema:
+        type: string
+
+
+  - name: create_threat_intel_set
+    description: Create a new ThreatIntelSet.
+    parameters:
+      - name: detectorId
+        description: The unique ID of the detector
+        required: true
+      - name: name
+        description: The user-friendly name to identify the ThreatIntelSet.
+        required: true
+      - name: fileformat
+        description: The format of the file that contains the IPSet.
+        required: true
+        options:
+        - TXT 
+        - STIX 
+        - OTX_CSV 
+        - ALIEN_VAULT 
+        - PROOF_POINT 
+        - FIRE_EYE
+      - name: location
+        description: The URI of the file that contains the IPSet.
+        required: true
+        example: 'https://s3.eu-central-1.amazonaws.com/test/ipset.txt'
+      - name: activate
+        description: Value that indicates whether GuardDuty is to start using the uploaded IPSet.
+        required: true
+        options:
+        - True
+        - False
+    returns:
+      schema:
+        type: string
+
+  - name: delete_threat_intel_set
+    description: Deletes the ThreatIntelSet 
+    parameters:
+      - name: detectorId
+        description: The unique ID of the detector
+        required: true
+      - name: threatIntelSetId
+        description: The unique ID of the threatIntelSet to delete
+        required: true
+    returns:
+      schema:
+        type: string
+
+  - name: get_threat_intel_set
+    description: Retrieves the ThreatIntelSet 
+    parameters:
+      - name: detectorId
+        description: The unique ID of the detector
+        required: true
+      - name: threatIntelSetId
+        description: The unique ID of the threatIntelSet to delete
+        required: true
+    returns:
+      schema:
+        type: string
+
+  - name: list_threat_intel_sets
+    description: Lists the threatintelsets of the GuardDuty
+    parameters:
+      - name: detectorId
+        description: The unique ID of the detector
+        required: true
+    returns:
+      schema:
+        type: string
+
+  - name: update_threat_intel_set
+    description: Updates the ThreatIntelSet specified by the ThreatIntelSet ID.
+    parameters:
+      - name: detectorId
+        description: The unique ID of the detector
+        required: true
+      - name: threatIntelSetId
+        description: The unique ID of the ThreatIntelSet
+        required: true
+      - name: name
+        description: The user-friendly name to identify the IPSet
+        required: false
+      - name: location
+        description: The URI of the file that contains the IPSet.
+        required: false
+        example: 'https://s3.eu-central-1.amazonaws.com/test/ipset.txt'
+      - name: activate
+        description: Value that indicates whether GuardDuty is to start using the uploaded IPSet.
+        required: false
+        options:
+        - True
+        - False
+    returns:
+      schema:
+        type: string
+
+  - name: list_findings
+    description: Lists findings for the specified detector ID
+    parameters:
+      - name: detectorId
+        description: ID of the detector whose findings you want
+        required: true
+    returns:
+      schema:
+        type: string
+
+  - name: get_findings
+    description: Describes findings specified by finding IDs.
+    parameters:
+      - name: detectorId
+        description: The unique ID of the detector
+        required: true
+      - name: findingIds
+        description: The IDs of the findings(comma seperated)
+        example: Id1,Id2
+        required: true
+    returns:
+      schema:
+        type: string
+    
+  - name: create_sample_findings
+    description: Generates example findings of types specified by the list of finding types.
+    parameters:
+      - name: detectorId
+        description: The unique ID of the detector
+        required: true
+      - name: findingIds
+        description: The IDs of the findings(comma seperated)
+        example: Id1,Id2
+        required: false
+    returns:
+      schema:
+        type: string
+
+  - name: archive_findings
+    description: Archives findings that are specified by the list of finding IDs.
+    parameters:
+      - name: detectorId
+        description: The unique ID of the detector
+        required: true
+      - name: findingIds
+        description: The IDs of the findings(comma seperated)
+        example: Id1,Id2
+        required: true
+    returns:
+      schema:
+        type: string
+
+  - name: unarchive_findings
+    description: Unarchives findings that are specified by the list of finding IDs.
+    parameters:
+      - name: detectorId
+        description: The unique ID of the detector
+        required: true
+      - name: findingIds
+        description: The IDs of the findings(comma seperated)
+        example: Id1,Id2
+        required: true
+    returns:
+      schema:
+        type: string
+
+  - name: list_members
+    description: Lists details about all member accounts
+    parameters:
+      - name: detectorId
+        description: The unique ID of the detector
+        required: true
+    returns:
+      schema:
+        type: string
+
+  - name: get_members
+    description: Retrieves member accounts
+    parameters:
+      - name: detectorId
+        description: The unique ID of the detector
+        required: true
+      - name: accountIds
+        description: The IDs of the member accounts(comma seperated)
+        example: Id1,Id2
+        required: true
+    returns:
+      schema:
+        type: string
+
+
+large_image: data:image/png;base64,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
