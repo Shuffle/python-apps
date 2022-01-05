@@ -1,0 +1,139 @@
+app_version: 1.0.0
+name: MySQL
+description: Mysql integration
+contact_info:
+  name: "@d4rkw0lv3s"
+  url: https://github.com/D4rkw0lv3s
+  email: d4rkw0lv3s@outlook.pt
+tags:
+  - Mysql
+categories:
+  - Intel
+  - Network
+authentication:
+  required: true
+  parameters:
+    - name: server
+      description: mysql server ip or fqdn
+      example: "myserver.com or 127.0.0.1"
+      required: true
+      schema:
+        type: string
+    - name: user
+      description: mysql username
+      example: "root"
+      required: true
+      schema:
+        type: string
+    - name: password
+      description: mysql user password
+      example: "*****"
+      required: true
+      schema:
+        type: string
+    - name: database
+      description: mysql database
+      example: "my_database"
+      required: false
+      schema:
+        type: string
+actions:
+  - name: create_database
+    description: Create a new database
+    parameters:
+      - name: name
+        description: mysql databse name
+        required: true
+        multiline: false
+        example: "my_database"
+        schema:
+          type: string
+      - name: tables
+        description: create new tables
+        required: false
+        multiline: true
+        example: |
+          {
+            "employees": "CREATE TABLE `employees` (  `emp_no` int(11) NOT NULL AUTO_INCREMENT, `first_name` varchar(14) NOT NULL,  `last_name` varchar(16) NOT NULL,  PRIMARY KEY (`emp_no`)) ENGINE=InnoDB",
+            "departments": "CREATE TABLE `departments` (  `dept_no` char(4) NOT NULL,  `dept_name` varchar(40) NOT NULL,  PRIMARY KEY (`dept_no`), UNIQUE KEY `dept_name` (`dept_name`)) ENGINE=InnoDB"
+          }
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: create_tables
+    description: Create a new database
+    parameters:
+      - name: tables
+        description: create new tables
+        required: true
+        multiline: true
+        example: |
+          {
+            "employees": "CREATE TABLE `employees` (  `emp_no` int(11) NOT NULL AUTO_INCREMENT, `first_name` varchar(14) NOT NULL,  `last_name` varchar(16) NOT NULL,  PRIMARY KEY (`emp_no`)) ENGINE=InnoDB",
+            "departments": "CREATE TABLE `departments` (  `dept_no` char(4) NOT NULL,  `dept_name` varchar(40) NOT NULL,  PRIMARY KEY (`dept_no`), UNIQUE KEY `dept_name` (`dept_name`)) ENGINE=InnoDB"
+          }
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: insert_data
+    description: Insert data into mysql table
+    parameters:
+      - name: table
+        description: mysql table name
+        required: true
+        multiline: false
+        example: "my_table"
+        schema:
+          type: string
+      - name: data
+        description: mysql data in JSON format, it can be a list or not
+        required: true
+        multiline: true
+        example: |
+          [{
+            "title": "New Function1",
+            "text": "testing",
+            "time": 1617032159000
+          },
+          {
+            "title": "New Function2",
+            "text": "testing",
+            "time": 1617032159000
+          }]
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: query_data
+    description: Query data inside the table
+    parameters:
+      - name: table
+        description: table name
+        required: true
+        multiline: false
+        example: "my_table"
+        schema:
+          type: string
+      - name: fields
+        description: table fields to be return
+        required: false
+        multiline: false
+        example: "username, fname, lname"
+        schema:
+          type: string
+      - name: condition
+        description: query condition, the string after a WHERE
+        required: false
+        multiline: false
+        example: "id=123 and gender='M'"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+large_image: data:image/jpeg;base64,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
