@@ -466,6 +466,9 @@ class TheHive(AppBase):
                 )
 
             return str(ret.status_code)
+            
+        elif field_type.lower() == 'case':
+            return 'Use update_case action for updating a case.'
         else:
             return (
                 "%s is not implemented. See https://github.com/frikky/walkoff-integrations for more info."
