@@ -9,9 +9,9 @@ from botocore.config import Config
 
 from walkoff_app_sdk.app_base import AppBase
 
-class AWSGaurdduty(AppBase):
+class AWSGuardduty(AppBase):
     __version__ = "1.0.0"
-    app_name = "AWS GaurdDuty"  
+    app_name = "AWS Guardduty"  
 
     def __init__(self, redis, logger, console_logger=None):
         """
@@ -22,7 +22,7 @@ class AWSGaurdduty(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
-    def auth_gaurdduty(self, access_key, secret_key, region):
+    def auth_guardduty(self, access_key, secret_key, region):
         my_config = Config(
             region_name = region,
             signature_version = "v4",
@@ -33,7 +33,7 @@ class AWSGaurdduty(AppBase):
         )
 
         return boto3.client(
-            'gaurdduty', 
+            'guardduty', 
             config=my_config, 
             aws_access_key_id=access_key,
             aws_secret_access_key=secret_key,
@@ -41,14 +41,14 @@ class AWSGaurdduty(AppBase):
 
 
     def create_detector(self, access_key, secret_key, region, enable):
-        client = self.auth_gaurdduty(access_key, secret_key, region)
+        client = self.auth_guardduty(access_key, secret_key, region)
         try:
             return client.create_detector(bool(enable))
         except Exception as e:
             return f"Error: {e}"
 
     def delete_detector(self, access_key, secret_key, region, detectorId):
-        client = self.auth_gaurdduty(access_key, secret_key, region)
+        client = self.auth_guardduty(access_key, secret_key, region)
         try:
             return client.delete_detector(
                 DetectorId = detectorId
@@ -57,7 +57,7 @@ class AWSGaurdduty(AppBase):
             return f"Error: {e}"
 
     def get_detector(self, access_key, secret_key, region, detectorId):
-        client = self.auth_gaurdduty(access_key, secret_key, region)
+        client = self.auth_guardduty(access_key, secret_key, region)
         try:
             return client.get_detector(
                 DetectorId = detectorId
@@ -66,7 +66,7 @@ class AWSGaurdduty(AppBase):
             return f"Error: {e}"
     
     def update_detector(self, access_key, secret_key, region, detectorId, enable):
-        client = self.auth_gaurdduty(access_key, secret_key, region)
+        client = self.auth_guardduty(access_key, secret_key, region)
         try:
             return client.update_detector(
                 DetectorId = detectorId,
@@ -76,7 +76,7 @@ class AWSGaurdduty(AppBase):
             return f"Error: {e}"
 
     def create_ip_set(self, access_key, secret_key, region, detectorId, name, fileformat, location, activate):
-        client = self.auth_gaurdduty(access_key, secret_key, region)
+        client = self.auth_guardduty(access_key, secret_key, region)
         try:
             return client.create_ip_set(
                 DetectorId = detectorId,
@@ -89,7 +89,7 @@ class AWSGaurdduty(AppBase):
             return f"Error: {e}"
 
     def delete_ip_set(self, access_key, secret_key, region, detectorId, ipSetId):
-        client = self.auth_gaurdduty(access_key, secret_key, region)
+        client = self.auth_guardduty(access_key, secret_key, region)
         try:
             return client.delete_ip_set(
                 DetectorId = detectorId,
@@ -99,14 +99,14 @@ class AWSGaurdduty(AppBase):
             return f"Error: {e}"
 
     def list_detectors(self, access_key, secret_key, region):
-        client = self.auth_gaurdduty(access_key, secret_key, region)
+        client = self.auth_guardduty(access_key, secret_key, region)
         try:
             return client.list_detectors()
         except Exception as e:
             return f"Error: {e}"
 
     def update_ip_set(self, access_key, secret_key, region, detectorId, ipSetId, name, location, activate):
-        client = self.auth_gaurdduty(access_key, secret_key, region)
+        client = self.auth_guardduty(access_key, secret_key, region)
         try:
             return client.update_ip_set(
                 DetectorId = detectorId,
@@ -119,7 +119,7 @@ class AWSGaurdduty(AppBase):
             return f"Error: {e}"
 
     def get_ip_set(self, access_key, secret_key, region, detectorId, ipSetId):
-        client = self.auth_gaurdduty(access_key, secret_key, region)
+        client = self.auth_guardduty(access_key, secret_key, region)
         try:
             return client.get_ip_set(
                 DetectorId = detectorId,
@@ -129,7 +129,7 @@ class AWSGaurdduty(AppBase):
             return f"Error: {e}"
 
     def list_ip_sets(self, access_key, secret_key, region, detectorId):
-        client = self.auth_gaurdduty(access_key, secret_key, region)
+        client = self.auth_guardduty(access_key, secret_key, region)
         try:
             return client.list_ip_sets(
                 DetectorId = detectorId
@@ -139,7 +139,7 @@ class AWSGaurdduty(AppBase):
 
 
     def create_threat_intel_set(self, access_key, secret_key, region, detectorId, name, fileformat, location, activate):
-        client = self.auth_gaurdduty(access_key, secret_key, region)
+        client = self.auth_guardduty(access_key, secret_key, region)
         try:
             return client.create_threat_intel_set(
                 DetectorId = detectorId,
@@ -170,7 +170,7 @@ class AWSGaurdduty(AppBase):
             return f"Error: {e}"
 
     def list_threat_intel_sets(self, access_key, secret_key, region, detectorId):
-        client = self.auth_gaurdduty(access_key, secret_key, region)
+        client = self.auth_guardduty(access_key, secret_key, region)
         try:
             return client.list_threat_intel_sets(
                 DetectorId = detectorId
@@ -179,7 +179,7 @@ class AWSGaurdduty(AppBase):
             return f"Error: {e}"
 
     def update_threat_intel_set(self, access_key, secret_key, region, detectorId, threatIntelSetId, name, location, activate):
-        client = self.auth_gaurdduty(access_key, secret_key, region)
+        client = self.auth_guardduty(access_key, secret_key, region)
         try:
             return client.update_threat_intel_set(
                 DetectorId = detectorId,
@@ -192,7 +192,7 @@ class AWSGaurdduty(AppBase):
             return f"Error: {e}"
 
     def list_findings(self, access_key, secret_key, region, detectorId):
-        client = self.auth_gaurdduty(access_key, secret_key, region)
+        client = self.auth_guardduty(access_key, secret_key, region)
         try:
             return client.list_findings(
                 DetectorId = detectorId
@@ -201,7 +201,7 @@ class AWSGaurdduty(AppBase):
             return f"Error: {e}"
 
     def get_findings(self, access_key, secret_key, region, detectorId, findingIds):
-        client = self.auth_gaurdduty(access_key, secret_key, region)
+        client = self.auth_guardduty(access_key, secret_key, region)
         try:
             findingIds = findingIds.split(',')
             return client.get_findings(
@@ -212,7 +212,7 @@ class AWSGaurdduty(AppBase):
             return f"Error: {e}"
 
     def create_sample_findings(self, access_key, secret_key, region, detectorId, findingIds):
-        client = self.auth_gaurdduty(access_key, secret_key, region)
+        client = self.auth_guardduty(access_key, secret_key, region)
         try:
             findingIds = findingIds.split(',')
             return client.create_sample_findings(
@@ -223,7 +223,7 @@ class AWSGaurdduty(AppBase):
             return f"Error: {e}"
 
     def archive_findings(self,access_key, secret_key, region, detectorId, findingIds):
-        client = self.auth_gaurdduty(access_key, secret_key, region)
+        client = self.auth_guardduty(access_key, secret_key, region)
         try:
             findingIds = findingIds.split(',')
             return client.archive_findings(
@@ -234,7 +234,7 @@ class AWSGaurdduty(AppBase):
             return f"Error: {e}"
 
     def unarchive_findings(self,access_key, secret_key, region, detectorId, findingIds):
-        client = self.auth_gaurdduty(access_key, secret_key, region)
+        client = self.auth_guardduty(access_key, secret_key, region)
         try:
             findingIds = findingIds.split(',')
             return client.unarchive_findings(
@@ -245,7 +245,7 @@ class AWSGaurdduty(AppBase):
             return f"Error: {e}"
 
     def list_members(self,access_key, secret_key, region, detectorId):
-        client = self.auth_gaurdduty(access_key, secret_key, region)
+        client = self.auth_guardduty(access_key, secret_key, region)
         try:
             return client.list_members(
                 DetectorId = detectorId,
@@ -254,7 +254,7 @@ class AWSGaurdduty(AppBase):
             return f"Error: {e}"
 
     def get_members(self,access_key, secret_key, region, detectorId, accountIds):
-        client = self.auth_gaurdduty(access_key, secret_key, region)
+        client = self.auth_guardduty(access_key, secret_key, region)
         try:
             accountIds = accountIds.split(',')
             return client.get_members(
@@ -266,4 +266,4 @@ class AWSGaurdduty(AppBase):
 
 
 if __name__ == "__main__":
-    AWSGaurdduty.run()
+    AWSGuardduty.run()

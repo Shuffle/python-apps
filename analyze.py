@@ -56,7 +56,8 @@ for basename in dirs:
             pythondata = tmp.read()
             for action_name in action_names:
                 if not action_name in pythondata:
-                    print(f"===> Couldn't find action \"{action_name}\"") 
+                    print(f"===> Couldn't find action \"{action_name}\" from {apifile} in script {pythonfile}") 
+
 
     #break
 

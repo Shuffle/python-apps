@@ -1,6 +1,6 @@
 app_version: 1.0.0
-name: AWS GaurdDuty
-description: An app to interact with Amazon web service GaurdDuty
+name: AWS Guardduty 
+description: An app to interact with Amazon web service GuardDuty
 contact_info:
   name: "@shalinbhavsar"
   url: https://shuffler.io
@@ -34,7 +34,7 @@ authentication:
         type: string
 actions:
   - name: create_detector
-    description: Creates a single Amazon GaurdDuty detector
+    description: Creates a single Amazon Guardduty detector
     parameters:
       - name: enable
         description: Value that specifies whether the detector is to be enabled

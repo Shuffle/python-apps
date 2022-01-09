@@ -1,12 +1,13 @@
 # AWS GuardDuty
 Amazon Web Services Serverless Compute service (lambda)
+
 ## Actions
 access_key, secret_key and region are used for authentication.
  **Bold** Parameters are compulsory required.
 
 | No. | Action | Description | Parameters |
 |-----|--------|-------------|------------|
-|1 | Create Detector | Creates a single Amazon GaurdDuty detector | access_key, secret_key, region, **enable**
+|1 | Create Detector | Creates a single Amazon Guardduty detector | access_key, secret_key, region, **enable**
 |2 | Delete Detector | Deletes a detector | access_key, secret_key, region, **detectorId**
 |3 | Get Detector | Retrieves a detector | access_key, secret_key, region, **detectorId**
 |4 | Update Detector | Updates the detector | access_key, secret_key, region, **detectorId**, **enable**
