@@ -1,10 +1,15 @@
 import yaml
 import os
 
-dirs = os.listdir(".")
+basedir = "."
+dirs = os.listdir(basedir)
 #print(dirs)
 #basename = "testing"
 for basename in dirs:
+    if basename == ".gitignore" or basename == ".github" or basename == "README.md" or basename == ".git" or basename == "unsupported" or ".swp" in basename or ".swo" in basename:
+        continue
+
+    print(f"\n[DEBUG] Analyzing: {basename}")
     try:
         versions = os.listdir("./%s" % basename)
     except NotADirectoryError:
@@ -28,4 +33,32 @@ for basename in dirs:
         except (NotADirectoryError, FileNotFoundError) as e:
             #print("Error inner file: %s" % e)
             pass
+
+    try:
+        subfolders = os.listdir(f"{basedir}/{basename}")
+    except:
+        continue
+
+    for subfolder in subfolders:
+        apifile = f"{basedir}/{basename}/{subfolder}/api.yaml"
+        pythonfile = f"{basedir}/{basename}/{subfolder}/src/app.py"
+
+        action_names = []
+        try:
+            with open(apifile, "r") as tmp:
+                apidata = yaml.load(tmp.read())
+                for item in apidata["actions"]:
+                    action_names.append(item["name"])
+        except NotADirectoryError as e:
+            continue
+
+        with open(pythonfile, "r") as tmp:
+            pythondata = tmp.read()
+            for action_name in action_names:
+                if not action_name in pythondata:
+                    print(f"===> Couldn't find action \"{action_name}\"") 
+
+    #break
+
+
 #for item in 

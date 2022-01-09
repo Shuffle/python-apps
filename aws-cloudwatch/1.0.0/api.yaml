@@ -1,5 +1,5 @@
 app_version: 1.0.0
-name: AWS cloudwatch logs
+name: AWS cloudwatch 
 description: An app to interact with Aws cloudwatch
 contact_info:
   name: "@davedhaval"
