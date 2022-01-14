@@ -59,39 +59,6 @@ authentication:
       schema:
         type: bool
 actions:
-  - name: send_email
-    description: Send an email from Exchange (OWA)
-    parameters:
-      - name: recipient
-        description: The receiver(s) of the email
-        multiline: false
-        example: "frikky@shuffler.io,frikky@shuffler.io"
-        required: true
-        schema:
-          type: string
-      - name: subject
-        description: The subject of the email
-        multiline: false
-        example: "This is a subject, hello there :)"
-        required: true
-        schema:
-          type: string
-      - name: body
-        description: The body to add to the email
-        multiline: true
-        example: "This is an email alert from Shuffler.io :)"
-        required: true
-        schema:
-          type: string
-      - name: attachments
-        description: Uid of files to add as attachments
-        multiline: false
-        required: false
-        schema:
-          type: string
-    returns:
-      schema:
-        type: string
   - name: get_emails
     description: Get email from Exchange (OWA)
     parameters:
@@ -168,6 +135,39 @@ actions:
         required: true
         schema:
           type: bool
+    returns:
+      schema:
+        type: string
+  - name: send_email
+    description: Send an email from Exchange (OWA)
+    parameters:
+      - name: recipient
+        description: The receiver(s) of the email
+        multiline: false
+        example: "frikky@shuffler.io,frikky@shuffler.io"
+        required: true
+        schema:
+          type: string
+      - name: subject
+        description: The subject of the email
+        multiline: false
+        example: "This is a subject, hello there :)"
+        required: true
+        schema:
+          type: string
+      - name: body
+        description: The body to add to the email
+        multiline: true
+        example: "This is an email alert from Shuffler.io :)"
+        required: true
+        schema:
+          type: string
+      - name: attachments
+        description: Uid of files to add as attachments
+        multiline: false
+        required: false
+        schema:
+          type: string
     returns:
       schema:
         type: string
