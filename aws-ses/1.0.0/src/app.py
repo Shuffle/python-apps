@@ -120,4 +120,4 @@ class AWSSES(AppBase):
             return e
 
 if __name__ == "__main__":
-    asyncio.run(AWSSES.run(), debug=True)
+    AWSSES.run()

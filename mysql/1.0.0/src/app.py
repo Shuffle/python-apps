@@ -44,7 +44,7 @@ class MySQL(AppBase):
         except mysql.connector.Error as err:
             print(f"Database {name} does not exists.")
             if err.errno == errorcode.ER_BAD_DB_ERROR:
-                await self.create_database(cursor)
+                self.create_database(cursor)
                 print(f"Database {name} created successfully.")
                 conn.database = name
             else:

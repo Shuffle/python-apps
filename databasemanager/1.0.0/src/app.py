@@ -42,4 +42,4 @@ class DbManager(AppBase):
         return (json.dumps(res))     
 
 if __name__ == "__main__":
-    asyncio.run(DbManager.run(), debug=True)
+    DbManager.run()
