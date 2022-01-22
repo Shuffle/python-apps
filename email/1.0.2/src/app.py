@@ -9,10 +9,10 @@ import imaplib
 import smtplib
 import eml_parser
 from glom import glom
+from walkoff_app_sdk.app_base import AppBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from walkoff_app_sdk.app_base import AppBase
-
+from email.mime.application import MIMEApplication
 
 def default(o):
     """helpers to store item in json
@@ -57,7 +57,7 @@ class Email(AppBase):
         return requests.post(url, headers=headers, json=data).text
 
     def send_email(
-        self, username, password, smtp_host, recipient, subject, body, smtp_port, ssl_verify="True"
+        self, username, password, smtp_host, recipient, subject, body, smtp_port, attachments="", ssl_verify="True"
     ):
         if type(smtp_port) == str:
             try:
@@ -67,8 +67,8 @@ class Email(AppBase):
 
         try:
             s = smtplib.SMTP(host=smtp_host, port=smtp_port)
-        except socket.gaierror:
-            return "Bad SMTP host or port"
+        except socket.gaierror as e:
+            return f"Bad SMTP host or port: {e}"
 
         if ssl_verify == "false" or ssl_verify == "False":
             pass
@@ -77,8 +77,8 @@ class Email(AppBase):
 
         try:
             s.login(username, password)
-        except smtplib.SMTPAuthenticationError:
-            return "Bad username or password"
+        except smtplib.SMTPAuthenticationError as e:
+            return f"Bad username or password: {e}"
 
         # setup the parameters of the message
         msg = MIMEMultipart()
@@ -86,6 +86,42 @@ class Email(AppBase):
         msg["To"] = recipient
         msg["Subject"] = subject
         msg.attach(MIMEText(body, "html"))
+
+        # Read the attachments
+        attachment_count = 0
+        try:
+            if attachments != None and len(attachments) > 0:
+                print("Got attachments: %s" % attachments)
+                attachmentsplit = attachments.split(",")
+
+                #attachments = parse_list(attachments, splitter=",")
+                #print("Got attachments2: %s" % attachmentsplit)
+                print("Before loop")
+                files = []
+                for file_id in attachmentsplit:
+                    print(f"Looping {file_id}")
+                    file_id = file_id.strip()
+                    new_file = self.get_file(file_id)
+                    print(f"New file: {new_file}")
+                    try:
+                        part = MIMEApplication(
+                            new_file["data"],
+                            Name=new_file["filename"],
+                        )
+                        part["Content-Disposition"] = f"attachment; filename=\"{new_file['filename']}\""
+                        msg.attach(part)
+                        attachment_count += 1
+                    except Exception as e:
+                        print(f"[WARNING] Failed to attach {file_id}: {e}")
+
+
+                    #files.append(new_file)
+
+                #return files
+                #data["attachments"] = files
+        except Exception as e:
+            print(f"Error in attachment parsing for email: {e}")
+
 
         try:
             s.send_message(msg)
@@ -96,7 +132,11 @@ class Email(AppBase):
             }
 
         print("Successfully sent email with subject %s to %s" % (subject, recipient))
-        return "Email sent to %s!" % recipient
+        return {
+            "success": True, 
+            "reason": "Email sent to %s!" % recipient,
+            "attachments": attachment_count
+        }
 
     def get_emails_imap(
         self,

@@ -149,6 +149,13 @@ actions:
         required: true
         schema:
           type: string
+      - name: attachments 
+        description: The ID of files in Shuffle to add as attachments 
+        multiline: true
+        example: "file_id1,file_id2,file_id3"
+        required: false 
+        schema:
+          type: string
     returns:
       schema:
         type: string
@@ -457,6 +464,23 @@ actions:
     returns:
       schema:
         type: string
+  - name: create_file 
+    description: Returns uploaded file data 
+    parameters:
+      - name: filename 
+        description:  
+        required: true
+        multiline: false 
+        example: "test.csv"
+        schema:
+          type: string 
+      - name: data 
+        description:  
+        required: true
+        multiline: true
+        example: "EventID,username\n4137,frikky"
+        schema:
+          type: string 
   - name: download_remote_file
     description: Downloads a file from a URL
     parameters:

@@ -96,8 +96,9 @@ class Tools(AppBase):
         return requests.post(url, headers=headers, json=data).text
 
     # This is an email function of Shuffle
-    def send_email_shuffle(self, apikey, recipients, subject, body):
+    def send_email_shuffle(self, apikey, recipients, subject, body, attachments=""):
         recipients = self.parse_list(recipients)
+
 
         targets = [recipients]
         if ", " in recipients:
@@ -107,10 +108,24 @@ class Tools(AppBase):
 
         data = {
             "targets": targets, 
-            "body": body, 
             "subject": subject, 
+            "body": body, 
             "type": "alert",
         }
+
+        # Read the attachments
+        if attachments != None and len(attachments) > 0:
+            try:
+                attachments = parse_list(attachments, splitter=",")
+                files = []
+                for item in attachments:
+                    new_file = self.get_file(file_ids)
+                    files.append(new_file)
+            
+                data["attachments"] = files
+            except Exception as e:
+                print(f"Error in attachment parsing for email: {e}")
+                
 
         url = "https://shuffler.io/api/v1/functions/sendmail"
         headers = {"Authorization": "Bearer %s" % apikey}
@@ -878,6 +893,20 @@ class Tools(AppBase):
             headers=headers,
         )
         return ret.text
+
+    def create_file(self, filename, data):
+        print("Inside function")
+        filedata = {
+            "filename": filename,
+            "data": data,
+        }
+
+        fileret = self.set_files([filedata])
+        value = {"success": True, "file_ids": fileret}
+        if len(fileret) == 1:
+            value = {"success": True, "file_ids": fileret[0]}
+
+        return value 
 
     # Input is WAS a file, hence it didn't get the files 
     def get_file_value(self, filedata):

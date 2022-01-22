@@ -69,6 +69,13 @@ actions:
         required: true
         schema:
           type: string
+      - name: smtp_port
+        description: The port to use for SMTP
+        multiline: false
+        example: "587"
+        required: true
+        schema:
+          type: string
       - name: recipient
         description: The receiver(s) of the email
         multiline: false
@@ -90,11 +97,11 @@ actions:
         required: true
         schema:
           type: string
-      - name: smtp_port
-        description: The port to use for SMTP
+      - name: attachments 
+        description: Send files from shuffle as part of the email 
         multiline: false
-        example: "587"
-        required: true
+        example: "file_id1,file_id2,file_id3"
+        required: false
         schema:
           type: string
       - name: ssl_verify 

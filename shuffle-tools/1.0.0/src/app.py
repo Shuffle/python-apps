@@ -18,10 +18,13 @@ import tarfile
 
 import xmltodict
 from json2xml import json2xml
+
 from json2xml.utils import readfromstring
 
 from ioc_finder import find_iocs
 from walkoff_app_sdk.app_base import AppBase
+
+
 
 
 class Tools(AppBase):
@@ -29,6 +32,7 @@ class Tools(AppBase):
     An example of a Walkoff App.
     Inherit from the AppBase class to have Redis, logging, and console
     logging set up behind the scenes.
+
     """
 
     __version__ = "1.0.0"
