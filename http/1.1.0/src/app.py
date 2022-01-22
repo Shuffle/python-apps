@@ -134,56 +134,98 @@ class HTTP(AppBase):
         url = self.fix_url(url)
 
         parsed_headers = self.splitheaders(headers)
+        parsed_headers["User-Agent"] = "Shuffle Automation"
         verify = self.checkverify(verify)
-        return requests.get(url, headers=parsed_headers, auth=requests.auth.HTTPBasicAuth(username, password), verify=verify).text
+
+        auth=None
+        if username or password:
+            auth = requests.auth.HTTPBasicAuth(username, password)
+
+        return requests.get(url, headers=parsed_headers, auth=auth, verify=verify).text
 
     def POST(self, url, headers="", body="", username="", password="", verify=True):
         url = self.fix_url(url)
 
         parsed_headers = self.splitheaders(headers)
+        parsed_headers["User-Agent"] = "Shuffle Automation"
         verify = self.checkverify(verify)
         body = self.checkbody(body)
-        return requests.post(url, headers=parsed_headers, auth=requests.auth.HTTPBasicAuth(username, password), data=body, verify=verify).text
+
+        auth=None
+        if username or password:
+            auth = requests.auth.HTTPBasicAuth(username, password)
+
+        return requests.post(url, headers=parsed_headers, auth=auth, data=body, verify=verify).text
 
     # UNTESTED BELOW HERE
     def PUT(self, url, headers="", body="", username="", password="", verify=True):
         url = self.fix_url(url)
 
         parsed_headers = self.splitheaders(headers)
+        parsed_headers["User-Agent"] = "Shuffle Automation"
         verify = self.checkverify(verify)
         body = self.checkbody(body)
-        return requests.put(url, headers=parsed_headers, auth=requests.auth.HTTPBasicAuth(username, password), data=body, verify=verify).text
+
+        auth=None
+        if username or password:
+            auth = requests.auth.HTTPBasicAuth(username, password)
+
+        return requests.put(url, headers=parsed_headers, auth=auth, data=body, verify=verify).text
 
     def PATCH(self, url, headers="", body="", username="", password="", verify=True):
         url = self.fix_url(url)
 
         parsed_headers = self.splitheaders(headers)
+        parsed_headers["User-Agent"] = "Shuffle Automation"
         verify = self.checkverify(verify)
         body = self.checkbody(body)
-        return requests.patch(url, headers=parsed_headers, data=body, verify=verify).text
+
+        auth=None
+        if username or password:
+            auth = requests.auth.HTTPBasicAuth(username, password)
+
+        return requests.patch(url, headers=parsed_headers, data=body, auth=auth, verify=verify).text
 
     def DELETE(self, url, headers="", body="", username="", password="", verify=True):
         url = self.fix_url(url)
 
         parsed_headers = self.splitheaders(headers)
+        parsed_headers["User-Agent"] = "Shuffle Automation"
         verify = self.checkverify(verify)
-        return requests.delete(url, headers=parsed_headers, auth=requests.auth.HTTPBasicAuth(username, password), verify=verify).text
+
+        auth=None
+        if username or password:
+            auth = requests.auth.HTTPBasicAuth(username, password)
+
+        return requests.delete(url, headers=parsed_headers, auth=auth, verify=verify).text
 
     def HEAD(self, url, headers="", body="", username="", password="", verify=True):
         url = self.fix_url(url)
 
         parsed_headers = self.splitheaders(headers)
+        parsed_headers["User-Agent"] = "Shuffle Automation"
         verify = self.checkverify(verify)
         body = self.checkbody(body)
-        return requests.head(url, headers=parsed_headers, auth=requests.auth.HTTPBasicAuth(username, password), verify=verify).text
+
+        auth=None
+        if username or password:
+            auth = requests.auth.HTTPBasicAuth(username, password)
+
+        return requests.head(url, headers=parsed_headers, auth=auth, verify=verify).text
 
     def OPTIONS(self, url, headers="", body="", username="", password="", verify=True):
         url = self.fix_url(url)
 
         parsed_headers = self.splitheaders(headers)
+        parsed_headers["User-Agent"] = "Shuffle Automation"
         verify = self.checkverify(verify)
         body = self.checkbody(body)
-        return requests.options(url, headers=parsed_headers, auth=requests.auth.HTTPBasicAuth(username, password), verify=verify).text
+
+        auth=None
+        if username or password:
+            auth = requests.auth.HTTPBasicAuth(username, password)
+
+        return requests.options(url, headers=parsed_headers, auth=auth, verify=verify).text
 
 
 # Run the actual thing after we've checked params
