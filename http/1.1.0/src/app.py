@@ -1,6 +1,6 @@
 import time
 import json
-import json
+import ast
 import random
 import socket
 import uncurl
@@ -99,7 +99,7 @@ class HTTP(AppBase):
     def checkbody(self, body):
         # Indicates json
         if body.strip().startswith("{"):
-            body = body.replace("\'", "\"")
+            body = json.dumps(ast.literal_eval(body))
 
             # Not sure if loading is necessary
             # Seemed to work with plain string into data=body too, and not parsed json=body
