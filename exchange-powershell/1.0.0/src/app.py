@@ -44,7 +44,11 @@ class exchange_powershell(AppBase):
         
 
         print(f"SKIPPED {skipped} lines")
+        if len(newlines) == 0:
+            return item
+
         item = "\n".join(newlines)
+
         return item
 
     def replace_and_run(self, username, password, parsed_command):
@@ -76,17 +80,23 @@ class exchange_powershell(AppBase):
         print(f"STDOUT: {stdout}")
         item = ""
         if len(stdout[0]) > 0:
-            print("Succesfully ran bash!")
             item = stdout[0]
+            print("Succesfully ran bash. Stdout: %s" % item)
         else:
-            print("FAILED to run bash!")
             item = stdout[1]
+            print("FAILED to run bash. Stdout: %s!" % item)
+            #return item
 
-        item = self.cleanup(item)
+        try:
+            new_cleanup = self.cleanup(item)
+            if len(new_cleanup) > 0:
+                item = new_cleanup
+        except Exception as e:
+            pass
 
         try:
             return item.decode("utf-8")
-        except Exception:
+        except Exception as e:
             return item
 
         return item 

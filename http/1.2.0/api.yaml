@@ -75,6 +75,16 @@ actions:
         example: "10"
         schema:
           type: bool 
+      - name: to_file 
+        description: Makes the response into a file, and returns it as an ID
+        multiline: false 
+        required: false 
+        options:
+          - false
+          - true
+        example: "true"
+        schema:
+          type: bool 
     returns:
       schema:
         type: string
