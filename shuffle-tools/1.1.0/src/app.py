@@ -475,10 +475,17 @@ class Tools(AppBase):
             #except Exception as e:
             #    print(f"Failed utf-8 encoding response: {e}")
 
-            return {
-                "success": True,
-                "message": s,
-            }
+            try:
+                return {
+                    "success": True,
+                    "message": s.strip(),
+                }
+            except Exception as e:
+                return {
+                    "success": True,
+                    "message": s,
+                }
+                
         except Exception as e:
             return {
                 "success": False,
