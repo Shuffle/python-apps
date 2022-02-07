@@ -41,16 +41,20 @@ class AWSSES(AppBase):
 
         return self.ses
 
-    def send_email(self, access_key, secret_key, region, source, toAddresses, ccAddresses, bccAddresses, subject_data, data_option, content, charset):
+    def send_email(self, access_key, secret_key, region, source, toAddresses, ccAddresses, bccAddresses, replyToAddresses, subject_data, data_option, content, charset):
         self.ses = self.auth_ses(access_key, secret_key, region)
         client = self.ses
         toAddresses = list(toAddresses.split(','))
         ccAddresses = list(ccAddresses.split(','))
+        replyToAddresses = list(replyToAddresses.split(','))
         if '' in ccAddresses:
             ccAddresses.clear()
         bccAddresses = list(bccAddresses.split(','))
         if '' in bccAddresses:
             bccAddresses.clear()
+        if '' in replyToAddresses:
+            replyToAddresses.clear()
+
         try:
             if data_option == 'Text':
                 response = client.send_email(
@@ -72,6 +76,7 @@ class AWSSES(AppBase):
                             },
                         }
                     },
+                    ReplyToAddresses = replyToAddresses,
                 )
                 return response
             else:
@@ -94,6 +99,7 @@ class AWSSES(AppBase):
                             },
                         }
                     },
+                    ReplyToAddresses = replyToAddresses,
                 )
                 return response
         except Exception as e:

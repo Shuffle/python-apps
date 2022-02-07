@@ -60,6 +60,13 @@ actions:
         example: 'recipient@example.com,recipient1@example.com'
         schema:
           type: string
+      - name: replyToAddresses
+        description: The reply-to email address(es) for the message. If the recipient replies to the message, each reply-to address will receive the reply.
+        required: false
+        multiline: false
+        example: 'recipient@example.com,recipient1@example.com'
+        schema:
+          type: string
       - name: subject_data 
         description: The subject of the message
         required: true
