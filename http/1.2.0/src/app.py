@@ -200,7 +200,7 @@ class HTTP(AppBase):
         else:
             to_file = False 
 
-        request = requests.post(url, headers=parsed_headers, auth=auth, data=body, verify=verify, proxies=proxies, timeout=timeout).text
+        request = requests.post(url, headers=parsed_headers, auth=auth, data=body, verify=verify, proxies=proxies, timeout=timeout)
         if not to_file:
             return request.text
 
@@ -235,7 +235,7 @@ class HTTP(AppBase):
         else:
             to_file = False 
 
-        request = requests.put(url, headers=parsed_headers, auth=auth, data=body, verify=verify, proxies=proxies, timeout=timeout).text
+        request = requests.put(url, headers=parsed_headers, auth=auth, data=body, verify=verify, proxies=proxies, timeout=timeout)
         if not to_file:
             return request.text
 
@@ -268,7 +268,7 @@ class HTTP(AppBase):
         else:
             to_file = False 
 
-        request = requests.patch(url, headers=parsed_headers, data=body, auth=auth, verify=verify, proxies=proxies, timeout=timeout).text
+        request = requests.patch(url, headers=parsed_headers, data=body, auth=auth, verify=verify, proxies=proxies, timeout=timeout)
         if not to_file:
             return request.text
 
@@ -300,7 +300,7 @@ class HTTP(AppBase):
         else:
             to_file = False 
 
-        request = requests.delete(url, headers=parsed_headers, auth=auth, verify=verify, proxies=proxies, timeout=timeout).text
+        request = requests.delete(url, headers=parsed_headers, auth=auth, verify=verify, proxies=proxies, timeout=timeout)
         if not to_file:
             return request.text
 
@@ -333,7 +333,7 @@ class HTTP(AppBase):
         else:
             to_file = False 
 
-        request = requests.head(url, headers=parsed_headers, auth=auth, verify=verify, proxies=proxies, timeout=timeout).text
+        request = requests.head(url, headers=parsed_headers, auth=auth, verify=verify, proxies=proxies, timeout=timeout)
         if not to_file:
             return request.text
 
@@ -367,7 +367,7 @@ class HTTP(AppBase):
         else:
             to_file = False 
 
-        request = requests.options(url, headers=parsed_headers, auth=auth, verify=verify, proxies=proxies, timeout=timeout).text
+        request = requests.options(url, headers=parsed_headers, auth=auth, verify=verify, proxies=proxies, timeout=timeout)
         if not to_file:
             return request.text
 
