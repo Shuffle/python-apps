@@ -1,3 +1,0 @@
-requests==2.25.1
-eml_parser==1.14.4
-glom==20.11.0
