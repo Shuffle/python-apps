@@ -45,7 +45,7 @@ actions:
     returns:
       schema:
         type: string
-  - name: send_email
+  - name: send_email_smtp
     description: Send an email with SMTP
     parameters:
       - name: username
