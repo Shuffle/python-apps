@@ -29,6 +29,8 @@ from json2xml.utils import readfromstring
 from ioc_finder import find_iocs
 from walkoff_app_sdk.app_base import AppBase
 
+import binascii
+import struct
 
 class Tools(AppBase):
     """
@@ -55,16 +57,50 @@ class Tools(AppBase):
         return "This action should be skipped"
 
     def base64_conversion(self, string, operation):
-
         if operation == "encode":
             encoded_bytes = base64.b64encode(string.encode("utf-8"))
             encoded_string = str(encoded_bytes, "utf-8")
             return encoded_string
 
         elif operation == "decode":
-            decoded_bytes = base64.b64decode(string.encode("utf-8"))
-            decoded_string = str(decoded_bytes, "utf-8")
-            return decoded_string
+            try:
+                decoded_bytes = base64.b64decode(string)
+                try:
+                    decoded_bytes = str(decoded_bytes, "utf-8")
+                except:
+                    pass
+
+                return decoded_bytes
+            except Exception as e:
+                #return string.decode("utf-16")
+
+                print(f"[WARNING] Error in normal decoding: {e}")
+                return {
+                    "success": False,
+                    "reason": f"Error decoding the base64: {e}",
+                }
+                #newvar = binascii.a2b_base64(string)
+                #try:
+                #    if str(newvar).startswith("b'") and str(newvar).endswith("'"):
+                #        newvar = newvar[2:-1]
+                #except Exception as e:
+                #    print(f"Encoding issue in base64: {e}")
+                #return newvar
+
+                #try:
+                #    return newvar
+                #except:
+                #    pass
+
+            return {
+                "success": False,
+                "reason": "Error decoding the base64",
+            }
+
+        return json.dumps({
+            "success": False,
+            "reason": "No base64 to be converted",
+        })
 
     def parse_list(self, input_list):
         try:
@@ -903,6 +939,13 @@ class Tools(AppBase):
 
     def create_file(self, filename, data):
         print("Inside function")
+
+        #try:
+        #    if str(data).startswith("b'") and str(data).endswith("'"):
+        #        data = data[2:-1]
+        #except Exception as e:
+        #    print(f"Exception: {e}")
+
         filedata = {
             "filename": filename,
             "data": data,
@@ -917,17 +960,21 @@ class Tools(AppBase):
 
     # Input is WAS a file, hence it didn't get the files 
     def get_file_value(self, filedata):
-        #try:
-        #    return filedata["data"].decode()
-        #except:
-        #    pass
-
         filedata = self.get_file(filedata)
         if filedata is None:
             return "File is empty?"
 
         print("INSIDE APP DATA: %s" % filedata)
-        return filedata["data"].decode()
+        try:
+            return filedata["data"].decode()
+        except:
+            try:
+                return filedata["data"].decode("utf-16")
+            except:
+                return {
+                    "success": False,
+                    "reason": "Got the file, but the encoding can't be printed",
+                }
 
     def download_remote_file(self, url):
         ret = requests.get(url, verify=False)  # nosec

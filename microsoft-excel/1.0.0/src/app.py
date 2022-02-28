@@ -6,6 +6,7 @@ import json
 import uuid
 import time
 import requests
+import pandas as pd
 
 from walkoff_app_sdk.app_base import AppBase
 
@@ -116,6 +117,32 @@ class MSExcel(AppBase):
             return "Action failed"
         else:
             return "Action successfully completed"
+
+    def convert_to_csv(self, file_id, output_filename, sheet="Sheet1"):
+        filedata = self.get_file(file_id)
+        if filedata["success"] != True:
+            return filedata
+
+        with open("file.xlsx", "wb") as tmp:
+            tmp.write(filedata["data"])
+
+        if sheet == "":
+            sheet = "Sheet1"
+
+        data_xls = pd.read_excel('file.xlsx', sheet, index_col=None)
+        data_xls.to_csv(output_filename, encoding='utf-8')
+
+        with open(output_filename, "rb") as tmp:
+            newdata = tmp.read()
+            return self.set_files([{
+                "filename": output_filename,
+                "data": newdata
+            }])
+
+        return {
+            "success": False,
+            "reason": "May not have been able to upload file. Check files in admin for %s" % output_filename
+        }
         
 if __name__ == "__main__":
     MSExcel.run()
