@@ -123,13 +123,14 @@ class MSExcel(AppBase):
         if filedata["success"] != True:
             return filedata
 
-        with open("file.xlsx", "wb") as tmp:
+        basename = "file.xlsx"
+        with open(basename, "wb") as tmp:
             tmp.write(filedata["data"])
 
         if sheet == "":
             sheet = "Sheet1"
 
-        data_xls = pd.read_excel('file.xlsx', sheet, index_col=None)
+        data_xls = pd.read_excel(basename, sheet, index_col=None)
         data_xls.to_csv(output_filename, encoding='utf-8')
 
         with open(output_filename, "rb") as tmp:
