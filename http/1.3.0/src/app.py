@@ -10,7 +10,6 @@ import subprocess
 
 from walkoff_app_sdk.app_base import AppBase
 
-
 class HTTP(AppBase):
     __version__ = "1.3.0"
     app_name = "http"  
