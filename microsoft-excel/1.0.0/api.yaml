@@ -173,13 +173,13 @@ actions:
         required: true
         schema:
           type: string
-      - name: output_filename 
-        description: The filename of the output file
-        multiline: false
-        required: true
-        example: 'test.csv'
-        schema:
-          type: string
+      #- name: output_filename 
+      #  description: The filename of the output file
+      #  multiline: false
+      #  required: true
+      #  example: 'test.csv'
+      #  schema:
+      #    type: string
     returns:
       schema:
         type: string 
