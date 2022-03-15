@@ -6,7 +6,7 @@ import json
 import uuid
 import time
 import requests
-import pandas as pd
+from openpyxl import Workbook, load_workbook
 
 from walkoff_app_sdk.app_base import AppBase
 
@@ -118,32 +118,54 @@ class MSExcel(AppBase):
         else:
             return "Action successfully completed"
 
-    def convert_to_csv(self, file_id, output_filename, sheet="Sheet1"):
+    def convert_to_csv(self, tenant_id, client_id, client_secret, user_id, file_id, output_filename, sheet="Sheet1"):
         filedata = self.get_file(file_id)
         if filedata["success"] != True:
             return filedata
-
+    
         basename = "file.xlsx"
         with open(basename, "wb") as tmp:
             tmp.write(filedata["data"])
-
+    
         if sheet == "":
             sheet = "Sheet1"
-
-        data_xls = pd.read_excel(basename, sheet, index_col=None)
-        data_xls.to_csv(output_filename, encoding='utf-8')
-
-        with open(output_filename, "rb") as tmp:
-            newdata = tmp.read()
-            return self.set_files([{
-                "filename": output_filename,
-                "data": newdata
-            }])
-
-        return {
-            "success": False,
-            "reason": "May not have been able to upload file. Check files in admin for %s" % output_filename
-        }
+    
+        #wb = Workbook(basename)
+        wb = load_workbook(basename)
+        print("Sheets: %s" % wb.sheetnames)
+    
+        # grab the active worksheet
+        ws = wb.active
+        for item in ws.iter_rows():
+            print(item)
+    
+        csvdata = ""
+        cnt = 0
+        for row in ws.values:
+            if cnt == 0:
+                columnlen = len(row)
+    
+            cnt += 1
+            for value in row:
+                #print(value)
+                if value == None:
+                    csvdata += ","
+                elif isinstance(value, str):
+                    csvdata += value+","
+                else:
+                    csvdata += str(value)+","
+    
+            csvdata = csvdata[:-1]+"\n"
+        csvdata = csvdata[:-1]
+    
+        print()
+        print("Data:\n%s\n" % csvdata)
+        print("Columns: %s" % columnlen)
+    
+        return self.set_files([{
+            "filename": output_filename,
+            "data": csvdata, 
+        }])
         
 if __name__ == "__main__":
     MSExcel.run()

@@ -85,10 +85,12 @@ class Owa(AppBase):
                 )
             else:
                 config = Configuration(server=server, credentials=credentials)
+
             account = Account(
                 account, config=config, autodiscover=False, access_type=DELEGATE
             )
             account.root.refresh()
+
         except (exchangelib.errors.TransportError, Exception) as error:
             return {
                 "account": None,

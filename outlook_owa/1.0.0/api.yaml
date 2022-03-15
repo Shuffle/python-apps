@@ -53,8 +53,8 @@ authentication:
       description: False to ignore ssl verification during login
       multiline: false
       options:
-        - "true"
         - "false"
+        - "true"
       required: true
       schema:
         type: bool

@@ -1,2 +1,2 @@
 requests==2.25.1
-pandas==0.25.3
+openpyxl=3.0.9
