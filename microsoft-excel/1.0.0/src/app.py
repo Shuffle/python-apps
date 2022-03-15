@@ -118,7 +118,7 @@ class MSExcel(AppBase):
         else:
             return "Action successfully completed"
 
-    def convert_to_csv(self, tenant_id, client_id, client_secret, user_id, file_id, output_filename, sheet="Sheet1"):
+    def convert_to_csv(self, tenant_id, client_id, client_secret, file_id, sheet="Sheet1"):
         filedata = self.get_file(file_id)
         if filedata["success"] != True:
             return filedata
@@ -161,11 +161,12 @@ class MSExcel(AppBase):
         print()
         print("Data:\n%s\n" % csvdata)
         print("Columns: %s" % columnlen)
-    
-        return self.set_files([{
-            "filename": output_filename,
-            "data": csvdata, 
-        }])
+
+        return csvdata
+        #return self.set_files([{
+        #    "filename": output_filename,
+        #    "data": csvdata, 
+        #}])
         
 if __name__ == "__main__":
     MSExcel.run()
