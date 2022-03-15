@@ -140,12 +140,7 @@ class MSExcel(AppBase):
             print(item)
     
         csvdata = ""
-        cnt = 0
         for row in ws.values:
-            if cnt == 0:
-                columnlen = len(row)
-    
-            cnt += 1
             for value in row:
                 #print(value)
                 if value == None:
@@ -160,7 +155,6 @@ class MSExcel(AppBase):
     
         print()
         print("Data:\n%s\n" % csvdata)
-        print("Columns: %s" % columnlen)
 
         return csvdata
         #return self.set_files([{
