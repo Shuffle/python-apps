@@ -173,13 +173,18 @@ actions:
         required: true
         schema:
           type: string
-      #- name: output_filename 
-      #  description: The filename of the output file
-      #  multiline: false
-      #  required: true
-      #  example: 'test.csv'
-      #  schema:
-      #    type: string
+    returns:
+      schema:
+        type: string 
+  - name: get_excel_file_data 
+    description: Gets data from all cells in an excel file as a list
+    parameters:
+      - name: file_id
+        description: The file id of the file
+        multiline: false
+        required: true
+        schema:
+          type: string
     returns:
       schema:
         type: string 

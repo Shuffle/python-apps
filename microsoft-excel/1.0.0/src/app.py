@@ -157,10 +157,49 @@ class MSExcel(AppBase):
         print("Data:\n%s\n" % csvdata)
 
         return csvdata
-        #return self.set_files([{
-        #    "filename": output_filename,
-        #    "data": csvdata, 
-        #}])
+
+    def get_excel_file_data(self, file_id):
+        filedata = self.get_file(file_id)
+        if filedata["success"] != True:
+            print(f"Bad info from file: {filedata}") 
+            return filedata
+        #filedata = file_id
+    
+        basename = "file.xlsx"
+        with open(basename, "wb") as tmp:
+            tmp.write(filedata["data"])
+    
+        #wb = Workbook(basename)
+        wb = load_workbook(basename)
+        print("Sheets: %s" % wb.sheetnames)
+    
+        output_data = []
+        for ws in wb.worksheets:
+            print(f"Title: {ws.title}")
+    
+            # grab the active worksheet
+            csvdata = ""
+            for row in ws.values:
+                for value in row:
+                    #print(value)
+                    if value == None:
+                        csvdata += ","
+                    elif isinstance(value, str):
+                        csvdata += value+","
+                    else:
+                        csvdata += str(value)+","
+    
+                csvdata = csvdata[:-1]+"\n"
+            csvdata = csvdata[:-1]
+    
+            print()
+            print("Data:\n%s\n" % csvdata)
+            output_data.append({
+                "sheet": ws.title,
+                "data": csvdata,
+            })
+    
+        return output_data
         
 if __name__ == "__main__":
     MSExcel.run()
