@@ -170,7 +170,15 @@ class MSExcel(AppBase):
             tmp.write(filedata["data"])
     
         #wb = Workbook(basename)
-        wb = load_workbook(basename)
+        try:
+            wb = load_workbook(basename)
+        except Exception as e:
+            return {
+                "success": False,
+                "reason": "The file is invalid. Are you sure it's a valid excel file?",
+                "exception": "Error: %s" % e,
+            }
+
         print("Sheets: %s" % wb.sheetnames)
     
         output_data = []
