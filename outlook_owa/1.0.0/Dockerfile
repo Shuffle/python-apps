@@ -7,7 +7,7 @@ RUN apk update && \
 # We're going to stage away all of the bloat from the build tools so lets create a builder stage
 
 FROM base as builder
-RUN apk add --no-cache build-base gcc musl-dev python3-dev libffi-dev libxml2-dev libxslt-dev alpine-sdk openssl-dev libc-dev
+RUN apk add --no-cache build-base gcc musl-dev python3-dev libffi-dev libxml2-dev libxslt-dev alpine-sdk openssl-dev libc-dev ca-certificates
 RUN pip install --no-cache-dir -U pip && \
     pip wheel --no-cache-dir --wheel-dir=/root/lxml_wheel lxml
 
@@ -31,6 +31,11 @@ RUN python -OO -m pip install --no-cache --no-index --find-links=/root/lxml_whee
 
 COPY --from=builder /install /usr/local
 COPY src /app
+
+## Ensuring we can handle OLD exchange servers
+RUN echo "MinProtocol = TLSv1/" >> /etc/ssl/openssl.cnf
+run echo "CipherString = DEFAULT@SECLEVEL=1/" >> /etc/ssl/openssl.cnf
+RUN cat /etc/ssl/openssl.cnf
 
 # Finally, lets run our app!
 WORKDIR /app

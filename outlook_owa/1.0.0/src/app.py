@@ -22,6 +22,23 @@ from exchangelib import (
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
 from walkoff_app_sdk.app_base import AppBase
 
+import requests
+from urllib.parse import urlparse
+
+class RootCAAdapter(requests.adapters.HTTPAdapter):
+    """
+    An HTTP adapter that uses a custom root CA certificate at a hard coded
+    location.
+    """
+
+    def cert_verify(self, conn, url, verify, cert):
+        #cert_file = {
+        #    'example.com': '/path/to/example.com.crt',
+        #    'mail.internal': '/path/to/mail.internal.crt',
+        #}[urlparse(url).hostname]
+        #super().cert_verify(conn=conn, url=url, verify=cert_file, cert=cert)
+
+        super().cert_verify(conn=conn, url=url, verify=False, cert=cert)
 
 def default(o):
     """helpers to store item in json
@@ -55,8 +72,10 @@ class Owa(AppBase):
         """
         Authenticates to Exchange server
         """
+
+        BaseProtocol.USERAGENT = "Shuffle Automation"
         if not verifyssl or verifyssl.lower().strip() == "false":
-            BaseProtocol.HTTP_ADAPTER_CLS = NoVerifyHTTPAdapter
+            BaseProtocol.HTTP_ADAPTER_CLS = RootCAAdapter 
 
         processed_build = None
         if type(build) == str:
