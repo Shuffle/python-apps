@@ -1,7 +1,7 @@
 walkoff_version: 1.0.0
 app_version: 1.0.0
 name: outlook_owa
-description: Email app for Exchange (OWA). Important about usage: try WITHOUT the full email in the username for authentication.
+description: "Email app for Exchange (OWA). Important about usage: try WITHOUT the full email in the username for authentication."
 tags:
   - email
   - owa
@@ -15,7 +15,7 @@ authentication:
   required: true
   parameters:
     - name: username
-      description: The Exchange (OWA) login username. IMPORTANT: Try WITHOUT your full email. 
+      description: "The Exchange (OWA) login username. IMPORTANT: Try WITHOUT your full email."
       multiline: false
       example: "frikky@shuffler.io"
       required: true

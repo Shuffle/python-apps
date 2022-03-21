@@ -20,7 +20,11 @@ for basename in dirs:
 
         try:
             with open(filepath, "r") as tmp:
-                ret = yaml.load(tmp.read())
+                try:
+                    ret = yaml.load(tmp.read())
+                except yaml.scanner.ScannerError as e:
+                    print(f"Bad yaml in {filepath} (2): {e}")
+                    continue
 
                 newname = ret["name"].lower().replace(" ", "-", -1).replace(".", "-", -1)
                 if newname != basename:
@@ -46,7 +50,12 @@ for basename in dirs:
         action_names = []
         try:
             with open(apifile, "r") as tmp:
-                apidata = yaml.load(tmp.read())
+                try:
+                    apidata = yaml.load(tmp.read())
+                except yaml.scanner.ScannerError as e:
+                    print(f"Bad yaml in {apifile} (2): {e}")
+                    continue
+
                 for item in apidata["actions"]:
                     action_names.append(item["name"])
         except NotADirectoryError as e:
