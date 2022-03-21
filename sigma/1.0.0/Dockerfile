@@ -18,6 +18,9 @@ FROM base
 COPY --from=builder /install /usr/local
 COPY src /app
 
+# Fix python3.3 > issues 
+RUN sed -i 's/from collections import Iterable/from collections.abc import Iterable/g' /usr/local/lib/python3.10/site-packages/sigma/config/collection.py
+
 # Install any binary dependencies needed in our final image
 # RUN apk --no-cache add --update my_binary_dependency
 

@@ -21,7 +21,7 @@ for basename in dirs:
         try:
             with open(filepath, "r") as tmp:
                 try:
-                    ret = yaml.load(tmp.read())
+                    ret = yaml.full_load(tmp.read())
                 except yaml.scanner.ScannerError as e:
                     print(f"Bad yaml in {filepath} (2): {e}")
                     continue
@@ -51,7 +51,7 @@ for basename in dirs:
         try:
             with open(apifile, "r") as tmp:
                 try:
-                    apidata = yaml.load(tmp.read())
+                    apidata = yaml.full_load(tmp.read())
                 except yaml.scanner.ScannerError as e:
                     print(f"Bad yaml in {apifile} (2): {e}")
                     continue
