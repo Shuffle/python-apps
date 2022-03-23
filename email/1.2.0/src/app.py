@@ -135,7 +135,7 @@ class Email(AppBase):
                 #return files
                 #data["attachments"] = files
         except Exception as e:
-            print(f"Error in attachment parsing for email: {e}")
+            self.logger.info(f"Error in attachment parsing for email: {e}")
 
 
         try:
@@ -146,7 +146,7 @@ class Email(AppBase):
                 "reason": f"Failed to send mail: {e}"
             }
 
-        print("Successfully sent email with subject %s to %s" % (subject, recipient))
+        self.logger.info("Successfully sent email with subject %s to %s" % (subject, recipient))
         return {
             "success": True, 
             "reason": "Email sent to %s!" % recipient,
@@ -241,11 +241,11 @@ class Email(AppBase):
         if id_list == None:
             return {
                 "success": False,
-                "reason": "Couldn't retrieve email. Data: %s" % data,
+                "reason": f"Couldn't retrieve email. Data: {data}",
             }
 
         try:
-            print("LIST: ", len(id_list))
+            self.logger.info(f"LIST: {id_list}")
         except TypeError:
             return {
                 "success": False,
@@ -274,7 +274,7 @@ class Email(AppBase):
         if len(id_list) == 0:
             return {
                 "success": True,
-                "emails": json.dumps(emails, default=default),
+                "emails": [],
             }
 
         try:
@@ -283,7 +283,7 @@ class Email(AppBase):
                 error = None
 
                 if resp != "OK":
-                    print("Failed getting %s" % id_list[i])
+                    self.logger.info("Failed getting %s" % id_list[i])
                     continue
 
                 if data == None:
