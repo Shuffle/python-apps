@@ -278,7 +278,7 @@ class Email(AppBase):
         if len(id_list) == 0:
             return {
                 "success": True,
-                "emails": [],
+                "messages": [],
             }
 
         try:
@@ -309,8 +309,12 @@ class Email(AppBase):
                 else:
                     output_dict = parsed_eml
 
+                output_dict["imap_id"] = id_list[i]
+                output_dict["attachment"] = []
+                output_dict["attachment_uids"] = []
+
                 # Add message-id as top returned field
-                output_dict["message-id"] = parsed_eml["header"]["header"][
+                output_dict["message_id"] = parsed_eml["header"]["header"][
                     "message-id"
                 ][0]
 
@@ -320,15 +324,22 @@ class Email(AppBase):
                     output_dict["email_uid"] = email_id[0]
 
                 if upload_attachments_shuffle:
-                    atts_up = [
-                        {
-                            "filename": x["filename"],
-                            "data": base64.b64decode(x["raw"]),
-                        }
-                        for x in parsed_eml["attachment"]
-                    ]
-                    atts_ids = self.set_files(atts_up)
-                    output_dict["attachments_uids"] = atts_ids
+                    #self.logger.info(f"EML: {parsed_eml}")
+                    try:
+                        atts_up = [
+                            {
+                                "filename": x["filename"],
+                                "data": base64.b64decode(x["raw"]),
+                            }
+                            for x in parsed_eml["attachment"]
+                        ]
+
+                        atts_ids = self.set_files(atts_up)
+                        output_dict["attachments_uids"] = atts_ids
+
+                    except Exception as e:
+                        self.logger.info(f"Major issue with EML attachment - are there attachments: {e}")
+                        
 
                 emails.append(output_dict)
         except Exception as err:
@@ -340,14 +351,14 @@ class Email(AppBase):
         try:
             to_return = {
                 "success": True,
-                "reason": json.loads(json.dumps(emails, default=default)),
+                "messages": json.loads(json.dumps(emails, default=default)),
             }
             self.logger.info(f"Emails: {to_return}")
             return to_return
         except:
             return {
                 "success": True,
-                "reason": json.dumps(emails, default=default),
+                "messages": json.dumps(emails, default=default),
             }
 
     def parse_email_file(self, file_id, file_extension):
