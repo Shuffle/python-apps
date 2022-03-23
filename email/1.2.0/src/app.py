@@ -337,10 +337,18 @@ class Email(AppBase):
                 "reason": "Error during email processing: {}".format(err),
             }
 
-        return {
-            "success": True,
-            "reason": json.loads(json.dumps(emails, default=default)),
-        }
+        try:
+            to_return = {
+                "success": True,
+                "reason": json.loads(json.dumps(emails, default=default)),
+            }
+            self.logger.info(f"Emails: {to_return}")
+            return to_return
+        except:
+            return {
+                "success": True,
+                "reason": json.dumps(emails, default=default),
+            }
 
     def parse_email_file(self, file_id, file_extension):
         file_path = self.get_file(file_id)
