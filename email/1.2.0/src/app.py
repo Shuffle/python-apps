@@ -40,7 +40,11 @@ def default(o):
     if isinstance(o, set):
         return list(o)
     if isinstance(o, bytes):
-        return o.decode("utf-8")
+        try:
+            return o.decode("utf-8")
+        except:
+            print("Failed parsing utf-8 string")
+            return o
 
 
 class Email(AppBase):
@@ -335,7 +339,7 @@ class Email(AppBase):
 
         return {
             "success": True,
-            "reason": emails,
+            "reason": json.loads(json.dumps(emails, default=default)),
         }
 
     def parse_email_file(self, file_id, file_extension):
