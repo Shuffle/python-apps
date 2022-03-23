@@ -335,7 +335,7 @@ class Email(AppBase):
 
         return {
             "success": True,
-            "reason": json.dumps(emails, default=default),
+            "reason": emails,
         }
 
     def parse_email_file(self, file_id, file_extension):
