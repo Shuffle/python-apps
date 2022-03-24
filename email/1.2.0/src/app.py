@@ -282,6 +282,7 @@ class Email(AppBase):
             }
 
         try:
+            amount = len(id_list) if len(id_list)<amount else amount 
             for i in range(len(id_list) - 1, len(id_list) - amount - 1, -1):
                 resp, data = email.fetch(id_list[i], "(RFC822)")
                 error = None
