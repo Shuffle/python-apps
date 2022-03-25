@@ -147,6 +147,12 @@ class HTTP(AppBase):
             parsedheaders = {}
             for key, value in request.headers.items():
                 parsedheaders[key] = value
+
+            cookies = {}
+            if request.cookies:
+                for key, value in request.cookies.items():
+                    cookies[key] = value
+
             
             jsondata = request.text
             try:
@@ -160,6 +166,7 @@ class HTTP(AppBase):
                 "url": request.url,
                 "headers": parsedheaders,
                 "body": jsondata,
+                "cookies":cookies,
             })
         except Exception as e:
             print(f"[WARNING] Failed in request: {e}")
