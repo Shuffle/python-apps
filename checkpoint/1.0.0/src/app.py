@@ -114,7 +114,8 @@ class CheckPoint(AppBase):
             }
 
         response = requests.post(url,data=json.dumps(json_payload), headers=request_headers, verify=ssl_verify)
-        self.publish(ip_addr,session_id)
+        # Do we really need to publish changes after installing the policy??
+        #self.publish(ip_addr,session_id)
         self.logout(ip_addr, session_id)   
         return response.json()
     
@@ -419,7 +420,46 @@ class CheckPoint(AppBase):
         response = requests.post(url,data=json.dumps(json_payload), headers=request_headers, verify=ssl_verify)
         self.publish(ip_addr,session_id)
         self.logout(ip_addr, session_id)
-        return response.json()        
+        return response.json()
+
+    def list_all_tasks(self, ip_addr:str, user:str, password:str, ssl_verify)->"json":
+        url = f'https://{ip_addr}/web_api/show-tasks'
+        session_id = self.login(ip_addr, user, password)
+        
+        if ssl_verify.lower() == 'true':
+            ssl_verify = True
+        else:
+            ssl_verify = False
+
+        request_headers = {
+            'Content-Type' : 'application/json',
+            'X-chkp-sid': session_id
+            }
+            
+        response = requests.post(url,data=json.dumps({}), headers=request_headers, ssl_verify=verify)
+        self.logout(ip_addr, session_id)
+        return response.json() 
+
+    def get_task(self, ip_addr:str, user:str, password:str, ssl_verify)->"json":
+        url = f'https://{ip_addr}/web_api/show-task'
+        session_id = self.login(ip_addr, user, password)
+        
+        if ssl_verify.lower() == 'true':
+            ssl_verify = True
+        else:
+            ssl_verify = False
+
+        request_headers = {
+            'Content-Type' : 'application/json',
+            'X-chkp-sid': session_id
+            }
+        json_payload = {
+            'task-id': task_id 
+            }    
+        
+        response = requests.post(url,data=json.dumps(json_payload), headers=request_headers, ssl_verify=verify)
+        self.logout(ip_addr, session_id)
+        return response.json()                
 
 
 if __name__ == "__main__":
