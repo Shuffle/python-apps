@@ -440,7 +440,7 @@ class CheckPoint(AppBase):
         self.logout(ip_addr, session_id)
         return response.json() 
 
-    def get_task(self, ip_addr:str, user:str, password:str, ssl_verify)->"json":
+    def get_task(self, ip_addr:str, user:str, password:str, task_id:str, ssl_verify)->"json":
         url = f'https://{ip_addr}/web_api/show-task'
         session_id = self.login(ip_addr, user, password)
         
