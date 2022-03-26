@@ -349,7 +349,6 @@ class CheckPoint(AppBase):
         url = f'https://{ip_addr}/web_api/set-group'
         session_id = self.login(ip_addr, user, password)
         members = ast.literal_eval(members)
-        print(members,"---",type(members))
         if ssl_verify.lower() == 'true':
             ssl_verify = True
         else:
@@ -436,7 +435,7 @@ class CheckPoint(AppBase):
             'X-chkp-sid': session_id
             }
             
-        response = requests.post(url,data=json.dumps({}), headers=request_headers, ssl_verify=verify)
+        response = requests.post(url,data=json.dumps({}), headers=request_headers, verify=ssl_verify)
         self.logout(ip_addr, session_id)
         return response.json() 
 
@@ -457,7 +456,7 @@ class CheckPoint(AppBase):
             'task-id': task_id 
             }    
         
-        response = requests.post(url,data=json.dumps(json_payload), headers=request_headers, ssl_verify=verify)
+        response = requests.post(url,data=json.dumps(json_payload), headers=request_headers, verify=ssl_verify)
         self.logout(ip_addr, session_id)
         return response.json()                
 
