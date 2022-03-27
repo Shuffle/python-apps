@@ -61,13 +61,17 @@ class CloudWatch(AppBase):
     def create_log_group(self, access_key, secret_key, region, log_group_name, kms_key_id, tags):
         self.cloudwatch = self.auth_cloudwatch(access_key, secret_key, region)
 
+        if not isinstance(tags, list) and not isinstance(tags, object) and not isinstance(tags, dict):
+            tags = json.loads(tags)
+
         kwargs = {
-                "logGroupName":log_group_name, 
+                "logGroupName": log_group_name, 
                 }
+
         if kms_key_id:
             kwargs.update({"kmsKeyId":kms_key_id})
         if tags:
-            kwargs.update({"tags":json.loads(tags)})    
+            kwargs.update({"tags": tags})    
          
         return self.cloudwatch.create_log_group(**kwargs)   
 
@@ -78,8 +82,7 @@ class CloudWatch(AppBase):
         )
         return response
 
-    def get_log_events(self, access_key, secret_key, region, log_group_name, log_stream_name,
-             start_time, end_time, start_from_head, next_token, limit):
+    def get_log_events(self, access_key, secret_key, region, log_group_name, log_stream_name, start_time, end_time, start_from_head, next_token, limit):
 
         self.cloudwatch = self.auth_cloudwatch(access_key, secret_key, region) 
 
@@ -145,8 +148,7 @@ class CloudWatch(AppBase):
         )
         return response   
 
-     def create_export_task(self, access_key, secret_key, region, task_name,log_group_name, log_stream_name_prefix,
-             from_time, to_time, destination, destination_prefix):
+    def create_export_task(self, access_key, secret_key, region, task_name,log_group_name, log_stream_name_prefix, from_time, to_time, destination, destination_prefix):
         self.cloudwatch = self.auth_cloudwatch(access_key, secret_key, region)             
         
         kwargs = {"logGroupName":log_group_name,

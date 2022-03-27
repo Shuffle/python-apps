@@ -66,8 +66,14 @@ class Subflow(AppBase):
         if len(argument) == 0:
             ret = requests.post(url, headers=headers, params=params)
         else:
+            if not isinstance(argument, list) and not isinstance(argument, object) and not isinstance(argument, dict):
+                try:
+                    argument = json.loads(argument)
+                except:
+                    pass
+
             try:
-                ret = requests.post(url, headers=headers, params=params, json=json.loads(argument))
+                ret = requests.post(url, headers=headers, params=params, json=argument)
                 print(f"Successfully sent argument of length {len(argument)} as JSON")
             except:
                 try:

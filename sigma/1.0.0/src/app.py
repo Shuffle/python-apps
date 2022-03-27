@@ -93,4 +93,4 @@ class Sigma(AppBase):
         return item
 
 if __name__ == "__main__":
-    asyncio.run(Sigma.run(), debug=True)
+    Sigma.run()

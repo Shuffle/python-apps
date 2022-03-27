@@ -122,7 +122,8 @@ class exchange_powershell(AppBase):
         ret = self.replace_and_run(username, password, parsed_command)
         print("RET: %s" % ret)
         try:
-            ret = json.loads(ret)
+            if not isinstance(ret, list) and not isinstance(ret, object) and not isinstance(ret, dict):
+                ret = json.loads(ret)
         except json.decoder.JSONDecodeError:
             return ret
 

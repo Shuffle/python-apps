@@ -557,7 +557,7 @@ class Tools(AppBase):
         print(f"\nRunning function with list {input_list}")
 
         flip = False
-        if opposite.lower() == "true":
+        if str(opposite).lower() == "true":
             flip = True
 
         try:

@@ -62,11 +62,12 @@ class TheHive(AppBase):
     ):
         self.__connect_thehive(url, apikey, organisation)
 
-        try:
-            custom_query = json.loads(custom_query)
-        except:
-            # raise IOError("Invalid JSON payload received.")
-            pass
+        if not isinstance(custom_query, list) and not isinstance(custom_query, dict) and not isinstance(custom_query, object):
+            try:
+                custom_query = json.loads(custom_query)
+            except:
+                # raise IOError("Invalid JSON payload received.")
+                pass
 
         if search_for == "alert":
             response = self.thehive.find_alerts(
@@ -170,10 +171,13 @@ class TheHive(AppBase):
 
         # Prepare the customfields
         customfields = CustomFieldHelper()
-        try:
-            custom_fields = json.loads(custom_fields) if custom_fields else {}
-        except json.decoder.JSONDecodeError:
-            return "Custom fields need to be valid json"
+
+        if not isinstance(custom_fields, list) and not isinstance(custom_fields, dict) and not isinstance(custom_fields, object):
+            try:
+                custom_fields = json.loads(custom_fields) if custom_fields else {}
+            except json.decoder.JSONDecodeError:
+                return "Custom fields need to be valid json"
+
         for key, value in custom_fields.items():
             if type(value) == int:
                 customfields.add_integer(key, value)
@@ -261,42 +265,40 @@ class TheHive(AppBase):
             return "Severity needs to be a number from 1-3, not %d" % severity
 
         all_artifacts = []
-        if artifacts != "":
-            # print("ARTIFACTS: %s" % artifacts)
-            if isinstance(artifacts, str):
-                # print("ITS A STRING!")
+        if isinstance(artifacts, str):
+            # print("ITS A STRING!")
+            try:
+                artifacts = json.loads(artifacts)
+            except:
+                print("[ERROR] Error in parsing artifacts!")
+
+        # print("ART HERE: %s" % artifacts)
+        # print("ART: %s" % type(artifacts))
+        if isinstance(artifacts, list):
+            print("ITS A LIST!")
+            for item in artifacts:
+                print("ITEM: %s" % item)
                 try:
-                    artifacts = json.loads(artifacts)
-                except:
-                    print("[ERROR] Error in parsing artifacts!")
+                    artifact = thehive4py.models.AlertArtifact(
+                        dataType=item["data_type"],
+                        data=item["data"],
+                    )
 
-            # print("ART HERE: %s" % artifacts)
-            # print("ART: %s" % type(artifacts))
-            if isinstance(artifacts, list):
-                print("ITS A LIST!")
-                for item in artifacts:
-                    print("ITEM: %s" % item)
                     try:
-                        artifact = thehive4py.models.AlertArtifact(
-                            dataType=item["data_type"],
-                            data=item["data"],
-                        )
+                        artifact["message"] = item["message"]
+                    except:
+                        pass
 
+                    if item["data_type"] == "ip":
                         try:
-                            artifact["message"] = item["message"]
+                            if item["is_private_ip"]:
+                                message += " IP is private."
                         except:
                             pass
 
-                        if item["data_type"] == "ip":
-                            try:
-                                if item["is_private_ip"]:
-                                    message += " IP is private."
-                            except:
-                                pass
-
-                        all_artifacts.append(artifact)
-                    except KeyError as e:
-                        print("Error in artifacts: %s" % e)
+                    all_artifacts.append(artifact)
+                except KeyError as e:
+                    print("Error in artifacts: %s" % e)
 
         alert = thehive4py.models.Alert(
             title=title,

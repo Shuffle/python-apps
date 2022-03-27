@@ -162,7 +162,6 @@ class AzureSentinel(AppBase):
         return json.dumps(incident)
 
     def close_incident(self, **kwargs):
-
         incident = json.loads(self.get_incident(**kwargs))
         if "error" in incident:
             return json.dumps(incident)
@@ -193,7 +192,6 @@ class AzureSentinel(AppBase):
         return res.text
 
     def update_incident(self, **kwargs):
-
         incident = json.loads(self.get_incident(**kwargs))
         if "error" in incident:
             return json.dumps(incident)

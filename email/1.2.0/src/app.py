@@ -88,6 +88,8 @@ class Email(AppBase):
         except socket.gaierror as e:
             return f"Bad SMTP host or port: {e}"
 
+        # This is not how it should work.. 
+        # Port 465 & 587 = TLS
         if ssl_verify == "false" or ssl_verify == "False":
             pass
         else:

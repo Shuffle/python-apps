@@ -1,5 +1,6 @@
 import yaml
 import os
+import subprocess
 
 basedir = "."
 dirs = os.listdir(basedir)
@@ -66,6 +67,28 @@ for basename in dirs:
             for action_name in action_names:
                 if not action_name in pythondata:
                     print(f"===> Couldn't find action \"{action_name}\" from {apifile} in script {pythonfile}") 
+
+            code = f"python3 {pythonfile}"
+            process = subprocess.Popen(
+                code,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                shell=True,  # nosec
+            )
+            stdout = process.communicate()
+            item = ""
+            if len(stdout[0]) > 0:
+                #print("Succesfully ran bash!")
+                item = stdout[0]
+            else:
+                item = stdout[1]
+                if "ModuleNotFoundError" in item:
+                    continue
+
+                print(f"FAILED to run bash with code {code}: {item}")
+
+
 
 
     #break

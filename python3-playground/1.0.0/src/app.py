@@ -31,10 +31,11 @@ class PythonPlayground(AppBase):
     # Write your data inside this function
     def run_python_script(self, json_data, function_to_execute):
         # It comes in as a string, so needs to be set to JSON
-        try:
-            json_data = json.loads(json_data)
-        except json.decoder.JSONDecodeError as e:
-            return "Couldn't decode json: %s" % e
+        if not isinstance(json_data, list) and not isinstance(json_data, object) and not isinstance(json_data, dict):
+            try:
+                json_data = json.loads(json_data)
+            except json.decoder.JSONDecodeError as e:
+                return "Couldn't decode json: %s" % e
 
         # These are functions
         switcher = {
