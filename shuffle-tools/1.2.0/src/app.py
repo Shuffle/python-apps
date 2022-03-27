@@ -33,13 +33,7 @@ import binascii
 import struct
 
 class Tools(AppBase):
-    """
-    An example of a Walkoff App.
-    Inherit from the AppBase class to have Redis, logging, and console
-    logging set up behind the scenes.
-    """
-
-    __version__ = "1.1.0"
+    __version__ = "1.2.0"
     app_name = (
         "Shuffle Tools"  # this needs to match "name" in api.yaml for WALKOFF to work
     )
@@ -102,7 +96,7 @@ class Tools(AppBase):
             "reason": "No base64 to be converted",
         })
 
-    def parse_list(self, input_list):
+    def parse_list_internal(self, input_list):
         try:
             input_list = json.loads(input_list)
             if isinstance(input_list, list):
@@ -117,7 +111,7 @@ class Tools(AppBase):
 
     # This is an SMS function of Shuffle
     def send_sms_shuffle(self, apikey, phone_numbers, body):
-        phone_numbers = self.parse_list(phone_numbers)
+        phone_numbers = self.parse_list_internal(phone_numbers)
 
         targets = [phone_numbers]
         if ", " in phone_numbers:
@@ -133,7 +127,7 @@ class Tools(AppBase):
 
     # This is an email function of Shuffle
     def send_email_shuffle(self, apikey, recipients, subject, body, attachments=""):
-        recipients = self.parse_list(recipients)
+        recipients = self.parse_list_internal(recipients)
 
 
         targets = [recipients]
@@ -361,7 +355,7 @@ class Tools(AppBase):
         return json_object
 
     def delete_json_keys(self, json_object, keys):
-        keys = self.parse_list(keys)
+        keys = self.parse_list_internal(keys)
 
         splitdata = [keys]
         if ", " in keys:
@@ -378,7 +372,7 @@ class Tools(AppBase):
 
         return json_object
 
-    def translate_value(self, input_data, translate_from, translate_to, else_value=""):
+    def replace_value(self, input_data, translate_from, translate_to, else_value=""):
         splitdata = [translate_from]
         if ", " in translate_from:
             splitdata = translate_from.split(", ")
@@ -407,7 +401,7 @@ class Tools(AppBase):
 
         return input_data
 
-    def map_value(self, input_data, mapping, default_value=""):
+    def replace_value_from_dictionary(self, input_data, mapping, default_value=""):
         if not isinstance(mapping, dict) and not isinstance(mapping, object):
             try:
                 mapping = json.loads(mapping)
@@ -434,8 +428,10 @@ class Tools(AppBase):
 
             matches = re.findall(regex, input_data)
             self.logger.info(f"{matches}")
+            found = False
             for item in matches:
                 if isinstance(item, str):
+                    found = True 
                     name = "group_0" 
                     try:
                         returnvalues[name].append(item)
@@ -444,11 +440,14 @@ class Tools(AppBase):
 
                 else:
                     for i in range(0, len(item)):
+                        found = True 
                         name = "group_%d" % i
                         try:
                             returnvalues[name].append(item[i])
                         except:
                             returnvalues[name] = [item[i]]
+
+            returnvalues["found"] = found
 
             return returnvalues
         except re.error as e:
@@ -749,7 +748,7 @@ class Tools(AppBase):
 
                 # CONTAINS FIND FOR LIST AND IN FOR STR
                 elif check == "contains any of":
-                    value = self.parse_list(value)
+                    value = self.parse_list_internal(value)
                     checklist = value.split(",")
                     tmp = tmp.lower()
                     self.logger.info("CHECKLIST: %s. Value: %s" % (checklist, tmp))
@@ -945,9 +944,9 @@ class Tools(AppBase):
         }
 
         fileret = self.set_files([filedata])
-        value = {"success": True, "file_ids": fileret}
+        value = {"success": True, "file_id": fileret}
         if len(fileret) == 1:
-            value = {"success": True, "file_ids": fileret[0]}
+            value = {"success": True, "file_id": fileret[0]}
 
         return value 
 
@@ -969,9 +968,15 @@ class Tools(AppBase):
                     "reason": "Got the file, but the encoding can't be printed",
                 }
 
-    def download_remote_file(self, url):
+    def download_remote_file(self, url, custom_filename=""):
         ret = requests.get(url, verify=False)  # nosec
         filename = url.split("/")[-1]
+        if "?" in filename:
+            filename = filename.split("?")[0]
+
+        if custom_filename and len(str(custom_filename)) > 0:
+            filename = custom_filename
+
         fileret = self.set_files(
             [
                 {
@@ -988,199 +993,215 @@ class Tools(AppBase):
 
         return value
 
-    def extract_archive(self, file_ids, fileformat="zip", password=None):
+    
+    def extract_archive(self, file_id, fileformat="zip", password=None):
         try:
             return_data = {"success": False, "files": []}
+            to_be_uploaded = []
+            item = self.get_file(file_id)
+            return_ids = None
 
-            try:
-                file_ids = eval(file_ids)  # nosec
-            except SyntaxError:
-                file_ids = file_ids
+            self.logger.info("Working with fileformat %s" % fileformat)
+            with tempfile.TemporaryDirectory() as tmpdirname:
 
-            self.logger.info("IDS: %s" % file_ids)
-            items = file_ids if type(file_ids) == list else file_ids.split(",")
-            for file_id in items:
+                # Get archive and save phisically
+                with open(os.path.join(tmpdirname, "archive"), "wb") as f:
+                    f.write(item["data"])
 
-                item = self.get_file(file_id)
-                return_ids = None
+                # Grab files before, upload them later
 
-                self.logger.info("Working with fileformat %s" % fileformat)
-                with tempfile.TemporaryDirectory() as tmpdirname:
+                # Zipfile for zipped archive
+                if fileformat.strip().lower() == "zip":
+                    try:
+                        self.logger.info("Starting zip extraction")
+                        with zipfile.ZipFile(os.path.join(tmpdirname, "archive")) as z_file:
+                            if password:
+                                self.logger.info("In zip extraction with password")
+                                z_file.setpassword(bytes(password.encode()))
 
-                    # Get archive and save phisically
-                    with open(os.path.join(tmpdirname, "archive"), "wb") as f:
-                        f.write(item["data"])
+                            self.logger.info("Past zip extraction")
+                            for member in z_file.namelist():
+                                filename = os.path.basename(member)
+                                if not filename:
+                                    continue
 
-                    # Grab files before, upload them later
-                    to_be_uploaded = []
+                                source = z_file.open(member)
+                                to_be_uploaded.append(
+                                    {"filename": source.name, "data": source.read()}
+                                )
 
-                    # Zipfile for zipped archive
-                    if fileformat.strip().lower() == "zip":
-                        try:
-                            with zipfile.ZipFile(
-                                os.path.join(tmpdirname, "archive")
-                            ) as z_file:
-                                if password:
-                                    z_file.setpassword(bytes(password.encode()))
-                                for member in z_file.namelist():
-                                    filename = os.path.basename(member)
-                                    if not filename:
-                                        continue
-                                    source = z_file.open(member)
-                                    to_be_uploaded.append(
-                                        {"filename": source.name, "data": source.read()}
-                                    )
-                                    return_data["success"] = True
-                        except (zipfile.BadZipFile, Exception):
-                            return_data["files"].append(
-                                {
-                                    "success": False,
-                                    "file_id": file_id,
-                                    "filename": item["filename"],
-                                    "message": "File is not a valid zip archive",
-                                }
-                            )
-
-                            continue
-
-                    elif fileformat.strip().lower() == "rar":
-                        try:
-                            with rarfile.RarFile(
-                                os.path.join(tmpdirname, "archive")
-                            ) as z_file:
-                                if password:
-                                    z_file.setpassword(password)
-                                for member in z_file.namelist():
-                                    filename = os.path.basename(member)
-                                    if not filename:
-                                        continue
-                                    source = z_file.open(member)
-                                    to_be_uploaded.append(
-                                        {"filename": source.name, "data": source.read()}
-                                    )
-                                    return_data["success"] = True
-                        except Exception:
-                            return_data["files"].append(
-                                {
-                                    "success": False,
-                                    "file_id": file_id,
-                                    "filename": item["filename"],
-                                    "message": "File is not a valid rar archive",
-                                }
-                            )
-                            continue
-
-                    elif fileformat.strip().lower() == "tar":
-                        try:
-                            with tarfile.open(
-                                os.path.join(tmpdirname, "archive"), mode="r"
-                            ) as z_file:
-                                for member in z_file.getnames():
-                                    member_files = z_file.extractfile(member)
-                                    to_be_uploaded.append(
-                                        {
-                                            "filename": member,
-                                            "data": member_files.read(),
-                                        }
-                                    )
                                 return_data["success"] = True
-                        except Exception as e:
-                            return_data["files"].append(
-                                {
-                                    "success": False,
-                                    "file_id": file_id,
-                                    "filename": item["filename"],
-                                    "message": e,
-                                }
-                            )
-                            continue
-                    elif fileformat.strip().lower() == "tar.gz":
-                        try:
-                            with tarfile.open(
-                                os.path.join(tmpdirname, "archive"), mode="r:gz"
-                            ) as z_file:
-                                for member in z_file.getnames():
-                                    member_files = z_file.extractfile(member)
-                                    to_be_uploaded.append(
-                                        {
-                                            "filename": member,
-                                            "data": member_files.read(),
-                                        }
-                                    )
-                                return_data["success"] = True
-                        except Exception as e:
-                            return_data["files"].append(
-                                {
-                                    "success": False,
-                                    "file_id": file_id,
-                                    "filename": item["filename"],
-                                    "message": e,
-                                }
-                            )
-                            continue
-
-                    elif fileformat.strip().lower() == "7zip":
-                        try:
-                            with py7zr.SevenZipFile(
-                                os.path.join(tmpdirname, "archive"),
-                                mode="r",
-                                password=password if password else None,
-                            ) as z_file:
-                                for filename, source in z_file.readall().items():
-                                    # Removes paths
-                                    filename = filename.split("/")[-1]
-                                    to_be_uploaded.append(
-                                        {
-                                            "filename": item["filename"],
-                                            "data": source.read(),
-                                        }
-                                    )
-                                    return_data["success"] = True
-                        except Exception:
-                            return_data["files"].append(
-                                {
-                                    "success": False,
-                                    "file_id": file_id,
-                                    "filename": item["filename"],
-                                    "message": "File is not a valid 7zip archive",
-                                }
-                            )
-                            continue
-                    else:
-                        return "No such format: %s" % fileformat
-
-                    if len(to_be_uploaded) > 0:
-                        return_ids = self.set_files(to_be_uploaded)
-                        return_data["files"].append(
-                            {
-                                "success": True,
-                                "file_id": file_id,
-                                "filename": item["filename"],
-                                "file_ids": return_ids,
-                            }
-                        )
-                    else:
+                    except (zipfile.BadZipFile, Exception):
                         return_data["files"].append(
                             {
                                 "success": False,
                                 "file_id": file_id,
                                 "filename": item["filename"],
-                                "message": "Archive is empty",
+                                "message": "File is not a valid zip archive",
                             }
                         )
+
+                elif fileformat.strip().lower() == "rar":
+                    try:
+                        with rarfile.RarFile(
+                            os.path.join(tmpdirname, "archive")
+                        ) as z_file:
+                            if password:
+                                z_file.setpassword(password)
+                            for member in z_file.namelist():
+                                filename = os.path.basename(member)
+                                if not filename:
+                                    continue
+                                source = z_file.open(member)
+                                to_be_uploaded.append(
+                                    {"filename": source.name, "data": source.read()}
+                                )
+
+                                return_data["success"] = True
+                    except Exception:
+                        return_data["files"].append(
+                            {
+                                "success": False,
+                                "file_id": file_id,
+                                "filename": item["filename"],
+                                "message": "File is not a valid rar archive",
+                            }
+                        )
+
+                elif fileformat.strip().lower() == "tar":
+                    try:
+                        with tarfile.open(
+                            os.path.join(tmpdirname, "archive"), mode="r"
+                        ) as z_file:
+                            for member in z_file.getnames():
+                                member_files = z_file.extractfile(member)
+                                to_be_uploaded.append(
+                                    {
+                                        "filename": member,
+                                        "data": member_files.read(),
+                                    }
+                                )
+                            return_data["success"] = True
+                    except Exception as e:
+                        return_data["files"].append(
+                            {
+                                "success": False,
+                                "file_id": file_id,
+                                "filename": item["filename"],
+                                "message": f"{e}",
+                            }
+                        )
+                elif fileformat.strip().lower() == "tar.gz":
+                    try:
+                        with tarfile.open(
+                            os.path.join(tmpdirname, "archive"), mode="r:gz"
+                        ) as z_file:
+                            for member in z_file.getnames():
+                                member_files = z_file.extractfile(member)
+                                to_be_uploaded.append(
+                                    {
+                                        "filename": member,
+                                        "data": member_files.read(),
+                                    }
+                                )
+                            return_data["success"] = True
+                    except Exception as e:
+                        return_data["files"].append(
+                            {
+                                "success": False,
+                                "file_id": file_id,
+                                "filename": item["filename"],
+                                "message": f"{e}",
+                            }
+                        )
+
+                elif fileformat.strip().lower() == "7zip":
+                    try:
+                        with py7zr.SevenZipFile(
+                            os.path.join(tmpdirname, "archive"),
+                            mode="r",
+                            password=password if password else None,
+                        ) as z_file:
+                            for filename, source in z_file.readall().items():
+                                # Removes paths
+                                filename = filename.split("/")[-1]
+                                to_be_uploaded.append(
+                                    {
+                                        "filename": item["filename"],
+                                        "data": source.read(),
+                                    }
+                                )
+                                return_data["success"] = True
+                    except Exception:
+                        return_data["files"].append(
+                            {
+                                "success": False,
+                                "file_id": file_id,
+                                "filename": item["filename"],
+                                "message": "File is not a valid 7zip archive",
+                            }
+                        )
+                else:
+                    return "No such format: %s" % fileformat
+
+            self.logger.info("Breaking as this only handles one archive at a time.")
+            if len(to_be_uploaded) > 0:
+                return_ids = self.set_files(to_be_uploaded)
+                self.logger.info(f"Got return ids from files: {return_ids}")
+
+                for i in range(len(return_ids)):
+                    return_data["archive_id"] = file_id
+                    try:
+                        return_data["files"].append(
+                            {
+                                "success": True,
+                                "file_id": return_ids[i],
+                                "filename": to_be_uploaded[i]["filename"],
+                            }
+                        )
+                    except:
+                        return_data["files"].append(
+                            {
+                                "success": True,
+                                "file_id": return_ids[i],
+                            }
+                        )
+            else:
+                self.logger.info(f"No file ids to upload.")
+                return_data["success"] = False
+                return_data["files"].append(
+                    {
+                        "success": False,
+                        "filename": "No data in archive",
+                        "message": "Archive is empty",
+                    }
+                )
 
             return return_data
 
         except Exception as excp:
             return {"success": False, "message": "%s" % excp}
 
-    def inflate_archive(self, file_ids, fileformat, name, password=None):
-
+    def create_archive(self, file_ids, fileformat, name, password=None):
         try:
             # TODO: will in future support multiple files instead of string ids?
-            file_ids = file_ids.split()
-            self.logger.info("picking {}".format(file_ids))
+            if isinstance(file_ids, str):
+                file_ids = file_ids.split()
+            elif isinstance(file_ids, list):
+                file_ids = file_ids
+            else:
+                return {
+                    "success": False,
+                    "reason": "Bad file_ids. Example: file_13eea837-c56a-4d52-a067-e673c7186483",
+                }
 
+            if len(file_ids) == 0:
+                return {
+                    "success": False,
+                    "reason": "Make sure to send valid file ids. Example: file_13eea837-c56a-4d52-a067-e673c7186483,file_13eea837-c56a-4d52-a067-e673c7186484",
+                }
+
+            self.logger.info("picking {}".format(file_ids))
             # GET all items from shuffle
             items = [self.get_file(file_id) for file_id in file_ids]
 
@@ -1225,7 +1246,7 @@ class Tools(AppBase):
 
                     if len(return_id) == 1:
                         # Returns the first file's ID
-                        return {"success": True, "id": return_id[0]}
+                        return {"success": True, "file_id": return_id[0]}
                     else:
                         return {
                             "success": False,
@@ -1236,34 +1257,37 @@ class Tools(AppBase):
             return {"success": False, "message": excp}
 
     def add_list_to_list(self, list_one, list_two):
-        if not list_one or list_one == " " or list_one == "None" or list_one == "null":
-            list_one = "[]"
-        if not list_two or list_two == " " or list_two == "None" or list_two == "null":
-            list_two = "[]"
+        if not isinstance(list_one, list) and not isinstance(list_one, dict): 
+            if not list_one or list_one == " " or list_one == "None" or list_one == "null":
+                list_one = "[]"
 
-        try:
-            list_one = json.loads(list_one)
-        except json.decoder.JSONDecodeError as e:
-            self.logger.info("Failed to parse list1 as json: %s" % e)
-            if list_one == None:
-                list_one = []
-            else:
-                return {
-                    "success": False,
-                    "reason": f"List one is not a valid list: {list_one}" 
-                }
+            try:
+                list_one = json.loads(list_one)
+            except json.decoder.JSONDecodeError as e:
+                self.logger.info("Failed to parse list1 as json: %s" % e)
+                if list_one == None:
+                    list_one = []
+                else:
+                    return {
+                        "success": False,
+                        "reason": f"List one is not a valid list: {list_one}" 
+                    }
 
-        try:
-            list_two = json.loads(list_two)
-        except json.decoder.JSONDecodeError as e:
-            self.logger.info("Failed to parse list2 as json: %s" % e)
-            if list_one == None:
-                list_one = []
-            else:
-                return {
-                    "success": False,
-                    "reason": f"List two is not a valid list: {list_two}"
-                }
+        if not isinstance(list_two, list) and not isinstance(list_two, dict):
+            if not list_two or list_two == " " or list_two == "None" or list_two == "null":
+                list_two = "[]"
+
+            try:
+                list_two = json.loads(list_two)
+            except json.decoder.JSONDecodeError as e:
+                self.logger.info("Failed to parse list2 as json: %s" % e)
+                if list_one == None:
+                    list_one = []
+                else:
+                    return {
+                        "success": False,
+                        "reason": f"List two is not a valid list: {list_two}"
+                    }
 
         if isinstance(list_one, dict):
             list_one = [list_one]
@@ -1276,15 +1300,17 @@ class Tools(AppBase):
         return list_one
 
     def diff_lists(self, list_one, list_two):
-        try:
-            list_one = json.loads(list_one)
-        except json.decoder.JSONDecodeError as e:
-            self.logger.info("Failed to parse list1 as json: %s" % e)
+        if not isinstance(list_one, dict) and not isinstance(list_one, list):
+            try:
+                list_one = json.loads(list_one)
+            except json.decoder.JSONDecodeError as e:
+                self.logger.info("Failed to parse list1 as json: %s" % e)
 
-        try:
-            list_two = json.loads(list_two)
-        except json.decoder.JSONDecodeError as e:
-            self.logger.info("Failed to parse list2 as json: %s" % e)
+        if not isinstance(list_two, dict) and not isinstance(list_two, list):
+            try:
+                list_two = json.loads(list_two)
+            except json.decoder.JSONDecodeError as e:
+                self.logger.info("Failed to parse list2 as json: %s" % e)
 
         def diff(li1, li2):
             return list(set(li1) - set(li2)) + list(set(li2) - set(li1))
@@ -1351,6 +1377,12 @@ class Tools(AppBase):
         return list_one
 
     def xml_json_convertor(self, convertto, data):
+        if isinstance(data, dict) or isinstance(data, object) or isinstance(data, list):
+            try:
+                data = json.dumps(data)
+            except:
+                pass
+
         try:
             if convertto == "json":
                 ans = xmltodict.parse(data)
@@ -1360,7 +1392,11 @@ class Tools(AppBase):
                 ans = readfromstring(data)
                 return json2xml.Json2xml(ans, wrapper="all", pretty=True).to_xml()
         except Exception as e:
-            return e
+            return {
+                "success": False,
+                "input": data,
+                "reason": f"{e}"
+            }
 
     def date_to_epoch(self, input_data, date_field, date_format):
 
@@ -1370,10 +1406,10 @@ class Tools(AppBase):
             )
         )
 
-        result = json.loads(input_data)
-        #try:
-        #except json.decoder.JSONDecodeError as e:
-        #    result = input_data
+        if not isinstance(input_data, dict) and not isinstance(input_data, object):
+            result = json.loads(input_data)
+        else:
+            result = input_data
 
         # https://docs.python.org/3/library/datetime.html#strftime-strptime-behavior
         epoch = datetime.datetime.strptime(result[date_field], date_format).strftime(
@@ -1383,18 +1419,18 @@ class Tools(AppBase):
         return result
 
     def compare_relative_date(
-        self, input_data, date_format, equality_test, offset, units, direction
+        self, timestamp, date_format, equality_test, offset, units, direction
     ):
 
-        if input_data == "None":
+        if timestamp== "None":
             return False
 
         self.logger.info("Converting input date.")
 
         if date_format != "%s":
-            input_dt = datetime.datetime.strptime(input_data, date_format)
+            input_dt = datetime.datetime.strptime(timestamp, date_format)
         else:
-            input_dt = datetime.datetime.utcfromtimestamp(float(input_data))
+            input_dt = datetime.datetime.utcfromtimestamp(float(timestamp))
 
         offset = int(offset)
         if units == "seconds":
@@ -1426,7 +1462,7 @@ class Tools(AppBase):
 
         diff = (input_dt - comparison_dt).total_seconds()
         self.logger.info(
-            "Difference between {} and {} is {}".format(input_data, comparison_dt, diff)
+            "Difference between {} and {} is {}".format(timestamp, comparison_dt, diff)
         )
         result = False
         if equality_test == ">":
@@ -1453,7 +1489,7 @@ class Tools(AppBase):
         self.logger.info(
             "At {}, is {} {} than {} {} {}? {}".format(
                 formatted_dt,
-                input_data,
+                timestamp,
                 equality_test,
                 offset,
                 units,
@@ -1469,9 +1505,13 @@ class Tools(AppBase):
         result = eval(operation)
         return result
 
+    # This is kind of stupid
     def escape_html(self, input_data, field_name):
+        if isinstance(input_data, str):
+            mapping = json.loads(input_data)
+        else:
+            mapping = input_data
 
-        mapping = json.loads(input_data)
         self.logger.info(f"Got mapping {json.dumps(mapping, indent=2)}")
 
         result = markupsafe.escape(mapping[field_name])
@@ -1706,10 +1746,11 @@ class Tools(AppBase):
             return response.text
 
     def convert_json_to_tags(self, json_object, split_value=", ", include_key=True, lowercase=True):
-        try:
-            json_object = json.loads(json_object)
-        except json.decoder.JSONDecodeError as e:
-            self.logger.info("Failed to parse list2 as json: %s. Type: %s" % (e, type(json_object)))
+        if isinstance(json_object, str):
+            try:
+                json_object = json.loads(json_object)
+            except json.decoder.JSONDecodeError as e:
+                self.logger.info("Failed to parse list2 as json: %s. Type: %s" % (e, type(json_object)))
 
         if isinstance(lowercase, str) and lowercase.lower() == "true":
             lowercase = True
@@ -1747,13 +1788,17 @@ class Tools(AppBase):
     def cidr_ip_match(self, ip, networks):
         self.logger.info("Executing with\nIP: {},\nNetworks: {}".format(ip, networks))
 
-        try:
-            networks = json.loads(networks)
-        except json.decoder.JSONDecodeError as e:
-            self.logger.info("Failed to parse networks list as json: {}. Type: {}".format(
-                e, type(networks)
-            ))
-            return "Networks is not a valid list: {}".format(networks)
+        if isinstance(networks, str):
+            try:
+                networks = json.loads(networks)
+            except json.decoder.JSONDecodeError as e:
+                self.logger.info("Failed to parse networks list as json: {}. Type: {}".format(
+                    e, type(networks)
+                ))
+                return {
+                    "success": False,
+                    "reason": "Networks is not a valid list: {}".format(networks),
+                }
 
         try:
             ip_networks = list(map(ipaddress.ip_network, networks))
@@ -1764,6 +1809,7 @@ class Tools(AppBase):
         matched_networks = list(filter(lambda net: (ip_address in net), ip_networks))
 
         result = {}
+        result["ip"] = ip
         result['networks'] = list(map(str, matched_networks))
         result['is_contained'] = True if len(result['networks']) > 0 else False
 
