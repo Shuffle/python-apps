@@ -1338,14 +1338,7 @@ class Tools(AppBase):
             if isinstance(list_one[0], int):
                 return {
                     "success": False, 
-                    "message": "Items in list must be valid objects (JSON), not numbers (list_one).",
-                }
-                    
-        if isinstance(list_two[0], int):
-            if isinstance(list_two[0], int):
-                return {
-                    "success": False, 
-                    "message": "Items in list must be valid objects (JSON), not numbers (list_two).",
+                    "message": "Items in list_one must be valid objects (JSON), not numbers.",
                 }
 
         #result = json.loads(input_data)
