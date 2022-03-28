@@ -329,10 +329,11 @@ class Tools(AppBase):
                 "reason": "Item is not valid JSON (2)"
             }
 
-        try:
-            value = json.loads(value)
-        except json.decoder.JSONDecodeError as e:
-            pass
+        if isinstance(value, str):
+            try:
+                value = json.loads(value)
+            except json.decoder.JSONDecodeError as e:
+                pass
 
         # Handle JSON paths
         if "." in key:
