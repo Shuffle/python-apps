@@ -165,6 +165,7 @@ class Email(AppBase):
         foldername,
         amount,
         unread,
+        mark_as_read,
         fields,
         include_raw_body,
         include_attachment_data,
@@ -229,6 +230,7 @@ class Email(AppBase):
 
         email.select(foldername)
         unread = True if unread.lower().strip() == "true" else False
+        
         try:
             # IMAP search queries, e.g. "seen" or "read"
             # https://www.rebex.net/secure-mail.net/features/imap-search.aspx
@@ -255,6 +257,7 @@ class Email(AppBase):
                 "success": False,
                 "reason": "Error getting email. Data: %s" % data,
             }
+        mark_as_read = True if mark_as_read.lower().strip() == "true" else False
 
         include_raw_body = True if include_raw_body.lower().strip() == "true" else False
         include_attachment_data = (
@@ -293,6 +296,8 @@ class Email(AppBase):
 
                 if data == None:
                     continue
+                if not mark_as_read:
+                    email.store(id_list[i], "-FLAGS", '\Seen')
 
                 output_dict = {}
                 parsed_eml = ep.decode_email_bytes(data[0][1])
@@ -340,8 +345,7 @@ class Email(AppBase):
 
                     except Exception as e:
                         self.logger.info(f"Major issue with EML attachment - are there attachments: {e}")
-                        
-
+                
                 emails.append(output_dict)
         except Exception as err:
             return {
