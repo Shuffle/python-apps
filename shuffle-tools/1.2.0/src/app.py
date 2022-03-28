@@ -182,8 +182,7 @@ class Tools(AppBase):
                                         for subitem in subvalue:
                                             data = {
                                                 "data": subitem,
-                                                "data_type": "%s_%s"
-                                                % (key[:-1], subkey),
+                                                "data_type": "%s_%s" % (key[:-1], subkey),
                                             }
                                             if data not in newarray:
                                                 newarray.append(data)
@@ -823,7 +822,6 @@ class Tools(AppBase):
                             failed_list.append(item)
 
             except Exception as e:
-                # "Error: %s" % e
                 self.logger.info("[WARNING] FAILED WITH EXCEPTION: %s" % e)
                 failed_list.append(item)
             # return

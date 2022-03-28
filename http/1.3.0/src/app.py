@@ -85,7 +85,7 @@ class HTTP(AppBase):
         return parsed_headers
 
     def checkverify(self, verify):
-        if verify.lower().strip() == "false":
+        if str(verify).lower().strip() == "false":
             return False
         elif verify == None:
             return False
