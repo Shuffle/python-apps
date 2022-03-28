@@ -1237,34 +1237,36 @@ class Tools(AppBase):
             return {"success": False, "message": excp}
 
     def add_list_to_list(self, list_one, list_two):
-        if not list_one or list_one == " " or list_one == "None" or list_one == "null":
-            list_one = "[]"
-        if not list_two or list_two == " " or list_two == "None" or list_two == "null":
-            list_two = "[]"
+        if isinstance(list_one, str):
+            if not list_one or list_one == " " or list_one == "None" or list_one == "null":
+                list_one = "[]"
 
-        try:
-            list_one = json.loads(list_one)
-        except json.decoder.JSONDecodeError as e:
-            self.logger.info("Failed to parse list1 as json: %s" % e)
-            if list_one == None:
-                list_one = []
-            else:
-                return {
-                    "success": False,
-                    "reason": f"List one is not a valid list: {list_one}" 
-                }
+            try:
+                list_one = json.loads(list_one)
+            except json.decoder.JSONDecodeError as e:
+                self.logger.info("Failed to parse list1 as json: %s" % e)
+                if list_one == None:
+                    list_one = []
+                else:
+                    return {
+                        "success": False,
+                        "reason": f"List one is not a valid list: {list_one}" 
+                    }
 
-        try:
-            list_two = json.loads(list_two)
-        except json.decoder.JSONDecodeError as e:
-            self.logger.info("Failed to parse list2 as json: %s" % e)
-            if list_one == None:
-                list_one = []
-            else:
-                return {
-                    "success": False,
-                    "reason": f"List two is not a valid list: {list_two}"
-                }
+        if isinstance(list_two, str):
+            if not list_two or list_two == " " or list_two == "None" or list_two == "null":
+                list_two = "[]"
+            try:
+                list_two = json.loads(list_two)
+            except json.decoder.JSONDecodeError as e:
+                self.logger.info("Failed to parse list2 as json: %s" % e)
+                if list_one == None:
+                    list_one = []
+                else:
+                    return {
+                        "success": False,
+                        "reason": f"List two is not a valid list: {list_two}"
+                    }
 
         if isinstance(list_one, dict):
             list_one = [list_one]
@@ -1295,7 +1297,6 @@ class Tools(AppBase):
         return diff(list_one, list_two)
 
     def merge_lists(self, list_one, list_two, set_field="", sort_key_list_one="", sort_key_list_two=""):
-        self.logger.info(list_one, type(list_one))
         if isinstance(list_one, str):
             try:
                 list_one = json.loads(list_one)
@@ -1317,12 +1318,6 @@ class Tools(AppBase):
                     "success": False, 
                     "message": "Items in list_one must be valid objects (JSON), not numbers.",
                 }
-                    
-        #result = json.loads(input_data)
-        self.logger.info(list_one)
-        self.logger.info(list_two)
-        self.logger.info(set_field)
-        self.logger.info("START: ")
 
         if len(sort_key_list_one) > 0:
             self.logger.info("Sort 1 %s by key: %s" % (list_one, sort_key_list_one))

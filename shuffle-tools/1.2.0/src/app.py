@@ -1356,7 +1356,6 @@ class Tools(AppBase):
         }
 
     def merge_lists(self, list_one, list_two, set_field="", sort_key_list_one="", sort_key_list_two=""):
-        self.logger.info(list_one, type(list_one))
         if isinstance(list_one, str):
             try:
                 list_one = json.loads(list_one)
@@ -1378,8 +1377,6 @@ class Tools(AppBase):
                     "success": False, 
                     "message": "Items in list_one must be valid objects (JSON), not numbers.",
                 }
-
-        #result = json.loads(input_data)
 
         if len(sort_key_list_one) > 0:
             self.logger.info("Sort 1 %s by key: %s" % (list_one, sort_key_list_one))
