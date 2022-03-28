@@ -1305,17 +1305,48 @@ class Tools(AppBase):
                 list_one = json.loads(list_one)
             except json.decoder.JSONDecodeError as e:
                 self.logger.info("Failed to parse list1 as json: %s" % e)
+                return {
+                    "success": False,
+                    "reason": "list_one is not a valid list."
+                }
 
         if isinstance(list_two, str):
             try:
                 list_two = json.loads(list_two)
             except json.decoder.JSONDecodeError as e:
                 self.logger.info("Failed to parse list2 as json: %s" % e)
+                return {
+                    "success": False,
+                    "reason": "list_two is not a valid list."
+                }
 
         def diff(li1, li2):
-            return list(set(li1) - set(li2)) + list(set(li2) - set(li1))
+            try:
+                return list(set(li1) - set(li2)) + list(set(li2) - set(li1))
+            except TypeError as e:
+                # Bad json diffing - at least order doesn't matter :)
+                not_found = []
+                for item in list_one:
+                    #item = sorted(item.items())
+                    if item in list_two:
+                        pass
+                    else:
+                        not_found.append(item)
 
-        return diff(list_one, list_two)
+                for item in list_two:
+                    if item in list_one:
+                        pass
+                    else:
+                        if item not in not_found:
+                            not_found.append(item)
+
+                return not_found
+
+        newdiff = diff(list_one, list_two)
+        return {
+            "success": True,
+            "diff": newdiff,
+        }
 
     def merge_lists(self, list_one, list_two, set_field="", sort_key_list_one="", sort_key_list_two=""):
         self.logger.info(list_one, type(list_one))
