@@ -1343,6 +1343,13 @@ class Tools(AppBase):
                 return not_found
 
         newdiff = diff(list_one, list_two)
+        parsed_diff = []
+        for item in newdiff:
+            if not item:
+                continue
+
+            parsed_diff.append(item)
+
         return {
             "success": True,
             "diff": newdiff,
