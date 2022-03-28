@@ -1276,15 +1276,17 @@ class Tools(AppBase):
         return list_one
 
     def diff_lists(self, list_one, list_two):
-        try:
-            list_one = json.loads(list_one)
-        except json.decoder.JSONDecodeError as e:
-            self.logger.info("Failed to parse list1 as json: %s" % e)
+        if isinstance(list_one, str):
+            try:
+                list_one = json.loads(list_one)
+            except json.decoder.JSONDecodeError as e:
+                self.logger.info("Failed to parse list1 as json: %s" % e)
 
-        try:
-            list_two = json.loads(list_two)
-        except json.decoder.JSONDecodeError as e:
-            self.logger.info("Failed to parse list2 as json: %s" % e)
+        if isinstance(list_two, str):
+            try:
+                list_two = json.loads(list_two)
+            except json.decoder.JSONDecodeError as e:
+                self.logger.info("Failed to parse list2 as json: %s" % e)
 
         def diff(li1, li2):
             return list(set(li1) - set(li2)) + list(set(li2) - set(li1))
@@ -1293,13 +1295,13 @@ class Tools(AppBase):
 
     def merge_lists(self, list_one, list_two, set_field="", sort_key_list_one="", sort_key_list_two=""):
         self.logger.info(list_one, type(list_one))
-        if not isinstance(list_one, list):
+        if isinstance(list_one, str):
             try:
                 list_one = json.loads(list_one)
             except json.decoder.JSONDecodeError as e:
                 self.logger.info("Failed to parse list1 as json: %s" % e)
 
-        if not isinstance(list_two, list):
+        if isinstance(list_two, str):
             try:
                 list_two = json.loads(list_two)
             except json.decoder.JSONDecodeError as e:
@@ -1307,6 +1309,20 @@ class Tools(AppBase):
 
         if len(list_one) != len(list_two):
             return {"success": False, "message": "Lists length must be the same. %d vs %d" % (len(list_one), len(list_two))}
+
+        if len(list_one) > 0:
+            if isinstance(list_one[0], int):
+                return {
+                    "success": False, 
+                    "message": "Items in list must be valid objects (JSON), not numbers (list_one).",
+                }
+                    
+        if isinstance(list_two[0], int):
+            if isinstance(list_two[0], int):
+                return {
+                    "success": False, 
+                    "message": "Items in list must be valid objects (JSON), not numbers (list_two).",
+                }
 
         #result = json.loads(input_data)
         self.logger.info(list_one)

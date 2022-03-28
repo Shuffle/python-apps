@@ -114,7 +114,8 @@ class CheckPoint(AppBase):
             }
 
         response = requests.post(url,data=json.dumps(json_payload), headers=request_headers, verify=ssl_verify)
-        self.publish(ip_addr,session_id)
+        # Do we really need to publish changes after installing the policy??
+        #self.publish(ip_addr,session_id)
         self.logout(ip_addr, session_id)   
         return response.json()
     
@@ -125,7 +126,10 @@ class CheckPoint(AppBase):
             "success": [],
             "failed": []
         }
-        host_list = ast.literal_eval(host_list)
+
+        if isinstance(host_list, str):
+            host_list = ast.literal_eval(host_list)
+
         url = f'https://{ip_addr}/web_api/add-host'
         session_id = self.login(ip_addr, user, password)
         
@@ -347,8 +351,9 @@ class CheckPoint(AppBase):
 
         url = f'https://{ip_addr}/web_api/set-group'
         session_id = self.login(ip_addr, user, password)
-        members = ast.literal_eval(members)
-        print(members,"---",type(members))
+        if isinstance(members, str):
+            members = ast.literal_eval(members)
+
         if ssl_verify.lower() == 'true':
             ssl_verify = True
         else:
@@ -419,7 +424,46 @@ class CheckPoint(AppBase):
         response = requests.post(url,data=json.dumps(json_payload), headers=request_headers, verify=ssl_verify)
         self.publish(ip_addr,session_id)
         self.logout(ip_addr, session_id)
-        return response.json()        
+        return response.json()
+
+    def list_all_tasks(self, ip_addr:str, user:str, password:str, ssl_verify)->"json":
+        url = f'https://{ip_addr}/web_api/show-tasks'
+        session_id = self.login(ip_addr, user, password)
+        
+        if ssl_verify.lower() == 'true':
+            ssl_verify = True
+        else:
+            ssl_verify = False
+
+        request_headers = {
+            'Content-Type' : 'application/json',
+            'X-chkp-sid': session_id
+            }
+            
+        response = requests.post(url,data=json.dumps({}), headers=request_headers, verify=ssl_verify)
+        self.logout(ip_addr, session_id)
+        return response.json() 
+
+    def get_task(self, ip_addr:str, user:str, password:str, task_id:str, ssl_verify)->"json":
+        url = f'https://{ip_addr}/web_api/show-task'
+        session_id = self.login(ip_addr, user, password)
+        
+        if ssl_verify.lower() == 'true':
+            ssl_verify = True
+        else:
+            ssl_verify = False
+
+        request_headers = {
+            'Content-Type' : 'application/json',
+            'X-chkp-sid': session_id
+            }
+        json_payload = {
+            'task-id': task_id 
+            }    
+        
+        response = requests.post(url,data=json.dumps(json_payload), headers=request_headers, verify=ssl_verify)
+        self.logout(ip_addr, session_id)
+        return response.json()                
 
 
 if __name__ == "__main__":
