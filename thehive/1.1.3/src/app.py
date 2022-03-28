@@ -172,7 +172,7 @@ class TheHive(AppBase):
         # Prepare the customfields
         customfields = CustomFieldHelper()
 
-        if not isinstance(custom_fields, list) and not isinstance(custom_fields, dict) and not isinstance(custom_fields, object):
+        if isinstance(custom_fields, str):
             try:
                 custom_fields = json.loads(custom_fields) if custom_fields else {}
             except json.decoder.JSONDecodeError:
@@ -724,10 +724,12 @@ class TheHive(AppBase):
                         f'The value type "{value}" of the field {key} is not suported by the function.'
                     )
 
-        try:
-            custom_fields = json.loads(custom_fields) if custom_fields else {}
-        except json.decoder.JSONDecodeError:
-            return "Custom fields need to be valid json"
+        if isinstance(custom_fields, str):
+            try:
+                custom_fields = json.loads(custom_fields) if custom_fields else {}
+            except json.decoder.JSONDecodeError:
+                return "Custom fields need to be valid json"
+
         for key, value in custom_fields.items():
             if type(value) == int:
                 customfields.add_integer(key, value)
