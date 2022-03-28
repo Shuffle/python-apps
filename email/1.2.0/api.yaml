@@ -163,6 +163,15 @@ actions:
         required: true
         schema:
           type: bool
+      - name: mark_as_read
+        description: Mark email as read or not
+        multiline: false
+        options:
+          - "false"
+          - "true"
+        required: true
+        schema:
+          type: bool    
       - name: fields
         description: Comma separated list of fields to be exported
         multiline: false
