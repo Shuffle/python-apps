@@ -167,13 +167,13 @@ class Email(AppBase):
         foldername,
         amount,
         unread,
-        mark_as_read,
         fields,
         include_raw_body,
         include_attachment_data,
         upload_email_shuffle,
         upload_attachments_shuffle,
-        ssl_verify="True"
+        ssl_verify="True",
+        mark_as_read="False",
     ):
         def path_to_dict(path, value=None):
             def pack(parts):
@@ -192,6 +192,12 @@ class Email(AppBase):
                 else:
                     d1[k] = d2[k]
 
+        #if isinstance(mark_as_read, str):
+        #    if str(mark_as_read).lower() == "true":
+        #        mark_as_read = True
+        #    else:
+        #        mark_as_read = False 
+
         if type(amount) == str:
             try:
                 amount = int(amount)
@@ -207,7 +213,7 @@ class Email(AppBase):
             try:
                 email = imaplib.IMAP4(imap_server)
 
-                if ssl_verify == "false" or ssl_verify == "False":
+                if ssl_verify == "false" or ssl_verify == "False" or ssl_verify == False:
                     pass
                 else:
                     email.starttls()
@@ -252,24 +258,24 @@ class Email(AppBase):
                 "reason": f"Couldn't retrieve email. Data: {data}",
             }
 
-        try:
-            self.logger.info(f"LIST: {id_list}")
-        except TypeError:
-            return {
-                "success": False,
-                "reason": "Error getting email. Data: %s" % data,
-            }
-        mark_as_read = True if mark_as_read.lower().strip() == "true" else False
+        #try:
+        #    self.logger.info(f"LIST: {id_list}")
+        #except TypeError:
+        #    return {
+        #        "success": False,
+        #        "reason": "Error getting email. Data: %s" % data,
+        #    }
 
-        include_raw_body = True if include_raw_body.lower().strip() == "true" else False
+        mark_as_read = True if str(mark_as_read).lower().strip() == "true" else False
+        include_raw_body = True if str(include_raw_body).lower().strip() == "true" else False
         include_attachment_data = (
-            True if include_attachment_data.lower().strip() == "true" else False
+            True if str(include_attachment_data).lower().strip() == "true" else False
         )
         upload_email_shuffle = (
-            True if upload_email_shuffle.lower().strip() == "true" else False
+            True if str(upload_email_shuffle).lower().strip() == "true" else False
         )
         upload_attachments_shuffle = (
-            True if upload_attachments_shuffle.lower().strip() == "true" else False
+            True if str(upload_attachments_shuffle).lower().strip() == "true" else False
         )
 
         # Convert <amount> of mails in json
@@ -298,6 +304,7 @@ class Email(AppBase):
 
                 if data == None:
                     continue
+
                 if not mark_as_read:
                     email.store(id_list[i], "-FLAGS", '\Seen')
 
@@ -318,24 +325,20 @@ class Email(AppBase):
                     output_dict = parsed_eml
 
                 output_dict["imap_id"] = id_list[i]
-                output_dict["attachment"] = []
-                output_dict["attachment_uids"] = []
 
                 # Add message-id as top returned field
-                output_dict["message_id"] = parsed_eml["header"]["header"][
-                    "message-id"
-                ][0]
+                output_dict["message_id"] = parsed_eml["header"]["header"]["message-id"][0]
 
                 if upload_email_shuffle:
+                    self.logger.info("Uploading email to shuffle")
                     email_up = [{"filename": "email.msg", "data": data[0][1]}]
                     email_id = self.set_files(email_up)
                     output_dict["email_uid"] = email_id[0]
 
                 if upload_attachments_shuffle:
-                    #self.logger.info(f"EML: {parsed_eml}")
+                    self.logger.info(f"eml: {parsed_eml}")
                     try:
-                        atts_up = [
-                            {
+                        atts_up = [{
                                 "filename": x["filename"],
                                 "data": base64.b64decode(x["raw"]),
                             }
@@ -347,6 +350,9 @@ class Email(AppBase):
 
                     except Exception as e:
                         self.logger.info(f"Major issue with EML attachment - are there attachments: {e}")
+                else:
+                    output_dict["attachment"] = []
+                    output_dict["attachment_uids"] = []
                 
                 emails.append(output_dict)
         except Exception as err:
