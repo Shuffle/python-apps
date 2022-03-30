@@ -231,6 +231,7 @@ class Tools(AppBase):
 
     # https://github.com/fhightower/ioc-finder
     def parse_ioc(self, input_string, input_type="all"):
+        input_string = str(input_string)
         if input_type == "":
             input_type = "all"
         else:
@@ -1371,13 +1372,6 @@ class Tools(AppBase):
         if len(list_one) != len(list_two):
             return {"success": False, "message": "Lists length must be the same. %d vs %d" % (len(list_one), len(list_two))}
 
-        if len(list_one) > 0:
-            if isinstance(list_one[0], int):
-                return {
-                    "success": False, 
-                    "message": "Items in list_one must be valid objects (JSON), not numbers.",
-                }
-
         if len(sort_key_list_one) > 0:
             self.logger.info("Sort 1 %s by key: %s" % (list_one, sort_key_list_one))
             try:
@@ -1397,20 +1391,27 @@ class Tools(AppBase):
         # Loops for each item in sub array and merges items together
         # List one is being overwritten
         base_key = "shuffle_auto_merge"
-        for i in range(len(list_one)):
-            #self.logger.info(list_two[i])
-            if isinstance(list_two[i], dict):
-                for key, value in list_two[i].items():
-                    list_one[i][key] = value
-            elif isinstance(list_two[i], str) and list_two[i] == "":
-                continue
-            elif isinstance(list_two[i], str) or isinstance(list_two[i], int) or isinstance(list_two[i], bool):
-                self.logger.info("IN SETTER FOR %s" % list_two[i])
-                if len(set_field) == 0:
-                    self.logger.info("Define a JSON key to set for List two (Set Field)")
-                    list_one[i][base_key] = list_two[i]
-                else:
-                    list_one[i][set_field] = list_two[i]
+        try:
+            for i in range(len(list_one)):
+                #self.logger.info(list_two[i])
+                if isinstance(list_two[i], dict):
+                    for key, value in list_two[i].items():
+                        list_one[i][key] = value
+                elif isinstance(list_two[i], str) and list_two[i] == "":
+                    continue
+                elif isinstance(list_two[i], str) or isinstance(list_two[i], int) or isinstance(list_two[i], bool):
+                    self.logger.info("IN SETTER FOR %s" % list_two[i])
+                    if len(set_field) == 0:
+                        self.logger.info("Define a JSON key to set for List two (Set Field)")
+                        list_one[i][base_key] = list_two[i]
+                    else:
+                        list_one[i][set_field] = list_two[i]
+        except Exception as e:
+            return {
+                "success": False,
+                "reason": "An error occurred while merging the lists. PS: List one can NOT be a list of integers. If this persists, contact us at support@shuffler.io",
+                "exception": f"{e}",
+            }
 
         return list_one
 

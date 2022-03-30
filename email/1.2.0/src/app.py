@@ -336,7 +336,7 @@ class Email(AppBase):
                     output_dict["email_uid"] = email_id[0]
 
                 if upload_attachments_shuffle:
-                    self.logger.info(f"eml: {parsed_eml}")
+                    self.logger.info("Uploading email ATTACHMENTS to shuffle")
                     try:
                         atts_up = [{
                                 "filename": x["filename"],
@@ -347,6 +347,10 @@ class Email(AppBase):
 
                         atts_ids = self.set_files(atts_up)
                         output_dict["attachments_uids"] = atts_ids
+
+                        # Don't need this raw.
+                        for x in parsed_eml["attachment"]:
+                            x["raw"] = "Removed and saved in the uploaded file"
 
                     except Exception as e:
                         self.logger.info(f"Major issue with EML attachment - are there attachments: {e}")
@@ -366,7 +370,7 @@ class Email(AppBase):
                 "success": True,
                 "messages": json.loads(json.dumps(emails, default=default)),
             }
-            self.logger.info(f"Emails: {to_return}")
+
             return to_return
         except:
             return {
