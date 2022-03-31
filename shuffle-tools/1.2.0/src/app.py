@@ -1755,13 +1755,22 @@ class Tools(AppBase):
     def set_cache_value(self, key, value):
         org_id = self.full_execution["workflow"]["execution_org"]["id"]
         url = "%s/api/v1/orgs/%s/set_cache" % (self.url, org_id)
+
+        if isinstance(value, dict) or isinstance(value, list) or isinstance(value, object):
+            try:
+                value = json.dumps(value)
+            except:
+                pass
+        elif not isinstance(value, str):
+            value = str(value)
+
         data = {
             "workflow_id": self.full_execution["workflow"]["id"],
             "execution_id": self.current_execution_id,
             "authorization": self.authorization,
             "org_id": org_id,
             "key": key,
-            "value": str(value),
+            "value": value,
         }
 
         response = requests.post(url, json=data)
@@ -1774,7 +1783,7 @@ class Tools(AppBase):
                 try:
                     allvalues["value"] = json.loads(value)
                 except json.decoder.JSONDecodeError as e:
-                    self.logger.info("Failed inner value parsing: %s" % e)
+                    self.logger.info("[WARNING] Failed inner value cache parsing: %s" % e)
                     allvalues["value"] = str(value)
             else:
                 allvalues["value"] = str(value)
