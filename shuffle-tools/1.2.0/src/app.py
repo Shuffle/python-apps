@@ -1570,6 +1570,14 @@ class Tools(AppBase):
             "key": key,
         }
 
+        if isinstance(value, dict) or isinstance(value, list) or isinstance(value, object):
+            try:
+                value = json.dumps(value)
+            except:
+                pass
+        elif not isinstance(value, str):
+            value = str(value)
+
         if append.lower() == "true":
             append = True
         else:
