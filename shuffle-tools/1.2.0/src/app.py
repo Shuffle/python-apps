@@ -1369,6 +1369,9 @@ class Tools(AppBase):
             except json.decoder.JSONDecodeError as e:
                 self.logger.info("Failed to parse list2 as json: %s" % e)
 
+        if not isinstance(list_one, list) or not isinstance(list_two, list):
+            return {"success": False, "message": "Input lists need to be valid JSON lists."}
+
         if len(list_one) != len(list_two):
             return {"success": False, "message": "Lists length must be the same. %d vs %d" % (len(list_one), len(list_two))}
 
@@ -1573,8 +1576,8 @@ class Tools(AppBase):
         if isinstance(value, dict) or isinstance(value, list) or isinstance(value, object):
             try:
                 value = json.dumps(value)
-            except:
-                pass
+            except Exception as e:
+                self.logger.info(f"[WARNING] Error in JSON dumping (cache contains): {e}")
         elif not isinstance(value, str):
             value = str(value)
 
@@ -1767,8 +1770,8 @@ class Tools(AppBase):
         if isinstance(value, dict) or isinstance(value, list) or isinstance(value, object):
             try:
                 value = json.dumps(value)
-            except:
-                pass
+            except Exception as e:
+                self.logger.info(f"[WARNING] Error in JSON dumping (set cache): {e}")
         elif not isinstance(value, str):
             value = str(value)
 
