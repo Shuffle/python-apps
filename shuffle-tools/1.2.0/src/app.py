@@ -317,11 +317,11 @@ class Tools(AppBase):
                     "reason": "Item is valid JSON, but can't handle lists. Use .#"
                 }
 
-        if not isinstance(json_object, object):
-            return {
-                "success": False,
-                "reason": "Item is not valid JSON (2)"
-            }
+        #if not isinstance(json_object, object):
+        #    return {
+        #        "success": False,
+        #        "reason": "Item is not valid JSON (2)"
+        #    }
 
         
         if isinstance(value, str):
@@ -404,7 +404,7 @@ class Tools(AppBase):
         return input_data
 
     def replace_value_from_dictionary(self, input_data, mapping, default_value=""):
-        if not isinstance(mapping, dict) and not isinstance(mapping, object):
+        if isinstance(mapping, str):
             try:
                 mapping = json.loads(mapping)
             except json.decoder.JSONDecodeError as e:
@@ -1419,7 +1419,7 @@ class Tools(AppBase):
         return list_one
 
     def xml_json_convertor(self, convertto, data):
-        if isinstance(data, dict) or isinstance(data, object) or isinstance(data, list):
+        if isinstance(data, dict) or isinstance(data, list):
             try:
                 data = json.dumps(data)
             except:
@@ -1427,6 +1427,7 @@ class Tools(AppBase):
 
         try:
             if convertto == "json":
+                data = data.replace(" encoding=\"utf-8\"", " ")
                 ans = xmltodict.parse(data)
                 json_data = json.dumps(ans)
                 return json_data
@@ -1448,7 +1449,7 @@ class Tools(AppBase):
             )
         )
 
-        if not isinstance(input_data, dict) and not isinstance(input_data, object):
+        if isinstance(input_data, str):
             result = json.loads(input_data)
         else:
             result = input_data
@@ -1573,7 +1574,7 @@ class Tools(AppBase):
             "key": key,
         }
 
-        if isinstance(value, dict) or isinstance(value, list) or isinstance(value, object):
+        if isinstance(value, dict) or isinstance(value, list):
             try:
                 value = json.dumps(value)
             except Exception as e:
@@ -1767,7 +1768,7 @@ class Tools(AppBase):
         org_id = self.full_execution["workflow"]["execution_org"]["id"]
         url = "%s/api/v1/orgs/%s/set_cache" % (self.url, org_id)
 
-        if isinstance(value, dict) or isinstance(value, list) or isinstance(value, object):
+        if isinstance(value, dict) or isinstance(value, list):
             try:
                 value = json.dumps(value)
             except Exception as e:

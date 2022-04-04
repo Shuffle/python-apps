@@ -52,7 +52,7 @@ class MySQL(AppBase):
                 return err
         else:
             if tables:
-                if not isinstance(tables, list) and not isinstance(tables, object) and not isinstance(tables, dict):
+                if not isinstance(tables, list) and not isinstance(tables, dict):
                     tables = json.loads(tables)
 
                 t_count = 0
@@ -86,7 +86,7 @@ class MySQL(AppBase):
 
     # Create Tables
     def create_tables(self, server, user, password, database, tables):
-        if not isinstance(tables, list) and not isinstance(tables, object) and not isinstance(tables, dict):
+        if not isinstance(tables, list) and not isinstance(tables, dict):
             tables = json.loads(tables)
 
         try:
@@ -138,7 +138,7 @@ class MySQL(AppBase):
 
     # Insert data into table
     def insert_data(self, server, user, password, database, table, data):
-        if not isinstance(data, list) and not isinstance(data, object) and not isinstance(data, dict):
+        if not isinstance(data, list) and not isinstance(data, dict):
             data = json.loads(data)
 
         try:
