@@ -945,9 +945,9 @@ class Tools(AppBase):
         }
 
         fileret = self.set_files([filedata])
-        value = {"success": True, "file_id": fileret}
+        value = {"success": True, "filename": filename, "file_id": fileret}
         if len(fileret) == 1:
-            value = {"success": True, "file_id": fileret[0]}
+            value = {"success": True, "filename": filename, "file_id": fileret[0]}
 
         return value 
 
