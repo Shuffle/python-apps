@@ -243,11 +243,11 @@ class AzureSentinel(AppBase):
         return res.text
 
     def run_query(self, **kwargs):
-
         # Get a client credential access token
         auth = self.authenticate(
             kwargs["tenant_id"], kwargs["client_id"], kwargs["client_secret"]
         )
+
         if not auth["success"]:
             return {"error": auth["message"]}
 
@@ -268,7 +268,7 @@ class AzureSentinel(AppBase):
             "properties": {
                 "Category": kwargs["query_category"],
                 "DisplayName": kwargs["query_name"],
-                "Query": {kwargs['query']},
+                "Query": kwargs['query'],
             }
         }
 
