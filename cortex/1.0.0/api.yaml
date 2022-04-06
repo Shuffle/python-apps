@@ -75,6 +75,14 @@ actions:
         required: false 
         schema:
           type: tlp
+      - name: force 
+        description: Whether to force rerun the analysis
+        required: false 
+        options:
+          - true
+          - false
+        schema:
+          type: tlp
     returns:
       schema:
         type: string 
@@ -116,6 +124,14 @@ actions:
       - name: tlp 
         description: The tlp to use (0-3), default 1
         required: false 
+        schema:
+          type: tlp
+      - name: force 
+        description: Whether to force rerun the analysis
+        required: false 
+        options:
+          - true
+          - false
         schema:
           type: tlp
     returns:

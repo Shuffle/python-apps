@@ -417,6 +417,7 @@ class TheHive(AppBase):
         response = self.thehive.promote_alert_to_case(
             alert_id=alert_id, case_template=case_template
         )
+
         return response.text
 
     def merge_alert_into_case(self, apikey, url, organisation, alert_id, case_id):

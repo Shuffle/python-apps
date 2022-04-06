@@ -46,9 +46,17 @@ class Cortex(AppBase):
 
         return all_results
 
-    def run_available_analyzers(self, apikey, url, data, datatype, message="", tlp=1):
+    def run_available_analyzers(self, apikey, url, data, datatype, message="", tlp=1, force="true"):
         if data == "" or data == "[]":
-            return "No values to handle []"
+            return {
+                "success": False,
+                "reason": "No values to handle []",
+            }
+
+        if str(force.lower()) == "true":
+            force = 1
+        else:
+            force = 0
 
         self.api = Api(url, apikey, cert=False)
         analyzers = self.get_available_analyzers(apikey, url, datatype)
@@ -61,7 +69,7 @@ class Cortex(AppBase):
                     'dataType': datatype,
                     'tlp': tlp,
                     'message': message,
-                }, force=1)
+                }, force=force)
 
                 alljobs.append(job.id)
             except cortex4py.exceptions.ServiceUnavailableError as e:
@@ -75,7 +83,12 @@ class Cortex(AppBase):
         #    return alljobs[0]
         return alljobs
 
-    def run_analyzer(self, apikey, url, analyzer_name, data, datatype, message="", tlp=1):
+    def run_analyzer(self, apikey, url, analyzer_name, data, datatype, message="", tlp=1, force="true"):
+        if str(force.lower()) == "true":
+            force = 1
+        else:
+            force = 0
+
         self.api = Api(url, apikey, cert=False)
         try:
             job = self.api.analyzers.run_by_name(analyzer_name, {
@@ -83,7 +96,7 @@ class Cortex(AppBase):
                 'dataType': datatype,
                 'tlp': tlp,
                 'message': message,
-            }, force=1)
+            }, force=force)
         except cortex4py.exceptions.ServiceUnavailableError as e:
             return str(e)
         except cortex4py.exceptions.AuthorizationError as e:
