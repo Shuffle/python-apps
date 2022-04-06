@@ -464,18 +464,19 @@ class Owa(AppBase):
                 output_dict["categories"] = email.categories
 
                 if upload_email_shuffle:
-                    email_up = [{"filename": "email.msg",
+                    email_up = [{"filename": "email.eml",
                                  "data": email.mime_content}]
                     email_id = self.set_files(email_up)
                     output_dict["email_fileid"] = email_id[0]
 
                 if upload_attachments_shuffle:
-                    atts_up = [
-                        {"filename": attachment.name, "data": attachment.content}
-                        for attachment in email.attachments
-                        if type(attachment) == FileAttachment
-                    ]
-
+                    for attachment in email.attachments:
+                        if type(attachment) == FileAttachment:
+                            atts_up.append({"filename": attachment.name, "data": attachment.content})
+                        elif type(attachment) == ItemAttachment:
+                            atts_up.append({"filename": attachment.name, "data": attachment.item.mime_content})
+                        else:
+                            continue
                     atts_ids = self.set_files(atts_up)
                     output_dict["attachment_uids"] = atts_ids
 
