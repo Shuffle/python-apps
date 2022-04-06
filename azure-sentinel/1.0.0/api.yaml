@@ -243,7 +243,7 @@ actions:
     parameters:
       - name: query 
         description: The query to run
-        multiline: false
+        multiline: true
         example: "SecurityEvent | where EventID == \"4688\" | where CommandLine contains \"-noni -ep bypass $\""
         required: true
         schema:
