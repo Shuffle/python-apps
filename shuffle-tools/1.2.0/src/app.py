@@ -1408,6 +1408,7 @@ class Tools(AppBase):
                         self.logger.info("Define a JSON key to set for List two (Set Field)")
                         list_one[i][base_key] = list_two[i]
                     else:
+                        set_field = set_field.replace(" ", "_", -1)
                         list_one[i][set_field] = list_two[i]
         except Exception as e:
             return {
