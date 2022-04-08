@@ -7,7 +7,6 @@ import datetime
 import base64
 import imaplib
 import smtplib
-import eml_parser
 import time
 import random
 import eml_parser
@@ -398,11 +397,25 @@ class Email(AppBase):
         elif file_extension.lower() == 'msg':
             print('working with .msg file')
             try:
+                result = {}
                 msg = MsOxMessage(file_path['data'])
                 msg_properties_dict = msg.get_properties()
-                print(msg_properties_dict)
-                frozen = jsonpickle.encode(msg_properties_dict)
-                return frozen
+                frozen = jsonpickle.encode(msg_properties_dict, unpicklable = False)
+                json_response = json.loads(frozen)
+                if json_response.get("attachments"):
+                    for i in json_response["attachments"]:
+                        if isinstance(i,dict):
+                            if i.get('data') and 'text' in i.get('AttachMimeTag'):
+                                value = i.get('data').get('py/b64')
+                                i['data']['content'] = base64.b64decode(value).decode()
+                result['attachments'] = json_response['attachments']
+                ep = eml_parser.EmlParser()
+                temp = ep.decode_email_bytes(bytes(msg.get_email_mime_content(),'utf-8'))
+                result['body'] = temp['body']
+                msg1 = extract_msg.openMsg(file_path['data'])
+                result["header"] = dict(msg1.header.items())
+                result['body_data'] = msg.body
+                return result
             except Exception as e:
                 return {"Success":"False","Message":f"Exception occured: {e}"}    
         else:
