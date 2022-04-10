@@ -55,6 +55,6 @@ class MicrosoftSecurity(AppBase):
         response = session.get(url)
         print(response.status_code)
         return response.text
-    
+
 if __name__ == "__main__":
     MicrosoftSecurity.run()

@@ -4,7 +4,7 @@ import time
 import random
 import json
 import requests
-import jwt 
+import jwt
 import uuid
 import json
 from datetime import datetime, timedelta
@@ -13,7 +13,7 @@ from walkoff_app_sdk.app_base import AppBase
 
 class Cylance(AppBase):
     __version__ = "1.0.0"
-    app_name = "Cylance"  
+    app_name = "Cylance"
 
 
     def __init__(self, redis, logger, console_logger=None):
@@ -228,7 +228,7 @@ class Cylance(AppBase):
 
         resp = requests.get(url, headers=headers, params=params)
         return resp.text
-    
+
 
 if __name__ == "__main__":
     Cylance.run()

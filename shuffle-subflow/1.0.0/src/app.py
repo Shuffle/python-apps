@@ -55,7 +55,7 @@ class Subflow(AppBase):
             print("No source execution")
 
         if len(str(startnode)) > 0:
-            params["start"] = startnode 
+            params["start"] = startnode
         else:
             print("No startnode")
 

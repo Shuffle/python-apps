@@ -1,7 +1,7 @@
 ##########################################################
 #                 SAVE RESULTS FUNCTIONS                 #
 ##########################################################
-# rcATT is a tool to prediction tactics and techniques 
+# rcATT is a tool to prediction tactics and techniques
 # from the ATT&CK framework, using multilabel text
 # classification and post processing.
 # Version:    1.00

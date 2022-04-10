@@ -32,7 +32,7 @@ class ArchiveToday(AppBase):
         # This logs to the docker logs
         self.logger.info(message)
         return archive_url
- 
+
 #        return target
 
 if __name__ == "__main__":

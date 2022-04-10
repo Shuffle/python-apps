@@ -51,7 +51,7 @@ class Misp(AppBase):
         }
 
         return requests.post(url, headers=headers, json=data, verify=self.verify).text
-    
+
     def simplified_event_search(self, apikey, url, data):
         url = "%s/events/restSearch" % url
         data = {"value": data}
@@ -82,7 +82,7 @@ class Misp(AppBase):
         }
 
         return requests.post(url, headers=headers, data=data, verify=self.verify).text
-    
+
     def events_search(self, apikey, url, data):
         url = "%s/events/restSearch" % url
         headers = {

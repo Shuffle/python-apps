@@ -56,6 +56,6 @@ class Oauth2Example(AppBase):
         response = session.get(url)
         print(response.status_code)
         return response.text
-    
+
 if __name__ == "__main__":
     Oauth2Example.run()

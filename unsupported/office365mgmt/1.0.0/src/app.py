@@ -30,7 +30,7 @@ class Office365Mgmt(AppBase):
         pollInterval = 10 #Assume minutes
         return office365poller.pollOffice(planType,tenantID,clientID,clientSecret,pollInterval)
 
-    def run_me_2(self,planType,tenantID,clientID,clientSecret): 
+    def run_me_2(self,planType,tenantID,clientID,clientSecret):
         #Poll last 23 horus or 1380 min Office365
         #Parse json_data with key value data
         #planType = json_data['planType']
@@ -41,7 +41,7 @@ class Office365Mgmt(AppBase):
         return office365poller.pollOffice(planType,tenantID,clientID,clientSecret,pollInterval)
 
 
-    def run_me_3(self, json_data): 
+    def run_me_3(self, json_data):
         return "Ran function 3"
 
     # Write your data inside this function
@@ -62,6 +62,6 @@ class Office365Mgmt(AppBase):
 
         func = switcher.get(PollInterval, lambda: "Invalid function")
         return func(planType,tenantID,clientID,clientSecret)
-    
+
 if __name__ == "__main__":
     asyncio.run(Office365Mgmt.run(), debug=True)

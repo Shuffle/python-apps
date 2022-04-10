@@ -1,7 +1,7 @@
 ##########################################################
 #                PREPROCESSING FUNCTIONS                 #
 ##########################################################
-# rcATT is a tool to prediction tactics and techniques 
+# rcATT is a tool to prediction tactics and techniques
 # from the ATT&CK framework, using multilabel text
 # classification and post processing.
 # Version:    1.00
@@ -14,7 +14,7 @@ import re
 
 from sklearn.base import BaseEstimator, TransformerMixin
 
-from nltk import word_tokenize		  
+from nltk import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk.stem.snowball import EnglishStemmer
 
@@ -77,7 +77,7 @@ class StemTokenizer(object):
 	"""
 	def __init__(self):
 		self.st = EnglishStemmer()
-		
+
 	def __call__(self, doc):
 		return [self.st.stem(t) for t in word_tokenize(doc)]
 
@@ -88,7 +88,7 @@ class LemmaTokenizer(object):
 	"""
 	def __init__(self):
 		self.wnl = WordNetLemmatizer()
-		
+
 	def __call__(self, doc):
 		return [self.wnl.lemmatize(t) for t in word_tokenize(doc)]
 

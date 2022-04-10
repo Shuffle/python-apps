@@ -137,9 +137,9 @@ class Tools(AppBase):
             targets = recipients.split(",")
 
         data = {
-            "targets": targets, 
-            "subject": subject, 
-            "body": body, 
+            "targets": targets,
+            "subject": subject,
+            "body": body,
             "type": "alert",
         }
 
@@ -151,11 +151,11 @@ class Tools(AppBase):
                 for item in attachments:
                     new_file = self.get_file(file_ids)
                     files.append(new_file)
-            
+
                 data["attachments"] = files
             except Exception as e:
                 self.logger.info(f"Error in attachment parsing for email: {e}")
-                
+
 
         url = "https://shuffler.io/api/v1/functions/sendmail"
         headers = {"Authorization": "Bearer %s" % apikey}
@@ -323,7 +323,7 @@ class Tools(AppBase):
         #        "reason": "Item is not valid JSON (2)"
         #    }
 
-        
+
         if isinstance(value, str):
             try:
                 value = json.loads(value)
@@ -333,7 +333,7 @@ class Tools(AppBase):
         # Handle JSON paths
         if "." in key:
             base_object = json.loads(json.dumps(json_object))
-            #base_object.output.recipients.notificationEndpointIds = ... 
+            #base_object.output.recipients.notificationEndpointIds = ...
 
             keys = key.split(".")
             if len(keys) >= 1:
@@ -342,12 +342,12 @@ class Tools(AppBase):
             # This is awful :)
             buildstring = "base_object"
             for subkey in keys:
-                buildstring += f"[\"{subkey}\"]" 
+                buildstring += f"[\"{subkey}\"]"
 
             buildstring += f" = {value}"
             self.logger.info("BUILD: %s" % buildstring)
 
-            #output = 
+            #output =
             exec(buildstring)
             json_object = base_object
             #json_object[first_object] = base_object
@@ -419,9 +419,9 @@ class Tools(AppBase):
             except:
                 self.logger.info(f"Failed mapping output data for key {key}")
 
-        return input_data 
+        return input_data
 
-    # Changed with 1.1.0 to run with different returns 
+    # Changed with 1.1.0 to run with different returns
     def regex_capture_group(self, input_data, regex):
         try:
             returnvalues = {
@@ -433,8 +433,8 @@ class Tools(AppBase):
             found = False
             for item in matches:
                 if isinstance(item, str):
-                    found = True 
-                    name = "group_0" 
+                    found = True
+                    name = "group_0"
                     try:
                         returnvalues[name].append(item)
                     except:
@@ -442,7 +442,7 @@ class Tools(AppBase):
 
                 else:
                     for i in range(0, len(item)):
-                        found = True 
+                        found = True
                         name = "group_%d" % i
                         try:
                             returnvalues[name].append(item[i])
@@ -515,7 +515,7 @@ class Tools(AppBase):
                     "success": True,
                     "message": s,
                 }
-                
+
         except Exception as e:
             return {
                 "success": False,
@@ -568,7 +568,7 @@ class Tools(AppBase):
         if not isinstance(input_list, list):
             return {
                 "success": False,
-                "reason": "Error: input isnt a list. Remove # to use this action.", 
+                "reason": "Error: input isnt a list. Remove # to use this action.",
                 "valid": [],
                 "invalid": [],
             }
@@ -949,9 +949,9 @@ class Tools(AppBase):
         if len(fileret) == 1:
             value = {"success": True, "filename": filename, "file_id": fileret[0]}
 
-        return value 
+        return value
 
-    # Input is WAS a file, hence it didn't get the files 
+    # Input is WAS a file, hence it didn't get the files
     def get_file_value(self, filedata):
         filedata = self.get_file(filedata)
         if filedata is None:
@@ -994,7 +994,7 @@ class Tools(AppBase):
 
         return value
 
-    
+
     def extract_archive(self, file_id, fileformat="zip", password=None):
         try:
             return_data = {"success": False, "files": []}
@@ -1258,7 +1258,7 @@ class Tools(AppBase):
             return {"success": False, "message": excp}
 
     def add_list_to_list(self, list_one, list_two):
-        if not isinstance(list_one, list) and not isinstance(list_one, dict): 
+        if not isinstance(list_one, list) and not isinstance(list_one, dict):
             if not list_one or list_one == " " or list_one == "None" or list_one == "null":
                 list_one = "[]"
 
@@ -1271,7 +1271,7 @@ class Tools(AppBase):
                 else:
                     return {
                         "success": False,
-                        "reason": f"List one is not a valid list: {list_one}" 
+                        "reason": f"List one is not a valid list: {list_one}"
                     }
 
         if not isinstance(list_two, list) and not isinstance(list_two, dict):
@@ -1586,7 +1586,7 @@ class Tools(AppBase):
         if append.lower() == "true":
             append = True
         else:
-            append = False 
+            append = False
 
         get_response = requests.post(url, json=data)
         try:
@@ -1639,7 +1639,7 @@ class Tools(AppBase):
                     parsedvalue = []
 
                 #return parsedvalue
-                    
+
                 for item in parsedvalue:
                     #return "%s %s" % (item, value)
                     if item == value:
@@ -1659,8 +1659,8 @@ class Tools(AppBase):
                                 "key": key,
                                 "value": json.loads(allvalues["value"]),
                             }
-                            
-                        # Lol    
+
+                        # Lol
                         break
 
                 if not append:
@@ -1683,7 +1683,7 @@ class Tools(AppBase):
 
                 new_value.append(value)
 
-                #return new_value 
+                #return new_value
 
                 data["value"] = json.dumps(new_value)
                 #return allvalues
@@ -1712,8 +1712,8 @@ class Tools(AppBase):
                     "reason": f"Failed to set append the value: {exception}. This should never happen",
                     "key": key
                 }
-                            
-                self.logger.info("Handle all values!") 
+
+                self.logger.info("Handle all values!")
 
             #return allvalues
 
@@ -1725,7 +1725,7 @@ class Tools(AppBase):
                 "found": False,
             }
 
-        return value.text 
+        return value.text
 
     def get_cache_value(self, key):
         org_id = self.full_execution["workflow"]["execution_org"]["id"]
@@ -1748,8 +1748,8 @@ class Tools(AppBase):
             if allvalues["success"] == True:
                 allvalues["found"] = True
             else:
-                allvalues["success"] = True 
-                allvalues["found"] = False 
+                allvalues["success"] = True
+                allvalues["found"] = False
 
             try:
                 parsedvalue = json.loads(allvalues["value"])
@@ -1904,7 +1904,7 @@ class Tools(AppBase):
             "sha256": sha256_value,
         }
 
-        return parsedvalue 
+        return parsedvalue
 
 if __name__ == "__main__":
     Tools.run()

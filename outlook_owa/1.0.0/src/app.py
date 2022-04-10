@@ -76,7 +76,7 @@ class Owa(AppBase):
 
         BaseProtocol.USERAGENT = "Shuffle Automation"
         if not verifyssl or verifyssl.lower().strip() == "false":
-            BaseProtocol.HTTP_ADAPTER_CLS = RootCAAdapter 
+            BaseProtocol.HTTP_ADAPTER_CLS = RootCAAdapter
 
         processed_build = None
         if type(build) == str:
@@ -203,9 +203,9 @@ class Owa(AppBase):
         print(ret)
 
         return {
-            "success": True, 
-            "error": False, 
-            "recipients": recipient, 
+            "success": True,
+            "error": False,
+            "recipients": recipient,
             "subject": subject
         }
 
@@ -460,7 +460,7 @@ class Owa(AppBase):
                 # Add message_id as top returned field
                 output_dict["message_id"] = parsed_eml["header"]["header"]["message-id"][0]
                 output_dict["message_id"] = output_dict["message_id"].replace("\t", "").strip()
-                
+
                 # Add categories to output dict
                 output_dict["categories"] = email.categories
 

@@ -25,7 +25,7 @@ class Sooty(AppBase):
             return {"Success":"True",'Result':x}
         except Exception as e:
             raise Exception(e)
-    
+
     def UrlDecoder(self, url):
         url = url.strip()
         decodedUrl = urllib.parse.unquote(url)

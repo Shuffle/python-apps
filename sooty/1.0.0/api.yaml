@@ -1,5 +1,5 @@
 app_version: 1.0.0
-name: Sooty 
+name: Sooty
 description: A test app made for replicate Sooty functions
 contact_info:
   name: "@frikkylikeme"
@@ -7,7 +7,7 @@ contact_info:
   email: frikky@shuffler.io
 actions:
   - name: Urlsanitise
-    description: Sanitise the url 
+    description: Sanitise the url
     parameters:
       - name: url
         description: url address
@@ -17,7 +17,7 @@ actions:
         schema:
           type: string
   - name: UrlDecoder
-    description: Decodes url 
+    description: Decodes url
     parameters:
       - name: url
         description: url address
@@ -27,7 +27,7 @@ actions:
         schema:
           type: string
   - name: SafelinksDecoder
-    description: Decodes url 
+    description: Decodes url
     parameters:
       - name: url
         description: url address
@@ -62,7 +62,7 @@ actions:
   #     - name: ip
   #       description: Ip address
   #       required: true
-  #       multiline: false  
+  #       multiline: false
   #       example: '192.168.1.1'
   #       schema:
   #         type: string

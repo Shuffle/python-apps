@@ -28,7 +28,7 @@ class MsTeams(AppBase):
             myTeamsMessage.send()# send the message.
         except Exception as e:
             return f'{e.__class__} occured'
-        
+
         return f'Message Sent'
 
     def send_rich_text(self, webhook_url, title, message, link_button_text, link_button_url):
@@ -40,8 +40,8 @@ class MsTeams(AppBase):
             myTeamsMessage.send()# send the message.
         except Exception as e:
             return f'{e.__class__} occured'
-        
-        return f'Message Sent'        
+
+        return f'Message Sent'
 
     def send_actionable_msg(self, webhook_url, title, message, added_information, choices, callback_url):
         try:
@@ -97,8 +97,8 @@ class MsTeams(AppBase):
             myTeamsMessage.send()# send the message.
         except Exception as e:
             return f'{e} occured'
-        
-        return f'Message Sent'        
+
+        return f'Message Sent'
 
     def get_user_input(self, webhook_url, title, message, callback_url):
         try:

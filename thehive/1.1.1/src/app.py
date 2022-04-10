@@ -240,12 +240,12 @@ class TheHive(AppBase):
                     print("ITEM: %s" % item)
                     try:
                         artifact = thehive4py.models.AlertArtifact(
-                            dataType=item["data_type"], 
+                            dataType=item["data_type"],
                             data=item["data"],
                         )
-                        
+
                         try:
-                            artifact["message"] = item["message"] 
+                            artifact["message"] = item["message"]
                         except:
                             pass
 

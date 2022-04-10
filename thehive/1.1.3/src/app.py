@@ -469,7 +469,7 @@ class TheHive(AppBase):
                 )
 
             return str(ret.status_code)
-            
+
         elif field_type.lower() == 'case':
             return 'Use update_case action for updating a case.'
         else:
@@ -965,18 +965,18 @@ class TheHive(AppBase):
         response = self.thehive.create_case_task(case_id, case_task)
 
         return response.text
-    
+
     # Close TheHive case Task
     def update_task(self,apikey,url,organisation,task_id,status):
         if status == "Completed":
-            
+
             # Add EndDate Time before close
             headers = {
                 "Authorization": f"Bearer {apikey}",
             }
             if organisation:
                 headers["X-Organisation"] = organisation
- 
+
             data = {"endDate": round(time.time() * 1000)}
             requests.patch(
                 f"{url}/api/case/task/{task_id}",
@@ -992,9 +992,9 @@ class TheHive(AppBase):
             id = task_id,
             status = status,
         )
- 
+
         response = self.thehive.update_case_task(task, fields=["status"])
- 
+
         return response.text
 
 

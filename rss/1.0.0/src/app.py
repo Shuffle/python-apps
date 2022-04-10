@@ -34,7 +34,7 @@ class PythonPlayground(AppBase):
 
         print(NewsFeed)
         entry = NewsFeed.entries[1]
-        
+
         print(entry.keys())
         return entry.keys()
 
@@ -43,7 +43,7 @@ class PythonPlayground(AppBase):
     #    # It comes in as a string, so needs to be set to JSON
     #    NewsFeed = feedparser.parse(url)
     #    NewsFeed.entries[1]
-    #    
+    #
     #    print entry.keys()
     #    return entry.keys()
 

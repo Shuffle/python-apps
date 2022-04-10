@@ -76,11 +76,11 @@ class cardsection:
 
     def __init__(self):
         self.payload = {}
-        
+
 
 
 class potentialaction:
-    
+
     def addInput(self,_type,_id,title, isMultiline = None):
         if "inputs" not in self.payload.keys():
             self.payload["inputs"] = []
@@ -104,7 +104,7 @@ class potentialaction:
 
     def addAction(self,_type,_name,_target):
         if "actions" not in self.payload.keys():
-            self.payload["actions"] = [] 
+            self.payload["actions"] = []
             action = {
             "@type": _type,
             "name": _name,
@@ -115,14 +115,14 @@ class potentialaction:
 
     def addCommentAction(self,_type,_name,_target):
         if "actions" not in self.payload.keys():
-            self.payload["actions"] = [] 
+            self.payload["actions"] = []
             action = {
             "@type": _type,
             "name": _name,
             "target": _target,
             "body": "{{comment.value}}"
             }
-        self.payload["actions"].append(action)    
+        self.payload["actions"].append(action)
 
     def addOpenURI(self, _name, _targets):
         """
@@ -154,7 +154,7 @@ class potentialaction:
 class choice:
     def __init__(self):
         self.choices = []
-    
+
     def addChoices(self,_display,_value):
         self.choices.append({
                                 "display": _display,
