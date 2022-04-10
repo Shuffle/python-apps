@@ -467,6 +467,7 @@ class Owa(AppBase):
                 if upload_email_shuffle:
                     email_up = [{"filename": "email.eml",
                                  "data": email.mime_content}]
+
                     email_id = self.set_files(email_up)
                     output_dict["email_fileid"] = email_id[0]
 
@@ -474,8 +475,14 @@ class Owa(AppBase):
                     atts_up = []
                     for attachment in email.attachments:
                         if type(attachment) == FileAttachment:
+                            if not attachment.name:
+                                attachment.name = "TBD"
+
                             atts_up.append({"filename": attachment.name, "data": attachment.content})
                         elif type(attachment) == ItemAttachment:
+                            if not attachment.name:
+                                attachment.name = "TBD"
+
                             atts_up.append({"filename": attachment.name, "data": attachment.item.mime_content})
                         else:
                             continue
