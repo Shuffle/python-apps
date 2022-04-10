@@ -9,20 +9,17 @@
 # Date:       2019_10_22
 # Important global constants and functions for
 # classifications: training and prediction.
-
+import classification_tools.postprocessing as pop
+import classification_tools.preprocessing as prp
 import joblib
 import pandas as pd
-
-from sklearn.svm import LinearSVC
+from nltk.corpus import stopwords
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_selection import chi2
+from sklearn.feature_selection import SelectPercentile
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.pipeline import Pipeline
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.feature_selection import chi2, SelectPercentile
-
-from nltk.corpus import stopwords
-
-import classification_tools.preprocessing as prp
-import classification_tools.postprocessing as pop
+from sklearn.svm import LinearSVC
 
 ##########################################################
 #       LABELS AND DATAFRAME LISTS AND RELATIONSHIP      #

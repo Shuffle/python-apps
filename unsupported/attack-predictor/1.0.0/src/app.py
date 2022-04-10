@@ -1,22 +1,22 @@
-import socket
 import asyncio
-import time
-import random
-import json
-
-import sys
 import getopt
-import joblib
 import json
-from shutil import copyfile
-from colorama import init, Fore, Back, Style
+import random
+import socket
+import sys
+import time
 from operator import itemgetter
+from shutil import copyfile
 
-import classification_tools.preprocessing as prp
-import classification_tools.postprocessing as pop
-import classification_tools.save_results as sr
 import classification_tools as clt
-
+import classification_tools.postprocessing as pop
+import classification_tools.preprocessing as prp
+import classification_tools.save_results as sr
+import joblib
+from colorama import Back
+from colorama import Fore
+from colorama import init
+from colorama import Style
 from walkoff_app_sdk.app_base import AppBase
 
 # 1. Generate the api.yaml based on downloaded files

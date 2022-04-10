@@ -1,4 +1,3 @@
-
 #Office 365 Management API Event Poller
 
 __author__ = "Robert Evans"

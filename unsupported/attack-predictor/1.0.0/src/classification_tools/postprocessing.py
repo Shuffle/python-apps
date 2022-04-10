@@ -14,23 +14,20 @@
 # The results are saved in the configuration file and these
 # functions are reused during prediction with the best
 # post-processing method.
-
+import classification_tools as clt
+import classification_tools.preprocessing as prp
 import joblib
-import pandas as pd
 import numpy as np
-
-from sklearn.svm import LinearSVC
-from sklearn.multiclass import OneVsRestClassifier
-from sklearn.pipeline import Pipeline
+import pandas as pd
+from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.feature_selection import chi2, SelectPercentile
+from sklearn.feature_selection import chi2
+from sklearn.feature_selection import SelectPercentile
 from sklearn.metrics import fbeta_score
 from sklearn.model_selection import KFold
-
-from nltk.corpus import stopwords
-
-import classification_tools.preprocessing as prp
-import classification_tools as clt
+from sklearn.multiclass import OneVsRestClassifier
+from sklearn.pipeline import Pipeline
+from sklearn.svm import LinearSVC
 
 
 def print_progress_bar(iteration):

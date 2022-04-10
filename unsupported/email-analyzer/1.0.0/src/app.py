@@ -1,15 +1,15 @@
-import socket
 import asyncio
-import time
-import random
-import json
-import eml_parser
 import datetime
-from msg_parser import MsOxMessage
-import mailparser
+import json
+import random
+import socket
+import time
+
+import eml_parser
 import extract_msg
 import jsonpickle
-
+import mailparser
+from msg_parser import MsOxMessage
 from walkoff_app_sdk.app_base import AppBase
 
 def json_serial(obj):

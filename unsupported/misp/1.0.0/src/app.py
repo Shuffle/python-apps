@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import os
 import asyncio
-import urllib3
-import requests
 import base64
+import os
 import tempfile
 
+import requests
+import urllib3
 from walkoff_app_sdk.app_base import AppBase
 
 
