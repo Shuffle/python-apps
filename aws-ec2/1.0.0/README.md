@@ -39,4 +39,3 @@ __Note__:
 4. To see the new access key, choose Show. Your credentials resemble the following:
    - Access key ID: AKIAIOSFODNN7EXAMPLE
    - Secret access key: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-

@@ -61,6 +61,3 @@ and once there go down to **App Registrations** a new window will pop up.
 - To add permission, Go to your application &#8594; API permission &#8594; Add permission (some of the permissions will require admin consent)
 - For Excel app we need Files.ReadWrite.All, Sites.ReadWrite.All, User.ReadWrite.All permissions.
 - After adding permission , Grant consent.
-
-
-

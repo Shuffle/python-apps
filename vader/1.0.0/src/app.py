@@ -40,5 +40,3 @@ class Vader(AppBase):
 
 if __name__ == "__main__":
     Vader.run()
-
-
