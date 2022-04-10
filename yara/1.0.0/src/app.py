@@ -1,12 +1,12 @@
-import socket
 import asyncio
-import time
-import random
 import json
-import requests
-import yara
 import os
+import random
+import socket
+import time
 
+import requests
+import yara  # noreorder
 from walkoff_app_sdk.app_base import AppBase
 
 class Yara(AppBase):

@@ -1,30 +1,27 @@
-import json
 import asyncio
 import datetime
-import eml_parser
-import exchangelib
-
-from glom import glom
+import json
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-
-from exchangelib import (
-    DELEGATE,
-    Account,
-    Credentials,
-    Configuration,
-    Version,
-    Build,
-    Mailbox,
-    Message,
-    FileAttachment,
-    ItemAttachment,
-)
-from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
-from walkoff_app_sdk.app_base import AppBase
-
-import requests
 from urllib.parse import urlparse
+
+import eml_parser
+import exchangelib
+import requests
+from exchangelib import Account
+from exchangelib import Build
+from exchangelib import Configuration
+from exchangelib import Credentials
+from exchangelib import DELEGATE
+from exchangelib import FileAttachment
+from exchangelib import ItemAttachment
+from exchangelib import Mailbox
+from exchangelib import Message
+from exchangelib import Version
+from exchangelib.protocol import BaseProtocol
+from exchangelib.protocol import NoVerifyHTTPAdapter
+from glom import glom
+from walkoff_app_sdk.app_base import AppBase
 
 class RootCAAdapter(requests.adapters.HTTPAdapter):
     """

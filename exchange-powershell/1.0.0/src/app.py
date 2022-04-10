@@ -1,10 +1,10 @@
-import socket
 import asyncio
-import time
-import random
-import json
-import subprocess
 import base64
+import json
+import random
+import socket
+import subprocess
+import time
 
 from walkoff_app_sdk.app_base import AppBase
 

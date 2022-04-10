@@ -1,14 +1,14 @@
-import socket
 import asyncio
-import time
+import json
 import random
-import json
-import requests
-import jwt
+import socket
+import time
 import uuid
-import json
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 
+import jwt
+import requests
 from walkoff_app_sdk.app_base import AppBase
 
 class Cylance(AppBase):

@@ -1,10 +1,10 @@
-import socket
 import asyncio
-import time
-import random
 import json
-import teams #We have made changes to pymsteams module so please use teams.py DO NOT USE pymsteams.py
+import random
+import socket
+import time
 
+import teams #We have made changes to pymsteams module so please use teams.py DO NOT USE pymsteams.py
 from walkoff_app_sdk.app_base import AppBase
 
 class MsTeams(AppBase):

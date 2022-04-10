@@ -1,11 +1,11 @@
-import socket
 import asyncio
-import time
-import random
 import json
-from pygitguardian import GGClient
-import requests
+import random
+import socket
+import time
 
+import requests
+from pygitguardian import GGClient
 from walkoff_app_sdk.app_base import AppBase
 
 class GitGuardian(AppBase):

@@ -1,6 +1,7 @@
-import yaml
 import os
 import subprocess
+
+import yaml
 
 basedir = "."
 dirs = os.listdir(basedir)

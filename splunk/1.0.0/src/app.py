@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 import asyncio
-import time
+import json
 import random
+import time
+
 import requests
 import urllib3
-import json
-
 from walkoff_app_sdk.app_base import AppBase
 
 class Splunk(AppBase):

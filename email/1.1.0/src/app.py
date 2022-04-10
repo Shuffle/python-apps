@@ -1,26 +1,24 @@
-import json
-import uuid
-import socket
 import asyncio
-import requests
-import datetime
 import base64
+import datetime
 import imaplib
-import smtplib
-import eml_parser
-import time
+import json
 import random
-import eml_parser
-import mailparser
-import extract_msg
-import jsonpickle
-
-from glom import glom
-from msg_parser import MsOxMessage
+import smtplib
+import socket
+import time
+import uuid
+from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email.mime.application import MIMEApplication
 
+import eml_parser
+import extract_msg
+import jsonpickle
+import mailparser
+import requests
+from glom import glom
+from msg_parser import MsOxMessage
 from walkoff_app_sdk.app_base import AppBase
 
 def json_serial(obj):

@@ -1,8 +1,8 @@
-import socket
 import asyncio
-import time
-import random
 import json
+import random
+import socket
+import time
 
 from walkoff_app_sdk.app_base import AppBase
 

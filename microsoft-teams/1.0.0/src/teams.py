@@ -1,8 +1,6 @@
 #!/usr/bin/env python
-
 # reference: https://github.com/rveachkc/pymsteams/
 # reference: https://dev.outlook.com/connectors/reference
-
 import requests
 
 class TeamsWebhookException(Exception):

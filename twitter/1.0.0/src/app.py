@@ -1,10 +1,10 @@
-import socket
 import asyncio
-import time
-import random
 import json
-from twython import Twython
+import random
+import socket
+import time
 
+from twython import Twython
 from walkoff_app_sdk.app_base import AppBase
 
 class Twitter(AppBase):

@@ -1,12 +1,13 @@
-import socket
-import asyncio
-import time
-import random
-import json
-import requests
-from walkoff_app_sdk.app_base import AppBase
-from urllib3.exceptions import InsecureRequestWarning
 import ast
+import asyncio
+import json
+import random
+import socket
+import time
+
+import requests
+from urllib3.exceptions import InsecureRequestWarning
+from walkoff_app_sdk.app_base import AppBase
 
 requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 

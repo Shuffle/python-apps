@@ -1,13 +1,13 @@
-import socket
 import asyncio
-import time
-import random
 import json
+import random
+import socket
+import time
+
+from walkoff_app_sdk.app_base import AppBase
 
 from mysql.connector import connection
 from mysql.connector import errorcode
-
-from walkoff_app_sdk.app_base import AppBase
 
 class DbManager(AppBase):
     __version__ = "1.0.0"

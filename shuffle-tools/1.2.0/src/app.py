@@ -1,36 +1,33 @@
 import asyncio
+import base64
+import binascii
 import datetime
+import hashlib
+import ipaddress
 import json
-import time
-import markupsafe
 import os
 import re
+import struct
 import subprocess
+import tarfile
 import tempfile
+import time
 import zipfile
-import base64
-import ipaddress
-import hashlib
-from io import StringIO
 from contextlib import redirect_stdout
-from liquid import Liquid
-import liquid
+from io import StringIO
 
+import liquid
+import markupsafe
 import py7zr
 import pyminizip
 import rarfile
 import requests
-import tarfile
-
 import xmltodict
+from ioc_finder import find_iocs
 from json2xml import json2xml
 from json2xml.utils import readfromstring
-
-from ioc_finder import find_iocs
+from liquid import Liquid
 from walkoff_app_sdk.app_base import AppBase
-
-import binascii
-import struct
 
 class Tools(AppBase):
     __version__ = "1.2.0"

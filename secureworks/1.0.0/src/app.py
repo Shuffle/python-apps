@@ -1,11 +1,10 @@
-import time
-import json
+import asyncio
 import json
 import random
 import socket
-import asyncio
-import requests
+import time
 
+import requests
 from walkoff_app_sdk.app_base import AppBase
 
 class Secureworks(AppBase):
