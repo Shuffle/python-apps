@@ -12,7 +12,6 @@ contact_info:
 actions:
   - name: hello_world
     description: Returns Hello World from the hostname the action is run on
-    returns:
     example: HELLO WORLD FROM host.name
     returns:
       schema:
