@@ -114,6 +114,12 @@ class HTTP(AppBase):
             else:
                 return body
 
+        if isinstance(body, dict) or isinstance(body, list):
+            try:
+                body = json.dumps(body)
+            except:
+                return body
+
         return body
 
     def fix_url(self, url):
