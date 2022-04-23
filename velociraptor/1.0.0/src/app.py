@@ -57,8 +57,7 @@ class Velociraptor(AppBase):
         return r 
   
   def search_filename(self, api_config, filepath, filename):
-      #filename_hunt_query = 'SELECT hunt(description=\"Shuffle Filename Hunt::' + filename +'", expires=(now() + 60) * 1000000, artifacts=[\"Windows.Forensics.FilenameSearch\"],spec=dict(`Windows.Forensics.FilenameSearch`=dict(yaraRule=\"wide nocase:' + filename + '\"))) AS Hunt from scope()'
-      query = 'SELECT hunt(description=\"Shuffle Filename Hunt::' + filename +'", expires=(now() + 60) * 1000000, artifacts=[\"Windows.Forensics.FilenameSearch\"],spec=dict(`Linux.Search.FileFinder`=dict(`SearchFilesGlob`=\"' + filepath + '/' + filename + '"))) AS Hunt from scope()'
+      query = 'SELECT hunt(description=\"Shuffle Filename Hunt::' + filename + '\", expires=(now() + 60) * 1000000,artifacts=[\"Linux.Search.FileFinder\",\"MacOS.Search.FileFinder\","Windows.Forensics.FilenameSearch\"],spec=dict(`Linux.Search.FileFinder`=dict(`SearchFilesGlob`=\"' + filename + '\"),`MacOS.Search.FileFinder`=dict(`SearchFilesGlob`=\"' + filename + '\"),`Windows.Forensics.FilenameSearch`=dict(`yaraRule`=\"wide nocase:' + filepath + filename + '\"))) AS Hunt FROM scope()'
       results = self.request(api_config, query)
       return results[0]
 
