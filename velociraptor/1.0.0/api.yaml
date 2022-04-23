@@ -45,7 +45,7 @@ actions:
         type: string
 
   - name: add_client_quarantine
-    description: Add Velociraptor client host to quarantine
+    description: Add Velociraptor client host to quarantine (only supported for Windows hosts at this time)
     parameters:
       - name: client_id
         description: Host to correlate to client ID
