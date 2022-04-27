@@ -19,4 +19,3 @@ COPY src /app
 # Finally, lets run our app!
 WORKDIR /app
 CMD python app.py --log-level DEBUG
-~
