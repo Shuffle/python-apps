@@ -113,26 +113,26 @@ actions:
       schema:
         type: string
 
-  - name: get_client label
-    description: Check if label exists for Velociraptor client
-    parameters:
-      - name: client_id
-        description: Velociraptor client ID
-        multiline: false
-        example:
-        required: true
-        schema:
-          type: string
-      - name: label
-        description: Label to check for Velociraptor client
-        multiline: false
-        example: badfile.txt
-        required: true
-        schema:
-          type: string
-    returns:
-      schema:
-        type: string
+  #- name: get_client_label
+  #  description: Check if label exists for Velociraptor client
+  #  parameters:
+  #    - name: client_id
+  #      description: Velociraptor client ID
+  #      multiline: false
+  #      example:
+  #      required: true
+  #      schema:
+  #        type: string
+  #    - name: label
+  #      description: Label to check for Velociraptor client
+  #      multiline: false
+  #      example: badfile.txt
+  #      required: true
+  #      schema:
+  #        type: string
+  #  returns:
+  #    schema:
+  #      type: string
 
   - name: get_hunt_flows
     description: Get flows for a Velociraptor hunt
