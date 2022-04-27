@@ -1,12 +1,22 @@
-# This build will need to be tweaked, as it currently sits around 502MB
-FROM frikky/shuffle:app_sdk_ubuntu as base
+# GRPC base image to reduce build time
+FROM frikky/shuffle:app_sdk_grpc as base
 
-# Install pre-reqs
+# We're going to stage away all of the bloat from the build tools so lets create a builder stage
+FROM base as builder
+
+# Install all of our pip packages in a single directory that we can copy to our base image later
+RUN mkdir /install
+WORKDIR /install
 COPY requirements.txt /requirements.txt
-RUN apt update && apt install -y python-is-python3 python3-pip
-RUN pip install -r /requirements.txt
+RUN mkdir -p /install && \
+ pip install --prefix="/install" -r /requirements.txt
+
+# Switch back to our base image and copy in all of our built packages and source code
+FROM base
+COPY --from=builder /install /usr/local
 COPY src /app
 
 # Finally, lets run our app!
 WORKDIR /app
 CMD python app.py --log-level DEBUG
+~
