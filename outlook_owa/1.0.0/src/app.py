@@ -19,6 +19,7 @@ from exchangelib import (
     Message,
     FileAttachment,
     ItemAttachment,
+    HTMLBody,
 )
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
 from walkoff_app_sdk.app_base import AppBase
@@ -181,6 +182,11 @@ class Owa(AppBase):
 
         account = auth["account"]
 
+        try:
+            body = HTMLBody(str(body))
+        except Exception as e:
+            pass
+
         m = Message(
             account=account,
             subject=subject,
@@ -190,7 +196,7 @@ class Owa(AppBase):
             ],
         )
 
-        file_uids = attachments.split()
+        file_uids = str(attachments).split()
         if len(file_uids) > 0:
             for file_uid in file_uids:
                 attachment_data = self.get_file(file_uid)
