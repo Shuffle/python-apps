@@ -8,8 +8,7 @@ FROM base as builder
 RUN mkdir /install
 WORKDIR /install
 COPY requirements.txt /requirements.txt
-RUN mkdir -p /install && \
- pip install --prefix="/install" -r /requirements.txt
+RUN pip install --prefix="/install" -r /requirements.txt
 
 # Switch back to our base image and copy in all of our built packages and source code
 FROM base
