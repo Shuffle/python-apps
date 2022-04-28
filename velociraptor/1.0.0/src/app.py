@@ -59,7 +59,7 @@ class Velociraptor(AppBase):
         return results
 
 
-    def check_client_label(self, api_config, client_id, label):
+    def get_client_label(self, api_config, client_id, label):
         query = "SELECT label(client_id='" + client_id + "', labels=['" + label  +"'], op='check') FROM scope()'"
         results = self.request(api_config, query)
         return results
