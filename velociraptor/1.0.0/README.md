@@ -45,7 +45,7 @@ Enter a title for the authentication configuration, and paste the file ID into t
 ![image](https://user-images.githubusercontent.com/16829864/165663556-bd48696c-e613-4079-8feb-383012f2fa1b.png)
 
 #### Test Authentication
-To test authentication, try running the `Get artifact definitions` action, or the `Search with custom query` action with the following query:
+To test authentication, try using the `Search with custom query` action with the following query:
 
 `SELECT * FROM info()`
 
