@@ -1,4 +1,27 @@
 # Velociraptor
+## Overview
+Velociraptor is an open source, cross-platform endpoint visibility tool that allows for endpoint detection, forensics, monitoring, and response at scale.
+
+You can read more about Velociraptor here: https://docs.velociraptor.app/
+
+This app allows provides integration with Velociraptor's GRPC API to facilitate the automation of artifact collection and response actions to increase context and save defenders time during security operations and investigations.
+
+## Actions
+The following actions are currently available:
+
+- Add client label
+- Add client quarantine (Only Windows hosts supported at this time)
+- Get client ID
+- Get client flows
+- Get client flow results
+- Get client label
+- Get hunt flows
+- Get hunt results
+- Remove client label
+- Remove client quarantine
+- Search filename (create a hunt for a particular file name)
+- Search hash (create a hunt for a particular file hash)
+- Search with custom query (free-form VQL query)
 
 ## Authentication
 
