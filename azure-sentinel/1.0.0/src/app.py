@@ -251,10 +251,11 @@ class AzureSentinel(AppBase):
         if not auth["success"]:
             return {"error": auth["message"]}
 
-        query_url = f"{self.azure_url}/subscriptions/{kwargs['subscription_id']}/resourceGroups/{kwargs['resource_group_name']}/providers/Microsoft.OperationalInsights/workspaces/{kwargs['workspace_name']}/savedSearches"
+        print("Here 0")
+        comment_url = f"{self.azure_url}/subscriptions/{kwargs['subscription_id']}/resourceGroups/{kwargs['resource_group_name']}/providers/Microsoft.OperationalInsights/workspaces/{kwargs['workspace_name']}/savedSearches"
         
-        #providers/Microsoft.SecurityInsights/incidents/{kwargs['incident_id']}/comments"
 
+        #providers/Microsoft.SecurityInsights/incidents/{kwargs['incident_id']}/comments"
         #PUT https://management.azure.com/subscriptions/{subscriptionId} _
         #/resourcegroups/{resourceGroupName} _
         #/providers/Microsoft.OperationalInsights/workspaces/{workspaceName} _
@@ -262,7 +263,7 @@ class AzureSentinel(AppBase):
 
 
         params = {"api-version": "2020-01-01"}
-
+        print("Here 1")
         comment_id = str(uuid.uuid4())
         comment_data = {
             "properties": {
@@ -273,6 +274,7 @@ class AzureSentinel(AppBase):
         }
 
 
+        print("Here 2")
         res = self.s.put(f"{comment_url}/{comment_id}", json=comment_data, params=params)
         if res.status_code != 200:
             raise ConnectionError(res.text)
