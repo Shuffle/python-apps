@@ -345,7 +345,7 @@ class Email(AppBase):
                         ]
 
                         atts_ids = self.set_files(atts_up)
-                        output_dict["attachments_uids"] = atts_ids
+                        output_dict["attachment_uids"] = atts_ids
 
                         # Don't need this raw.
                         for x in parsed_eml["attachment"]:
