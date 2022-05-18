@@ -61,6 +61,16 @@ RUN pwsh -Command Import-Module 'Microsoft.PowerShell.Security' -Force
 COPY replacementfile.ps1 /app/replacementfile.ps1  
 #COPY password.ps1 password.ps1  
 #RUN pwsh -file password.ps1
+#RUN pwsh -Command Get-Help Connect-IPPSSession
+#RUN pwsh -Command Get-Help Connect-ExchangeOnline
+#RUN pwsh -Command Get-Help New-PSSession 
+#Connect-ExchangeOnline -CertificateFilePath "C:\Users\johndoe\Desktop\automation-cert.pfx" -CertificatePassword (ConvertTo-SecureString -String "<MyPassword>" -AsPlainText -Force) -AppID "36ee4c6c-0812-40a2-b820-b22ebd02bce3" -Organization "contosoelectronics.onmicrosoft.com"
+
+COPY example.pfx /example.pfx
+#RUN pwsh -Command 'Connect-ExchangeOnline -CertificateFilePath "./example.pfx" -CertificatePassword (ConvertTo-SecureString -String "<your password>" -AsPlainText -Force) -AppID "70a66541-50e6-47e4-83d9-ccaa55db7da9" -Organization "shufflertest2.onmicrosoft.com"'
+#RUN pwsh -Command Get-QuarantineMessage -StartReceivedDate {time_from} -EndReceivedDate {time_to}
+RUN pwsh -Command Get-EXOMailbox
+
 
 # Finally, lets run our app!
 WORKDIR /app
