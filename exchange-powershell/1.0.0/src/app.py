@@ -30,6 +30,8 @@ class exchange_powershell(AppBase):
 
     def cleanup(self, item):
         newlines = []
+        print(f"Cleanup item: {item}")
+
         record = False
         skipped = 0
         for line in item.split("\n"):
@@ -62,6 +64,7 @@ class exchange_powershell(AppBase):
         data = data.replace("{USERNAME}", username)
         data = data.replace("{PASSWORD}", password)
         data = data.replace("{COMMAND}", parsed_command)
+        print(f"DATA: {data}")
 
         with open(self.filename, "w+") as tmp:
             tmp.write(data)
@@ -122,8 +125,7 @@ class exchange_powershell(AppBase):
         ret = self.replace_and_run(username, password, parsed_command)
         print("RET: %s" % ret)
         try:
-            if not isinstance(ret, list) and not isinstance(ret, object) and not isinstance(ret, dict):
-                ret = json.loads(ret)
+            ret = json.loads(ret)
         except json.decoder.JSONDecodeError:
             return ret
 
@@ -143,7 +145,6 @@ class exchange_powershell(AppBase):
                 "success": True,
                 "file_id": fileinfo[0]
             }
-
         return fileinfo
 
     # Write your data inside this function
@@ -162,7 +163,10 @@ class exchange_powershell(AppBase):
 
     # Write your data inside this function
     def get_quarantine_messages(self, username, password, time_from, time_to):
-        parsed_command = f"Get-QuarantineMessage -StartReceivedDate {time_from} -EndReceivedDate {time_to} | ConvertTo-Json"
+        #parsed_command = f"Get-QuarantineMessage -StartReceivedDate {time_from} -EndReceivedDate {time_to} | ConvertTo-Json"
+        #parsed_command = f"Get-QuarantineMessage -StartReceivedDate {time_from} -EndReceivedDate {time_to}"
+        parsed_command = f"Get-QuarantineMessage -PageSize 50 -Page 1"
+
 
         ret = self.replace_and_run(username, password, parsed_command)
         return ret 

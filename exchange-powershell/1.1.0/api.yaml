@@ -1,0 +1,161 @@
+app_version: 1.1.0
+name: Exchange Powershell 
+description: An app to interact with emails to be downloaded and release quarantined emails from office365 using Powershell
+contact_info:
+  name: "@frikkylikeme"
+  url: https://github.com/vlegoy/rcATT
+  email: frikky@shuffler.io
+tags:
+  - Communication 
+categories:
+  - Communication 
+authentication:
+  required: true
+  parameters:
+    - name: certificate 
+      description: The File ID of the certificate to use
+      required: true
+      example: 'file_1231231231232'
+      schema:
+        type: string
+    - name: password 
+      description: The password for the certificate
+      required: true
+      example: 'app_password'
+      schema:
+        type: string
+    - name: app_id 
+      description: The app ID from azure
+      required: true
+      example: 'app_id_from_azure'
+      schema:
+        type: string
+    - name: organization 
+      description: Your organization as an onmicrosoft.com account
+      required: true
+      example: 'shufflertest2.onmicrosoft.com'
+      schema:
+        type: string
+actions:
+  - name: run_custom 
+    description: Runs a python script defined by YOU 
+    parameters:
+      - name: command 
+        description: The organization
+        multiline: true
+        required: true
+        example: 'ls; echo "hi"; Get-Mailbox'
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: get_quarantine_messages
+    description: Predicts the 
+    parameters:
+      - name: time_from 
+        description: Start time
+        required: true
+        multiline: true
+        example: '06/13/2016'
+        schema:
+          type: string
+      - name: time_to
+        description: End time
+        required: true
+        multiline: true
+        example: '01/01/2025'
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: release_quarantine_message 
+    description: Releases quarantine message back to the original user
+    parameters:
+      - name: message_id 
+        description: The message to get
+        required: true
+        multiline: false  
+        example: ''
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: preview_quarantine_message 
+    description: Previews a quarantine message
+    parameters:
+      - name: message_id 
+        description: The message to get
+        required: true
+        multiline: false  
+        example: '{"data": "testing"}'
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: export_quarantine_message 
+    description: Exports a quarantine message
+    parameters:
+      - name: message_id 
+        description: The message to get
+        required: true
+        multiline: false  
+        example: '{"data": "testing"}'
+        schema:
+          type: string
+      - name: skip_upload 
+        description: Decides if you should upload the file or not
+        required: true
+        multiline: false  
+        options:
+          - false
+          - true
+        example: '{"data": "testing"}'
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: delete_quarantine_message 
+    description: Deletes a quarantine message
+    parameters:
+      - name: message_id 
+        description: The message to get
+        required: true
+        multiline: false  
+        example: '{"data": "testing"}'
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: get_quarantine_message
+    description: Predicts the 
+    parameters:
+      - name: message_id 
+        description: The message to get
+        required: true
+        multiline: false  
+        example: '{"data": "testing"}'
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: get_quarantine_messageheaders 
+    description: Predicts the 
+    parameters:
+      - name: message_id 
+        description: The message to get
+        required: true
+        multiline: false 
+        example: ''
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+large_image: data:image/png;base64,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
