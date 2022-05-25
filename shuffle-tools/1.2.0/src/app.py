@@ -231,6 +231,12 @@ class Tools(AppBase):
 
     # https://github.com/fhightower/ioc-finder
     def parse_ioc(self, input_string, input_type="all"):
+        if len(input_string) > 2500000 and (input_type == "" or input_type == "all"):
+            return {
+                "success": False,
+                "reason": "Data too large (%d). Please reduce it below 2.5 Megabytes to use this action or specify the input type" % len(input_string)
+            }
+
         input_string = str(input_string)
         if input_type == "":
             input_type = "all"

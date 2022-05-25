@@ -151,7 +151,7 @@ actions:
           type: string
       - name: attachments 
         description: The ID of files in Shuffle to add as attachments 
-        multiline: true
+        multiline: false
         example: "file_id1,file_id2,file_id3"
         required: false 
         schema:
