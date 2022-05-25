@@ -423,7 +423,7 @@ class TheHive(AppBase):
     def merge_alert_into_case(self, apikey, url, organisation, alert_id, case_id):
         self.__connect_thehive(url, apikey, organisation)
         req = url + f"/api/alert/{alert_id}/merge/{case_id}"
-        ret = requests.post(req, auth=self.thehive.auth)
+        ret = requests.post(req, auth=self.thehive.auth, verify=False)
         return ret.text
 
     # Not sure what the data should be
@@ -457,6 +457,7 @@ class TheHive(AppBase):
                         "Content-Type": "application/json",
                         "Authorization": "Bearer %s" % apikey,
                     },
+                    verify=False,
                 )
             else:
                 ret = requests.patch(
@@ -466,6 +467,7 @@ class TheHive(AppBase):
                         "Authorization": "Bearer %s" % apikey,
                     },
                     json=newdata,
+                    verify=False,
                 )
 
             return str(ret.status_code)
@@ -530,6 +532,7 @@ class TheHive(AppBase):
             headers=headers,
             files=files,
             data=data,
+            verify=False,
         )
         return response.text
 
@@ -982,6 +985,7 @@ class TheHive(AppBase):
                 f"{url}/api/case/task/{task_id}",
                 headers=headers,
                 data=data,
+                verify=False,
             )
             task = CaseTask(
                 id=task_id,

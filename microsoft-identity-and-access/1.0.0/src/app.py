@@ -148,7 +148,8 @@ class MsIdentityAccess(AppBase):
         if skip == 0 or skip == "":
             skip = 0
 
-        graph_url = f"https://graph.microsoft.com/v1.0/identityProtection/riskyUsers?$top=%d&$skip=%d" % (int(amount), int(skip))
+        #graph_url = f"https://graph.microsoft.com/v1.0/identityProtection/riskyUsers?$top=%d&$skip=%d" % (int(amount), int(skip))
+        graph_url = f"https://graph.microsoft.com/v1.0/identityProtection/riskyUsers"
         ret = session.get(graph_url)
         print(ret.status_code)
         print(ret.text)
