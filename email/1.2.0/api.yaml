@@ -109,8 +109,8 @@ actions:
         example: "true"
         required: false 
         options:
-          - false
           - true
+          - false
         schema:
           type: string
     returns:

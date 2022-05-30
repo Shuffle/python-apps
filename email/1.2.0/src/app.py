@@ -88,7 +88,7 @@ class Email(AppBase):
             return f"Bad SMTP host or port: {e}"
 
         # This is not how it should work.. 
-        # Port 465 & 587 = TLS
+        # Port 465 & 587 = TLS. Sometimes 25.
         if ssl_verify == "false" or ssl_verify == "False":
             pass
         else:
