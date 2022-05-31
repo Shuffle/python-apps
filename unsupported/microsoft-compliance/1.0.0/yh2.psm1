@@ -352,8 +352,8 @@ function Connect-ExchangeOnline
             $CertificatePassword.Value = $null
 
             # Certificate Thumbprint
-            $CertificateThumbprint = New-Object System.Management.Automation.RuntimeDefinedParameter('CertificateThumbprint', [string], $attributeCollection)
-            $CertificateThumbprint.Value = ''
+            #$CertificateThumbprint = New-Object System.Management.Automation.RuntimeDefinedParameter('CertificateThumbprint', [string], $attributeCollection)
+            #$CertificateThumbprint.Value = ''
 
             # Application Id
             $AppId = New-Object System.Management.Automation.RuntimeDefinedParameter('AppId', [string], $attributeCollection)
@@ -756,8 +756,8 @@ function Connect-IPPSSession
             $CertificatePassword.Value = $null
 
             # Certificate Thumbprint
-            $CertificateThumbprint = New-Object System.Management.Automation.RuntimeDefinedParameter('CertificateThumbprint', [string], $attributeCollection)
-            $CertificateThumbprint.Value = ''
+            #$CertificateThumbprint = New-Object System.Management.Automation.RuntimeDefinedParameter('CertificateThumbprint', [string], $attributeCollection)
+            #$CertificateThumbprint.Value = ''
 
             # Application Id
             $AppId = New-Object System.Management.Automation.RuntimeDefinedParameter('AppId', [string], $attributeCollection)

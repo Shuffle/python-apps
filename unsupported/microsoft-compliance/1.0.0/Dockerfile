@@ -94,7 +94,7 @@ RUN cat /root/.local/share/powershell/Modules/ExchangeOnlineManagement/2.0.6/net
 COPY yh2.psm1 /root/.local/share/powershell/Modules/ExchangeOnlineManagement/2.0.6/netCore/ExchangeOnlineManagement.psm1
 COPY src/example.pfx example.pfx
 RUN pwsh -Command 'echo "hi"'
-RUN pwsh -Command 'Connect-IPPSSession -CertificateFilePath "./example.pfx" -AppID "70a66541-50e6-47e4-83d9-ccaa55db7da9" -Organization "shufflertest2.onmicrosoft.com" -CertificatePassword (ConvertTo-SecureString -String "<your pass>" -AsPlainText -Force) -verbose'
+RUN pwsh -Command 'Connect-IPPSSession -CertificateFilePath "./example.pfx" -AppID "70a66541-50e6-47e4-83d9-ccaa55db7da9" -Organization "shufflertest2.onmicrosoft.com" -CertificatePassword (ConvertTo-SecureString -String "<your password>" -AsPlainText -Force) -verbose'
 
 #RUN pwsh -Command 'Get-Help Connect-ExchangeOnline'
 #RUN pwsh -Command 'Connect-ExchangeOnline -CertificateFilePath "./example.pfx" -CertificatePassword (ConvertTo-SecureString -String "<your pass>" -AsPlainText -Force) -AppID "70a66541-50e6-47e4-83d9-ccaa55db7da9" -Organization "shufflertest2.onmicrosoft.com" -ConnectionUri "https://ps.compliance.protection.outlook.com/PowerShell-LiveId" -AzureADAuthorizationEndpointUri "https://login.microsoftonline.com/organizations" -UseRPSSession:$true -ShowBanner:$false -BypassMailboxAnchoring:$false -ShowProgress:$true -verbose -CommandName "Test-ActiveToken"'

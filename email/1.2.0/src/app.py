@@ -98,7 +98,10 @@ class Email(AppBase):
             try:
                 s.login(username, password)
             except smtplib.SMTPAuthenticationError as e:
-                return f"Bad username or password: {e}"
+                return {
+                    "success": False,
+                    "reason": f"Bad username or password: {e}"
+                }
 
         # setup the parameters of the message
         msg = MIMEMultipart()
