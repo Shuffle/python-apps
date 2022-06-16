@@ -231,19 +231,25 @@ class Tools(AppBase):
 
     # https://github.com/fhightower/ioc-finder
     def parse_ioc(self, input_string, input_type="all"):
-        if len(input_string) > 2500000 and (input_type == "" or input_type == "all"):
-            return {
-                "success": False,
-                "reason": "Data too large (%d). Please reduce it below 2.5 Megabytes to use this action or specify the input type" % len(input_string)
-            }
+        #if len(input_string) > 2500000 and (input_type == "" or input_type == "all"):
+        #    return {
+        #        "success": False,
+        #        "reason": "Data too large (%d). Please reduce it below 2.5 Megabytes to use this action or specify the input type" % len(input_string)
+        #    }
 
+        # https://github.com/fhightower/ioc-finder/blob/6ff92a73a60e9233bf09b530ccafae4b4415b08a/ioc_finder/ioc_finder.py#L433
+        ioc_types = ["domains", "urls", "email_addresses", "ipv6s", "ipv4s", "ipv4_cidrs", "md5s", "sha256s", "sha1s", "cves"]
         input_string = str(input_string)
         if input_type == "":
             input_type = "all"
         else:
             input_type = input_type.split(",")
+            for item in input_type:
+                item = item.strip()
 
-        iocs = find_iocs(input_string)
+            ioc_types = input_type
+
+        iocs = find_iocs(input_string, included_ioc_types=ioc_types)
         newarray = []
         for key, value in iocs.items():
             if input_type != "all":

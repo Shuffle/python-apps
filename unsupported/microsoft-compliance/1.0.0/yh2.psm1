@@ -1,4 +1,6 @@
 # Import the REST module so that the EXO* cmdlets are present before Connect-ExchangeOnline in the powershell instance.
+Write-Host "Windows: $IsWindows"
+
 $RestModule = "Microsoft.Exchange.Management.RestApiClient.dll"
 $RestModulePath = [System.IO.Path]::Combine($PSScriptRoot, $RestModule)
 Import-Module $RestModulePath 
@@ -6,6 +8,9 @@ Import-Module $RestModulePath
 $ExoPowershellModule = "Microsoft.Exchange.Management.ExoPowershellGalleryModule.dll"
 $ExoPowershellModulePath = [System.IO.Path]::Combine($PSScriptRoot, $ExoPowershellModule)
 Import-Module $ExoPowershellModulePath
+
+
+Write-Host "PSEdition: $PSEdition"
 
 ############# Helper Functions Begin #############
 
@@ -425,6 +430,9 @@ function Connect-ExchangeOnline
             $paramDictionary.Add('ShowProgress', $ShowProgress)
             $paramDictionary.Add('UseMultithreading', $UseMultithreading)
             $paramDictionary.Add('PageSize', $PageSize)
+
+            Write-Host "PSEdition: $PSEdition"
+            Write-Host "Windows: $IsWindows"
             if($PSEdition -eq 'Core')
             {
                 $paramDictionary.Add('Device', $Device)
@@ -776,6 +784,10 @@ function Connect-IPPSSession
             $paramDictionary.Add('CertificateThumbprint', $CertificateThumbprint);
             $paramDictionary.Add('AppId', $AppId)
             $paramDictionary.Add('Organization', $Organization)
+
+            Write-Host "PSEdition: $PSEdition"
+            Write-Host "Windows: $IsWindows"
+
             if($PSEdition -eq 'Core')
             {
                 # We do not want to expose certificate thumprint in Linux as it is not feasible there.
