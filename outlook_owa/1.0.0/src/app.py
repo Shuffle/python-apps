@@ -165,6 +165,7 @@ class Owa(AppBase):
         account,
         verifyssl,
         recipient,
+        ccrecipient,
         subject,
         body,
         attachments,
@@ -193,6 +194,9 @@ class Owa(AppBase):
             body=body,
             to_recipients=[
                 Mailbox(email_address=address) for address in recipient.split(", ")
+            ],
+            cc_recipients=[
+                Mailbox(email_address=address) for address in ccrecipient.split(", ")
             ],
         )
 
