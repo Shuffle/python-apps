@@ -21,7 +21,7 @@ class Markdownify(AppBase):
         super().__init__(redis, logger, console_logger)
 
     def html_to_markdown(self, some_string):
-        return markdownify.markdownify(some_string, heading_style="ATX")
+        return markdownify.markdownify(some_string, heading_style="ATX").rstrip()
 
 if __name__ == "__main__":
     Markdownify.run()
