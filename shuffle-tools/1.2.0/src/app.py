@@ -1431,6 +1431,41 @@ class Tools(AppBase):
 
         return list_one
 
+    def fix_json(self, json_data):
+        try:
+            deletekeys = []
+            copied_dict = json_data.copy()
+
+            for key, value in copied_dict.items():
+                if "@" in key or "." in key or " " in key:
+                    deletekeys.append(key)
+
+                    key = key.replace("@", "", -1)
+                    key = key.replace(".", "", -1)
+                    key = key.replace(" ", "_", -1)
+                    json_data[key] = value
+
+                if isinstance(value, dict):
+                    json_data[key] = self.fix_json(value)
+                else:
+                    json_data[key] = value
+
+                #elif isinstance(value, list):
+                #    json_data[key] = value
+                #else:
+                #    json_data[key] = value
+                #    #for item in json_data[key]:
+                #    #    if isinstance(item, dict):
+                #    #        json_data[
+                    
+            for key in deletekeys:
+                del json_data[key]
+
+        except Exception as e:
+            print("[DEBUG] Problem in JSON (fix_json): %s" % e)
+
+        return json_data
+
     def xml_json_convertor(self, convertto, data):
         if isinstance(data, dict) or isinstance(data, list):
             try:
@@ -1442,7 +1477,9 @@ class Tools(AppBase):
             if convertto == "json":
                 data = data.replace(" encoding=\"utf-8\"", " ")
                 ans = xmltodict.parse(data)
+                ans = self.fix_json(ans)
                 json_data = json.dumps(ans)
+
                 return json_data
             else:
                 ans = readfromstring(data)
@@ -1482,8 +1519,10 @@ class Tools(AppBase):
             return False
 
         self.logger.info("Converting input date.")
-
-        if date_format != "%s":
+       
+        if date_format == "autodetect":
+            input_dt = parser.parse(timestamp)
+        elif date_format != "%s":
             input_dt = datetime.datetime.strptime(timestamp, date_format)
         else:
             input_dt = datetime.datetime.utcfromtimestamp(float(timestamp))
