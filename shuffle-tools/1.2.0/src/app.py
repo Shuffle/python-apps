@@ -1519,8 +1519,10 @@ class Tools(AppBase):
             return False
 
         self.logger.info("Converting input date.")
-
-        if date_format != "%s":
+       
+        if date_format == "autodetect":
+            input_dt = parser.parse(timestamp)
+        elif date_format != "%s":
             input_dt = datetime.datetime.strptime(timestamp, date_format)
         else:
             input_dt = datetime.datetime.utcfromtimestamp(float(timestamp))
