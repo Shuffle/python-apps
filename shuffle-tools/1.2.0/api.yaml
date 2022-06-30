@@ -608,6 +608,7 @@ actions:
         multiline: false
         example: '%Y-%m-%dT%H:%M:%S.%f%Z'
         options:
+          - 'autodetect'
           - '%Y-%m-%dT%H:%M%z'
           - '%Y-%m-%dT%H:%M:%SZ'
           - '%Y-%m-%dT%H:%M:%S%Z'
