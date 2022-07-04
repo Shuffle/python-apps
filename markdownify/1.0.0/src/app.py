@@ -5,6 +5,7 @@ import json
 import markdownify
 import markdown2
 
+
 from walkoff_app_sdk.app_base import AppBase
 
 
@@ -22,7 +23,7 @@ class Markdownify(AppBase):
         super().__init__(redis, logger, console_logger)
 
     def html_to_markdown(self, some_string):
-        return markdownify.markdownify(some_string, heading_style="ATX")
+        return markdownify.markdownify(some_string, heading_style="ATX").rstrip()
     
     def markdown_to_html(self, some_string):
         return markdown2.markdown(some_string)

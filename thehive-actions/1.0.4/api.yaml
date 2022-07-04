@@ -1,0 +1,223 @@
+app_version: 1.0.4
+name: TheHive Actions 
+description: API Actions for TheHive
+tags:
+  - Ticketing 
+  - Search
+categories:
+  - Ticketing
+  - Search
+contact_info:
+  name: "nusantara-self"
+  url: https://github.com/nusantara-self
+authentication:
+  required: true
+  parameters:
+    - name: apikey
+      description: apikey to use
+      example: "*****"
+      required: true
+      schema:
+        type: string
+    - name: url
+      description: The URL to use
+      example: "http://10.0.0.14:9000"
+      required: true
+      schema:
+        type: string
+actions:
+  - name: run_responder
+    description: Runs a responder for a case. 
+    parameters:
+      - name: case_id
+        description: id of the case
+        schema:
+          type: string
+        required: true
+      - name: responder_id
+        description: id of the responder
+        schema:
+          type: string
+        required: true
+    returns:
+      example: '{"responderId": "68d6c37f","responderName": "Responder_1_0","responderDefinition": "Responder_1_0","cortexId": "local","cortexJobId": "68LWv6gB4Zeov3sZV8Tr","objectType": "Case","objectId": "~3694164","status": "Waiting","startDate": 1618126199160,"operations": "[]","report": "{}"}'
+      schema:
+        type: string
+  - name: run_responder_from_list
+    description: Runs a responder for a case.
+    parameters:
+      - name: case_id
+        description: id of the case
+        schema:
+          type: string
+        required: true
+      - name: responder
+        description : Responder to run
+        options:
+          - PrismaCloud_GetAlertStatus
+          - PrismaCloud_RemediateAlert
+          - SMAX_GetIncidentInfos
+        schema:
+           type: string
+        required: true
+    returns:
+      example: '{"responderId": "68d6c37f","responderName": "Responder_1_0","responderDefinition": "Responder_1_0","cortexId": "local","cortexJobId": "68LWv6gB4Zeov3sZV8Tr","objectType": "Cas    e","objectId": "~3694164","status": "Waiting","startDate": 1618126199160,"operations": "[]","report": "{}"}'
+      schema:
+        type: string
+  - name: get_observable_from_case_id
+    description: Returns the value of an observable for a specific case id
+    parameters:
+      - name: case_id
+        description: API endpoint of WALKOFF
+        schema:
+          type: string
+        required: true
+      - name: dataType
+        description: Observable to call
+        schema:
+          type: string
+        required: true
+    returns:
+      schema:
+        type: string 
+  - name: import_alert
+    description: Import an alert as a case. Returns case id.
+    parameters:
+      - name: alert_id
+        description: id of the alert to import
+        schema:
+          type: string
+        required: true
+    returns:
+      schema:
+        type: string
+  - name: close_case
+    description: Closes a case in TheHive
+    parameters:
+      - name: case_id
+        description: ID of case to close
+        schema:
+          type: string
+        required: true
+      - name: resolution_status
+        description: Resolution status of the case to close.
+        schema:
+          type: string
+        options:
+          - TruePositive
+          - FalsePositive
+          - Indeterminate
+        required: true
+      - name: impact_status
+        description: Impact status of the case to close. The impact status is only captured when resolution status is TruePositive
+        schema:
+          type: string
+        options:
+          - NoImpact
+          - WithImpact
+        required: true
+      - name: summary
+        description: Explanation of why the case was closed.
+        schema:
+          type: string
+        required: true
+      - name: tags
+        description: Tags on the case
+        schema:
+          type: string 
+      - name: tags_mode
+        description: Whether to append or replace the list of tags on the case.
+        schema:
+          type: string
+        options:
+          - append
+          - replace
+        required: true
+    returns:
+      schema:
+        type: string
+  - name: update_case
+    description: Updates a case with the payload provided
+    parameters:
+      - name: case_id
+        description: id of the case to modify
+        schema:
+          type: string
+        required: true
+        multiline: true
+      - name: payload
+        description: Payload
+        example: '{"customFields.smax-incident-status.string": "Open"}'
+        schema:
+          type: string
+        required: true
+    returns:
+      schema:
+        type: string
+  - name: get_case
+    description: Get case json
+    parameters:
+      - name: case_id
+        description: id of the case
+        schema:
+          type: string
+        required: true
+    returns:
+      schema:
+        type: string
+  - name: get_tasks
+    description: get tasks of the case
+    parameters:
+      - name: case_id
+        description: id of the case to retrieve tasks
+        schema:
+          type: string
+        required: true
+    returns:
+      schema:
+        type: string
+  - name: update_case_task
+    description: Updates case task
+    parameters:
+      - name: task_id
+        description: id of the task to update
+        schema:
+          type: string
+        required: true
+      - name: status
+        description: 
+        schema:
+          type: string
+        options:
+          - InProgress
+          - Waiting
+          - Completed
+        required: false
+  - name: update_task_log
+    description: Updates case task log
+    parameters:
+      - name: log_id
+        description: id of the task log to update
+        schema:
+          type: string
+        required: true
+      - name: message
+        description: 
+        schema:
+          type: string
+        required: true
+    returns:
+      schema:
+        type: string
+  - name: delete_task_log
+    description: Deletes a task log from its task identifier
+    parameters:
+      - name: log_id
+        description: id of the task log to delete
+        schema:
+          type: string
+        required: true
+    returns:
+      schema:
+        type: string
+large_image: data:image/png;base64,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
