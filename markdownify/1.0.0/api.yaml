@@ -10,11 +10,23 @@ contact_info:
   url: https://github.com/nusantara-self
 actions:
   - name: html_to_markdown
-    description: Retrieve data of the found ticket
+    description: Converts an HTML string to Markdown
     parameters:
       - name: some_string
         description: HTML string
         example: "<p> Hi! </p>"
+        required: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: markdown_to_html
+    description: Converts a Markdown string to HTML
+    parameters:
+      - name: some_string
+        description: Markdown string
+        example: "\n**Hi!**"
         required: true
         schema:
           type: string
