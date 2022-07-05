@@ -34,27 +34,27 @@ class Subflow(AppBase):
         url = "%s/api/v1/workflows/%s/execute" % (self.url, workflow)
 
         params = {}
-        if len(source_workflow) > 0:
+        if len(str(source_workflow)) > 0:
             params["source_workflow"] = source_workflow
         else:
             print("No source workflow")
 
-        if len(source_auth) > 0:
+        if len(str(source_auth)) > 0:
             params["source_auth"] = source_auth
         else:
             print("No source auth")
 
-        if len(source_node) > 0:
+        if len(str(source_node)) > 0:
             params["source_node"] = source_node
         else:
             print("No source node")
 
-        if len(source_execution) > 0:
+        if len(str(source_execution)) > 0:
             params["source_execution"] = source_execution
         else:
             print("No source execution")
 
-        if len(startnode) > 0:
+        if len(str(startnode)) > 0:
             params["start"] = startnode 
         else:
             print("No startnode")
@@ -63,12 +63,18 @@ class Subflow(AppBase):
             "Authorization": "Bearer %s" % user_apikey,
         }
 
-        if len(argument) == 0:
+        if len(str(argument)) == 0:
             ret = requests.post(url, headers=headers, params=params)
         else:
+            if not isinstance(argument, list) and not isinstance(argument, object) and not isinstance(argument, dict):
+                try:
+                    argument = json.loads(argument)
+                except:
+                    pass
+
             try:
-                ret = requests.post(url, headers=headers, params=params, json=json.loads(argument))
-                print(f"Successfully sent argument of length {len(argument)} as JSON")
+                ret = requests.post(url, headers=headers, params=params, json=argument)
+                print(f"Successfully sent argument of length {len(str(argument))} as JSON")
             except:
                 try:
                     ret = requests.post(url, headers=headers, json=argument, params=params)

@@ -18,6 +18,8 @@ from exchangelib import (
     Mailbox,
     Message,
     FileAttachment,
+    ItemAttachment,
+    HTMLBody,
 )
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
 from walkoff_app_sdk.app_base import AppBase
@@ -163,6 +165,7 @@ class Owa(AppBase):
         account,
         verifyssl,
         recipient,
+        ccrecipient,
         subject,
         body,
         attachments,
@@ -180,6 +183,11 @@ class Owa(AppBase):
 
         account = auth["account"]
 
+        try:
+            body = HTMLBody(str(body))
+        except Exception as e:
+            pass
+
         m = Message(
             account=account,
             subject=subject,
@@ -187,9 +195,12 @@ class Owa(AppBase):
             to_recipients=[
                 Mailbox(email_address=address) for address in recipient.split(", ")
             ],
+            cc_recipients=[
+                Mailbox(email_address=address) for address in ccrecipient.split(", ")
+            ],
         )
 
-        file_uids = attachments.split()
+        file_uids = str(attachments).split()
         if len(file_uids) > 0:
             for file_uid in file_uids:
                 attachment_data = self.get_file(file_uid)
@@ -464,17 +475,27 @@ class Owa(AppBase):
                 output_dict["categories"] = email.categories
 
                 if upload_email_shuffle:
-                    email_up = [{"filename": "email.msg",
+                    email_up = [{"filename": "email.eml",
                                  "data": email.mime_content}]
+
                     email_id = self.set_files(email_up)
                     output_dict["email_fileid"] = email_id[0]
 
                 if upload_attachments_shuffle:
-                    atts_up = [
-                        {"filename": attachment.name, "data": attachment.content}
-                        for attachment in email.attachments
-                        if type(attachment) == FileAttachment
-                    ]
+                    atts_up = []
+                    for attachment in email.attachments:
+                        if type(attachment) == FileAttachment:
+                            if not attachment.name:
+                                attachment.name = "TBD"
+
+                            atts_up.append({"filename": attachment.name, "data": attachment.content})
+                        elif type(attachment) == ItemAttachment:
+                            if not attachment.name:
+                                attachment.name = "TBD"
+
+                            atts_up.append({"filename": attachment.name, "data": attachment.item.mime_content})
+                        else:
+                            continue
 
                     atts_ids = self.set_files(atts_up)
                     output_dict["attachment_uids"] = atts_ids

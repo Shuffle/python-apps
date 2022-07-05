@@ -139,10 +139,16 @@ class MsIdentityAccess(AppBase):
 
         return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code,"error_response":ret.text}
 
-    def list_risky_users(self, tenant_id, client_id, client_secret):
+    def list_risky_users(self, tenant_id, client_id, client_secret, amount=20, skip=0):
         graph_url = "https://graph.microsoft.com"
         session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
+        if amount == 0 or amount == "":
+            amount = 20
 
+        if skip == 0 or skip == "":
+            skip = 0
+
+        #graph_url = f"https://graph.microsoft.com/v1.0/identityProtection/riskyUsers?$top=%d&$skip=%d" % (int(amount), int(skip))
         graph_url = f"https://graph.microsoft.com/v1.0/identityProtection/riskyUsers"
         ret = session.get(graph_url)
         print(ret.status_code)
@@ -157,7 +163,7 @@ class MsIdentityAccess(AppBase):
         graph_url = "https://graph.microsoft.com"
         session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
-        graph_url = f"https://graph.microsoft.com/v1.0/identityProtection/riskyUsers{risky_user_id}"
+        graph_url = f"https://graph.microsoft.com/v1.0/identityProtection/riskyUsers/{risky_user_id}"
         ret = session.get(graph_url)
         print(ret.status_code)
         print(ret.text)

@@ -162,7 +162,6 @@ class AzureSentinel(AppBase):
         return json.dumps(incident)
 
     def close_incident(self, **kwargs):
-
         incident = json.loads(self.get_incident(**kwargs))
         if "error" in incident:
             return json.dumps(incident)
@@ -193,7 +192,6 @@ class AzureSentinel(AppBase):
         return res.text
 
     def update_incident(self, **kwargs):
-
         incident = json.loads(self.get_incident(**kwargs))
         if "error" in incident:
             return json.dumps(incident)
@@ -238,6 +236,45 @@ class AzureSentinel(AppBase):
         comment_id = str(uuid.uuid4())
         comment_data = {"properties": {"message": kwargs["comment"]}}
 
+        res = self.s.put(f"{comment_url}/{comment_id}", json=comment_data, params=params)
+        if res.status_code != 200:
+            raise ConnectionError(res.text)
+
+        return res.text
+
+    def run_query(self, **kwargs):
+        # Get a client credential access token
+        auth = self.authenticate(
+            kwargs["tenant_id"], kwargs["client_id"], kwargs["client_secret"]
+        )
+
+        if not auth["success"]:
+            return {"error": auth["message"]}
+
+        print("Here 0")
+        comment_url = f"{self.azure_url}/subscriptions/{kwargs['subscription_id']}/resourceGroups/{kwargs['resource_group_name']}/providers/Microsoft.OperationalInsights/workspaces/{kwargs['workspace_name']}/savedSearches"
+        
+
+        #providers/Microsoft.SecurityInsights/incidents/{kwargs['incident_id']}/comments"
+        #PUT https://management.azure.com/subscriptions/{subscriptionId} _
+        #/resourcegroups/{resourceGroupName} _
+        #/providers/Microsoft.OperationalInsights/workspaces/{workspaceName} _
+        #/savedSearches/{savedSearchId}?api-version=2020-03-01-preview
+
+
+        params = {"api-version": "2020-01-01"}
+        print("Here 1")
+        comment_id = str(uuid.uuid4())
+        comment_data = {
+            "properties": {
+                "Category": kwargs["query_category"],
+                "DisplayName": kwargs["query_name"],
+                "Query": kwargs['query'],
+            }
+        }
+
+
+        print("Here 2")
         res = self.s.put(f"{comment_url}/{comment_id}", json=comment_data, params=params)
         if res.status_code != 200:
             raise ConnectionError(res.text)

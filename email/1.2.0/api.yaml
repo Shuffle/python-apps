@@ -109,8 +109,8 @@ actions:
         example: "true"
         required: false 
         options:
-          - false
           - true
+          - false
         schema:
           type: string
     returns:
@@ -215,6 +215,15 @@ actions:
           - false
         schema:
           type: string
+      - name: mark_as_read
+        description: Mark email as read or not
+        multiline: false
+        options:
+          - "false"
+          - "true"
+        required: false 
+        schema:
+          type: bool    
   - name: parse_email_file
     description: Takes a file from shuffle and analyzes it if it's a valid .eml or .msg
     parameters:

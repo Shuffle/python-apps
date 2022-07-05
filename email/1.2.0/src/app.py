@@ -7,7 +7,6 @@ import datetime
 import base64
 import imaplib
 import smtplib
-import eml_parser
 import time
 import random
 import eml_parser
@@ -88,6 +87,8 @@ class Email(AppBase):
         except socket.gaierror as e:
             return f"Bad SMTP host or port: {e}"
 
+        # This is not how it should work.. 
+        # Port 465 & 587 = TLS. Sometimes 25.
         if ssl_verify == "false" or ssl_verify == "False":
             pass
         else:
@@ -97,7 +98,10 @@ class Email(AppBase):
             try:
                 s.login(username, password)
             except smtplib.SMTPAuthenticationError as e:
-                return f"Bad username or password: {e}"
+                return {
+                    "success": False,
+                    "reason": f"Bad username or password: {e}"
+                }
 
         # setup the parameters of the message
         msg = MIMEMultipart()
@@ -170,7 +174,8 @@ class Email(AppBase):
         include_attachment_data,
         upload_email_shuffle,
         upload_attachments_shuffle,
-        ssl_verify="True"
+        ssl_verify="True",
+        mark_as_read="False",
     ):
         def path_to_dict(path, value=None):
             def pack(parts):
@@ -189,6 +194,12 @@ class Email(AppBase):
                 else:
                     d1[k] = d2[k]
 
+        #if isinstance(mark_as_read, str):
+        #    if str(mark_as_read).lower() == "true":
+        #        mark_as_read = True
+        #    else:
+        #        mark_as_read = False 
+
         if type(amount) == str:
             try:
                 amount = int(amount)
@@ -204,7 +215,7 @@ class Email(AppBase):
             try:
                 email = imaplib.IMAP4(imap_server)
 
-                if ssl_verify == "false" or ssl_verify == "False":
+                if ssl_verify == "false" or ssl_verify == "False" or ssl_verify == False:
                     pass
                 else:
                     email.starttls()
@@ -229,6 +240,7 @@ class Email(AppBase):
 
         email.select(foldername)
         unread = True if unread.lower().strip() == "true" else False
+        
         try:
             # IMAP search queries, e.g. "seen" or "read"
             # https://www.rebex.net/secure-mail.net/features/imap-search.aspx
@@ -248,23 +260,24 @@ class Email(AppBase):
                 "reason": f"Couldn't retrieve email. Data: {data}",
             }
 
-        try:
-            self.logger.info(f"LIST: {id_list}")
-        except TypeError:
-            return {
-                "success": False,
-                "reason": "Error getting email. Data: %s" % data,
-            }
+        #try:
+        #    self.logger.info(f"LIST: {id_list}")
+        #except TypeError:
+        #    return {
+        #        "success": False,
+        #        "reason": "Error getting email. Data: %s" % data,
+        #    }
 
-        include_raw_body = True if include_raw_body.lower().strip() == "true" else False
+        mark_as_read = True if str(mark_as_read).lower().strip() == "true" else False
+        include_raw_body = True if str(include_raw_body).lower().strip() == "true" else False
         include_attachment_data = (
-            True if include_attachment_data.lower().strip() == "true" else False
+            True if str(include_attachment_data).lower().strip() == "true" else False
         )
         upload_email_shuffle = (
-            True if upload_email_shuffle.lower().strip() == "true" else False
+            True if str(upload_email_shuffle).lower().strip() == "true" else False
         )
         upload_attachments_shuffle = (
-            True if upload_attachments_shuffle.lower().strip() == "true" else False
+            True if str(upload_attachments_shuffle).lower().strip() == "true" else False
         )
 
         # Convert <amount> of mails in json
@@ -294,6 +307,9 @@ class Email(AppBase):
                 if data == None:
                     continue
 
+                if not mark_as_read:
+                    email.store(id_list[i], "-FLAGS", '\Seen')
+
                 output_dict = {}
                 parsed_eml = ep.decode_email_bytes(data[0][1])
 
@@ -311,24 +327,20 @@ class Email(AppBase):
                     output_dict = parsed_eml
 
                 output_dict["imap_id"] = id_list[i]
-                output_dict["attachment"] = []
-                output_dict["attachment_uids"] = []
 
                 # Add message-id as top returned field
-                output_dict["message_id"] = parsed_eml["header"]["header"][
-                    "message-id"
-                ][0]
+                output_dict["message_id"] = parsed_eml["header"]["header"]["message-id"][0]
 
                 if upload_email_shuffle:
+                    self.logger.info("Uploading email to shuffle")
                     email_up = [{"filename": "email.msg", "data": data[0][1]}]
                     email_id = self.set_files(email_up)
                     output_dict["email_uid"] = email_id[0]
 
                 if upload_attachments_shuffle:
-                    #self.logger.info(f"EML: {parsed_eml}")
+                    self.logger.info("Uploading email ATTACHMENTS to shuffle")
                     try:
-                        atts_up = [
-                            {
+                        atts_up = [{
                                 "filename": x["filename"],
                                 "data": base64.b64decode(x["raw"]),
                             }
@@ -336,12 +348,18 @@ class Email(AppBase):
                         ]
 
                         atts_ids = self.set_files(atts_up)
-                        output_dict["attachments_uids"] = atts_ids
+                        output_dict["attachment_uids"] = atts_ids
+
+                        # Don't need this raw.
+                        for x in parsed_eml["attachment"]:
+                            x["raw"] = "Removed and saved in the uploaded file"
 
                     except Exception as e:
                         self.logger.info(f"Major issue with EML attachment - are there attachments: {e}")
-                        
-
+                else:
+                    output_dict["attachment"] = []
+                    output_dict["attachment_uids"] = []
+                
                 emails.append(output_dict)
         except Exception as err:
             return {
@@ -354,7 +372,7 @@ class Email(AppBase):
                 "success": True,
                 "messages": json.loads(json.dumps(emails, default=default)),
             }
-            self.logger.info(f"Emails: {to_return}")
+
             return to_return
         except:
             return {
@@ -382,11 +400,25 @@ class Email(AppBase):
         elif file_extension.lower() == 'msg':
             print('working with .msg file')
             try:
+                result = {}
                 msg = MsOxMessage(file_path['data'])
                 msg_properties_dict = msg.get_properties()
-                print(msg_properties_dict)
-                frozen = jsonpickle.encode(msg_properties_dict)
-                return frozen
+                frozen = jsonpickle.encode(msg_properties_dict, unpicklable = False)
+                json_response = json.loads(frozen)
+                if json_response.get("attachments"):
+                    for i in json_response["attachments"]:
+                        if isinstance(i,dict):
+                            if i.get('data') and 'text' in i.get('AttachMimeTag'):
+                                value = i.get('data').get('py/b64')
+                                i['data']['content'] = base64.b64decode(value).decode()
+                result['attachments'] = json_response['attachments']
+                ep = eml_parser.EmlParser()
+                temp = ep.decode_email_bytes(bytes(msg.get_email_mime_content(),'utf-8'))
+                result['body'] = temp['body']
+                msg1 = extract_msg.openMsg(file_path['data'])
+                result["header"] = dict(msg1.header.items())
+                result['body_data'] = msg.body
+                return result
             except Exception as e:
                 return {"Success":"False","Message":f"Exception occured: {e}"}    
         else:

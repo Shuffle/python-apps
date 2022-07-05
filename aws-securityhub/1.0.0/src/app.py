@@ -57,7 +57,9 @@ class AWSEC2(AppBase):
         client = self.auth(access_key, secret_key, region)
 
         try:
-            filters = json.loads(filters)
+            if not isinstance(filters, list) and not isinstance(filters, object) and not isinstance(filters, dict):
+                filters = json.loads(filters)
+
             response = client.get_findings(Filters=filters)
         except:
             print("Failed to add filters. Couldn't decode JSON")

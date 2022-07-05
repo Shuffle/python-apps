@@ -126,7 +126,10 @@ class CheckPoint(AppBase):
             "success": [],
             "failed": []
         }
-        host_list = ast.literal_eval(host_list)
+
+        if isinstance(host_list, str):
+            host_list = ast.literal_eval(host_list)
+
         url = f'https://{ip_addr}/web_api/add-host'
         session_id = self.login(ip_addr, user, password)
         
@@ -348,7 +351,9 @@ class CheckPoint(AppBase):
 
         url = f'https://{ip_addr}/web_api/set-group'
         session_id = self.login(ip_addr, user, password)
-        members = ast.literal_eval(members)
+        if isinstance(members, str):
+            members = ast.literal_eval(members)
+
         if ssl_verify.lower() == 'true':
             ssl_verify = True
         else:

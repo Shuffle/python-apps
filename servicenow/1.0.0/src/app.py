@@ -113,10 +113,13 @@ class Servicenow(AppBase):
         return self.send_request(url, username, password, path, 'get', params=query_params)
 
     def create_ticket(self, url, username, password, table_name, body, file_id=""):
-        try:
-            data = json.loads(body)
-        except json.decoder.JSONDecodeError as e:
-            return {"success": False, "reason": e} 
+        if not isinstance(body, list) and not isinstance(body, object) and not isinstance(body, dict):
+            try:
+                data = json.loads(body)
+            except json.decoder.JSONDecodeError as e:
+                return {"success": False, "reason": e} 
+        else:
+            data = body
             
 
         path = "/api/now/v1/table/%s" % table_name
@@ -147,10 +150,13 @@ class Servicenow(AppBase):
         return base_request
 
     def update_ticket(self, url, username, password, table_name, sys_id, body, file_id=""):
-        try:
-            data = json.loads(body)
-        except json.decoder.JSONDecodeError as e:
-            return {"success": False, "reason": e} 
+        if not isinstance(body, list) and not isinstance(body, object) and not isinstance(body, dict):
+            try:
+                data = json.loads(body)
+            except json.decoder.JSONDecodeError as e:
+                return {"success": False, "reason": e} 
+        else:
+            data = body
             
 
         path = "/api/now/v1/table/%s/%s" % (table_name, sys_id)

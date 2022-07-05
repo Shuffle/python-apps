@@ -1,14 +1,15 @@
 version: '3.4'
 services:
-  thehive:
+  shuffle-tools:
     build:
       context: .
       dockerfile: Dockerfile
-    env_file:
-      - env.txt
-    restart: "no"
+#    image: walkoff_registry:5000/walkoff_app_HelloWorld-v1-0
     deploy:
       mode: replicated
       replicas: 10
       restart_policy:
         condition: none
+    restart: "no"
+    secrets:
+      - secret1

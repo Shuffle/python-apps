@@ -74,7 +74,7 @@ class Tools(AppBase):
             except Exception as e:
                 #return string.decode("utf-16")
 
-                print(f"[WARNING] Error in normal decoding: {e}")
+                self.logger.info(f"[WARNING] Error in normal decoding: {e}")
                 return {
                     "success": False,
                     "reason": f"Error decoding the base64: {e}",
@@ -84,7 +84,7 @@ class Tools(AppBase):
                 #    if str(newvar).startswith("b'") and str(newvar).endswith("'"):
                 #        newvar = newvar[2:-1]
                 #except Exception as e:
-                #    print(f"Encoding issue in base64: {e}")
+                #    self.logger.info(f"Encoding issue in base64: {e}")
                 #return newvar
 
                 #try:
@@ -160,7 +160,7 @@ class Tools(AppBase):
             
                 data["attachments"] = files
             except Exception as e:
-                print(f"Error in attachment parsing for email: {e}")
+                self.logger.info(f"Error in attachment parsing for email: {e}")
                 
 
         url = "https://shuffler.io/api/v1/functions/sendmail"
@@ -238,6 +238,7 @@ class Tools(AppBase):
 
     # https://github.com/fhightower/ioc-finder
     def parse_ioc(self, input_string, input_type="all"):
+        input_string = str(input_string)
         if input_type == "":
             input_type = "all"
         else:
@@ -276,8 +277,7 @@ class Tools(AppBase):
                 try:
                     item["is_private_ip"] = ipaddress.ip_address(item["data"]).is_private
                 except:
-                    print("Error parsing %s" % item["data"])
-                    pass
+                    self.logger.info("Error parsing %s" % item["data"])
 
         try:
             newarray = json.dumps(newarray)
@@ -300,13 +300,12 @@ class Tools(AppBase):
                 item = item.replace("'", '"', -1)
                 item = json.loads(item)
             except json.decoder.JSONDecodeError as e:
-                print("Parse error: %s" % e)
-                pass
+                self.logger.info("Parse error: %s" % e)
 
         return str(len(item))
 
     def set_json_key(self, json_object, key, value):
-        print(f"OBJ: {json_object}\nKEY: {key}\nVAL: {value}")
+        self.logger.info(f"OBJ: {json_object}\nKEY: {key}\nVAL: {value}")
         if isinstance(json_object, str):
             try:
                 json_object = json.loads(json_object)
@@ -325,23 +324,20 @@ class Tools(AppBase):
                     "reason": "Item is valid JSON, but can't handle lists. Use .#"
                 }
 
-        print(f"2")
         if not isinstance(json_object, object):
             return {
                 "success": False,
                 "reason": "Item is not valid JSON (2)"
             }
 
-        print(f"3")
-        try:
-            value = json.loads(value)
-        except json.decoder.JSONDecodeError as e:
-            pass
+        if isinstance(value, str):
+            try:
+                value = json.loads(value)
+            except json.decoder.JSONDecodeError as e:
+                pass
 
-        print(f"4")
         # Handle JSON paths
         if "." in key:
-            print(f"4")
             base_object = json.loads(json.dumps(json_object))
             #base_object.output.recipients.notificationEndpointIds = ... 
 
@@ -355,7 +351,7 @@ class Tools(AppBase):
                 buildstring += f"[\"{subkey}\"]" 
 
             buildstring += f" = {value}"
-            print("BUILD: %s" % buildstring)
+            self.logger.info("BUILD: %s" % buildstring)
 
             #output = 
             exec(buildstring)
@@ -380,7 +376,7 @@ class Tools(AppBase):
             try:
                 del json_object[key]
             except:
-                print("Key %s doesn't exist" % key)
+                self.logger.info(f"[ERROR] Key {key} doesn't exist")
 
         return json_object
 
@@ -414,19 +410,20 @@ class Tools(AppBase):
         return input_data
 
     def map_value(self, input_data, mapping, default_value=""):
-        try:
-            mapping = json.loads(mapping)
-        except json.decoder.JSONDecodeError as e:
-            return {
-                "success": False,
-                "reason": "Mapping is not valid JSON: %s" % e,
-            }
+        if not isinstance(mapping, dict) and not isinstance(mapping, object):
+            try:
+                mapping = json.loads(mapping)
+            except json.decoder.JSONDecodeError as e:
+                return {
+                    "success": False,
+                    "reason": "Mapping is not valid JSON: %s" % e,
+                }
 
         for key, value in mapping.items():
             try:
                 input_data = input_data.replace(key, str(value), -1)
             except:
-                print("Failed mapping output data for key %s" % key)
+                self.logger.info(f"Failed mapping output data for key {key}")
 
         return input_data 
 
@@ -438,7 +435,7 @@ class Tools(AppBase):
             }
 
             matches = re.findall(regex, input_data)
-            print(matches)
+            self.logger.info(f"{matches}")
             for item in matches:
                 if isinstance(item, str):
                     name = "group_0" 
@@ -466,10 +463,10 @@ class Tools(AppBase):
         self, input_data, regex, replace_string="", ignore_case="False"
     ):
 
-        print("=" * 80)
-        print(f"Regex: {regex}")
-        print(f"replace_string: {replace_string}")
-        print("=" * 80)
+        #self.logger.info("=" * 80)
+        #self.logger.info(f"Regex: {regex}")
+        #self.logger.info(f"replace_string: {replace_string}")
+        #self.logger.info("=" * 80)
 
         if ignore_case.lower().strip() == "true":
             return re.sub(regex, replace_string, input_data, flags=re.IGNORECASE)
@@ -477,7 +474,7 @@ class Tools(AppBase):
             return re.sub(regex, replace_string, input_data)
 
     def execute_python(self, code):
-        print(f"Python code {len(code)} {code}. If uuid, we'll try to download and use the file.")
+        self.logger.info(f"Python code {len(code)} {code}. If uuid, we'll try to download and use the file.")
 
         if len(code) == 36 and "-" in code:
             filedata = self.get_file(code)
@@ -494,8 +491,6 @@ class Tools(AppBase):
                 }
 
 
-        print(f"Decoded: {code}")
-
         # Write the code to a file
         # 1. Take the data into a file
         # 2. Subprocess execute file?
@@ -509,7 +504,7 @@ class Tools(AppBase):
             #try:
             #    s = s.encode("utf-8")
             #except Exception as e:
-            #    print(f"Failed utf-8 encoding response: {e}")
+            #    self.logger.info(f"Failed utf-8 encoding response: {e}")
 
             try:
                 return {
@@ -539,10 +534,10 @@ class Tools(AppBase):
         stdout = process.communicate()
         item = ""
         if len(stdout[0]) > 0:
-            print("Succesfully ran bash!")
+            self.logger.info("[DEBUG] Succesfully ran bash!")
             item = stdout[0]
         else:
-            print("FAILED to run bash!")
+            self.logger.info(f"[ERROR] FAILED to run bash command {code}!")
             item = stdout[1]
 
         try:
@@ -554,10 +549,10 @@ class Tools(AppBase):
         return item
 
     def filter_list(self, input_list, field, check, value, opposite):
-        print(f"\nRunning function with list {input_list}")
+        self.logger.info(f"\nRunning function with list {input_list}")
 
         flip = False
-        if opposite.lower() == "true":
+        if str(opposite).lower() == "true":
             flip = True
 
         try:
@@ -568,7 +563,7 @@ class Tools(AppBase):
                 input_list = input_list.replace("'", '"', -1)
                 input_list = json.loads(input_list)
             except Exception:
-                print("[WARNING] Error parsing string to array. Continuing anyway.")
+                self.logger.info("[WARNING] Error parsing string to array. Continuing anyway.")
 
         # Workaround D:
         if not isinstance(input_list, list):
@@ -581,7 +576,7 @@ class Tools(AppBase):
 
             input_list = [input_list]
 
-        print("\nRunning with check \"%s\" on list of length %d\n" % (check, len(input_list)))
+        self.logger.info(f"\nRunning with check \"%s\" on list of length %d\n" % (check, len(input_list)))
         found_items = []
         new_list = []
         failed_list = []
@@ -602,10 +597,10 @@ class Tools(AppBase):
                     try:
                         tmp = json.dumps(tmp)
                     except json.decoder.JSONDecodeError as e:
-                        print("FAILED DECODING: %s" % e)
+                        self.logger.info("FAILED DECODING: %s" % e)
                         pass
 
-                #print("PRE CHECKS FOR TMP: %")
+                #self.logger.info("PRE CHECKS FOR TMP: %")
 
                 # EQUALS JUST FOR STR
                 if check == "equals":
@@ -613,7 +608,7 @@ class Tools(AppBase):
                     # value = tmp.lower()
 
                     if str(tmp).lower() == str(value).lower():
-                        print("APPENDED BECAUSE %s %s %s" % (field, check, value))
+                        self.logger.info("APPENDED BECAUSE %s %s %s" % (field, check, value))
                         if not flip:
                             new_list.append(item)
                         else:
@@ -687,9 +682,9 @@ class Tools(AppBase):
                     else:
                         failed_list.append(item)
                 elif check == "contains any of":
-                    print("Inside contains any of")
+                    self.logger.info("Inside contains any of")
                     checklist = value.split(",")
-                    print("Checklist and tmp: %s - %s" % (checklist, tmp))
+                    self.logger.info("Checklist and tmp: %s - %s" % (checklist, tmp))
                     found = False
                     for subcheck in checklist:
                         subcheck = subcheck.strip().lower()
@@ -732,7 +727,7 @@ class Tools(AppBase):
 
                 # CONTAINS FIND FOR LIST AND IN FOR STR
                 elif check == "field is unique":
-                    #print("FOUND: %s"
+                    #self.logger.info("FOUND: %s"
                     if tmp.lower() not in found_items and not flip:
                         new_list.append(item)
                         found_items.append(tmp.lower())
@@ -759,7 +754,7 @@ class Tools(AppBase):
                     value = self.parse_list(value)
                     checklist = value.split(",")
                     tmp = tmp.lower()
-                    print("CHECKLIST: %s. Value: %s" % (checklist, tmp))
+                    self.logger.info("CHECKLIST: %s. Value: %s" % (checklist, tmp))
                     found = False
                     for value in checklist:
                         if value in tmp and not flip:
@@ -830,7 +825,7 @@ class Tools(AppBase):
 
             except Exception as e:
                 # "Error: %s" % e
-                print("[WARNING] FAILED WITH EXCEPTION: %s" % e)
+                self.logger.info("[WARNING] FAILED WITH EXCEPTION: %s" % e)
                 failed_list.append(item)
             # return
 
@@ -876,7 +871,7 @@ class Tools(AppBase):
     #        index = 0
     #        for check in checksplit:
     #            if check == "equals":
-    #                print(
+    #                self.logger.info(
     #                    "Checking %s vs %s"
     #                    % (list_item[fieldsplit[index]], valuesplit[index])
     #                )
@@ -919,7 +914,7 @@ class Tools(AppBase):
             % (self.url, file_id, self.current_execution_id),
             headers=headers,
         )
-        print(f"RET: {ret}")
+        self.logger.info(f"RET: {ret}")
 
         return ret.text
 
@@ -928,7 +923,7 @@ class Tools(AppBase):
         headers = {
             "Authorization": "Bearer %s" % self.authorization,
         }
-        print("HEADERS: %s" % headers)
+        self.logger.info("HEADERS: %s" % headers)
 
         ret = requests.delete(
             "%s/api/v1/files/%s?execution_id=%s"
@@ -938,13 +933,13 @@ class Tools(AppBase):
         return ret.text
 
     def create_file(self, filename, data):
-        print("Inside function")
+        self.logger.info("Inside function")
 
         #try:
         #    if str(data).startswith("b'") and str(data).endswith("'"):
         #        data = data[2:-1]
         #except Exception as e:
-        #    print(f"Exception: {e}")
+        #    self.logger.info(f"Exception: {e}")
 
         filedata = {
             "filename": filename,
@@ -964,7 +959,7 @@ class Tools(AppBase):
         if filedata is None:
             return "File is empty?"
 
-        print("INSIDE APP DATA: %s" % filedata)
+        self.logger.info("INSIDE APP DATA: %s" % filedata)
         try:
             return filedata["data"].decode()
         except:
@@ -1004,14 +999,14 @@ class Tools(AppBase):
             except SyntaxError:
                 file_ids = file_ids
 
-            print("IDS: %s" % file_ids)
+            self.logger.info("IDS: %s" % file_ids)
             items = file_ids if type(file_ids) == list else file_ids.split(",")
             for file_id in items:
 
                 item = self.get_file(file_id)
                 return_ids = None
 
-                print("Working with fileformat %s" % fileformat)
+                self.logger.info("Working with fileformat %s" % fileformat)
                 with tempfile.TemporaryDirectory() as tmpdirname:
 
                     # Get archive and save phisically
@@ -1186,7 +1181,7 @@ class Tools(AppBase):
         try:
             # TODO: will in future support multiple files instead of string ids?
             file_ids = file_ids.split()
-            print("picking {}".format(file_ids))
+            self.logger.info("picking {}".format(file_ids))
 
             # GET all items from shuffle
             items = [self.get_file(file_id) for file_id in file_ids]
@@ -1197,14 +1192,14 @@ class Tools(AppBase):
             # Dump files on disk, because libs want path :(
             with tempfile.TemporaryDirectory() as tmpdir:
                 paths = []
-                print("Number 1")
+                self.logger.info("Number 1")
                 for item in items:
                     with open(os.path.join(tmpdir, item["filename"]), "wb") as f:
                         f.write(item["data"])
                         paths.append(os.path.join(tmpdir, item["filename"]))
 
                 # Create archive temporary
-                print("{} items to inflate".format(len(items)))
+                self.logger.info("{} items to inflate".format(len(items)))
                 with tempfile.NamedTemporaryFile() as archive:
 
                     if fileformat == "zip":
@@ -1243,34 +1238,36 @@ class Tools(AppBase):
             return {"success": False, "message": excp}
 
     def add_list_to_list(self, list_one, list_two):
-        if not list_one or list_one == " " or list_one == "None" or list_one == "null":
-            list_one = "[]"
-        if not list_two or list_two == " " or list_two == "None" or list_two == "null":
-            list_two = "[]"
+        if isinstance(list_one, str):
+            if not list_one or list_one == " " or list_one == "None" or list_one == "null":
+                list_one = "[]"
 
-        try:
-            list_one = json.loads(list_one)
-        except json.decoder.JSONDecodeError as e:
-            print("Failed to parse list1 as json: %s" % e)
-            if list_one == None:
-                list_one = []
-            else:
-                return {
-                    "success": False,
-                    "reason": f"List one is not a valid list: {list_one}" 
-                }
+            try:
+                list_one = json.loads(list_one)
+            except json.decoder.JSONDecodeError as e:
+                self.logger.info("Failed to parse list1 as json: %s" % e)
+                if list_one == None:
+                    list_one = []
+                else:
+                    return {
+                        "success": False,
+                        "reason": f"List one is not a valid list: {list_one}" 
+                    }
 
-        try:
-            list_two = json.loads(list_two)
-        except json.decoder.JSONDecodeError as e:
-            print("Failed to parse list2 as json: %s" % e)
-            if list_one == None:
-                list_one = []
-            else:
-                return {
-                    "success": False,
-                    "reason": f"List two is not a valid list: {list_two}"
-                }
+        if isinstance(list_two, str):
+            if not list_two or list_two == " " or list_two == "None" or list_two == "null":
+                list_two = "[]"
+            try:
+                list_two = json.loads(list_two)
+            except json.decoder.JSONDecodeError as e:
+                self.logger.info("Failed to parse list2 as json: %s" % e)
+                if list_one == None:
+                    list_one = []
+                else:
+                    return {
+                        "success": False,
+                        "reason": f"List two is not a valid list: {list_two}"
+                    }
 
         if isinstance(list_one, dict):
             list_one = [list_one]
@@ -1283,15 +1280,17 @@ class Tools(AppBase):
         return list_one
 
     def diff_lists(self, list_one, list_two):
-        try:
-            list_one = json.loads(list_one)
-        except json.decoder.JSONDecodeError as e:
-            print("Failed to parse list1 as json: %s" % e)
+        if isinstance(list_one, str):
+            try:
+                list_one = json.loads(list_one)
+            except json.decoder.JSONDecodeError as e:
+                self.logger.info("Failed to parse list1 as json: %s" % e)
 
-        try:
-            list_two = json.loads(list_two)
-        except json.decoder.JSONDecodeError as e:
-            print("Failed to parse list2 as json: %s" % e)
+        if isinstance(list_two, str):
+            try:
+                list_two = json.loads(list_two)
+            except json.decoder.JSONDecodeError as e:
+                self.logger.info("Failed to parse list2 as json: %s" % e)
 
         def diff(li1, li2):
             return list(set(li1) - set(li2)) + list(set(li2) - set(li1))
@@ -1299,58 +1298,62 @@ class Tools(AppBase):
         return diff(list_one, list_two)
 
     def merge_lists(self, list_one, list_two, set_field="", sort_key_list_one="", sort_key_list_two=""):
-        try:
-            list_one = json.loads(list_one)
-        except json.decoder.JSONDecodeError as e:
-            print("Failed to parse list1 as json: %s" % e)
+        if isinstance(list_one, str):
+            try:
+                list_one = json.loads(list_one)
+            except json.decoder.JSONDecodeError as e:
+                self.logger.info("Failed to parse list1 as json: %s" % e)
 
-        try:
-            list_two = json.loads(list_two)
-        except json.decoder.JSONDecodeError as e:
-            print("Failed to parse list2 as json: %s" % e)
+        if isinstance(list_two, str):
+            try:
+                list_two = json.loads(list_two)
+            except json.decoder.JSONDecodeError as e:
+                self.logger.info("Failed to parse list2 as json: %s" % e)
 
         if len(list_one) != len(list_two):
             return {"success": False, "message": "Lists length must be the same. %d vs %d" % (len(list_one), len(list_two))}
 
-        #result = json.loads(input_data)
-        print(list_one)
-        print(list_two)
-        print(set_field)
-        print("START: ")
-
         if len(sort_key_list_one) > 0:
-            print("Sort 1 %s by key: %s" % (list_one, sort_key_list_one))
+            self.logger.info("Sort 1 %s by key: %s" % (list_one, sort_key_list_one))
             try:
                 list_one = sorted(list_one, key=lambda k: k.get(sort_key_list_one), reverse=True)
             except:
-                print("Failed to sort list one")
+                self.logger.info("Failed to sort list one")
                 pass
 
         if len(sort_key_list_two) > 0:
-            #print("Sort 2 %s by key: %s" % (list_two, sort_key_list_two))
+            #self.logger.info("Sort 2 %s by key: %s" % (list_two, sort_key_list_two))
             try:
                 list_two = sorted(list_two, key=lambda k: k.get(sort_key_list_two), reverse=True)
             except:
-                print("Failed to sort list one")
+                self.logger.info("Failed to sort list one")
                 pass
 
         # Loops for each item in sub array and merges items together
         # List one is being overwritten
         base_key = "shuffle_auto_merge"
-        for i in range(len(list_one)):
-            #print(list_two[i])
-            if isinstance(list_two[i], dict):
-                for key, value in list_two[i].items():
-                    list_one[i][key] = value
-            elif isinstance(list_two[i], str) and list_two[i] == "":
-                continue
-            elif isinstance(list_two[i], str) or isinstance(list_two[i], int) or isinstance(list_two[i], bool):
-                print("IN SETTER FOR %s" % list_two[i])
-                if len(set_field) == 0:
-                    print("Define a JSON key to set for List two (Set Field)")
-                    list_one[i][base_key] = list_two[i]
-                else:
-                    list_one[i][set_field] = list_two[i]
+        try:
+            for i in range(len(list_one)):
+                #self.logger.info(list_two[i])
+                if isinstance(list_two[i], dict):
+                    for key, value in list_two[i].items():
+                        list_one[i][key] = value
+                elif isinstance(list_two[i], str) and list_two[i] == "":
+                    continue
+                elif isinstance(list_two[i], str) or isinstance(list_two[i], int) or isinstance(list_two[i], bool):
+                    self.logger.info("IN SETTER FOR %s" % list_two[i])
+                    if len(set_field) == 0:
+                        self.logger.info("Define a JSON key to set for List two (Set Field)")
+                        list_one[i][base_key] = list_two[i]
+                    else:
+                        list_one[i][set_field] = list_two[i]
+        except Exception as e:
+            return {
+                "success": False,
+                "reason": "An error occurred while merging the lists. PS: List one can NOT be a list of integers. If this persists, contact us at support@shuffler.io",
+                "exception": f"{e}",
+            }
+            
 
         return list_one
 
@@ -1368,7 +1371,7 @@ class Tools(AppBase):
 
     def date_to_epoch(self, input_data, date_field, date_format):
 
-        print(
+        self.logger.info(
             "Executing with {} on {} with format {}".format(
                 input_data, date_field, date_format
             )
@@ -1393,7 +1396,7 @@ class Tools(AppBase):
         if input_data == "None":
             return False
 
-        print("Converting input date.")
+        self.logger.info("Converting input date.")
 
         if date_format != "%s":
             input_dt = datetime.datetime.strptime(input_data, date_format)
@@ -1421,15 +1424,15 @@ class Tools(AppBase):
         else:
             formatted_dt = datetime.datetime.utcnow()
 
-        print("Formatted time is: {}".format(formatted_dt))
+        self.logger.info("Formatted time is: {}".format(formatted_dt))
         if direction == "ago":
             comparison_dt = formatted_dt - delta
         else:
             comparison_dt = formatted_dt + delta
-        print("{} {} {} is {}".format(offset, units, direction, comparison_dt))
+        self.logger.info("{} {} {} is {}".format(offset, units, direction, comparison_dt))
 
         diff = (input_dt - comparison_dt).total_seconds()
-        print(
+        self.logger.info(
             "Difference between {} and {} is {}".format(input_data, comparison_dt, diff)
         )
         result = False
@@ -1454,7 +1457,7 @@ class Tools(AppBase):
             if direction == "ahead" and diff != 0:
                 result = not (result)
 
-        print(
+        self.logger.info(
             "At {}, is {} {} than {} {} {}? {}".format(
                 formatted_dt,
                 input_data,
@@ -1469,17 +1472,17 @@ class Tools(AppBase):
         return result
 
     def run_math_operation(self, operation):
-        print("Operation: %s" % operation)
+        self.logger.info("Operation: %s" % operation)
         result = eval(operation)
         return result
 
     def escape_html(self, input_data, field_name):
 
         mapping = json.loads(input_data)
-        print(f"Got mapping {json.dumps(mapping, indent=2)}")
+        self.logger.info(f"Got mapping {json.dumps(mapping, indent=2)}")
 
         result = markupsafe.escape(mapping[field_name])
-        print(f"Mapping {input_data} to {result}")
+        self.logger.info(f"Mapping {input_data} to {result}")
 
         mapping[field_name] = result
         return mapping
@@ -1625,7 +1628,7 @@ class Tools(AppBase):
                     "key": key
                 }
                             
-                print("Handle all values!") 
+                self.logger.info("Handle all values!") 
 
             #return allvalues
 
@@ -1653,9 +1656,9 @@ class Tools(AppBase):
         value = requests.post(url, json=data)
         try:
             allvalues = value.json()
-            print("VAL1: ", allvalues)
+            self.logger.info("VAL1: ", allvalues)
             allvalues["key"] = key
-            print("VAL2: ", allvalues)
+            self.logger.info("VAL2: ", allvalues)
 
             if allvalues["success"] == True:
                 allvalues["found"] = True
@@ -1668,12 +1671,12 @@ class Tools(AppBase):
                 allvalues["value"] = parsedvalue
 
             except:
-                print("Parsing of value as JSON failed")
+                self.logger.info("Parsing of value as JSON failed")
                 pass
 
             return json.dumps(allvalues)
         except:
-            print("Value couldn't be parsed, or json dump of value failed")
+            self.logger.info("Value couldn't be parsed, or json dump of value failed")
             return value.text
 
     # FIXME: Add option for org only & sensitive data (not to be listed)
@@ -1699,21 +1702,21 @@ class Tools(AppBase):
                 try:
                     allvalues["value"] = json.loads(value)
                 except json.decoder.JSONDecodeError as e:
-                    print("Failed inner value parsing: %s" % e)
+                    self.logger.info("Failed inner value parsing: %s" % e)
                     allvalues["value"] = str(value)
             else:
                 allvalues["value"] = str(value)
 
             return json.dumps(allvalues)
         except:
-            print("Value couldn't be parsed")
+            self.logger.info("Value couldn't be parsed")
             return response.text
 
     def convert_json_to_tags(self, json_object, split_value=", ", include_key=True, lowercase=True):
         try:
             json_object = json.loads(json_object)
         except json.decoder.JSONDecodeError as e:
-            print("Failed to parse list2 as json: %s. Type: %s" % (e, type(json_object)))
+            self.logger.info("Failed to parse list2 as json: %s. Type: %s" % (e, type(json_object)))
 
         if isinstance(lowercase, str) and lowercase.lower() == "true":
             lowercase = True
@@ -1728,14 +1731,14 @@ class Tools(AppBase):
         parsedstring = []
         try:
             for key, value in json_object.items():
-                print("KV: %s:%s" % (key, value))
+                self.logger.info("KV: %s:%s" % (key, value))
                 if isinstance(value, str) or isinstance(value, int) or isinstance(value, bool):
                     if include_key == True:
                         parsedstring.append("%s:%s" % (key, value))
                     else:
                         parsedstring.append("%s" % (value))
                 else:
-                    print("Can't handle type %s" % type(value))
+                    self.logger.info("Can't handle type %s" % type(value))
         except AttributeError as e:
             return {
                 "success": False,
@@ -1749,12 +1752,12 @@ class Tools(AppBase):
         return fullstring
 
     def cidr_ip_match(self, ip, networks):
-        print("Executing with\nIP: {},\nNetworks: {}".format(ip, networks))
+        self.logger.info("Executing with\nIP: {},\nNetworks: {}".format(ip, networks))
 
         try:
             networks = json.loads(networks)
         except json.decoder.JSONDecodeError as e:
-            print("Failed to parse networks list as json: {}. Type: {}".format(
+            self.logger.info("Failed to parse networks list as json: {}. Type: {}".format(
                 e, type(networks)
             ))
             return "Networks is not a valid list: {}".format(networks)
@@ -1776,7 +1779,7 @@ class Tools(AppBase):
     def get_timestamp(self, time_format):
         timestamp = int(time.time())
         if time_format == "unix" or time_format == "epoch":
-            print("Running default timestamp %s" % timestamp)
+            self.logger.info("Running default timestamp %s" % timestamp)
 
         return timestamp
 
@@ -1787,12 +1790,12 @@ class Tools(AppBase):
         try:
             md5_value = hashlib.md5(str(value).encode('utf-8')).hexdigest()
         except Exception as e:
-            print(f"Error in md5sum: {e}")
+            self.logger.info(f"Error in md5sum: {e}")
 
         try:
             sha256_value = hashlib.sha256(str(value).encode('utf-8')).hexdigest()
         except Exception as e:
-            print(f"Error in sha256: {e}")
+            self.logger.info(f"Error in sha256: {e}")
 
         parsedvalue = {
             "success": True,

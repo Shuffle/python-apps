@@ -152,6 +152,7 @@ class AWSGuardduty(AppBase):
             return f"Error: {e}"
 
     def delete_threat_intel_set(self, access_key, secret_key, region, detectorId, threatIntelSetId):
+        client = self.auth_guardduty(access_key, secret_key, region)
         try:
             return client.delete_threat_intel_set(
                 DetectorId = detectorId,
@@ -161,6 +162,7 @@ class AWSGuardduty(AppBase):
             return f"Error: {e}"
 
     def get_threat_intel_set(self, access_key, secret_key, region, detectorId, threatIntelSetId):
+        client = self.auth_guardduty(access_key, secret_key, region)
         try:
             return client.get_threat_intel_set(
                 DetectorId = detectorId,
@@ -183,7 +185,7 @@ class AWSGuardduty(AppBase):
         try:
             return client.update_threat_intel_set(
                 DetectorId = detectorId,
-                IpSetId = ipSetId,
+                ThreatIntelSetId = threatIntelSetId,
                 Name = name,
                 Location = location,
                 Activate = bool(activate)

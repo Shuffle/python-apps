@@ -120,6 +120,21 @@ actions:
           type: string 
   - name: list_risky_users
     description: Lists risky users  
+    parameters:
+      - name: amount 
+        description: 20 
+        multiline: false
+        example: "20"
+        required: true
+        schema:
+          type: string
+      - name: skip 
+        description: 0
+        multiline: false
+        example: "0"
+        required: true
+        schema:
+          type: string
   - name: get_risky_user
     description: Get risky user by id
     parameters:

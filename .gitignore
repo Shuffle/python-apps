@@ -1,5 +1,8 @@
 *.swo
 *.swp
+*.swn
+*.swm
+*.pem
 *test.py
 *.remote-sync.json
 .DS_Store
