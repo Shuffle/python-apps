@@ -6,7 +6,8 @@ import json
 import requests
 import yara
 import os
-
+import zipfile
+from io import BytesIO
 from walkoff_app_sdk.app_base import AppBase
 
 class Yara(AppBase):
@@ -186,6 +187,74 @@ class Yara(AppBase):
             return json.dumps(return_data)
         except (json.JSONDecodeError, TypeError):
             return return_data 
+
+    def custom_rules(self, file_id, namespace,timeout=15):
+        if timeout == 0 or not timeout:
+            timeout = 15
+        else:
+            timeout = int(timeout)
+
+        file_ret = self.get_file(file_id)
+        myzipfile = self.get_file_namespace(namespace)
+        failed_rules = list()
+        total_string_matches = 0
+        all_matches = []
+
+        result = {}
+
+        for name in myzipfile.namelist():
+            file_data =  myzipfile.open(name,mode="r").read().decode('utf-8')
+            try:
+                rules = yara.compile(source=file_data)
+            except Exception as e:
+                print("exception",e)
+                print(f"[INFO] Rule {name} failed")
+                failed_rules.append(file_data)
+                continue
+
+            matches = rules.match(data=file_ret["data"].decode('utf-8'), timeout=timeout)
+            # result[str(name)] = matches[0] 
+            if len(matches) > 0:
+                for item in matches:
+                    submatch = {
+                        "rule": item.rule,
+                        "tags": item.tags,
+                        "file": name,
+                        "matches": []
+                    }
+
+                    for string in item.strings:
+                        try:
+                            submatch["matches"].append({
+                                "number": string[0],
+                                "name": string[1],
+                                "string": string[2].decode("utf-8"),
+                            })
+                        except:
+                            print(f"Failed MATCH decoding for {string}")
+
+                    submatch["total_matches"] = len(item.strings)
+                    total_string_matches += len(item.strings)
+                    all_matches.append(submatch)
+
+        #print("Matches: %d" % len(all_matches))
+        #print(all_matches)
+
+        if len(all_matches) >= 10:
+            all_matches = all_matches[0:9]
+
+        return_data = {
+            "success": True,
+            "matches": all_matches,
+            "failed_rules": len(failed_rules),
+            "total_rule_files": len(myzipfile.namelist()),
+            "total_string_matches": total_string_matches,
+        }
+
+        try:
+            return json.dumps(return_data)
+        except (json.JSONDecodeError, TypeError):
+            return return_data
 
 if __name__ == "__main__":
     Yara.run()
