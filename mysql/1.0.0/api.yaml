@@ -123,7 +123,7 @@ actions:
         description: table fields to be return
         required: false
         multiline: false
-        example: "enter id "
+        example: "username, fname, lname"
         schema:
           type: string
       - name: condition
@@ -150,7 +150,7 @@ actions:
         description: table fields to be return
         required: false
         multiline: false
-        example: "username, fname, lname"
+        example: ["username", "fname"]
         schema:
           type: string
       - name: condition
@@ -164,7 +164,7 @@ actions:
         description: query data, value
         required: false
         multiline: false
-        example: "firstname,lastname,etc"
+        example: ["firstname","lastname"]
         schema:
           type: string
     returns:
