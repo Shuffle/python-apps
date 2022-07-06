@@ -98,21 +98,18 @@ Fields:
 **Fields example:**
 Table fields to be return.
 ```
-
 ["first_name","last_name"]
 ```
 
 **Condition example:**
 Query condition text after a WHERE clause.
 ```
-
 emp_no=1
 ```
 
 **Data Fields example:**
 Table fields value to be updated.
 ```
-
 ["jaydeep","kotak"]
 ```
 
