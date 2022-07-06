@@ -125,7 +125,11 @@ Query condition text after a WHERE clause.
 ```
 emp_no = 1
 ```
-
+**Data Fields example:**
+Table fields value to be deleted.
+```
+["jaydeep","kotak"]
+```
 
 ### Join Query 
 join two or more table and display data
