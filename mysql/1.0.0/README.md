@@ -87,7 +87,63 @@ Query condition text after a WHERE clause.
 age=23 and gender='M'
 ```
 
+### Update data 
+update data inside the table
+Fields:
+- table;
+- fields;
+- condition.
+- data fields.
+
+**Fields example:**
+Table fields to be return.
+```
+
+["first_name","last_name"]
+```
+
+**Condition example:**
+Query condition text after a WHERE clause.
+```
+
+emp_no=1
+```
+
+**Data Fields example:**
+Table fields value to be updated.
+```
+
+["jaydeep","kotak"]
+```
+
+### Delete data 
+delete data inside the table
+Fields:
+- table;
+- condition
+- fields;(optional)
+
+**Condition example:**
+Query condition text after a WHERE clause.
+```
+emp_no = 1
+```
+
+
+### Join Query 
+join two or more table and display data
+Fields:
+- type;
+- fields.
+
+**Fields example:**
+Table fields to be return.
+```
+
+SELECT * from employees INNER JOIN departments ON employees.emp_no = departments.emp_no
+```
+
 ## Upcoming
 
 - Improve the tables field to be needed just to insert the table name once in the json as key, and for the value the table fields syntax.
-- Advanced Query - Allows the user to insert any type of query, as example with joins, etc...;
+

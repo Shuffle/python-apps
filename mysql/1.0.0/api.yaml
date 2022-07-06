@@ -123,6 +123,33 @@ actions:
         description: table fields to be return
         required: false
         multiline: false
+        example: "enter id "
+        schema:
+          type: string
+      - name: condition
+        description: query condition, the string after a WHERE
+        required: false
+        multiline: false
+        example: "id=123 and gender='M'"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: update_data
+    description: update data inside the table
+    parameters:
+      - name: table
+        description: table name
+        required: true
+        multiline: false
+        example: "my_table"
+        schema:
+          type: string
+      - name: fields
+        description: table fields to be return
+        required: false
+        multiline: false
         example: "username, fname, lname"
         schema:
           type: string
@@ -131,6 +158,65 @@ actions:
         required: false
         multiline: false
         example: "id=123 and gender='M'"
+        schema:
+          type: string
+      - name: data_value
+        description: query data, value
+        required: false
+        multiline: false
+        example: "firstname,lastname,etc"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: delete_data
+    description: delete data inside the table
+    parameters:
+      - name: table
+        description: table name
+        required: true
+        multiline: false
+        example: "my_table"
+        schema:
+          type: string
+      - name: condition
+        description: query condition, the string after a WHERE
+        required: false
+        multiline: false
+        example: "id=123 and gender='M'"
+        schema:
+          type: string
+      - name: fields
+        description: table fields to be return
+        required: false
+        multiline: false
+        example: "username, fname, lname"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: join
+    description: join multiple table
+    parameters:
+      - name: type
+        description: join type
+        required: true
+        multiline: false
+        example: "select here"
+        options:
+          - INNER JOIN
+          - LEFT JOIN
+          - RIGHT JOIN
+          - CROSS JOIN
+        schema:
+          type: string
+      - name: fields
+        description: table fields to be return
+        required: false
+        multiline: false
+        example: input query
         schema:
           type: string
     returns:
