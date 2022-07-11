@@ -10,7 +10,7 @@ import urllib3
 from walkoff_app_sdk.app_base import AppBase
 
 
-class DktSplunk(AppBase):
+class SplunkActions(AppBase):
     __version__ = "1.0.0"
     app_name = "splunk-actions"
 
@@ -57,9 +57,11 @@ class DktSplunk(AppBase):
             print("Bad status code: %d" % run_search_result.status_code)
             return {"success": False, "reason": "Bad status code %d - expecting 200." % run_search_result.status_code}
 
-        return {"success": True, "results": run_search_result_text}
+        run_search_result_json = json.loads(run_search_result_text)
+        ret = {"success": True, "results": run_search_result_json}
+
+        return ret
 
 
 if __name__ == "__main__":
-    DktSplunk.run()
-
+    SplunkActions.run()
