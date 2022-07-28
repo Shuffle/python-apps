@@ -33,14 +33,20 @@ class SplunkActions(AppBase):
 
 
     def run_splunk_search(self, url, username, password, search_query, earliest_time="-24h", latest_time="now", return_format="json"):
-        # Setup Request
         auth = (username, password)
+
+        # Handle the searches that use inputlookup
+        if not (search_query.startswith('|inputlookup') or search_query.startswith('| inputlookup')):
+            print("Doesn't start with |inputlookup")
+            search_query = "search " + search_query
+
         query = {
-            "search": "search %s" % search_query,
+            "search": "%s" % search_query,
             "earliest_time": earliest_time,
             "latest_time": latest_time,
-            "output_mode": return_format,
-            "exec_mode": "oneshot"
+            "output_mode": "json",
+            "exec_mode": "oneshot",
+            "enable_lookups": True
         }
 
         print("Current search: %s" % query["search"])
