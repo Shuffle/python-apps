@@ -43,6 +43,74 @@ class Yara(AppBase):
 
     # Write your data inside this function
     #https://yara.readthedocs.io/en/latest/yarapython.html
+    def analyze_by_file_category(self, file_id, file_category, timeout=15):
+        zipfiles = self.get_file_namespace(namespace)
+        if zipfiles == None:
+            return {
+                "success": False,
+                "reason": "Failed loading files from namespace %s" % namespace,
+            }
+
+        all_files = ""
+        for name in zipfiles.namelist():
+            for line in zipfiles.open(name).readlines():
+                linedata = line.decode('utf-8')
+                all_files += linedata
+
+            
+        print("Downloaded a lot of files from category %s!" % file_category)
+        if timeout == 0 or not timeout:
+            timeout = 15
+        else:
+            timeout = int(timeout)
+
+        file_ret = self.get_file(file_id)
+        #print("Getting file: %s" % file_id)
+        #print("FINISHED GETTING FILE: %s" % file_ret)
+        #rules.match(file)
+
+        all_matches = []
+
+        rule='rule dummy { condition: true }'
+        rules = yara.compile(sources={
+            'rule': all_files,
+        })
+
+        matches = rules.match(data=file_ret["data"], timeout=timeout)
+        if len(matches) > 0:
+            for item in matches:
+                submatch = {
+                    "tags": item.tags,
+                    "file": filepath,
+                }
+
+                try:
+                    submatch["rule"] = item.rule.decode("utf-8")
+                except:
+                    print(f"Failed RULE decoding for {item.rule}")
+
+                try:
+                    submatch["match"] = item.strings.decode("utf-8")
+                except:
+                    print(f"Failed MATCH decoding for {item.strings}")
+
+                all_matches.append(submatch)
+
+        print("Matches: %d" % len(all_matches))
+        print(all_matches)
+
+        return_data = {
+            "success": True,
+            "matches": all_matches
+        }
+
+        try:
+            return json.dumps(return_data)
+        except (json.JSONDecodeError, TypeError):
+            return return_data 
+
+    # Write your data inside this function
+    #https://yara.readthedocs.io/en/latest/yarapython.html
     def analyze_by_rule(self, file_id, rule, timeout=15):
         if timeout == 0 or not timeout:
             timeout = 15

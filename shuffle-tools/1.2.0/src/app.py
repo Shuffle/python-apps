@@ -16,21 +16,22 @@ from contextlib import redirect_stdout
 from liquid import Liquid
 import liquid
 
-import py7zr
-import pyminizip
-import rarfile
-import requests
-import tarfile
-
 import xmltodict
 from json2xml import json2xml
 from json2xml.utils import readfromstring
 
 from ioc_finder import find_iocs
-from walkoff_app_sdk.app_base import AppBase
+from dateutil.parser import parse as dateutil_parser
 
+import py7zr
+import pyminizip
+import rarfile
+import requests
+import tarfile
 import binascii
 import struct
+
+from walkoff_app_sdk.app_base import AppBase
 
 class Tools(AppBase):
     __version__ = "1.2.0"
@@ -630,6 +631,26 @@ class Tools(AppBase):
                         else:
                             failed_list.append(item)
 
+                elif check == "equals any of":
+                    self.logger.info("Inside equals any of")
+                    checklist = value.split(",")
+                    self.logger.info("Checklist and tmp: %s - %s" % (checklist, tmp))
+                    found = False
+                    for subcheck in checklist:
+                        subcheck = subcheck.strip()
+
+                        #ext.lower().strip() == value.lower().strip()
+                        if type(tmp) == list and subcheck in tmp:
+                            new_list.append(item)
+                            found = True
+                            break
+                        elif type(tmp) == str and tmp == subcheck:
+                            new_list.append(item)
+                            found = True
+                            break
+                        else:
+                            print("Nothing matching")
+
                 # IS EMPTY FOR STR OR LISTS
                 elif check == "is empty":
                     if tmp == "[]":
@@ -764,7 +785,7 @@ class Tools(AppBase):
                 elif check == "contains any of":
                     value = self.parse_list_internal(value)
                     checklist = value.split(",")
-                    tmp = tmp.lower()
+                    tmp = tmp
                     self.logger.info("CHECKLIST: %s. Value: %s" % (checklist, tmp))
                     found = False
                     for value in checklist:
@@ -838,6 +859,12 @@ class Tools(AppBase):
                 self.logger.info("[WARNING] FAILED WITH EXCEPTION: %s" % e)
                 failed_list.append(item)
             # return
+
+        if check == "equals_any of" and flip:
+            tmplist = new_list
+            new_list = failed_list
+            failed_list = tmplist
+
 
         try:
             return json.dumps(
@@ -962,6 +989,10 @@ class Tools(AppBase):
             value = {"success": True, "filename": filename, "file_id": fileret[0]}
 
         return value 
+
+    # Input is WAS a file, hence it didn't get the files 
+    def list_file_category_ids(self, file_category):
+        return self.get_file_category_ids(file_category)
 
     # Input is WAS a file, hence it didn't get the files 
     def get_file_value(self, filedata):
@@ -1521,7 +1552,7 @@ class Tools(AppBase):
         self.logger.info("Converting input date.")
        
         if date_format == "autodetect":
-            input_dt = parser.parse(timestamp)
+            input_dt = dateutil_parser(timestamp).replace(tzinfo=None)
         elif date_format != "%s":
             input_dt = datetime.datetime.strptime(timestamp, date_format)
         else:
@@ -1593,7 +1624,13 @@ class Tools(AppBase):
             )
         )
 
-        return result
+        parsed_string = "%s %s %s %s" % (equality_test, offset, units, direction)
+        return {
+            "success": True,
+            "date": timestamp,
+            "check": parsed_string,
+            "result": result,
+        }
 
     def run_math_operation(self, operation):
         self.logger.info("Operation: %s" % operation)
@@ -1778,6 +1815,57 @@ class Tools(AppBase):
 
         return value.text 
 
+    
+    ## Adds value to a subkey of the cache
+    ## subkey = "hi", value = "test", overwrite=False
+    ## {"subkey": "hi", "value": "test"}
+    ## subkey = "hi", value = "test2", overwrite=True
+    ## {"subkey": "hi", "value": "test2"}
+    ## subkey = "hi", value = "test3", overwrite=False
+    ## {"subkey": "hi", "value": ["test2", "test3"]}
+
+    #def set_cache_value(self, key, value):
+    def change_cache_subkey(self, key, subkey, value, overwrite):
+        org_id = self.full_execution["workflow"]["execution_org"]["id"]
+        url = "%s/api/v1/orgs/%s/set_cache" % (self.url, org_id)
+
+        if isinstance(value, dict) or isinstance(value, list):
+            try:
+                value = json.dumps(value)
+            except Exception as e:
+                self.logger.info(f"[WARNING] Error in JSON dumping (set cache): {e}")
+        elif not isinstance(value, str):
+            value = str(value)
+
+        data = {
+            "workflow_id": self.full_execution["workflow"]["id"],
+            "execution_id": self.current_execution_id,
+            "authorization": self.authorization,
+            "org_id": org_id,
+            "key": key,
+            "value": value,
+        }
+
+        response = requests.post(url, json=data)
+        try:
+            allvalues = response.json()
+            allvalues["key"] = key
+            #allvalues["value"] = json.loads(json.dumps(value))
+
+            if (value.startswith("{") and value.endswith("}")) or (value.startswith("[") and value.endswith("]")):
+                try:
+                    allvalues["value"] = json.loads(value)
+                except json.decoder.JSONDecodeError as e:
+                    self.logger.info("[WARNING] Failed inner value cache parsing: %s" % e)
+                    allvalues["value"] = str(value)
+            else:
+                allvalues["value"] = str(value)
+
+            return json.dumps(allvalues)
+        except:
+            self.logger.info("Value couldn't be parsed")
+            return response.text
+
     def get_cache_value(self, key):
         org_id = self.full_execution["workflow"]["execution_org"]["id"]
         url = "%s/api/v1/orgs/%s/get_cache" % (self.url, org_id)
@@ -1956,6 +2044,7 @@ class Tools(AppBase):
         }
 
         return parsedvalue 
+
 
 if __name__ == "__main__":
     Tools.run()

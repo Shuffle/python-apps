@@ -48,6 +48,49 @@ class MsIdentityAccess(AppBase):
         return s
 
 
+    def list_users(self, tenant_id, client_id, client_secret):
+        graph_url = "https://graph.microsoft.com"
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
+
+        graph_url = "https://graph.microsoft.com/v1.0/users"
+        ret = session.get(graph_url)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code}
+
+    def list_groups(self, tenant_id, client_id, client_secret):
+        graph_url = "https://graph.microsoft.com"
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
+
+        graph_url = "https://graph.microsoft.com/v1.0/groups"
+        ret = session.get(graph_url)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code}
+
+    def list_group_members(self, tenant_id, client_id, client_secret, group_id):
+        graph_url = "https://graph.microsoft.com"
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
+
+        graph_url = "https://graph.microsoft.com/v1.0/groups/%s/members" % group_id
+
+        ret = session.get(graph_url)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code}
+
     def list_administrative_units(self, tenant_id, client_id, client_secret):
         graph_url = "https://graph.microsoft.com"
         session = self.authenticate(tenant_id, client_id, client_secret, graph_url)

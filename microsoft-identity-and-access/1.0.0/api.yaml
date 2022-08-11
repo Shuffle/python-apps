@@ -35,6 +35,20 @@ authentication:
       schema:
         type: string         
 actions:
+  - name: list_users
+    description: Retrieve a list users in the organization
+  - name: list_groups 
+    description: Retrieve a list of groups in the organization
+  - name: list_group_members
+    description: Retrieve a list of users in a group
+    parameters:
+      - name: group_id 
+        description: id
+        multiline: false
+        example: "1"
+        required: true
+        schema:
+          type: string
   - name: list_administrative_units 
     description: Retrieve a list of administrativeUnit objects  
   - name: get_administrative_unit 

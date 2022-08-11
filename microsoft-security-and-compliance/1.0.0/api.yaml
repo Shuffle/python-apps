@@ -92,7 +92,7 @@ actions:
   - name: get_alert_by_id 
     description: Returns an alert by id
     parameters:
-      - name: id
+      - name: alert_id
         description: Alert id
         multiline: false
         example: "1"

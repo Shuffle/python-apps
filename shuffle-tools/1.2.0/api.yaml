@@ -183,6 +183,7 @@ actions:
         example: "equals"
         options:
           - equals
+          - 'equals any of'
           - 'larger than'
           - 'less than'
           - is empty
@@ -400,6 +401,19 @@ actions:
         required: false
         schema:
           type: string
+    returns:
+      schema:
+        type: string
+  - name: list_file_category_ids 
+    description: Lists the IDs within a File namespace (category)
+    parameters:
+      - name: file_category
+        description: The category to get files from 
+        required: true
+        multiline: false
+        example: "default"
+        schema:
+          type: string 
     returns:
       schema:
         type: string
@@ -943,6 +957,19 @@ actions:
           type: string
   - name: run_math_operation
     description: Takes a math input and gives you the result
+    parameters:
+      - name: operation
+        description: The operation to perform
+        required: true
+        multiline: true
+        example: "5+10"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: hmac_generator 
+    description: Can be used to construct the Authorization and Date headers for a lot of apps
     parameters:
       - name: operation
         description: The operation to perform
