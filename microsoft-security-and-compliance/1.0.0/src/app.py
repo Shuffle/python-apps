@@ -141,7 +141,7 @@ class MSComplianceCenter(AppBase):
 
         return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code}     
     
-    def get_alert_by_id(self, tenant_id, client_id, client_secret,alert_id):
+    def get_alert_by_id(self, tenant_id, client_id, client_secret, alert_id):
         graph_url = "https://graph.microsoft.com"
         session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
