@@ -968,6 +968,42 @@ actions:
     returns:
       schema:
         type: string
+  - name: get_jwt_from_file 
+    description: 'Loads a file from Shuffles file storage, then generates a JWT token from the info in the file. Built for Google services, but works for others using JWT generation as well. Generic audience: https://oauth2.googleapis.com/token '
+    parameters:
+      - name: file_id
+        description: The File ID of your stored credentials
+        required: true
+        multiline: false
+        example: "File ID from /admin?tab=files" 
+        schema:
+          type: string
+      - name: jwt_audience 
+        description: The audience to use.
+        required: true
+        multiline: false
+        example: "https://oauth2.googleapis.com/token" 
+        schema:
+          type: string
+      - name: scopes 
+        description: The scopes to access
+        required: true
+        multiline: false
+        example: "https://www.googleapis.com/auth/devstorage.full_control,https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/devstorage.read_write" 
+        schema:
+          type: string
+      - name: complete_request
+        description: Whether to finish the Oauth2 connection or not
+        required: true
+        multiline: false
+        options:
+          - true
+          - false 
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
   - name: hmac_generator 
     description: Can be used to construct the Authorization and Date headers for a lot of apps
     parameters:

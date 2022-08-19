@@ -22,6 +22,8 @@ from json2xml.utils import readfromstring
 
 from ioc_finder import find_iocs
 from dateutil.parser import parse as dateutil_parser
+from google.auth import crypt
+from google.auth import jwt
 
 import py7zr
 import pyminizip
@@ -2044,6 +2046,87 @@ class Tools(AppBase):
         }
 
         return parsedvalue 
+
+    def run_oauth_request(self, url, jwt):
+        headers = {
+            "Content-Type": "application/x-www-form-urlencoded",
+        }
+
+        data = "grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=%s" % jwt
+
+        return requests.post(url, data=data, headers=headers).text
+
+    # Based on https://google-auth.readthedocs.io/en/master/reference/google.auth.crypt.html
+    def get_jwt_from_file(self, file_id, jwt_audience, scopes, complete_request=True):
+        allscopes = scopes
+
+
+        #if "," in scopes:
+        #    for item in scope.split(","):
+        #        allscopes.append(item.strip())
+        #else:
+        #    allscopes = [scopes]
+     
+        # Service account key path
+        filedata = self.get_file(file_id)
+        if filedata["success"] == False:
+            return {
+                "success": False,
+                "message": f"Failed to get file for ID {file_id}",
+            }
+    
+        data = json.loads(filedata["data"], strict=False)
+        #sa_keyfile = ""
+        sa_keyfile = data["private_key"]
+        sa_email = data["client_email"]
+    
+        # The audience to target
+        audience = jwt_audience
+    
+        def get_jwt(sa_keyfile,
+                     sa_email,
+                     audience,
+                     allscopes,
+                     expiry_length=3600):
+            """Generates a signed JSON Web Token using a Google API Service Account."""
+        
+            now = int(time.time())
+            
+            # build payload
+            payload = {
+                # expires after 'expiry_length' seconds.
+                # iss must match 'issuer' in the security configuration in your
+                # swagger spec (e.g. service account email). It can be any string.
+                'iss': sa_email,
+                # aud must be either your Endpoints service name, or match the value
+                # specified as the 'x-google-audience' in the OpenAPI document.
+                'scope': allscopes,
+                'aud':  audience,
+                "exp": now + expiry_length,
+                'iat': now,
+
+                # sub and email should match the service account's email address
+                'sub': sa_email,
+                'email': sa_email,
+            }
+            
+            # sign with keyfile
+            #signer = crypt.RSASigner.from_service_account_file(sa_keyfile)
+            signer = crypt.RSASigner.from_string(sa_keyfile)
+            jwt_token = jwt.encode(signer, payload)
+            # print(jwt_token.decode('utf-8'))
+            return jwt_token
+    
+    
+        signed_jwt = get_jwt(sa_keyfile, sa_email, audience, allscopes)
+
+        if str(complete_request).lower() == "true":
+            return self.run_oauth_request(audience, signed_jwt.decode())
+        else:
+            return {
+                "success": True,
+                "jwt": signed_jwt.decode(),
+            }
 
 
 if __name__ == "__main__":
