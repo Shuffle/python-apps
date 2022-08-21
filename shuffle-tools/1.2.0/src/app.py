@@ -2061,11 +2061,8 @@ class Tools(AppBase):
         allscopes = scopes
 
 
-        #if "," in scopes:
-        #    for item in scope.split(","):
-        #        allscopes.append(item.strip())
-        #else:
-        #    allscopes = [scopes]
+        if "," in scopes:
+            allscopes = " ".join(scopes.split(","))
      
         # Service account key path
         filedata = self.get_file(file_id)
@@ -2083,12 +2080,12 @@ class Tools(AppBase):
         # The audience to target
         audience = jwt_audience
     
+        """Generates a signed JSON Web Token using a Google API Service Account or similar."""
         def get_jwt(sa_keyfile,
                      sa_email,
                      audience,
                      allscopes,
                      expiry_length=3600):
-            """Generates a signed JSON Web Token using a Google API Service Account."""
         
             now = int(time.time())
             
@@ -2127,6 +2124,167 @@ class Tools(AppBase):
                 "success": True,
                 "jwt": signed_jwt.decode(),
             }
+
+    def get_synonyms(self, input_type):
+        if input_type == "cases":
+            return {
+                "id": [
+                    "id",
+                    "ref",
+                    "sourceref",
+                    "reference",
+                    "sourcereference",
+                    "alertid",
+                    "caseid",
+                    "incidentid",
+                    "serviceid",
+                    "sid",
+                    "uid",
+                    "uuid",
+                    "teamid",
+                    "messageid",
+                  ],
+                  "title": ["title", "message", "subject", "name"],
+                  "description": ["description", "explanation", "story", "details", "snippet"],
+                  "email": ["mail", "email", "sender", "receiver", "recipient"],
+                  "data": [
+                    "data",
+                    "ip",
+                    "domain",
+                    "url",
+                    "hash",
+                    "md5",
+                    "sha2",
+                    "sha256",
+                    "value",
+                    "item",
+                  ],
+                  "tags": ["tags", "taxonomies", "labels", "labelids"],
+            }
+        
+        return []
+    
+    def find_key(self, inputkey, synonyms):
+        inputkey = inputkey.lower().replace(" ", "").replace(".", "")
+        for key, value in synonyms.items():
+            if inputkey in value:
+                return key
+    
+        return inputkey
+    
+    def run_key_recursion(self, json_input, synonyms):
+        if isinstance(json_input, str):
+            return json_input, {}
+    
+        if isinstance(json_input, list):
+            if len(json_input) != 1:
+                return json_input, {}
+            else:
+                json_input = json_input[0]
+    
+            #new_list = []
+            #for item in json_input:
+            #run_key_recursion(item, synonyms)
+            #new_dict[new_key], found_important = run_key_recursion(value, synonyms)
+    
+        # Looks for exact key:value stuff in other format
+        if len(json_input.keys()) == 2:
+            newkey = ""
+            newvalue = ""
+            for key, value in json_input.items():
+                if key == "key" or key == "name":
+                    newkey = value
+                elif key == "value":
+                    newvalue = value
+    
+            if len(newkey) > 0 and len(newvalue) > 0:
+                json_input[newkey] = newvalue
+                try:
+                    del json_input["name"]
+                except:
+                    pass
+    
+                try:
+                    del json_input["value"]
+                except:
+                    pass
+    
+                try:
+                    del json_input["key"]
+                except:
+                    pass
+    
+        important_fields = {}
+        new_dict = {}
+        for key, value in json_input.items():
+            new_key = self.find_key(key, synonyms)
+    
+            if isinstance(value, list):
+                new_list = []
+                for subitem in value:
+                    returndata, found_important = self.run_key_recursion(subitem, synonyms)
+    
+                    new_list.append(returndata)
+                    for subkey, subvalue in found_important.items():
+                        important_fields[subkey] = subvalue 
+    
+                new_dict[new_key] = new_list
+    
+            elif isinstance(value, dict):
+                # FIXMe: Try to understand Key:Values as well by translating them
+                # name/key: subject
+                # value: This is a subject
+                # will become:
+                # subject: This is a subject
+                    
+                new_dict[new_key], found_important = self.run_key_recursion(value, synonyms)
+    
+                for subkey, subvalue in found_important.items():
+                    important_fields[subkey] = subvalue
+            else:
+                new_dict[new_key] = value
+    
+            # Translated fields are added as important
+            if key.lower().replace(" ", "").replace(".", "") != new_key:
+                try:
+                    if len(new_dict[new_key]) < str(important_fields[new_key]):
+                        important_fields[new_key] = new_dict[new_key]
+                except KeyError as e:
+                    important_fields[new_key] = new_dict[new_key]
+                except:
+                    important_fields[new_key] = new_dict[new_key]
+    
+            #break
+    
+        return new_dict, important_fields
+    
+    # Should translate the data to something more useful
+    def get_standardized_data(self, json_input, input_type):
+        if isinstance(json_input, str):
+            json_input = json.loads(json_input, strict=False)
+    
+        input_synonyms = self.get_synonyms(input_type)
+    
+        parsed_data, important_fields = self.run_key_recursion(json_input, input_synonyms)
+    
+        # Try base64 decoding and such too?
+        for key, value in important_fields.items():
+            try:
+                important_fields[key] = important_fields[key][key]
+            except:
+                pass
+    
+            try:
+                important_fields[key] = base64.b64decode(important_fields[key])
+            except:
+                pass
+    
+        return {
+            "success": True,
+            "original": json_input,
+            "parsed": parsed_data,
+            "changed_fields": important_fields,
+        }
 
 
 if __name__ == "__main__":
