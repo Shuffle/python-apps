@@ -129,7 +129,15 @@ class ActiveDirectory(AppBase):
             search_filter=f"(samAccountName={samaccountname})",
             attributes=ALL_ATTRIBUTES,
         )
-        result = json.loads(c.response_to_json())["entries"][0]
+
+        result = json.loads(c.response_to_json())
+        if len(result) == 0:
+            return {
+                "success": False,
+                "result": result, 
+            }
+
+        result = result["entries"][0]
         result["attributes"][
             "userAccountControl"
         ] = self.__getUserAccountControlAttributes(

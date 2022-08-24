@@ -1547,12 +1547,11 @@ class Tools(AppBase):
     def compare_relative_date(
         self, timestamp, date_format, equality_test, offset, units, direction
     ):
-
         if timestamp== "None":
             return False
 
-        self.logger.info("Converting input date.")
-       
+        print("Converting input date.")
+   
         if date_format == "autodetect":
             input_dt = dateutil_parser(timestamp).replace(tzinfo=None)
         elif date_format != "%s":
@@ -1574,23 +1573,24 @@ class Tools(AppBase):
         if utc_format.endswith("%z"):
             utc_format = utc_format.replace("%z", "Z")
 
-        if date_format != "%s":
+        if date_format != "%s" and date_format != "autodetect":
             formatted_dt = datetime.datetime.strptime(
                 datetime.datetime.utcnow().strftime(utc_format), date_format
             )
         else:
             formatted_dt = datetime.datetime.utcnow()
 
-        self.logger.info("Formatted time is: {}".format(formatted_dt))
+        print("Formatted time is: {}".format(formatted_dt))
+
         if direction == "ago":
             comparison_dt = formatted_dt - delta
         else:
             comparison_dt = formatted_dt + delta
-        self.logger.info("{} {} {} is {}".format(offset, units, direction, comparison_dt))
+        print("{} {} {} is {}".format(offset, units, direction, comparison_dt))
 
         diff = (input_dt - comparison_dt).total_seconds()
-        self.logger.info(
-            "Difference between {} and {} is {}".format(timestamp, comparison_dt, diff)
+        print(
+            "Difference between {} and {} is {} seconds ({} days)".format(timestamp, comparison_dt, diff, int(diff/86400))
         )
         result = False
         if equality_test == ">":
@@ -1614,7 +1614,7 @@ class Tools(AppBase):
             if direction == "ahead" and diff != 0:
                 result = not (result)
 
-        self.logger.info(
+        print(
             "At {}, is {} {} than {} {} {}? {}".format(
                 formatted_dt,
                 timestamp,
@@ -1627,12 +1627,20 @@ class Tools(AppBase):
         )
 
         parsed_string = "%s %s %s %s" % (equality_test, offset, units, direction)
+        newdiff = diff
+        if newdiff < 0:
+            newdiff = newdiff*-1
+
         return {
             "success": True,
             "date": timestamp,
             "check": parsed_string,
             "result": result,
+            "diff": {
+                "days": int(int(newdiff)/86400),
+            },
         }
+
 
     def run_math_operation(self, operation):
         self.logger.info("Operation: %s" % operation)

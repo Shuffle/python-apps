@@ -30,7 +30,7 @@ authentication:
         type: string
     - name: domain
       description: "Domain to BIND to AD/LDAP with"
-      example: "MYCOMPANY"
+      example: "CORP"
       required: true
       schema:
         type: string
@@ -56,6 +56,9 @@ authentication:
       description: "Use SSL Connection Security"
       required: true
       example: "True"
+      options:
+        - "true"
+        - "false"
       schema:
         type: string
 actions:
