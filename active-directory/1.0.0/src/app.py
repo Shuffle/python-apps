@@ -124,25 +124,28 @@ class ActiveDirectory(AppBase):
 
         c = self.__ldap_connection(server, port, domain, login_user, password, use_ssl)
 
-        c.search(
-            search_base=base_dn,
-            search_filter=f"(samAccountName={samaccountname})",
-            attributes=ALL_ATTRIBUTES,
-        )
+        try:
+            c.search(
+                search_base=base_dn,
+                search_filter=f"(samAccountName={samaccountname})",
+                attributes=ALL_ATTRIBUTES,
+            )
 
-        result = json.loads(c.response_to_json())
-        if len(result) == 0:
+            result = json.loads(c.response_to_json())
+            if len(result) == 0:
+                return {
+                    "success": False,
+                    "result": result, 
+                }
+        except Exception as e:
             return {
                 "success": False,
-                "result": result, 
+                "reason": "Failed to get users in user attributes: %s" % e,
             }
 
+
         result = result["entries"][0]
-        result["attributes"][
-            "userAccountControl"
-        ] = self.__getUserAccountControlAttributes(
-            result["attributes"]["userAccountControl"]
-        )
+        result["attributes"]["userAccountControl"] = self.__getUserAccountControlAttributes(result["attributes"]["userAccountControl"])
 
         return json.dumps(result)
 
@@ -253,6 +256,7 @@ class ActiveDirectory(AppBase):
                 search_base,
             )
         )
+
         userAccountControl = result["attributes"]["userAccountControl"]
 
         if "ACCOUNTDISABLED" in userAccountControl:
@@ -308,28 +312,49 @@ class ActiveDirectory(AppBase):
                 search_base,
             )
         )
-        userAccountControl = result["attributes"]["userAccountControl"]
+
+        try:
+            userAccountControl = result["attributes"]["userAccountControl"]
+        except Exception as e:
+            return {
+                "success": False,
+                "reason": "Failed to get result attributes: %s" % e,
+            }
+            
 
         if "ACCOUNTDISABLED" in userAccountControl:
-            result = {}
-            result["samAccountName"] = samaccountname
-            result["status"] = "success"
-            result["description"] = "Account already disable"
+            try:
+                result = {}
+                result["samAccountName"] = samaccountname
+                result["status"] = "success"
+                result["description"] = "Account already disable"
+                result["success"] = True
 
-            return json.dumps(result)
+                return json.dumps(result)
+            except Exception as e:
+                return {
+                    "success": False,
+                    "reason": "Failed to send baseresult in disable user: %s" % e,
+                }
         else:
-            userAccountControl.append("ACCOUNTDISABLED")
-            userAccountControl_code = self.__getUserAccountControlCode(
-                userAccountControl
-            )
-            new_userAccountControl = {
-                "userAccountControl": (MODIFY_REPLACE, userAccountControl_code)
-            }
-            user_dn = result["dn"]
-            c.modify(dn=user_dn, changes=new_userAccountControl)
-            c.result["samAccountName"] = samaccountname
+            try:
+                userAccountControl.append("ACCOUNTDISABLED")
+                userAccountControl_code = self.__getUserAccountControlCode(
+                    userAccountControl
+                )
+                new_userAccountControl = {
+                    "userAccountControl": (MODIFY_REPLACE, userAccountControl_code)
+                }
+                user_dn = result["dn"]
+                c.modify(dn=user_dn, changes=new_userAccountControl)
+                c.result["samAccountName"] = samaccountname
 
-            return json.dumps(c.result)
+                return json.dumps(c.result)
+            except Exception as e:
+                return {
+                    "success": False,
+                    "reason": "Failed adding ACCOUNTDISABLED to user: %s" % e,
+                }
 
 
 if __name__ == "__main__":
