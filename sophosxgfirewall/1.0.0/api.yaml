@@ -1,0 +1,2472 @@
+actions:
+- description: 'Lists all firewall rules. IMPORTANT: The list starts at 0 (not 1)!'
+  name: sophos_firewall_rule_list
+  parameters:
+  - description: 'The start index for the rules to list, e.g: 5. Default is "0".'
+    example: '0'
+    name: start
+    required: false
+    schema:
+      type: string
+    value: '0'
+  - description: 'The end index for the rules to list, e.g: 20. Default is "50".'
+    example: '50'
+    name: end
+    required: false
+    schema:
+      type: string
+    value: '50'
+  returns:
+    example: ''
+- description: Gets a single firewall rule by name.
+  name: sophos-firewall-rule-get
+  parameters:
+  - description: Name of the rule to get.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  returns:
+    example: ''
+- description: Adds a new firewall rule.
+  name: sophos_firewall_rule_add
+  parameters:
+  - description: Name of the new rule.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  - description: Description of the new rule.
+    example: ''
+    name: description
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Whether to enable the new rule. Possible values: "Enable" and "Disable".
+      Default is "Enable".'
+    example: Enable
+    name: status
+    required: false
+    schema:
+      type: string
+    value: Enable
+  - description: 'The IP family. Possible values: "IPv4" and "IPv6". Default is "IPv4".'
+    example: IPv4
+    name: ip_family
+    required: false
+    schema:
+      type: string
+    value: IPv4
+  - description: 'The position of the new rule in the list. Possible values: "top",
+      "bottom", "before", and "after". If "before" or "after" is selected, you must
+      provide a value for the position_policy_name argument.'
+    example: ''
+    name: position
+    required: true
+    schema:
+      type: string
+    value: ''
+  - description: The name of the policy that the rule should be created before or
+      after. This argument is required when the value of the position argument is
+      "before" or "after".
+    example: ''
+    name: position_policy_name
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Policy type of the new rule. Possible values: "User" and "Network".'
+    example: ''
+    name: policy_type
+    required: true
+    schema:
+      type: string
+    value: ''
+  - description: 'Source zones to add to the rule. Possible values: "Any", "LAN".
+      "WAN", "VPN", "DMZ", and "WiFi".'
+    example: ''
+    name: source_zones
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Source networks to add to the rule.
+    example: ''
+    name: source_networks
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Destination zones to add to the rule. Possible values: "Any", "LAN".
+      "WAN", "VPN", "DMZ", and "WiFi".'
+    example: ''
+    name: destination_zones
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Destination networks to add to the rule.
+    example: ''
+    name: destination_networks
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Destination services to add to the rule.
+    example: ''
+    name: services
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'The schedule for the rule. Possible values: "All the time", "Work
+      hours (5 Day week)", "Work hours (6 Day week)", "All Time on Weekdays", "All
+      Time on Weekends", "All Time on Sunday", "All Days 10:00 to 19:00". IMPORTANT:
+      Creating a new schedule is available from the web console.'
+    example: ''
+    name: schedule
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Whether to enable traffic logging for the policy. Possible values:
+      "Enable" and "Disable". Default is "Disable".'
+    example: Disable
+    name: log_traffic
+    required: false
+    schema:
+      type: string
+    value: Disable
+  - description: 'Whether to check if the specified user/user group from the\ \ selected
+      zone is allowed to access the selected service. Possible values: "Enable" and
+      "Disable". Default is "Disable". When enabling match_identity, the members argument
+      is required.'
+    example: Disable
+    name: match_identity
+    required: false
+    schema:
+      type: string
+    value: Disable
+  - description: 'Whether to accept traffic from unknown users. The captive portal
+      page\ \ is displayed to the user where the user can log in to access the Internet.\
+      \ Possible values: "Enable" and "Disable". Default is "Disable". To enable this
+      argument, the match_identity argument must be enabled and the value of the policy_type
+      is "User".'
+    example: Disable
+    name: show_captive_portal
+    required: false
+    schema:
+      type: string
+    value: Disable
+  - description: An existing user(s) or group(s) to add to the rule. This argument
+      is required when match_identity is enabled.
+    example: ''
+    name: members
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Action for the rule traffic. Possible values: "Accept", "Reject",
+      and "Drop". Default is "Drop".'
+    example: Drop
+    name: action
+    required: false
+    schema:
+      type: string
+    value: Drop
+  - description: The DSCP marking level to classify the flow of packets based on the
+      Traffic Shaping policy.
+    example: ''
+    name: dscp_marking
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: The primary gateway. Applicable only in case of multiple gateways.
+    example: ''
+    name: primary_gateway
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: The backup gateway. Applicable only in case of multiple gateways.
+    example: ''
+    name: backup_gateway
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: The Application Filter policy for the rule. Default is "Allow All".
+    example: Allow All
+    name: application_control
+    required: false
+    schema:
+      type: string
+    value: Allow All
+  - description: 'Whether to limit the bandwidth for the applications categorized\
+      \ under the Application category. This tag is only applicable when\ \ an application_control
+      is selected. Possible values: "Apply" and "Revoke". Default is "Revoke".'
+    example: Revoke
+    name: application_based_qos_policy
+    required: false
+    schema:
+      type: string
+    value: Revoke
+  - description: The Web Filter policy for the rule. Default is "Allow All".
+    example: Allow All
+    name: web_filter
+    required: false
+    schema:
+      type: string
+    value: Allow All
+  - description: 'Whether to limit the bandwidth for the URLs categorized under the
+      Web\ \ category. This tag is only applicable when a web_filter is defined."
+      Possible values: "Apply" and "Revoke". Default is "Revoke".'
+    example: Revoke
+    name: web_category_base_qos_policy
+    required: false
+    schema:
+      type: string
+    value: Revoke
+  - description: The Traffic Shaping policy for the rule. Default is "None".
+    example: None
+    name: traffic_shaping_policy
+    required: false
+    schema:
+      type: string
+    value: None
+  - description: 'Whether to enable virus and spam scanning for the HTTP protocol.
+      Possible values: "Enable" and "Disable". Default is "Disable".'
+    example: Disable
+    name: scan_http
+    required: false
+    schema:
+      type: string
+    value: Disable
+  - description: 'Whether to enable virus and spam scanning for the HTTPS protocol.
+      Possible values: "Enable" and "Disable". Default is "Disable".'
+    example: Disable
+    name: scan_https
+    required: false
+    schema:
+      type: string
+    value: Disable
+  - description: 'Whether to enable sandstorm analysis. Possible values: "Enable"
+      and "Disable". Default is "Disable".'
+    example: Disable
+    name: sandstorm
+    required: false
+    schema:
+      type: string
+    value: Disable
+  - description: 'Whether to enable Google websites to use HTTP/s instead of QUICK
+      QUIC. Possible values: "Enable" and "Disable". Default is "Disable".'
+    example: Disable
+    name: block_quick_quic
+    required: false
+    schema:
+      type: string
+    value: Disable
+  - description: 'Whether to enable scanning of FTP traffic. Possible values: "Enable"
+      and "Disable". Default is "Disable".'
+    example: Disable
+    name: scan_ftp
+    required: false
+    schema:
+      type: string
+    value: Disable
+  - description: 'Whether to exclude a user''s network traffic from data accounting.
+      This option is available only if the match_identity argument is enabled. Possible
+      values: "Enable" and "Disable". Default is "Disable".'
+    example: Disable
+    name: data_accounting
+    required: false
+    schema:
+      type: string
+    value: Disable
+  - description: 'Whether to enable the NAT policy. Possible values: "Enable" and
+      "Disable". Default is "Enable".'
+    example: Enable
+    name: rewrite_source_address
+    required: false
+    schema:
+      type: string
+    value: Enable
+  - description: 'Whether to enable the Internet scheme to apply the user-based Web
+      Filter policy for the rule. Possible values: "Enable" and "Disable". Default
+      is "Disable".'
+    example: Disable
+    name: web_filter_internet_scheme
+    required: false
+    schema:
+      type: string
+    value: Disable
+  - description: 'Whether to enable the Internet scheme to apply user-based Application
+      Filter policy for the rule. Possible values: "Enable" and "Disable". Default
+      is "Disable".'
+    example: Disable
+    name: application_control_internet_scheme
+    required: false
+    schema:
+      type: string
+    value: Disable
+  - description: 'Whether to override the gateway of the default NAT policy. Possible
+      values: "Enable" and "Disable". Default is "Disable".'
+    example: Disable
+    name: override_gateway_default_nat_policy
+    required: false
+    schema:
+      type: string
+    value: Disable
+  - description: 'Whether to enable the source security heartbeat. Possible values:
+      "Enable" and "Disable". Default is "Disable".'
+    example: Disable
+    name: source_security_heartbeat
+    required: false
+    schema:
+      type: string
+    value: Disable
+  - description: 'Whether to enable the destination security heartbeat. Possible values:
+      "Enable" and "Disable". Default is "Disable".'
+    example: Disable
+    name: destination_security_heartbeat
+    required: false
+    schema:
+      type: string
+    value: Disable
+  - description: The NAT policy to apply. Default is "MASQ".
+    example: MASQ
+    name: outbound_address
+    required: false
+    schema:
+      type: string
+    value: MASQ
+  - description: The minimum source health status permitted. Default is "No Restriction".
+    example: No Restriction
+    name: minimum_source_hb_permitted
+    required: false
+    schema:
+      type: string
+    value: No Restriction
+  - description: The minimum destination health status permitted. Default is "No Restriction".
+    example: No Restriction
+    name: minimum_destination_hb_permitted
+    required: false
+    schema:
+      type: string
+    value: No Restriction
+  - description: The IPS policy for the rule. Default is "generalpolicy".
+    example: generalpolicy
+    name: intrusion_prevention
+    required: false
+    schema:
+      type: string
+    value: generalpolicy
+  returns:
+    example: ''
+- description: Updates an existing firewall rule.
+  name: sophos-firewall-rule-update
+  parameters:
+  - description: Name of the new rule.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  - description: Description of the new rule.
+    example: ''
+    name: description
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Whether the rule is enabled. Possible values: "Enable" and "Disable".
+      Default is "Enable".'
+    example: Enable
+    name: status
+    required: false
+    schema:
+      type: string
+    value: Enable
+  - description: 'The IP family. Possible values: "IPv4" and "IPv6". Default is "IPv4".'
+    example: IPv4
+    name: ip_family
+    required: false
+    schema:
+      type: string
+    value: IPv4
+  - description: 'The position of the new rule in the list. Possible values: "top",
+      "bottom", "before", and "after". If "before" or "after" is selected, you must
+      provide a value for the position_policy_name argument.'
+    example: ''
+    name: position
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: The name of the policy that the rule should be created before or
+      after. This argument is required when the value of the position argument is
+      "before" or "after".
+    example: ''
+    name: position_policy_name
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Policy type of the new rule. Possible values: "User" and "Network".'
+    example: ''
+    name: policy_type
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Source zones to add to the rule. Possible values: "Any", "LAN".
+      "WAN", "VPN", "DMZ", and "WiFi".'
+    example: ''
+    name: source_zones
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Source networks to add to the rule.
+    example: ''
+    name: source_networks
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Destination zones to add to the rule. Possible values: "Any", "LAN".
+      "WAN", "VPN", "DMZ", and "WiFi".'
+    example: ''
+    name: destination_zones
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Destination networks to add to the rule.
+    example: ''
+    name: destination_networks
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Destination services to add to the rule.
+    example: ''
+    name: services
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'The schedule for the rule. Possible values: "All the time", "Work
+      hours (5 Day week)", "Work hours (6 Day week)", "All Time on Weekdays", "All
+      Time on Weekends", "All Time on Sunday", "All Days 10:00 to 19:00". IMPORTANT:
+      Creating a new schedule is available in the web console.'
+    example: ''
+    name: schedule
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Whether to enable traffic logging for the policy. Possible values:
+      "Enable" and "Disable". Default is "Disable".'
+    example: Disable
+    name: log_traffic
+    required: false
+    schema:
+      type: string
+    value: Disable
+  - description: 'Whether to check if the specified user/user group from the\ \ selected
+      zone is allowed to access the selected service. Possible values: "Enable" and
+      "Disable". Default is "Disable". IMPORTANT: When enabling match_identity, the
+      members argument is required.'
+    example: Disable
+    name: match_identity
+    required: false
+    schema:
+      type: string
+    value: Disable
+  - description: 'Whether to accept traffic from unknown users. The captive portal
+      page\ \ is displayed to the user where the user can log in to access the Internet.\
+      \ Possible values: "Enable" and "Disable". Default is "Disable". To enable this
+      argument, the match_identity argument must be enabled and the value of the policy_type
+      is "User".'
+    example: Disable
+    name: show_captive_portal
+    required: false
+    schema:
+      type: string
+    value: Disable
+  - description: An existing user(s) or group(s) to add to the rule. This argument
+      is required  when match_identity is enabled.
+    example: ''
+    name: members
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Action for the rule traffic. Possible values: "Accept", "Reject",
+      and "Drop". Default is "Drop".'
+    example: Drop
+    name: action
+    required: false
+    schema:
+      type: string
+    value: Drop
+  - description: The DSCP marking level to classify the flow of packets based on the
+      Traffic Shaping policy.
+    example: ''
+    name: dscp_marking
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: The primary gateway. Applicable only in case of multiple gateways.
+    example: ''
+    name: primary_gateway
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: The backup gateway. Applicable only in case of multiple gateways.
+    example: ''
+    name: backup_gateway
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: The Application Filter policy for the rule. Default is "Allow All".
+    example: Allow All
+    name: application_control
+    required: false
+    schema:
+      type: string
+    value: Allow All
+  - description: 'Whether to limit the bandwidth for the applications categorized\
+      \ under the Application category. This tag is only applicable when\ \ an application_control
+      is selected. Possible values: "Apply" and "Revoke". Default is "Revoke".'
+    example: Revoke
+    name: application_based_qos_policy
+    required: false
+    schema:
+      type: string
+    value: Revoke
+  - description: The Web Filter policy for the rule. Default is "Allow All".
+    example: Allow All
+    name: web_filter
+    required: false
+    schema:
+      type: string
+    value: Allow All
+  - description: 'Whether to limit the bandwidth for the URLs categorized under the
+      Web\ \ category. This tag is only applicable when a web_filter is defined."
+      Possible values: "Apply" and "Revoke". Default is "Revoke".'
+    example: Revoke
+    name: web_category_base_qos_policy
+    required: false
+    schema:
+      type: string
+    value: Revoke
+  - description: The Traffic Shaping policy for the rule. Default is "None".
+    example: None
+    name: traffic_shaping_policy
+    required: false
+    schema:
+      type: string
+    value: None
+  - description: 'Whether to enable virus and spam scanning for HTTP protocol. Possible
+      values: "Enable" and "Disable". Default is "Disable".'
+    example: Disable
+    name: scan_http
+    required: false
+    schema:
+      type: string
+    value: Disable
+  - description: 'Whether to enable virus and spam scanning for HTTPS protocol. Possible
+      values: "Enable" and "Disable". Default is "Disable".'
+    example: Disable
+    name: scan_https
+    required: false
+    schema:
+      type: string
+    value: Disable
+  - description: 'Whether to enable sandstorm analysis. Possible values: "Enable"
+      and "Disable". Default is "Disable".'
+    example: Disable
+    name: sandstorm
+    required: false
+    schema:
+      type: string
+    value: Disable
+  - description: 'Whether to enable Google websites to use HTTP/s instead of QUICK
+      QUIC. Possible values: "Enable" and "Disable". Default is "Disable".'
+    example: Disable
+    name: block_quick_quic
+    required: false
+    schema:
+      type: string
+    value: Disable
+  - description: 'Whether to enable scanning of FTP traffic. Possible values: "Enable"
+      and "Disable". Default is "Disable".'
+    example: Disable
+    name: scan_ftp
+    required: false
+    schema:
+      type: string
+    value: Disable
+  - description: 'Whether to exclude a user''s network traffic from data accounting.
+      This option is available only if the match_identity argument is enabled. Possible
+      values: "Enable" and "Disable". Default is "Disable".'
+    example: Disable
+    name: data_accounting
+    required: false
+    schema:
+      type: string
+    value: Disable
+  - description: 'Whether to enable the NAT policy. Possible values: "Enable" and
+      "Disable". Default is "Enable".'
+    example: Enable
+    name: rewrite_source_address
+    required: false
+    schema:
+      type: string
+    value: Enable
+  - description: 'Whether to enable the Internet scheme to apply the user-based Web
+      Filter policy for the rule. Possible values: "Enable" and "Disable". Default
+      is "Disable".'
+    example: Disable
+    name: web_filter_internet_scheme
+    required: false
+    schema:
+      type: string
+    value: Disable
+  - description: 'Whether to enable the Internet scheme to apply user-based Application
+      Filter Policy for the rule. Possible values: "Enable" and "Disable". Default
+      is "Disable".'
+    example: Disable
+    name: application_control_internet_scheme
+    required: false
+    schema:
+      type: string
+    value: Disable
+  - description: 'Whether to override the gateway of the default NAT policy. Possible
+      values: "Enable" and "Disable". Default is "Disable".'
+    example: Disable
+    name: override_gateway_default_nat_policy
+    required: false
+    schema:
+      type: string
+    value: Disable
+  - description: 'Whether to enable the source security heartbeat. Possible values:
+      "Enable" and "Disable". Default is "Disable".'
+    example: Disable
+    name: source_security_heartbeat
+    required: false
+    schema:
+      type: string
+    value: Disable
+  - description: 'Whether to enable the destination security heartbeat. Possible values:
+      "Enable" and "Disable". Default is "Disable".'
+    example: Disable
+    name: destination_security_heartbeat
+    required: false
+    schema:
+      type: string
+    value: Disable
+  - description: The NAT policy to be applied. Default is "MASQ".
+    example: MASQ
+    name: outbound_address
+    required: false
+    schema:
+      type: string
+    value: MASQ
+  - description: The minimum source health status permitted. Default is "No Restriction".
+    example: No Restriction
+    name: minimum_source_hb_permitted
+    required: false
+    schema:
+      type: string
+    value: No Restriction
+  - description: The minimum destination health status permitted. Default is "No Restriction".
+    example: No Restriction
+    name: minimum_destination_hb_permitted
+    required: false
+    schema:
+      type: string
+    value: No Restriction
+  - description: The IPS policy for the rule. Default is "generalpolicy".
+    example: generalpolicy
+    name: intrusion_prevention
+    required: false
+    schema:
+      type: string
+    value: generalpolicy
+  returns:
+    example: ''
+- description: Deletes an existing firewall rule.
+  name: sophos-firewall-rule-delete
+  parameters:
+  - description: Name of the rule.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  returns:
+    example: ''
+- description: 'Lists all firewall rule groups. IMPORTANT: The list starts at 0 (not
+    1)!'
+  name: sophos-firewall-rule-group-list
+  parameters:
+  - description: 'The start index for the rules to list, e.g: 5. Default is "0".'
+    example: '0'
+    name: start
+    required: false
+    schema:
+      type: string
+    value: '0'
+  - description: 'The end index for the rules to list, e.g: 20. Default is "50".'
+    example: '50'
+    name: end
+    required: false
+    schema:
+      type: string
+    value: '50'
+  returns:
+    example: ''
+- description: Gets a single firewall rule group by name.
+  name: sophos-firewall-rule-group-get
+  parameters:
+  - description: Name of the firewall rule group.
+    example: ''
+    name: name
+    required: false
+    schema:
+      type: string
+    value: ''
+  returns:
+    example: ''
+- description: Adds a new firewall rule group.
+  name: sophos-firewall-rule-group-add
+  parameters:
+  - description: Name of the rule group.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  - description: Description of the rule group.
+    example: ''
+    name: description
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Type of the rules (policies) inside the group. Possible values:
+      "Any", "User/network rule", "User rule", and "Business application rule".'
+    example: ''
+    name: policy_type
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Rules contained in the group.
+    example: ''
+    name: rules
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Source zones contained in the group. Possible values: "Any", "LAN",
+      "WAN", "VPN", "DMZ", and "WiFi.'
+    example: ''
+    name: source_zones
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Destination zones contained in the group. Possible values: "Any",
+      "LAN", "WAN", "VPN", "DMZ", and "WiFi.'
+    example: ''
+    name: destination_zones
+    required: false
+    schema:
+      type: string
+    value: ''
+  returns:
+    example: ''
+- description: Updates an existing firewall rule group.
+  name: sophos-firewall-rule-group-update
+  parameters:
+  - description: Name of the rule group.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  - description: Description of the rule group.
+    example: ''
+    name: description
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Type of the rules (policies) inside the group. Possible values:
+      "Any", "User/network rule", "User rule", and "Business application rule".'
+    example: ''
+    name: policy_type
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Rules contained in the group.
+    example: ''
+    name: rules
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Source zones contained in the group. Possible values: "Any", "LAN",
+      "WAN", "VPN", "DMZ", and "WiFi.'
+    example: ''
+    name: source_zones
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Destination zones contained in the group. Possible values: "Any",
+      "LAN", "WAN", "VPN", "DMZ", and "WiFi.'
+    example: ''
+    name: destination_zones
+    required: false
+    schema:
+      type: string
+    value: ''
+  returns:
+    example: ''
+- description: Deletes an existing firewall group.
+  name: sophos-firewall-rule-group-delete
+  parameters:
+  - description: Name of the group.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  returns:
+    example: ''
+- description: 'Lists all URL groups. IMPORTANT: The list starts at 0 (not 1)!'
+  name: sophos-firewall-url-group-list
+  parameters:
+  - description: 'The start index for the rules to list, e.g: 5. Default is "0".'
+    example: '0'
+    name: start
+    required: false
+    schema:
+      type: string
+    value: '0'
+  - description: 'The end index for the rules to list, e.g: 20. Default is "50".'
+    example: '50'
+    name: end
+    required: false
+    schema:
+      type: string
+    value: '50'
+  returns:
+    example: ''
+- description: Gets a single URL group by name.
+  name: sophos-firewall-url-group-get
+  parameters:
+  - description: Name of the group.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  returns:
+    example: ''
+- description: Adds new URLs to the group.
+  name: sophos-firewall-url-group-add
+  parameters:
+  - description: Name of the group.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  - description: Description of the group.
+    example: ''
+    name: description
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Comma-separated list of URLs to add to the group.
+    example: ''
+    name: urls
+    required: true
+    schema:
+      type: string
+    value: ''
+  returns:
+    example: ''
+- description: Updates an existing URL group.
+  name: sophos-firewall-url-group-update
+  parameters:
+  - description: Name of the group.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  - description: Description of the group.
+    example: ''
+    name: description
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Comma-separated list of URLs to add to the group.
+    example: ''
+    name: urls
+    required: false
+    schema:
+      type: string
+    value: ''
+  returns:
+    example: ''
+- description: Deletes an existing URL group or groups.
+  name: sophos-firewall-url-group-delete
+  parameters:
+  - description: Name of the group(s).
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  returns:
+    example: ''
+- description: 'Lists all IP hosts. IMPORTANT: The list starts at 0 (not 1)!'
+  name: sophos-firewall-ip-host-list
+  parameters:
+  - description: 'The start index for the rules to list, e.g: 5. Default is "0".'
+    example: '0'
+    name: start
+    required: false
+    schema:
+      type: string
+    value: '0'
+  - description: 'The end index for the rules to list, e.g: 20. Default is "50".'
+    example: '50'
+    name: end
+    required: false
+    schema:
+      type: string
+    value: '50'
+  returns:
+    example: ''
+- description: Gets a single IP host by name.
+  name: sophos-firewall-ip-host-get
+  parameters:
+  - description: Name of the IP host.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  returns:
+    example: ''
+- description: Adds a new IP host.
+  name: sophos-firewall-ip-host-add
+  parameters:
+  - description: Name of the IP host.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  - description: 'Type of the host. Possible values: "IP", "Network", "IPRange", and
+      "IPList".'
+    example: ''
+    name: host_type
+    required: true
+    schema:
+      type: string
+    value: ''
+  - description: 'The IP family. Possible values: "IPv4" and "IPv6". Default is "IPv4".'
+    example: IPv4
+    name: ip_family
+    required: false
+    schema:
+      type: string
+    value: IPv4
+  - description: IP address if IP or Network was the chosen host_type.
+    example: ''
+    name: ip_address
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Subnet mask if Network was the chosen host_type.
+    example: ''
+    name: subnet_mask
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Start of the IP range if IPRange was the chosen host_type.
+    example: ''
+    name: start_ip
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: End of the IP range if IPRange was the chosen host_type.
+    example: ''
+    name: end_ip
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: List of IP addresses if IPList was the chosen host_type.
+    example: ''
+    name: ip_addresses
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Select the host group to which the host belongs.
+    example: ''
+    name: host_group
+    required: false
+    schema:
+      type: string
+    value: ''
+  returns:
+    example: ''
+- description: Updates an existing IP host.
+  name: sophos-firewall-ip-host-update
+  parameters:
+  - description: Name of the IP host.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  - description: 'Type of the host. Possible values: "IP", "Network", "IPRange", and
+      "IPList".'
+    example: ''
+    name: host_type
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'The IP family. Possible values: "IPv4" and "IPv6". Default is "IPv4".'
+    example: IPv4
+    name: ip_family
+    required: false
+    schema:
+      type: string
+    value: IPv4
+  - description: IP address if IP or Network was the chosen host_type.
+    example: ''
+    name: ip_address
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Subnet mask if Network was the chosen host_type.
+    example: ''
+    name: subnet_mask
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Start of the IP range if IPRange was the chosen host_type.
+    example: ''
+    name: start_ip
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: End of the IP range if IPRange was the chosen host_type.
+    example: ''
+    name: end_ip
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: List of IP addresses if IPList was the chosen host_type.
+    example: ''
+    name: ip_addresses
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Select the host group to which the host belongs.
+    example: ''
+    name: host_group
+    required: false
+    schema:
+      type: string
+    value: ''
+  returns:
+    example: ''
+- description: Deletes an existing IP host.
+  name: sophos-firewall-ip-host-delete
+  parameters:
+  - description: Name of the host.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  returns:
+    example: ''
+- description: 'Lists all IP host groups. IMPORTANT: The list starts at 0 (not 1)!'
+  name: sophos-firewall-ip-host-group-list
+  parameters:
+  - description: 'The start index for the rules to list, e.g: 5. Default is "0".'
+    example: '0'
+    name: start
+    required: false
+    schema:
+      type: string
+    value: '0'
+  - description: 'The end index for the rules to list, e.g: 20. Default is "50".'
+    example: '50'
+    name: end
+    required: false
+    schema:
+      type: string
+    value: '50'
+  returns:
+    example: ''
+- description: Gets a single IP host group by name.
+  name: sophos-firewall-ip-host-group-get
+  parameters:
+  - description: Name of the IP host group.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  returns:
+    example: ''
+- description: Adds a new IP host group.
+  name: sophos-firewall-ip-host-group-add
+  parameters:
+  - description: Name of the IP host group.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  - description: Description of the IP host group.
+    example: ''
+    name: description
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'The IP family. Possible values: "IPv4" and "IPv6".'
+    example: ''
+    name: ip_family
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: IP hosts contained in the group. Must be hosts that exist in the
+      system.
+    example: ''
+    name: hosts
+    required: false
+    schema:
+      type: string
+    value: ''
+  returns:
+    example: ''
+- description: Updates an existing IP host group.
+  name: sophos-firewall-ip-host-group-update
+  parameters:
+  - description: Name of the IP host group.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  - description: Description of the IP host group.
+    example: ''
+    name: description
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'The IP family. Possible values: "IPv4" and "IPv6".'
+    example: ''
+    name: ip_family
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: IP hosts contained in the group. Must be hosts that exist in the
+      system.
+    example: ''
+    name: hosts
+    required: false
+    schema:
+      type: string
+    value: ''
+  returns:
+    example: ''
+- description: Deletes an existing IP host group.
+  name: sophos-firewall-ip-host-group-delete
+  parameters:
+  - description: Name of the group.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  returns:
+    example: ''
+- description: 'Lists all firewall services. IMPORTANT: The list starts at 0 (not
+    1)!'
+  name: sophos-firewall-services-list
+  parameters:
+  - description: 'The start index for the rules to list, e.g: 5. Default is "0".'
+    example: '0'
+    name: start
+    required: false
+    schema:
+      type: string
+    value: '0'
+  - description: 'The end index for the rules to list, e.g: 20. Default is "50".'
+    example: '50'
+    name: end
+    required: false
+    schema:
+      type: string
+    value: '50'
+  returns:
+    example: ''
+- description: Gets a single service by name.
+  name: sophos-firewall-services-get
+  parameters:
+  - description: Name of the firewall service.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  returns:
+    example: ''
+- description: Adds a new firewall service.
+  name: sophos-firewall-services-add
+  parameters:
+  - description: Name of the firewall service.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  - description: 'Type of service. Possible values: "TCPorUDP", "IP", "ICMP", and
+      "ICMPv6".'
+    example: ''
+    name: service_type
+    required: true
+    schema:
+      type: string
+    value: ''
+  - description: 'The protocol for the service if service_type is TCPorUDP. Possible
+      values: "TCP" and "UDP".'
+    example: ''
+    name: protocol
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Source port if service_type is TCPorUDP.
+    example: ''
+    name: source_port
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Destination port if service_type is TCPorUDP.
+    example: ''
+    name: destination_port
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Protocol name if service_type is IP.
+    example: ''
+    name: protocol_name
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: ICMP type if service_type is ICMP.
+    example: ''
+    name: icmp_type
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: ICMP code if service_type is ICMP.
+    example: ''
+    name: icmp_code
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: ICMPv6 type if service_type is ICMPv6.
+    example: ''
+    name: icmp_v6_type
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: ICMPv6 code if service_type is ICMPv6.
+    example: ''
+    name: icmp_v6_code
+    required: false
+    schema:
+      type: string
+    value: ''
+  returns:
+    example: ''
+- description: Updates an existing firewall service.
+  name: sophos-firewall-services-update
+  parameters:
+  - description: Name of the firewall service.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  - description: 'Type of service. Possible values: "TCPorUDP", "IP", "ICMP", and
+      "ICMPv6".'
+    example: ''
+    name: service_type
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'The protocol for the service if service_type is TCPorUDP. Possible
+      values: "TCP" and "UDP".'
+    example: ''
+    name: protocol
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Source port if service_type is TCPorUDP.
+    example: ''
+    name: source_port
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Destination port if service_type is TCPorUDP.
+    example: ''
+    name: destination_port
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Protocol name if service_type is IP.
+    example: ''
+    name: protocol_name
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: ICMP type if service_type is ICMP.
+    example: ''
+    name: icmp_type
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: ICMP code if service_type is ICMP.
+    example: ''
+    name: icmp_code
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: ICMPv6 type if service_type is ICMPv6.
+    example: ''
+    name: icmp_v6_type
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: ICMPv6 code if service_type is ICMPv6.
+    example: ''
+    name: icmp_v6_code
+    required: false
+    schema:
+      type: string
+    value: ''
+  returns:
+    example: ''
+- description: Deletes an existing firewall service.
+  name: sophos-firewall-services-delete
+  parameters:
+  - description: Name of the service.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  returns:
+    example: ''
+- description: 'Lists all users. IMPORTANT: The list starts at 0 (not 1)!'
+  name: sophos-firewall-user-list
+  parameters:
+  - description: 'The start index for the rules to list, e.g: 5. Default is "0".'
+    example: '0'
+    name: start
+    required: false
+    schema:
+      type: string
+    value: '0'
+  - description: 'The end index for the rules to list, e.g: 20. Default is "50".'
+    example: '50'
+    name: end
+    required: false
+    schema:
+      type: string
+    value: '50'
+  returns:
+    example: ''
+- description: Gets a single user by name.
+  name: sophos-firewall-user-get
+  parameters:
+  - description: Name of the user.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  returns:
+    example: ''
+- description: Adds a new user.
+  name: sophos-firewall-user-add
+  parameters:
+  - description: Username of the user.
+    example: ''
+    name: username
+    required: true
+    schema:
+      type: string
+    value: ''
+  - description: Name of the user.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  - description: Description of the user.
+    example: ''
+    name: description
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Email of the user.
+    example: ''
+    name: email
+    required: true
+    schema:
+      type: string
+    value: ''
+  - description: Group of the user. Default is "Guest Group".
+    example: Guest Group
+    name: group
+    required: false
+    schema:
+      type: string
+    value: Guest Group
+  - description: The password of the user.
+    example: ''
+    name: password
+    required: true
+    schema:
+      type: string
+    value: ''
+  - description: 'The type of the user. Possible values: "Administrator" and "User".
+      Default is "User".'
+    example: User
+    name: user_type
+    required: false
+    schema:
+      type: string
+    value: User
+  - description: 'Profile of the administrator if user_type is Administrator. Possible
+      values: "Administrator", "Crypto Admin", "Security Admin", "Audit Admin", and
+      "HAProfile". IMPORTANT: You can add more types in the web console.'
+    example: ''
+    name: profile
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: The Surfing Quota policy. Default is "Unlimited Internet Access".
+    example: Unlimited Internet Access
+    name: surfing_quota_policy
+    required: false
+    schema:
+      type: string
+    value: Unlimited Internet Access
+  - description: The Access Time policy. Default is "Allowed all the time".
+    example: Allowed all the time
+    name: access_time_policy
+    required: false
+    schema:
+      type: string
+    value: Allowed all the time
+  - description: The SSL VPN policy. Default is "No Policy Applied".
+    example: No Policy Applied
+    name: ssl_vpn_policy
+    required: false
+    schema:
+      type: string
+    value: No Policy Applied
+  - description: The clientless policy. Default is "No Policy Applied".
+    example: No Policy Applied
+    name: clientless_policy
+    required: false
+    schema:
+      type: string
+    value: No Policy Applied
+  - description: 'The Data Transfer policy. Default is: "100 MB Total Data Transfer
+      policy".'
+    example: 100 MB Total Data Transfer policy
+    name: data_transfer_policy
+    required: false
+    schema:
+      type: string
+    value: 100 MB Total Data Transfer policy
+  - description: 'Whether to enable simultaneous logins global. Possible values: "Enable"
+      and "Disable". Default is "Enable".'
+    example: Enable
+    name: simultaneous_logins_global
+    required: false
+    schema:
+      type: string
+    value: Enable
+  - description: 'The schedule for appliance access. Default is "All The Time". IMPORTANT:
+      This option\ \ is available only for Administrators.'
+    example: All The Time
+    name: schedule_for_appliance_access
+    required: false
+    schema:
+      type: string
+    value: All The Time
+  - description: The QoS policy. Default is "High Guarantee User".
+    example: High Guarantee User
+    name: qos_policy
+    required: false
+    schema:
+      type: string
+    value: High Guarantee User
+  - description: 'The login restriction option. Possible values: "AnyNode" and "UserGroupNode".
+      Default is "UserGroupNode".'
+    example: UserGroupNode
+    name: login_restriction
+    required: false
+    schema:
+      type: string
+    value: UserGroupNode
+  returns:
+    example: ''
+- description: Updates a user.
+  name: sophos-firewall-user-update
+  parameters:
+  - description: Username of the user.
+    example: ''
+    name: username
+    required: true
+    schema:
+      type: string
+    value: ''
+  - description: Name of the user.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  - description: Description of the user.
+    example: ''
+    name: description
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Email of the user.
+    example: ''
+    name: email
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Group of the user. Default is "Guest Group".
+    example: Guest Group
+    name: group
+    required: false
+    schema:
+      type: string
+    value: Guest Group
+  - description: The password of the user.
+    example: ''
+    name: password
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'The type of the user. Possible values: "Administrator" and "User".
+      Default is "User".'
+    example: User
+    name: user_type
+    required: false
+    schema:
+      type: string
+    value: User
+  - description: 'Profile of the administrator if user_type is Administrator. Possible
+      values: "Administrator", "Crypto Admin", "Security Admin", "Audit Admin", and
+      "HAProfile". IMPORTANT: You can add more types in the web console.'
+    example: ''
+    name: profile
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: The Surfing Quota policy. Default is "Unlimited Internet Access".
+    example: Unlimited Internet Access
+    name: surfing_quota_policy
+    required: false
+    schema:
+      type: string
+    value: Unlimited Internet Access
+  - description: The Access Time policy. Default is "Allowed all the time".
+    example: Allowed all the time
+    name: access_time_policy
+    required: false
+    schema:
+      type: string
+    value: Allowed all the time
+  - description: The SSL VPN policy. Default is "No Policy Applied".
+    example: No Policy Applied
+    name: ssl_vpn_policy
+    required: false
+    schema:
+      type: string
+    value: No Policy Applied
+  - description: The clientless policy. Default is "No Policy Applied".
+    example: No Policy Applied
+    name: clientless_policy
+    required: false
+    schema:
+      type: string
+    value: No Policy Applied
+  - description: 'The Data Transfer policy. Default is: "100 MB Total Data Transfer
+      policy".'
+    example: 100 MB Total Data Transfer policy
+    name: data_transfer_policy
+    required: false
+    schema:
+      type: string
+    value: 100 MB Total Data Transfer policy
+  - description: 'Whether to enable simultaneous logins global. Possible values: "Enable"
+      and "Disable". Default is "Enable".'
+    example: Enable
+    name: simultaneous_logins_global
+    required: false
+    schema:
+      type: string
+    value: Enable
+  - description: 'The schedule for appliance access. Default is "All The Time".IMPORTANT:
+      This option\ \ is available only for Administrators.'
+    example: All The Time
+    name: schedule_for_appliance_access
+    required: false
+    schema:
+      type: string
+    value: All The Time
+  - description: The QoS policy. Default is "High Guarantee User".
+    example: High Guarantee User
+    name: qos_policy
+    required: false
+    schema:
+      type: string
+    value: High Guarantee User
+  - description: 'The login restriction option. Possible values: "AnyNode" and "UserGroupNode".
+      Default is "UserGroupNode".'
+    example: UserGroupNode
+    name: login_restriction
+    required: false
+    schema:
+      type: string
+    value: UserGroupNode
+  returns:
+    example: ''
+- description: Deletes an existing user.
+  name: sophos-firewall-user-delete
+  parameters:
+  - description: Name of the user.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  returns:
+    example: ''
+- description: 'Lists all app policies. IMPORTANT: The list starst at 0 (not 1)!'
+  name: sophos-firewall-app-policy-list
+  parameters:
+  - description: 'The start index for the rules to list, e.g: 5. Default is "0".'
+    example: '0'
+    name: start
+    required: false
+    schema:
+      type: string
+    value: '0'
+  - description: 'The end index for the rules to list, e.g: 20. Default is "50".'
+    example: '50'
+    name: end
+    required: false
+    schema:
+      type: string
+    value: '50'
+  returns:
+    example: ''
+- description: Gets a single app policy by name.
+  name: sophos-firewall-app-policy-get
+  parameters:
+  - description: Name of the policy.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  returns:
+    example: ''
+- description: Adds a new app policy.
+  name: sophos-firewall-app-policy-add
+  parameters:
+  - description: Name of the policy.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  - description: Description of the policy.
+    example: ''
+    name: description
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Whether microapp support is enabled. Possible values: "true" and
+      "false".'
+    example: ''
+    name: micro_app_support
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Default action for the policy. Possible values: "Allow" and "Deny".'
+    example: ''
+    name: default_action
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Whether to enable the select all rule. Possible values: "Enable"
+      and "Disable".'
+    example: ''
+    name: select_all
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Categories to add to the rule.
+    example: ''
+    name: categories
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Risks to add to the rule.
+    example: ''
+    name: risks
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Applications to add to the rule.
+    example: ''
+    name: applications
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Characteristics to add to the rule.
+    example: ''
+    name: characteristics
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Technologies to add to the rule.
+    example: ''
+    name: technologies
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Classifications to add to the rule.
+    example: ''
+    name: classifications
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Action for the rule. Possible values: "Allow" and "Deny".'
+    example: ''
+    name: action
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'The schedule for the rule. Possible values: "All the time", "Work
+      hours (5 Day week)", "Work hours (6 Day week)", "All Time on Weekdays", "All
+      Time on Weekends", "All Time on Sunday", "All Days 10:00 to 19:00". IMPORTANT:
+      Creating a new schedule is available in the web console.'
+    example: ''
+    name: schedule
+    required: false
+    schema:
+      type: string
+    value: ''
+  returns:
+    example: ''
+- description: Updates an existing app policy.
+  name: sophos-firewall-app-policy-update
+  parameters:
+  - description: Name of the policy.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  - description: Description of the policy.
+    example: ''
+    name: description
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Whether microapp support is enabled. Possible values: "true" and
+      "false".'
+    example: ''
+    name: micro_app_support
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Default action for the policy. Possible values: "Allow" and "Deny".'
+    example: ''
+    name: default_action
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Whether to enable the select all rule. Possible values: "Enable"
+      and "Disable".'
+    example: ''
+    name: select_all
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Categories to add to the rule.
+    example: ''
+    name: categories
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Risks to add to the rule.
+    example: ''
+    name: risks
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Applications to add to the rule.
+    example: ''
+    name: applications
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Characteristics to add to the rule.
+    example: ''
+    name: characteristics
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Technologies to add to the rule.
+    example: ''
+    name: technologies
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Classifications to add to the rule.
+    example: ''
+    name: classifications
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Action for the rule. Possible values: "Allow" and "Deny".'
+    example: ''
+    name: action
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'The schedule for the rule. Possible values: "All the time", "Work
+      hours (5 Day week)", "Work hours (6 Day week)", "All Time on Weekdays", "All
+      Time on Weekends", "All Time on Sunday", "All Days 10:00 to 19:00". IMPORTANT:
+      Creating a new schedule is available in the web console.'
+    example: ''
+    name: schedule
+    required: false
+    schema:
+      type: string
+    value: ''
+  returns:
+    example: ''
+- description: Deletes an existing app policy.
+  name: sophos-firewall-app-policy-delete
+  parameters:
+  - description: Name of the policy.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  returns:
+    example: ''
+- description: 'Lists all app filter categories. IMPORTANT: The list starts at 0 (not
+    1)!'
+  name: sophos-firewall-app-category-list
+  parameters:
+  - description: 'The start index for the rules to list, e.g: 5. Default is "0".'
+    example: '0'
+    name: start
+    required: false
+    schema:
+      type: string
+    value: '0'
+  - description: 'The end index for the rules to list, e.g: 20. Default is "50".'
+    example: '50'
+    name: end
+    required: false
+    schema:
+      type: string
+    value: '50'
+  returns:
+    example: ''
+- description: Gets a single app filter category by name.
+  name: sophos-firewall-app-category-get
+  parameters:
+  - description: Name of the app category.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  returns:
+    example: ''
+- description: Updates an existing app filter category.
+  name: sophos-firewall-app-category-update
+  parameters:
+  - description: Name of the app category.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  - description: The description of the category.
+    example: ''
+    name: description
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: QoS policy of the category.
+    example: ''
+    name: qos_policy
+    required: false
+    schema:
+      type: string
+    value: ''
+  returns:
+    example: ''
+- description: 'Lists all web filter policies. IMPORTANT: The list starts at 0 (not
+    1)!'
+  name: sophos-firewall-web-filter-list
+  parameters:
+  - description: 'The start index for the rules to list, e.g: 5. Default is "0".'
+    example: '0'
+    name: start
+    required: false
+    schema:
+      type: string
+    value: '0'
+  - description: 'The end index for the rules to list, e.g: 20. Default is "50".'
+    example: '50'
+    name: end
+    required: false
+    schema:
+      type: string
+    value: '50'
+  returns:
+    example: ''
+- description: Gets a single web filter policy by name.
+  name: sophos-firewall-web-filter-get
+  parameters:
+  - description: Name of the policy.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  returns:
+    example: ''
+- description: Adds a new web filter policy.
+  name: sophos-firewall-web-filter-add
+  parameters:
+  - description: Name of the policy
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  - description: Description of the policy.
+    example: ''
+    name: description
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Default action for the policy. Possible values: "Allow" and "Deny".'
+    example: ''
+    name: default_action
+    required: true
+    schema:
+      type: string
+    value: ''
+  - description: 'Whether the max download file size is enabled. Possible values:
+      "0" and "1".'
+    example: ''
+    name: download_file_size_restriction_enabled
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Maximum file size to enable downloading in MB.
+    example: ''
+    name: download_file_size_restriction
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Enable to specify domains allowed to access the Google service.
+      Possible values: "0" and "1".'
+    example: ''
+    name: goog_app_domain_list_enabled
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: The domains allowed to access the Google service.
+    example: ''
+    name: goog_app_domain_list
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Whether to enable YouTube Restricted Mode to restrict the content
+      that is accessible. Possible values: "0" and "1".'
+    example: ''
+    name: youtube_filter_enabled
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Whether to adjust the policy used for YouTube Restricted Mode. Possible
+      values: "0" and "1".'
+    example: ''
+    name: youtube_filter_is_strict
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Enable to block websites containing pornography and explicit sexual
+      content from appearing in the search results of Google, Yahoo, and Bing search
+      results. Possible values: "0" and "1".'
+    example: ''
+    name: enforce_safe_search
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Whether to further limit inappropriate content by enforcing search
+      engine filters for Creative Commons licensed images. Possible values: "0" and
+      "1".'
+    example: ''
+    name: enforce_image_licensing
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Comma-separted list of URL groups to block, allow, warn, or log.
+    example: ''
+    name: url_group_names
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'The HTTP action. Possible values: "Deny", "Allow", "Warn", and "Log".'
+    example: ''
+    name: http_action
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'The HTTPs action. Possible values: "Deny", "Allow", "Warn", and
+      "Log".'
+    example: ''
+    name: https_action
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'The schedule for the rule. Possible values: "All the time", "Work
+      hours (5 Day week)", "Work hours (6 Day week)", "All Time on Weekdays", "All
+      Time on Weekends", "All Time on Sunday", "All Days 10:00 to 19:00". IMPORTANT:
+      Creating a new schedule is available in the web console.'
+    example: ''
+    name: schedule
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Whether to enable the policy rule. Possible values: "1" and "0".'
+    example: ''
+    name: policy_rule_enabled
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: A comma-separated list of users who this rule will apply to.
+    example: ''
+    name: user_names
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: A comma-separated list of CCL names. This argument is required When
+      ccl_rule_enabled is ON.
+    example: ''
+    name: ccl_names
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Whether to enable the CCL rule. Possible values: "0" and "1". If
+      enabled, ccl_name is required.'
+    example: ''
+    name: ccl_rule_enabled
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Whether to enable the HTTP action. Possible values: "0" and "1".'
+    example: ''
+    name: follow_http_action
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Whether to enable reporting of the policy. Possible values: "Enable"
+      and "Disable". Default is "Enable".'
+    example: Enable
+    name: enable_reporting
+    required: false
+    schema:
+      type: string
+    value: Enable
+  returns:
+    example: ''
+- description: Updates an existing web filter policy.
+  name: sophos-firewall-web-filter-update
+  parameters:
+  - description: Name of the policy.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  - description: Description of the policy.
+    example: ''
+    name: description
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Default action for the policy. Possible values: "Allow" and "Deny".'
+    example: ''
+    name: default_action
+    required: true
+    schema:
+      type: string
+    value: ''
+  - description: 'Whether the maximum download file size is enabled. Possible values:
+      "0" and "1".'
+    example: ''
+    name: download_file_size_restriction_enabled
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: The maximum file size to enable downloading in MB.
+    example: ''
+    name: download_file_size_restriction
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Whether to enable specifying domains allowed to access the Google
+      service. Possible values: "0" and "1".'
+    example: ''
+    name: goog_app_domain_list_enabled
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Comma-separated list of domains allowed to access the Google service.
+    example: ''
+    name: goog_app_domain_list
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Whether to enable YouTube Restricted Mode to restrict the content
+      that is accessible. Possible values: "0" and "1".'
+    example: ''
+    name: youtube_filter_enabled
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Whether to adjust the policy used for YouTube Restricted Mode. Possible
+      values: "0" and "1".'
+    example: ''
+    name: youtube_filter_is_strict
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Whether to enable blocking websites containing pornography and explicit
+      sexual content from appearing in the search results of Google, Yahoo, and Bing
+      search results. Possible values: "0" and "1".'
+    example: ''
+    name: enforce_safe_search
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Whether to further limit inappropriate content by enforcing search
+      engine filters for Creative Commons licensed images. Possible values: "0" and
+      "1".'
+    example: ''
+    name: enforce_image_licensing
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: Comma-separated list of URL groups to block, allow, warn, or log.
+    example: ''
+    name: url_group_names
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'The HTTP action. Possible values: "Deny", "Allow", "Warn", and "Log".'
+    example: ''
+    name: http_action
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'The HTTPs action. Possible values: "Deny", "Allow", "Warn", and
+      "Log".'
+    example: ''
+    name: https_action
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'The schedule for the rule. Possible values: "All the time", "Work
+      hours (5 Day week)", "Work hours (6 Day week)", "All Time on Weekdays", "All
+      Time on Weekends", "All Time on Sunday", "All Days 10:00 to 19:00". IMPORTANT:
+      Creating a new schedule is available in the web console.'
+    example: ''
+    name: schedule
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Whether to enable the policy rule. Possible values: "1" and "0".'
+    example: ''
+    name: policy_rule_enabled
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: A comma-separated list of users who this rule will apply to.
+    example: ''
+    name: user_names
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'A comma-separated list of CCL names. REQUIRED: when ccl_rule_enabled
+      is ON'
+    example: ''
+    name: ccl_names
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Whether to enable the CCL rule. Possible values: "0" and "1". IMPORTANT:
+      If enabled, ccl_name is required.'
+    example: ''
+    name: ccl_rule_enabled
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Whether to enable the HTTP action. Possible values: "0" and "1".'
+    example: ''
+    name: follow_http_action
+    required: false
+    schema:
+      type: string
+    value: ''
+  - description: 'Whether to enable reporting of the policy. Possible values: "Enable"
+      and "Disable". Default is "Enable".'
+    example: Enable
+    name: enable_reporting
+    required: false
+    schema:
+      type: string
+    value: Enable
+  returns:
+    example: ''
+- description: Deletes an existing web filter policy.
+  name: sophos-firewall-web-filter-delete
+  parameters:
+  - description: Name of the policy.
+    example: ''
+    name: name
+    required: true
+    schema:
+      type: string
+    value: ''
+  returns:
+    example: ''
+app_version: 1.0.0
+authentication:
+  required: true
+  parameters:
+  - description: ''
+    example: ''
+    name: server_url
+    required: true
+    schema:
+      type: string
+  - description: ''
+    example: ''
+    name: credentials
+    required: true
+    schema:
+      type: string
+  - description: ''
+    example: ''
+    name: insecure
+    required: false
+    schema:
+      type: string
+categories:
+- Network Security
+contact_info:
+  email: support@shuffler.io
+  name: support@shuffler.io
+  url: https://shuffler.io
+description: "On-premise firewall by Sophos enables you to manage your firewall, respond\
+  \ to threats, and monitor what\u2019s happening on your network."
+large_image: ''
+name: sophosxgfirewall
+tags: []
+large_image: data:image/jpg;base64,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
+large_image: data:image/png;base64,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
