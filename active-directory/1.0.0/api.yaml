@@ -29,8 +29,8 @@ authentication:
       schema:
         type: string
     - name: domain
-      description: "Domain to BIND to AD/LDAP with"
-      example: "CORP"
+      description: "Domain to BIND to AD/LDAP with. Should JUST be the NetBIOSName from Get-Addomain"
+      example: "ICPLAHD"
       required: true
       schema:
         type: string
@@ -48,7 +48,7 @@ authentication:
         type: string
     - name: base_dn
       description: "Search Base DN"
-      example: "OU=Users,DC=mycompany,DC=com"
+      example: "OU=Users,DC=icplahd,DC=com"
       required: true
       schema:
         type: string
@@ -169,7 +169,7 @@ actions:
         description: "If empty it will use the base_dn."
         required: false
         multiline: false
-        example: "OU=Users,DC=mycompany,DC=com"
+        example: "OU=Users,DC=icplahd,DC=com"
         schema:
           type: string
     returns:

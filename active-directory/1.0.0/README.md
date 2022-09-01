@@ -1,4 +1,4 @@
-# Intro
+# Active Directory 
 Active Directory is used all over the world for different reasons. This app helps you explore and control those users. It's based on an LDAP connection.
 
 ## Authentication
@@ -7,8 +7,10 @@ Active Directory is used all over the world for different reasons. This app help
 * domain: Your CORP domain. Used to login properly together with your login_user
 * login_user: Your username. DONT add CORP\\ in front
 * password: The password of the user logging in.
-* base_dn: The base DN to e.g. search from or find a user from. `dsquery user USERNAME`. Should NOT contain spaces. Example: `ou=Users,ou=GPO Groups,dc=nameofdomainserver,dc=company,dc=com` 
+* base_dn: The base DN to e.g. search from or find a user from. `dsquery user USERNAME`. Should NOT contain spaces. example: `OU=Users,DC=icplahd,DC=com`
 * use_ssl: Whether to use SSL to connect to the default port.
+
+* search_base: Usually same as base_dn
 
 ## Typical issues
 - InvalidCredentials: This happens when the credentials are wrong. 
