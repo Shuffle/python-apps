@@ -653,6 +653,9 @@ class Tools(AppBase):
                         else:
                             print("Nothing matching")
 
+                    if not found:
+                        failed_list.append(item)
+
                 # IS EMPTY FOR STR OR LISTS
                 elif check == "is empty":
                     if tmp == "[]":
@@ -862,7 +865,7 @@ class Tools(AppBase):
                 failed_list.append(item)
             # return
 
-        if check == "equals_any of" and flip:
+        if check == "equals any of" and flip:
             tmplist = new_list
             new_list = failed_list
             failed_list = tmplist
