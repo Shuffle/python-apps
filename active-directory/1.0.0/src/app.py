@@ -132,10 +132,11 @@ class ActiveDirectory(AppBase):
             )
 
             result = json.loads(c.response_to_json())
-            if len(result) == 0:
+            if len(result["entries"]) == 0:
                 return {
                     "success": False,
                     "result": result, 
+                    "reason": "No user found for %s" % samaccountname,
                 }
         except Exception as e:
             return {

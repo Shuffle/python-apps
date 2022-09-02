@@ -174,8 +174,9 @@ def user_attributes(
         attributes=ALL_ATTRIBUTES,
     )
 
-    result = json.loads(c.response_to_json())["entries"][0]
+    result = json.loads(c.response_to_json())
     print(result)
+    result = result["entries"][0]
     result["attributes"]["userAccountControl"] = __getUserAccountControlAttributes(
         result["attributes"]["userAccountControl"]
     )
