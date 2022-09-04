@@ -10,7 +10,7 @@ tags:
   - Access Management
   - Azure Active Directory
 categories:
-  - Testing 
+  - IAM
 authentication:
   required: true
   parameters:
