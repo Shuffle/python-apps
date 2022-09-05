@@ -8,7 +8,7 @@ contact_info:
 tags:
   - Testing 
 categories:
-  - Testing 
+  - SIEM 
 actions:
   - name: get_searches 
     description: Runs a python script defined by YOU 

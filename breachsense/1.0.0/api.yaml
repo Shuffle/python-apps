@@ -9,7 +9,7 @@ tags:
   - Darkweb
   - Data breach Monitor 
 categories:
-  - Testing   
+  - Assets 
 authentication:
   required: true
   parameters:
