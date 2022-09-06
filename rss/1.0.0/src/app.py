@@ -5,9 +5,10 @@ import random
 import json
 import feedparser
 
+socket.setdefaulttimeout(10)
 from walkoff_app_sdk.app_base import AppBase
 
-class PythonPlayground(AppBase):
+class RSS(AppBase):
     __version__ = "1.0.0"
     app_name = "python_playground"  # this needs to match "name" in api.yaml
 
@@ -48,4 +49,4 @@ class PythonPlayground(AppBase):
     #    return entry.keys()
 
 if __name__ == "__main__":
-    PythonPlayground.run()
+    RSS.run()

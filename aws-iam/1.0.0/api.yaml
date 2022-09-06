@@ -9,8 +9,7 @@ tags:
   - Access 
   - Users
 categories:
-  - Access 
-  - Users
+  - IAM 
 authentication:
   required: true
   parameters:

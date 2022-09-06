@@ -1,9 +1,15 @@
-## Using curl to test whether you SMPT mails are getting delivered.
+# Mail
+This apps is used to interact with SMTP, IMAP and contains other basic email tools
+
+## eml parsing
+You can parse eml files by running the "Parse email file" action
+
+### Using curl to test whether you SMPT mails are getting delivered.
 ``` 
 curl --ssl smtp://1.1.1.1:587 --mail-from example@example.com --mail-rcpt example1@example.com --upload-file email.txt --user 'example:Password123' -k -v
 ```
 
-## email.txt : Should contain the below
+### email.txt : Should contain the below
 ```
 From: <example@example.com>
 To: <example1@example.com>

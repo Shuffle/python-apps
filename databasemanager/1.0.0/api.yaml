@@ -10,7 +10,7 @@ tags:
   - SQL
   - PostgreSQL
 categories:
-  - Testing 
+  - Other 
 actions:
   - name: query_mysql_database
     description: Query MySQL database 

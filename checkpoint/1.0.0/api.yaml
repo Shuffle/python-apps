@@ -8,7 +8,7 @@ contact_info:
 tags:
   - Firewall
 categories:
-  - Testing
+  - Network 
 authentication:
   required: true
   parameters:

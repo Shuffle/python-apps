@@ -47,6 +47,112 @@ class MsIdentityAccess(AppBase):
         s.headers = {"Authorization": f"Bearer {access_token}", "cache-control": "no-cache"}
         return s
 
+    # Disable = reset password & sessions
+    def list_deleted_users(self, tenant_id, client_id, client_secret, user_email_or_id):
+        graph_url = "https://graph.microsoft.com"
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
+
+
+        graph_url = f"https://graph.microsoft.com/v1.0/directory/deletedItems/microsoft.graph.user"
+        headers = {
+            "Content-type": "application/json"
+        }
+        ret = session.get(graph_url, headers=headers)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code}
+
+    # Disable = reset password & sessions
+    def restore_deleted_user(self, tenant_id, client_id, client_secret, user_email_or_id):
+        graph_url = "https://graph.microsoft.com"
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
+
+        graph_url = f"https://graph.microsoft.com/v1.0/directory/deletedItems/{user_email_or_id}/restore"
+        headers = {
+            "Content-type": "application/json"
+        }
+        ret = session.post(graph_url, headers=headers)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code}
+
+    # Disable = reset password & sessions
+    def logout_user(self, tenant_id, client_id, client_secret, user_email_or_id):
+
+        new_password = str(uuid.uuid4())
+        graph_url = "https://graph.microsoft.com"
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
+
+        graph_url = f"https://graph.microsoft.com/v1.0/users/{user_email_or_id}/revokeSignInSessions"
+        headers = {
+            "Content-type": "application/json"
+        }
+        ret = session.post(graph_url, headers=headers)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code}
+
+    # Disable = reset password & sessions
+    def disable_user(self, tenant_id, client_id, client_secret, user_email_or_id):
+
+        new_password = str(uuid.uuid4())
+        graph_url = "https://graph.microsoft.com"
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
+
+        graph_url = f"https://graph.microsoft.com/v1.0/users/{user_email_or_id}/revokeSignInSessions"
+        headers = {
+            "Content-type": "application/json"
+        }
+        ret = session.get(graph_url, headers=headers)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code >= 300:
+            data = ret.json()
+            return data
+
+        graph_url = f"https://graph.microsoft.com/v1.0/users/{user_email_or_id}/authentication/passwordMethods"
+
+        ret = session.get(graph_url)
+        retdata = ret.json()
+        #return retdata
+        try:
+            if len(retdata["value"]) == 0:
+                return {"success": False, "reason": "Couldn't find any password methods to reset password, but DID revoke their sessions"}
+        except:
+            return {"success": False, "reason": "Couldn't find any password methods to reset password, but DID revoke their sessions (2)"}
+
+        registered_password_id = retdata["value"][0]["id"]
+        graph_url = f"https://graph.microsoft.com/v1.0/users/{user_email_or_id}/authentication/passwordMethods/{registered_password_id}/resetPassword"
+        headers = {
+            "Content-type": "application/json"
+        }
+
+        request_body = {
+            "newPassword": str(new_password)
+        }
+
+
+        ret = session.post(graph_url, json=request_body,headers=headers)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code >= 300:
+            data = ret.json()
+            return data
+
+        return {"success": True, "reason": "Stopped all active sessions and reset their password."}
+
 
     def list_users(self, tenant_id, client_id, client_secret):
         graph_url = "https://graph.microsoft.com"
@@ -316,6 +422,21 @@ class MsIdentityAccess(AppBase):
         }
 
         ret = session.delete(graph_url, json=request_body)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code, "error_response":ret.text}
+
+    def delete_user(self, tenant_id, client_id, client_secret, user_email_or_id):
+        graph_url = "https://graph.microsoft.com"
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
+
+        graph_url = f"https://graph.microsoft.com/v1.0/users/{user_email_or_id}"
+
+        ret = session.delete(graph_url)
         print(ret.status_code)
         print(ret.text)
         if ret.status_code < 300:

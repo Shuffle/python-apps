@@ -10,7 +10,7 @@ tags:
   - Access Management
   - Azure Active Directory
 categories:
-  - Testing 
+  - IAM
 authentication:
   required: true
   parameters:
@@ -39,6 +39,56 @@ actions:
     description: Retrieve a list users in the organization
   - name: list_groups 
     description: Retrieve a list of groups in the organization
+  #- name: disable_user 
+  #  description: Disables a user by setting a random password for them and stopping their current sessions.
+  #  parameters:
+  #    - name: user_email_or_id
+  #      description: id
+  #      multiline: false
+  #      example: "User email address or id"
+  #      required: true
+  #      schema:
+  #        type: string
+  - name: delete_user 
+    description: Deletes a user. Can be restored again within 30 days. Well used in conjunction after the logout user action
+    parameters:
+      - name: user_email_or_id
+        description: id
+        multiline: false
+        example: "User email address or id"
+        required: true
+        schema:
+          type: string
+  - name: restore_deleted_user 
+    description: Deletes a user. Can be restored again within 30 days. Well used in conjunction after the logout user action
+    parameters:
+      - name: user_email_or_id
+        description: id
+        multiline: false
+        example: "User email address or id"
+        required: true
+        schema:
+          type: string
+  - name: list_deleted_users
+    description: Lists deleted information in the tenant 
+    parameters:
+      - name: user_email_or_id
+        description: id
+        multiline: false
+        example: "User email address or id"
+        required: true
+        schema:
+          type: string
+  - name: logout_user 
+    description: Logs out the selected user from all session.
+    parameters:
+      - name: user_email_or_id
+        description: id
+        multiline: false
+        example: "User email address or id"
+        required: true
+        schema:
+          type: string
   - name: list_group_members
     description: Retrieve a list of users in a group
     parameters:
