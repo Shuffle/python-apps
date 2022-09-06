@@ -22,7 +22,7 @@ class TheHive(AppBase):
     Inherit from the AppBase class to have Redis, logging, and console logging set up behind the scenes.
     """
 
-    __version__ = "1.1.4
+    __version__ = "1.1.4"
     app_name = "thehive"
 
     def __init__(self, redis, logger, console_logger=None):
