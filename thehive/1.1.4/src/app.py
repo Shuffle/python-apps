@@ -255,7 +255,7 @@ class TheHive(AppBase):
             tlp = int(tlp)
         if isinstance(severity, str):
             if not severity.isdigit():
-                return "Severity needs to be a number from 1-3, not %s" % severity
+                return "Severity needs to be a number from 1-4, not %s" % severity
 
             severity = int(severity)
 
