@@ -22,7 +22,7 @@ class TheHive(AppBase):
     Inherit from the AppBase class to have Redis, logging, and console logging set up behind the scenes.
     """
 
-    __version__ = "1.1.0"
+    __version__ = "1.1.3"
     app_name = "thehive"
 
     def __init__(self, redis, logger, console_logger=None):
@@ -255,14 +255,14 @@ class TheHive(AppBase):
             tlp = int(tlp)
         if isinstance(severity, str):
             if not severity.isdigit():
-                return "Severity needs to be a number from 1-3, not %s" % severity
+                return "Severity needs to be a number from 1-4, not %s" % severity
 
             severity = int(severity)
 
         if tlp > 3 or tlp < 0:
             return "TLP needs to be a number from 0-3, not %d" % tlp
-        if severity > 3 or severity < 1:
-            return "Severity needs to be a number from 1-3, not %d" % severity
+        if severity > 4 or severity < 1:
+            return f"Severity needs to be a number from 1-4, not {severity}"
 
         all_artifacts = []
         if isinstance(artifacts, str):
@@ -471,7 +471,7 @@ class TheHive(AppBase):
                 )
 
             return str(ret.status_code)
-            
+
         elif field_type.lower() == 'case':
             return 'Use update_case action for updating a case.'
         else:
@@ -968,18 +968,18 @@ class TheHive(AppBase):
         response = self.thehive.create_case_task(case_id, case_task)
 
         return response.text
-    
+
     # Close TheHive case Task
     def update_task(self,apikey,url,organisation,task_id,status):
         if status == "Completed":
-            
+
             # Add EndDate Time before close
             headers = {
                 "Authorization": f"Bearer {apikey}",
             }
             if organisation:
                 headers["X-Organisation"] = organisation
- 
+
             data = {"endDate": round(time.time() * 1000)}
             requests.patch(
                 f"{url}/api/case/task/{task_id}",
@@ -996,9 +996,9 @@ class TheHive(AppBase):
             id = task_id,
             status = status,
         )
- 
+
         response = self.thehive.update_case_task(task, fields=["status"])
- 
+
         return response.text
 
 
