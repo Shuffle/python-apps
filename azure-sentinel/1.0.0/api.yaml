@@ -193,6 +193,7 @@ actions:
         required: false
         multiline: false
         options:
+          - None
           - Informational
           - Low
           - Medium
@@ -204,6 +205,7 @@ actions:
         required: false
         multiline: false
         options:
+          - None
           - New
           - Active
         schema:
