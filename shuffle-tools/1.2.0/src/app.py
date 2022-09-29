@@ -982,6 +982,10 @@ class Tools(AppBase):
         #        data = data[2:-1]
         #except Exception as e:
         #    self.logger.info(f"Exception: {e}")
+        try:
+            data = json.dumps(data)
+        except:
+            pass
 
         filedata = {
             "filename": filename,

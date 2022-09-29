@@ -1,6 +1,6 @@
 app_version: 1.0.0
 name: MySQL
-description: Mysql integration
+description: Mysql integration. Compatible with MSSQL and other SQL databases.
 contact_info:
   name: "@d4rkw0lv3s"
   url: https://github.com/D4rkw0lv3s

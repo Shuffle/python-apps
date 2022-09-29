@@ -113,6 +113,15 @@ actions:
           - false
         schema:
           type: string
+      - name: body_type 
+        description: The type of body to send. HTML by default
+        example: "true"
+        required: false 
+        options:
+          - "html"
+          - "plain"
+        schema:
+          type: string
     returns:
       schema:
         type: string

@@ -203,10 +203,10 @@ class AzureSentinel(AppBase):
                 "severity": incident["properties"]["severity"],
             },
         }
-        if kwargs["severity"]:
+        if kwargs["severity"] and kwargs["severity"] != "None":
             update_data["properties"]["severity"] = kwargs["severity"]
 
-        if kwargs["status"]:
+        if kwargs["status"] and kwargs["status"] != "None":
             update_data["properties"]["status"] = kwargs["status"]
 
         if kwargs["owner"]:

@@ -74,7 +74,7 @@ class Email(AppBase):
         return requests.post(url, headers=headers, json=data).text
 
     def send_email_smtp(
-        self, username, password, smtp_host, recipient, subject, body, smtp_port, attachments="", ssl_verify="True"
+        self, username, password, smtp_host, recipient, subject, body, smtp_port, attachments="", ssl_verify="True", body_type="html"
     ):
         if type(smtp_port) == str:
             try:
@@ -103,12 +103,15 @@ class Email(AppBase):
                     "reason": f"Bad username or password: {e}"
                 }
 
+        if body_type == "" or len(body_type) < 3:
+            body_type = "html"
+
         # setup the parameters of the message
         msg = MIMEMultipart()
         msg["From"] = username
         msg["To"] = recipient
         msg["Subject"] = subject
-        msg.attach(MIMEText(body, "html"))
+        msg.attach(MIMEText(body, body_type))
 
         # Read the attachments
         attachment_count = 0
