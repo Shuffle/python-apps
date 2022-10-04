@@ -847,14 +847,7 @@ actions:
         description: The input data to use
         required: true
         multiline: true
-        example: '{"html": "<body>hello</body>"}' 
-        schema:
-          type: string
-      - name: field_name
-        description: The field to HTML escape
-        required: true
-        multiline: true
-        example: my_unsafe_field
+        example: '<body>hello</body>' 
         schema:
           type: string
     returns:
