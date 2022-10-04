@@ -1679,7 +1679,7 @@ class Tools(AppBase):
         return result
 
     # This is kind of stupid
-    def escape_html(self, input_data, field_name):
+    def escape_html(self, input_data):
         if isinstance(input_data, str):
             mapping = json.loads(input_data)
         else:
