@@ -170,6 +170,12 @@ class Owa(AppBase):
         body,
         attachments,
     ):
+        if "office365" in server.lower():
+            return {
+                "success": False,
+                "reason": "Use the Outlook Office365 app to connect to Office365. Basic auth is deprecated.",
+            }
+
         # Authenticate
         auth = self.authenticate(
             username, password, server, build, account, verifyssl
@@ -222,6 +228,13 @@ class Owa(AppBase):
     def mark_email_as_read(
         self, username, password, server, build, account, verifyssl, email_id, foldername="inbox"
     ):
+
+        if "office365" in server.lower():
+            return {
+                "success": False,
+                "reason": "Use the Outlook Office365 app to connect to Office365. Basic auth is deprecated.",
+            }
+
         if not foldername:
             foldername = "inbox"
 
@@ -257,6 +270,12 @@ class Owa(AppBase):
     def add_category(
         self, username, password, server, build, account, verifyssl, email_id, category, foldername="inbox"
         ):
+
+        if "office365" in server.lower():
+            return {
+                "success": False,
+                "reason": "Use the Outlook Office365 app to connect to Office365. Basic auth is deprecated.",
+            }
 
         if not foldername:
             foldername = "inbox"
@@ -295,6 +314,12 @@ class Owa(AppBase):
     def delete_email(
         self, username, password, server, build, account, verifyssl, email_id
     ):
+        if "office365" in server.lower():
+            return {
+                "success": False,
+                "reason": "Use the Outlook Office365 app to connect to Office365. Basic auth is deprecated.",
+            }
+
         # Authenticate
         auth = self.authenticate(
             username, password, server, build, account, verifyssl
@@ -323,6 +348,12 @@ class Owa(AppBase):
         email_id,
         foldername,
     ):
+        if "office365" in server.lower():
+            return {
+                "success": False,
+                "reason": "Use the Outlook Office365 app to connect to Office365. Basic auth is deprecated.",
+            }
+
         # Authenticate
         auth = self.authenticate(
             username, password, server, build, account, verifyssl
@@ -370,6 +401,12 @@ class Owa(AppBase):
         upload_email_shuffle,
         upload_attachments_shuffle,
     ):
+        if "office365" in server.lower():
+            return {
+                "success": False,
+                "reason": "Use the Outlook Office365 app to connect to Office365. Basic auth is deprecated.",
+            }
+
         def path_to_dict(path, value=None):
             def pack(parts):
                 return (

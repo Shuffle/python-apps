@@ -980,12 +980,15 @@ class Tools(AppBase):
         #try:
         #    if str(data).startswith("b'") and str(data).endswith("'"):
         #        data = data[2:-1]
+        #    if str(data).startswith("\"") and str(data).endswith("\""):
+        #        data = data[2:-1]
         #except Exception as e:
         #    self.logger.info(f"Exception: {e}")
-        try:
-            data = json.dumps(data)
-        except:
-            pass
+
+        #try:
+        #    data = json.dumps(data)
+        #except:
+        #    pass
 
         filedata = {
             "filename": filename,

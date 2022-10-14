@@ -840,19 +840,19 @@ actions:
           - false
         schema:
           type: string
-  - name: escape_html
-    description: Performs HTML escaping on a field
-    parameters:
-      - name: input_data
-        description: The input data to use
-        required: true
-        multiline: true
-        example: '<body>hello</body>' 
-        schema:
-          type: string
-    returns:
-      schema:
-        type: string
+  #- name: escape_html
+  #  description: Performs HTML escaping on a field. Can be done with Liquid formatting instead!!
+  #  parameters:
+  #    - name: input_data
+  #      description: The input data to use
+  #      required: true
+  #      multiline: true
+  #      example: '<body>hello</body>' 
+  #      schema:
+  #        type: string
+  #  returns:
+  #    schema:
+  #      type: string
   - name: base64_conversion
     description: Encode or decode a Base64 string
     parameters:

@@ -195,7 +195,12 @@ class HTTP(AppBase):
 
         auth=None
         if username or password:
-            auth = requests.auth.HTTPBasicAuth(username, password)
+            # Shouldn't be used if authorization headers exist
+            if "Authorization" in parsed_headers:
+                #print("Found authorization - skipping username & pw")
+                pass
+            else: 
+                auth = requests.auth.HTTPBasicAuth(username, password)
 
         if not timeout:
             timeout = 5
@@ -228,7 +233,12 @@ class HTTP(AppBase):
 
         auth=None
         if username or password:
-            auth = requests.auth.HTTPBasicAuth(username, password)
+            # Shouldn't be used if authorization headers exist
+            if "Authorization" in parsed_headers:
+                #print("Found authorization - skipping username & pw")
+                pass
+            else: 
+                auth = requests.auth.HTTPBasicAuth(username, password)
 
         if not timeout:
             timeout = 5
@@ -263,7 +273,12 @@ class HTTP(AppBase):
 
         auth=None
         if username or password:
-            auth = requests.auth.HTTPBasicAuth(username, password)
+            # Shouldn't be used if authorization headers exist
+            if "Authorization" in parsed_headers:
+                #print("Found authorization - skipping username & pw")
+                pass
+            else: 
+                auth = requests.auth.HTTPBasicAuth(username, password)
 
         if not timeout:
             timeout = 5
@@ -296,12 +311,12 @@ class HTTP(AppBase):
 
         auth=None
         if username or password:
-            auth = requests.auth.HTTPBasicAuth(username, password)
-
-        if not timeout:
-            timeout = 5
-        if timeout:
-            timeout = int(timeout)
+            # Shouldn't be used if authorization headers exist
+            if "Authorization" in parsed_headers:
+                #print("Found authorization - skipping username & pw")
+                pass
+            else: 
+                auth = requests.auth.HTTPBasicAuth(username, password)
 
         if to_file == "true":
             to_file = True
@@ -328,7 +343,12 @@ class HTTP(AppBase):
 
         auth=None
         if username or password:
-            auth = requests.auth.HTTPBasicAuth(username, password)
+            # Shouldn't be used if authorization headers exist
+            if "Authorization" in parsed_headers:
+                #print("Found authorization - skipping username & pw")
+                pass
+            else: 
+                auth = requests.auth.HTTPBasicAuth(username, password)
 
         if not timeout:
             timeout = 5
@@ -361,7 +381,12 @@ class HTTP(AppBase):
 
         auth=None
         if username or password:
-            auth = requests.auth.HTTPBasicAuth(username, password)
+            # Shouldn't be used if authorization headers exist
+            if "Authorization" in parsed_headers:
+                #print("Found authorization - skipping username & pw")
+                pass
+            else: 
+                auth = requests.auth.HTTPBasicAuth(username, password)
 
         if not timeout:
             timeout = 5
@@ -394,7 +419,12 @@ class HTTP(AppBase):
 
         auth=None
         if username or password:
-            auth = requests.auth.HTTPBasicAuth(username, password)
+            # Shouldn't be used if authorization headers exist
+            if "Authorization" in parsed_headers:
+                #print("Found authorization - skipping username & pw")
+                pass
+            else: 
+                auth = requests.auth.HTTPBasicAuth(username, password)
 
         if not timeout:
             timeout = 5
