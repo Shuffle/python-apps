@@ -188,6 +188,7 @@ actions:
           - is empty
           - contains
           - contains any of
+          - in cache key 
           - starts with
           - ends with
           - field is unique

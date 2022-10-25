@@ -821,6 +821,20 @@ class Tools(AppBase):
                     else:
                         failed_list.append(item)
 
+                elif check == "in cache key":
+                    ret = self.check_cache_contains(value, tmp, "true")
+                    if ret["success"] == True and ret["found"] == True:
+                        new_list.append(item)
+                    else:
+                        failed_list.append(item)
+
+                    #return {
+                    #    "success": True,
+                    #    "found": False,
+                    #    "key": key,
+                    #    "value": new_value,
+                    #}
+
                 # SINGLE ITEM COULD BE A FILE OR A LIST OF FILES
                 elif check == "files by extension":
                     if type(tmp) == list:
@@ -977,18 +991,20 @@ class Tools(AppBase):
     def create_file(self, filename, data):
         self.logger.info("Inside function")
 
-        #try:
-        #    if str(data).startswith("b'") and str(data).endswith("'"):
-        #        data = data[2:-1]
-        #    if str(data).startswith("\"") and str(data).endswith("\""):
-        #        data = data[2:-1]
-        #except Exception as e:
-        #    self.logger.info(f"Exception: {e}")
+        try:
+            if str(data).startswith("b'") and str(data).endswith("'"):
+                data = data[2:-1]
+            if str(data).startswith("\"") and str(data).endswith("\""):
+                data = data[2:-1]
+        except Exception as e:
+            self.logger.info(f"Exception: {e}")
 
-        #try:
-        #    data = json.dumps(data)
-        #except:
-        #    pass
+        try:
+            #if not isinstance(data, str) and not isinstance(data, int) and not isinstance(float) and not isinstance(data, bool):
+            if isinstance(data, dict) or isinstance(data, list):
+                data = json.dumps(data)
+        except:
+            pass
 
         filedata = {
             "filename": filename,
@@ -2184,7 +2200,7 @@ class Tools(AppBase):
                     "messageid",
                   ],
                   "title": ["title", "message", "subject", "name"],
-                  "description": ["description", "explanation", "story", "details", "snippet"],
+                  "description": ["description", "status", "explanation", "story", "details", "snippet"],
                   "email": ["mail", "email", "sender", "receiver", "recipient"],
                   "data": [
                     "data",
@@ -2197,8 +2213,24 @@ class Tools(AppBase):
                     "sha256",
                     "value",
                     "item",
+                    "rules",
                   ],
                   "tags": ["tags", "taxonomies", "labels", "labelids"],
+                  "assignment": [
+                    "assignment",
+                    "user",
+                    "assigned_to",
+                    "users",
+                    "closed_by",
+                    "closing_user",
+                    "opened_by",
+                  ],
+                  "severity": [
+                    "severity",
+                    "sev",
+                    "magnitude",
+                    "relevance",
+                  ]
             }
         
         return []
@@ -2212,7 +2244,7 @@ class Tools(AppBase):
         return inputkey
     
     def run_key_recursion(self, json_input, synonyms):
-        if isinstance(json_input, str):
+        if isinstance(json_input, str) or isinstance(json_input, int) or isinstance(json_input, float):
             return json_input, {}
     
         if isinstance(json_input, list):
