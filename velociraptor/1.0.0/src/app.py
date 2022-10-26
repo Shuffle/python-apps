@@ -97,6 +97,7 @@ class Velociraptor(AppBase):
             return {
                 "success": True,
                 "reason": results [0]['client_id']
+            }
         except Exception as e: 
             return {
                 "success": False,
