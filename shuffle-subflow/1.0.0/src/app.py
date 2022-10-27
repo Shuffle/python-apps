@@ -30,7 +30,7 @@ class Subflow(AppBase):
     #    if len(sms) > 0:
 
     def run_subflow(self, user_apikey, workflow, argument, source_workflow="", source_execution="", source_node="", source_auth="", startnode=""):
-        print("STARTNODE: %s" % startnode)
+        #print("STARTNODE: %s" % startnode)
         url = "%s/api/v1/workflows/%s/execute" % (self.url, workflow)
 
         params = {}
@@ -66,12 +66,13 @@ class Subflow(AppBase):
         if len(str(argument)) == 0:
             ret = requests.post(url, headers=headers, params=params)
         else:
-            if not isinstance(argument, list) and not isinstance(argument, object) and not isinstance(argument, dict):
+            if not isinstance(argument, list) and not isinstance(argument, dict):
                 try:
                     argument = json.loads(argument)
                 except:
                     pass
 
+            print(f"ARG: {argument}")
             try:
                 ret = requests.post(url, headers=headers, params=params, json=argument)
                 print(f"Successfully sent argument of length {len(str(argument))} as JSON")

@@ -1717,6 +1717,7 @@ class Tools(AppBase):
             "execution_id": self.current_execution_id,
             "authorization": self.authorization,
             "org_id": org_id,
+            "search": str(value),
             "key": key,
         }
 
@@ -1725,10 +1726,13 @@ class Tools(AppBase):
                 value = json.dumps(value)
             except Exception as e:
                 self.logger.info(f"[WARNING] Error in JSON dumping (cache contains): {e}")
-        elif not isinstance(value, str):
+        
+        if not isinstance(value, str):
             value = str(value)
 
-        if append.lower() == "true":
+        data["search"] = value
+
+        if str(append).lower() == "true":
             append = True
         else:
             append = False 
@@ -1758,6 +1762,7 @@ class Tools(AppBase):
                             "success": True,
                             "found": False,
                             "key": key,
+                            "search": value,
                             "value": new_value,
                         }
                     except Exception as e:
@@ -1765,6 +1770,7 @@ class Tools(AppBase):
                             "success": False,
                             "found": False,
                             "key": key,
+                            "search": value,
                             "reason": "Failed to find key, and failed to append",
                         }
                 else:
@@ -1772,6 +1778,7 @@ class Tools(AppBase):
                         "success": True,
                         "found": False,
                         "key": key,
+                        "search": value,
                         "reason": "Not appended, not found",
                     }
             else:
@@ -1794,6 +1801,7 @@ class Tools(AppBase):
                                 "found": True,
                                 "reason": "Found and not appending!",
                                 "key": key,
+                                "search": value,
                                 "value": json.loads(allvalues["value"]),
                             }
                         else:
@@ -1802,6 +1810,7 @@ class Tools(AppBase):
                                 "found": True,
                                 "reason": "Found, was appending, but item already exists",
                                 "key": key,
+                                "search": value,
                                 "value": json.loads(allvalues["value"]),
                             }
                             
@@ -1814,6 +1823,7 @@ class Tools(AppBase):
                         "found": False,
                         "reason": "Not found, not appending (2)!",
                         "key": key,
+                        "search": value,
                         "value": json.loads(allvalues["value"]),
                     }
 
@@ -1845,6 +1855,7 @@ class Tools(AppBase):
                         "found": False,
                         "reason": "Appended as it didn't exist",
                         "key": key,
+                        "search": value,
                         "value": new_value,
                     }
                 except Exception as e:
@@ -1855,6 +1866,7 @@ class Tools(AppBase):
                     "success": False,
                     "found": True,
                     "reason": f"Failed to set append the value: {exception}. This should never happen",
+                    "search": value,
                     "key": key
                 }
                             
@@ -1867,6 +1879,7 @@ class Tools(AppBase):
                 "success": False,
                 "key": key,
                 "reason": f"Failed to get cache: {e}",
+                "search": value,
                 "found": False,
             }
 
@@ -1970,7 +1983,8 @@ class Tools(AppBase):
                 value = json.dumps(value)
             except Exception as e:
                 self.logger.info(f"[WARNING] Error in JSON dumping (set cache): {e}")
-        elif not isinstance(value, str):
+        
+        if not isinstance(value, str):
             value = str(value)
 
         data = {
