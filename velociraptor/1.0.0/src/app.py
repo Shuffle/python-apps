@@ -92,7 +92,18 @@ class Velociraptor(AppBase):
         except:
             query = "SELECT client_id FROM clients(search=" + host + ")"
         results = self.request(api_config, query)
-        return results [0]['client_id']
+        
+        try:
+            return {
+                "success": True,
+                "reason": results [0]['client_id']
+            }
+        except Exception as e: 
+            return {
+                "success": False,
+                "reason": "An error happened getting client ID. This usually means the Client ID doesn't exist.",
+                "details": f"{e}"
+            }
 
     def get_client_flows(self, api_config, client_id):
         query = "SELECT * FROM flows(client_id='" + client_id  + "')"
