@@ -72,7 +72,7 @@ class Subflow(AppBase):
                 except:
                     pass
 
-            print(f"ARG: {argument}")
+            #print(f"ARG: {argument}")
             try:
                 ret = requests.post(url, headers=headers, params=params, json=argument)
                 print(f"Successfully sent argument of length {len(str(argument))} as JSON")
@@ -88,11 +88,6 @@ class Subflow(AppBase):
         print("RET: %s" % ret.text)
 
         return ret.text
-
-        # This logs to the docker logs
-        #self.logger.info(message)
-
-        return message
 
 if __name__ == "__main__":
     Subflow.run()
