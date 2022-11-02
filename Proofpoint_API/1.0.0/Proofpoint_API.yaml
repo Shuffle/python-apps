@@ -1,0 +1,127 @@
+openapi: 3.0.0
+info:
+  title: Proofpoint TAP API
+  description: ""
+  version: "1.0"
+  x-logo: data:image/png;base64,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
+  contact:
+    name: "@TechedJack"
+    url: https://twitter.com/TechedJack
+  x-categories:
+    - SIEM
+servers:
+  - url: https://tap-api-v2.proofpoint.com
+host: tap-api-v2.proofpoint.com
+basePath: /
+schemes:
+  - "https:"
+paths:
+  /v2/siem/clicks/blocked:
+    get:
+      responses:
+        default:
+          description: default
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: ""
+      summary: Get Blocked Clicks
+      operationId: Get_Blocked_Clicks
+      description: Fetch events for clicks to malicious URLs blocked in the specified
+        time period
+      parameters: []
+      requestBody:
+        content: {}
+  /v2/siem/clicks/permitted:
+    get:
+      responses:
+        default:
+          description: default
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: ""
+      summary: Get Permitted Clicks
+      operationId: Get_Permitted_Clicks
+      description: Fetch events for clicks to malicious URLs permitted in the
+        specified time period
+      parameters: []
+      requestBody:
+        content: {}
+  /v2/siem/messages/blocked:
+    get:
+      responses:
+        default:
+          description: default
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: ""
+      summary: Get Blocked Messages
+      operationId: Get_Blocked_Messages
+      description: Fetch events for messages blocked in the specified time period
+        which contained a known threat
+      parameters: []
+      requestBody:
+        content: {}
+  /v2/siem/messages/delivered:
+    get:
+      responses:
+        default:
+          description: default
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: ""
+      summary: Get Delivered Messages
+      operationId: Get_Delivered_Messages
+      description: Fetch events for messages delivered in the specified time period
+        which contained a known threat
+      parameters: []
+      requestBody:
+        content: {}
+  /v2/siem/issues:
+    get:
+      responses:
+        default:
+          description: default
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: ""
+      summary: Get TAP Issues
+      operationId: Get_TAP_Issues
+      description: Fetch events for clicks to malicious URLs permitted and messages
+        delivered containing a known threat within the specified time period.
+        (It is a combination of /v2/siem/clicks/permitted and
+        /v2/siem/messages/delivered)
+      parameters: []
+      requestBody:
+        content: {}
+  /v2/siem/all:
+    get:
+      responses:
+        default:
+          description: default
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: ""
+      summary: Get All TAP Issues
+      operationId: Get_All_TAP_Issues
+      description: Fetch events for all clicks and messages relating to known threats
+        within the specified time period
+      parameters: []
+      requestBody:
+        content: {}
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
