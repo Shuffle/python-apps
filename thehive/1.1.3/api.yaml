@@ -843,6 +843,96 @@ actions:
     returns:
       schema:
         type: string
+  - name: update_alert
+    description: Update alert in TheHive
+    parameters:
+      - name: id 
+        description: The alert id
+        example: "~123949208"
+        required: true
+        multiline: false
+        schema:
+          type: string
+      - name: alerttype
+        description: The type to use for the alert
+        example: "incident"
+        required: false
+        multiline: false
+        schema:
+          type: string
+      - name: source
+        description: The source to use
+        example: "SIEM"
+        required: false
+        multiline: false
+        schema:
+          type: string
+      - name: sourceRef
+        description: The source reference to use
+        example: "incident-1234"
+        required: false
+        multiline: false
+        schema:
+          type: string
+      - name: title
+        description: The alert title to be used
+        example: "MyAlert Title"
+        required: false
+        multiline: false
+        schema:
+          type: string
+      - name: description
+        description: The alert description to be used
+        example: "MyAlert description"
+        required: false
+        multiline: false
+        schema:
+          type: string
+      - name: tlp
+        description: "Alert's TLP: 0, 1, 2, 3 for WHITE, GREEN, AMBER, RED"
+        example: 2
+        required: false
+        multiline: false
+        schema:
+          type: integer
+      - name: pap
+        description: "Alert's PAP: 0, 1, 2, 3 for WHITE, GREEN, AMBER, RED"
+        example: 2
+        required: false
+        multiline: false
+        schema:
+          type: integer
+      - name: severity
+        description: "Alert's severity: 1, 2, 3, 4 for LOW, MEDIUM, HIGH, CRTICAL"
+        example: 2
+        required: false
+        multiline: false
+        schema:
+          type: integer
+      - name: tags
+        description: List of tags to be used
+        example: "tag1,tag2,tag3"
+        required: false
+        multiline: false
+        schema:
+          type: string
+      - name: custom_fields
+        description: Alert customfields to be used
+        example: |
+          {
+            "mystrcustomfield": "blah blah blah",
+            "myintcustomfield": 1234,
+            "myboolcustomfield": False,
+            "myfloatcustomfield": 12.3456,
+            ...
+          }
+        required: false
+        multiline: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
   - name: get_organisations
     description: Get all TheHive organisations
     returns:

@@ -788,6 +788,137 @@ class TheHive(AppBase):
 
         return json.dumps(result.json(), indent=4, sort_keys=True)
 
+    # Update TheHIVE alert
+    def update_alert(
+        self,
+        apikey,
+        url,
+        organisation,
+        id,
+        alerttype="",
+        source="",
+        sourceRef="",
+        title="",
+        description="",
+        tlp=None,
+        pap=None,
+        severity=None,
+        tags="",
+        custom_fields=None
+    ):
+        self.__connect_thehive(url, apikey, organisation)
+
+        # get the current data for the alert
+        alert = self.thehive.get_alert(id).json()
+
+        # Update information if given by the user, otherwise, 
+        # use the already present data retrieved above
+        alert_type = alerttype if alerttype else alert["type"]
+        alert_source = source if source else alert["source"]
+        alert_sourceRef = sourceRef if sourceRef else alert["sourceRef"]
+        alert_title = title if title else alert["title"]
+        alert_description = description if description else alert["description"]
+
+        # tlp handling
+        alert_tlp = int(tlp) if tlp else alert["tlp"]
+            
+        if alert_tlp > 3 or alert_tlp < 0:
+            return "TLP needs to be a number from 0-3, not %d" % alert_tlp
+
+        # pap handling
+        alert_pap = int(pap) if pap else alert["pap"]
+
+        if alert_pap > 3 or alert_pap < 0:
+            return "PAP needs to be a number from 0-3, not %d" % alert_pap
+
+        # severity handling
+        alert_severity = int(severity) if severity else alert["severity"]
+
+        if alert_severity > 4 or alert_severity < 1:
+            return "Severity needs to be a number from 1-4, not %s" % alert_severity
+
+        # tags handling
+        if tags:
+            if ", " in tags:
+                alert_tags = tags.split(", ")
+            elif "," in tags:
+                alert_tags = tags.split(",")
+            else:
+                alert_tags = [tags]
+        else:
+            alert_tags = alert["tags"]     
+
+        # custom fields handling
+        alert_customFields = alert["customFields"]
+
+        customfields = CustomFieldHelper()
+        if alert_customFields:
+            for key, value in alert_customFields.items():
+                if list(value)[0] == "integer":
+                    customfields.add_integer(key, list(value.items())[0][1])
+                elif list(value)[0] == "string":
+                    customfields.add_string(key, list(value.items())[0][1])
+                elif list(value)[0] == "boolean":
+                    customfields.add_boolean(key, list(value.items())[0][1])
+                elif list(value)[0] == "float":
+                    customfields.add_float(key, list(value.items())[0][1])
+                else:
+                    print(f'The value type "{value}" of the field {key} is not suported by the function.')
+
+        if isinstance(custom_fields, str):
+            try:
+                custom_fields = json.loads(custom_fields) if custom_fields else {}
+            except json.decoder.JSONDecodeError:
+                return "Custom fields need to be valid json"
+            
+        for key, value in custom_fields.items():
+            if type(value) == int:
+                customfields.add_integer(key, value)
+            elif type(value) == str:
+                customfields.add_string(key, value)
+            elif type(value) == bool:
+                customfields.add_boolean(key, value)
+            elif type(value) == float:
+                customfields.add_float(key, value)
+            else:
+                print(f'The value type "{value}" of the field {key} is not suported by the function.')
+
+        alert_customfields = customfields.build()
+        
+        # Prepare the fields to be updated
+        alert = Alert(
+            id=id,
+            type=alert_type,
+            source=alert_source,
+            sourceRef=alert_sourceRef,
+            title=alert_title,
+            description=alert_description,
+            tlp=alert_tlp,
+            pap=alert_pap,
+            severity=alert_severity,
+            tags=alert_tags,
+            customFields=alert_customfields,
+        )
+        
+        result = self.thehive.update_alert(
+            alert_id=id,
+            alert=alert,
+            fields=[
+                "type",
+                "source",
+                "sourceRef",
+                "title",
+                "description",
+                "tlp",
+                "pap",
+                "severity",
+                "tags",
+                "customFields",
+            ],
+        )
+
+        return json.dumps(result.json(), indent=4, sort_keys=True)
+
     # Get TheHive Organisations
     def get_organisations(
         self,
