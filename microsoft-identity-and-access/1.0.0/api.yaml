@@ -49,6 +49,23 @@ actions:
   #      required: true
   #      schema:
   #        type: string
+  - name: get_user 
+    description: Deletes a user. Can be restored again within 30 days. Well used in conjunction after the logout user action
+    parameters:
+      - name: user_id 
+        description: The user ID to get 
+        multiline: false
+        example: "User email address or id"
+        required: true
+        schema:
+          type: string
+      - name: selected_fields 
+        description: Selected fields
+        multiline: false
+        example: "Selected fields to get"
+        required: false
+        schema:
+          type: string
   - name: delete_user 
     description: Deletes a user. Can be restored again within 30 days. Well used in conjunction after the logout user action
     parameters:

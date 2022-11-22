@@ -28,7 +28,7 @@ class AWSDynamoDB(AppBase):
             signature_version = "dynamodbv4",
             retries = {
                 'max_attempts': 10,
-                'mode': 'standard'
+                'mode': 'standard',
             },
         )
 

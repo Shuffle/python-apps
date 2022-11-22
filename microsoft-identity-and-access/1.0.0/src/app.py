@@ -153,6 +153,22 @@ class MsIdentityAccess(AppBase):
 
         return {"success": True, "reason": "Stopped all active sessions and reset their password."}
 
+    def get_user(self, tenant_id, client_id, client_secret, user_id, selected_fields=""):
+        graph_url = "https://graph.microsoft.com"
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
+
+        graph_url = "https://graph.microsoft.com/v1.0/users?$filter=id eq '%s'" % user_id
+        if len(selected_fields) > 0:
+            graph_url += "&$select=%s" % selected_fields
+
+        ret = session.get(graph_url)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code}
 
     def list_users(self, tenant_id, client_id, client_secret):
         graph_url = "https://graph.microsoft.com"
