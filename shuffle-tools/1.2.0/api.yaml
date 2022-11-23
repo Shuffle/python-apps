@@ -25,11 +25,6 @@ actions:
     returns:
       schema:
         type: string
-  - name: router
-    description: Reroutes information between different nodes
-    returns:
-      schema:
-        type: string
   - name: check_cache_contains 
     description: Checks Shuffle cache whether a user-provided key contains a value. Returns ALL the values previously appended.
     parameters:
