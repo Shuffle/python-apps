@@ -565,9 +565,13 @@ class Tools(AppBase):
     def filter_list(self, input_list, field, check, value, opposite):
         self.logger.info(f"\nRunning function with list {input_list}")
 
+        # Remove hashtags on the fly
+        # E.g. #.fieldname or .#.fieldname
+
         flip = False
         if str(opposite).lower() == "true":
             flip = True
+
 
         try:
             #input_list = eval(input_list)  # nosec
@@ -589,6 +593,9 @@ class Tools(AppBase):
             }
 
             input_list = [input_list]
+
+        if str(value).lower() == "null":
+            value = "none"
 
         self.logger.info(f"\nRunning with check \"%s\" on list of length %d\n" % (check, len(input_list)))
         found_items = []

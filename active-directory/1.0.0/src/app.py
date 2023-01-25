@@ -133,16 +133,17 @@ class ActiveDirectory(AppBase):
 
             result = json.loads(c.response_to_json())
             if len(result["entries"]) == 0:
-                return {
+                return json.dumps({
                     "success": False,
                     "result": result, 
                     "reason": "No user found for %s" % samaccountname,
-                }
+                })
+
         except Exception as e:
-            return {
+            return json.dumps({
                 "success": False,
                 "reason": "Failed to get users in user attributes: %s" % e,
-            }
+            })
 
 
         result = result["entries"][0]

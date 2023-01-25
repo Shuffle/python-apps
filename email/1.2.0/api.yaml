@@ -183,8 +183,8 @@ actions:
         description: Include raw body in email export
         multiline: false
         options:
-          - "false"
           - "true"
+          - "false"
         required: true
         schema:
           type: bool

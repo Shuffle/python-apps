@@ -23,7 +23,7 @@ Get-ADDomain
 3. Find the response from "UsersContainer" and use this for Base DN and Search Base
 
 ## Typical issues
-- InvalidCredentials: This happens when the credentials are wrong. 
+- InvalidCredentials: This happens when the credentials are wrong. See #authentication to understand if your format for your username/password is correct.
 
 ## Features
 get user attributes -- done
