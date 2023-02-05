@@ -76,13 +76,13 @@ class HarfangLabEDR(AppBase):
         except Exception as e:
             return f'Failed to unisolate endpoint: %s' % (str(e))
 
-    def run_job(self, base_url, api_key, verify_certificate, http_proxy, https_proxy, job_name, agent_id, job_timeout):
+    def run_job(self, base_url, api_key, verify_certificate, http_proxy, https_proxy, job_name, agent_id, job_title, job_description, job_timeout):
         if not job_timeout or job_timeout == '':
             job_timeout = '600'
         conn = HarfangLabConnector(base_url, api_key, verify_certificate, http_proxy, https_proxy, self.logger)
 
         try:
-            return conn.run_job(job_name, agent_id, int(job_timeout))
+            return conn.run_job(job_name, agent_id, job_title, job_description, int(job_timeout))
         except Exception as e:
             return f'Failed to run job: %s' % (str(e))
 

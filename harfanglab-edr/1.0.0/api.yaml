@@ -6,9 +6,9 @@ contact_info:
   url: https://harfanglab.io
   email: support@harfanglab.fr
 tags:
-  - Testing 
+  - Testing
 categories:
-  - Other 
+  - Other
 authentication:
   required: true
   parameters:
@@ -95,7 +95,7 @@ actions:
       schema:
         type: string
   - name: unisolate_endpoint
-    description: Isolate an endpoint
+    description: Reconnect an endpoint
     parameters:
       - name: base_url
         description: HarfangLab EDR Manager's URL
@@ -207,7 +207,6 @@ actions:
           - getArtifactPrefetch
           - getArtifactAll
           - getArtifactRamdump
-
         schema:
           type: string
       - name: agent_id
@@ -215,6 +214,20 @@ actions:
         required: true
         multiline: false
         example: 'xyzawxkjnsdkfjnsdf'
+        schema:
+          type: string
+      - name: job_title
+        description: Job title
+        required: false
+        multiline: false
+        example: 'Job title'
+        schema:
+          type: string
+      - name: job_description
+        description: Job description
+        required: false
+        multiline: true
+        example: 'Job description'
         schema:
           type: string
       - name: job_timeout
@@ -538,7 +551,7 @@ actions:
         type: string
 
   - name: telemetry_search_destination_ip
-    description: Search an IP in HarfangLab EDR's telemetry
+    description: Search an IP as a destination in HarfangLab EDR's telemetry
     parameters:
       - name: base_url
         description: HarfangLab EDR Manager's URL
@@ -594,7 +607,7 @@ actions:
         type: string
 
   - name: telemetry_search_source_ip
-    description: Search an IP in HarfangLab EDR's telemetry
+    description: Search an IP as a source in HarfangLab EDR's telemetry
     parameters:
       - name: base_url
         description: HarfangLab EDR Manager's URL
@@ -694,70 +707,6 @@ actions:
         example: ''
         schema:
           type: string
-    returns:
-      schema:
-        type: string
-
-  - name: telemetry_search_iocs
-    description: Search multiple IOCs in HarfangLab EDR's telemetry
-    parameters:
-      - name: base_url
-        description: HarfangLab EDR Manager's URL
-        required: true
-        multiline: false
-        example: 'https://hurukai:8443/'
-        schema:
-          type: string
-      - name: api_key
-        description: HarfangLab EDR's API Key
-        required: true
-        multiline: false
-        example: 'xyzawxkjnsdkfjnsdf'
-        schema:
-          type: string
-      - name: verify_certificate
-        description: Certificate verification
-        required: true
-        example: 'true'
-        options:
-          - false
-          - true
-        schema:
-          type: string
-      - name: http_proxy
-        description: HTTP proxy
-        required: false
-        example: 'http://my-proxy:3128'
-        schema:
-          type: string
-      - name: https_proxy
-        description: HTTPS proxy
-        required: false
-        example: 'http://my-proxy:3128'
-        schema:
-          type: string
-      - name: iocs
-        description: List of IOCs (each IOC must have a type and a value field).
-        required: true
-        multiline: false
-        example: '[{"type": "md5", "value": "..."}, {...}]'
-        schema:
-          type: string
-      - name: limit
-        description: Maximum number of items to collect from telemetry searches
-        required: false
-        multiline: false
-        example: '10'
-        schema:
-          type: string
-      - name: search_types
-        description: List of search types, comma-separated
-        required: true
-        multiline: false
-        example: 'searchHash, searchDestinationIP, searchSourceIP, searchDriverByHash...'
-        schema:
-          type: string
-
     returns:
       schema:
         type: string

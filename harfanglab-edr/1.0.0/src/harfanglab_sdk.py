@@ -1196,13 +1196,13 @@ class HarfangLabConnector:
 
        :type ostype: ``str``
        :param ostype: The agent platform ("windows", "linux", "macos")
-       
+
        :type status: ``str``
        :param status: The agent status ("online", "offline")
-       
+
        :type offset: ``Integer``
-       :param offset: The search offset 
-       
+       :param offset: The search offset
+
        :type limit: ``Integer``
        :param limit: The search total number of records to fetch per call
 
@@ -1445,7 +1445,7 @@ class HarfangLabConnector:
         return results
 
 
-    def run_job(self, job_name, agent_id, job_timeout = 600, format = 'markdown', request_api_endpoint = None):
+    def run_job(self, job_name, agent_id, job_title = None, job_description = None, job_timeout = 600, format = 'markdown', request_api_endpoint = None):
         """
            Run a HarfangLab job and returns a markdown table with the results
 
@@ -1454,6 +1454,12 @@ class HarfangLabConnector:
 
            :type agent_id: ``str``
            :param agent_id: The agent identifier to run the job on
+
+           :type job_title: ``str``
+           :param job_title: The job title
+
+           :type job_description: ``str``
+           :param job_description: The job description
 
            :type job_timeout: ``int``
            :param job_timeout: The job timeout (in seconds)
@@ -1493,6 +1499,8 @@ class HarfangLabConnector:
         url = f'{self.base_url}{api_endpoint}'
 
         data = {
+            'title': job_title,
+            'description': job_description,
             'targets': {'agents': [agent_id]},
             'actions': [
                 {
