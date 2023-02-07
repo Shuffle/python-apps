@@ -28,6 +28,8 @@ class HarfangLabEDR(AppBase):
         conn = HarfangLabConnector(base_url, api_key, verify_certificate, http_proxy, https_proxy, self.logger)
         try:
 
+            excluded_rules = None
+
             last_fetch = None
 
             if only_new_alerts == 'true':

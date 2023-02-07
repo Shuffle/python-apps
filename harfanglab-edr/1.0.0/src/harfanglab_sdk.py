@@ -1065,7 +1065,10 @@ class HarfangLabConnector:
             excluded_rules = [x.lower() for x in exclude_rules]
 
         if first_fetch:
-            days = int(first_fetch)
+            try:
+                days = int(first_fetch)
+            except Exception as e:
+                days = 0
 
         first_fetch_time = int(datetime.timestamp(
             datetime.now() - timedelta(days=days)) * 1000000)
@@ -1074,7 +1077,10 @@ class HarfangLabConnector:
             min_severity = HarfangLabConnector.SEVERITIES[0]
 
         if max_fetch:
-            max_results = int(max_fetch)
+            try:
+                max_results = int(max_fetch)
+            except Exception as e:
+                max_results = None
 
         severity = ','.join(HarfangLabConnector.SEVERITIES[HarfangLabConnector.SEVERITIES.index(min_severity):]).lower()
 
@@ -1083,7 +1089,10 @@ class HarfangLabConnector:
             last_fetch = first_fetch_time
         else:
             # otherwise use the stored last fetch
-            last_fetch = int(last_fetch)
+            try:
+                last_fetch = int(last_fetch)
+            except Exception as e:
+                last_fetch = first_fetch_time
 
         if alert_status == 'ACTIVE':
             status = ['new', 'probable_false_positive', 'investigating']
@@ -1098,7 +1107,11 @@ class HarfangLabConnector:
         total_number_of_alerts = 0
 
         date_min = datetime.fromtimestamp(latest_created_time_us / 1000000)
-        date_max = datetime.fromtimestamp((datetime.timestamp(datetime.now() - timedelta(seconds=int(delay)))))
+        try:
+            delay = int(delay)
+        except Exceptions as e:
+            delay = 0
+        date_max = datetime.fromtimestamp(datetime.timestamp(datetime.now() - timedelta(seconds=int(delay))))
 
         cursor_min = date_min
         cursor_max = date_max
