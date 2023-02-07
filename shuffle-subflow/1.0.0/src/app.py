@@ -24,16 +24,19 @@ class Subflow(AppBase):
         """
         super().__init__(redis, logger, console_logger)
 
+    # Should run user input
     #def run_userinput(self, sms, email, subflow, argument):
     #    url = "%s/api/v1/workflows/%s/execute" % (self.url, workflow)
 
     #    if len(sms) > 0:
 
-    def run_subflow(self, user_apikey, workflow, argument, source_workflow="", source_execution="", source_node="", source_auth="", startnode=""):
+    def run_subflow(self, user_apikey, workflow, argument, source_workflow="", source_execution="", source_node="", source_auth="", startnode="", backend_url=""):
         #print("STARTNODE: %s" % startnode)
         url = "%s/api/v1/workflows/%s/execute" % (self.url, workflow)
 
-        params = {}
+        params = {
+            "User-Agent": "Subflow 1.0.0"
+        }
         if len(str(source_workflow)) > 0:
             params["source_workflow"] = source_workflow
         else:
@@ -58,6 +61,11 @@ class Subflow(AppBase):
             params["start"] = startnode 
         else:
             print("No startnode")
+
+        if len(str(backend_url)) > 0:
+            url = "%s/api/v1/workflows/%s/execute" % (backend_url, workflow)
+            print("[INFO] Changed URL to %s for this execution" % url)
+        
 
         headers = {
             "Authorization": "Bearer %s" % user_apikey,

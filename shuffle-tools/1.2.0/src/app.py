@@ -594,7 +594,7 @@ class Tools(AppBase):
 
             input_list = [input_list]
 
-        if str(value).lower() == "null":
+        if str(value).lower() == "null" or str(value).lower() == "none":
             value = "none"
 
         self.logger.info(f"\nRunning with check \"%s\" on list of length %d\n" % (check, len(input_list)))

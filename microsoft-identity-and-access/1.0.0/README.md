@@ -1,7 +1,9 @@
 ## Microsoft Identity and Access
 - An app to interact with Active Directory in Azure.
 
-## How to register app in Active Directory on Azure portal ?
+**PS: If you want to Reset a password in Azure AD, please use the "Azure AD Delegated" app, and use ONLY delegated permissions for this.** 
+
+## How to register app in Active Directory on Azure portal?
 
 ### Step 1: Go to the Azure portal
 
