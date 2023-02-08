@@ -15,6 +15,8 @@ from io import StringIO
 from contextlib import redirect_stdout
 from liquid import Liquid
 import liquid
+import random
+import string
 
 import xmltodict
 from json2xml import json2xml
@@ -2377,6 +2379,29 @@ class Tools(AppBase):
             "parsed": parsed_data,
             "changed_fields": important_fields,
         }
+
+    def generate_random_string(length=16, special_characters=True):
+        try:
+            length = int(length)
+        except:
+            return {
+                "success": False,
+                "error": "Length needs to be a whole number",
+            }
+
+        # get random password pf length 8 with letters, digits, and symbols
+        characters = string.ascii_letters + string.digits + string.punctuation
+        if str(special_characters).lower() == "false":
+            characters = string.ascii_letters + string.digits + string.punctuation
+
+        password = ''.join(random.choice(characters) for i in range(length))
+
+        return {
+            "success": True,
+            "password": password,
+        }
+
+
 
 
 if __name__ == "__main__":
