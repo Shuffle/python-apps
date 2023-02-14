@@ -1109,7 +1109,7 @@ class HarfangLabConnector:
         date_min = datetime.fromtimestamp(latest_created_time_us / 1000000)
         try:
             delay = int(delay)
-        except Exceptions as e:
+        except Exception as e:
             delay = 0
         date_max = datetime.fromtimestamp(datetime.timestamp(datetime.now() - timedelta(seconds=int(delay))))
 
