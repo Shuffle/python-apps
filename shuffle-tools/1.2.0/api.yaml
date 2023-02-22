@@ -747,6 +747,41 @@ actions:
         example: "json_key"
         schema:
           type: string
+  - name: merge_json_objects
+    description: Merges two lists of same type AND length.
+    parameters:
+      - name: list_one
+        description: The first list
+        multiline: true
+        example: "{'key': 'value'}"
+        required: true
+        schema:
+          type: string
+      - name: list_two
+        description: The second list to use
+        multiline: true
+        required: true
+        example: "{'key2': 'value2'}"
+        schema:
+          type: string
+      - name: set_field
+        description: If items in list 2 are strings, but first is JSON, sets the values to the specified key. Defaults to key "new_shuffle_key"
+        required: false
+        example: "json_key"
+        schema:
+          type: string
+      - name: sort_key_list_one
+        description: Sort by this key before using list one for merging
+        required: false
+        example: "json_key"
+        schema:
+          type: string
+      - name: sort_key_list_two
+        description: Sort by this key before using list two for merging
+        required: false
+        example: "json_key"
+        schema:
+          type: string
   - name: diff_lists
     description: Diffs two lists of strings or integers and finds what's missing
     parameters:

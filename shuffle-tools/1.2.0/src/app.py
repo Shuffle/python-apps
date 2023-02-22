@@ -1133,6 +1133,7 @@ class Tools(AppBase):
                                 filename = os.path.basename(member)
                                 if not filename:
                                     continue
+
                                 source = z_file.open(member)
                                 to_be_uploaded.append(
                                     {"filename": source.name, "data": source.read()}
@@ -1156,6 +1157,10 @@ class Tools(AppBase):
                         ) as z_file:
                             for member in z_file.getnames():
                                 member_files = z_file.extractfile(member)
+
+                                if not member_files:
+                                    continue
+
                                 to_be_uploaded.append(
                                     {
                                         "filename": member,
@@ -1174,18 +1179,22 @@ class Tools(AppBase):
                         )
                 elif fileformat.strip().lower() == "tar.gz":
                     try:
-                        with tarfile.open(
-                            os.path.join(tmpdirname, "archive"), mode="r:gz"
-                        ) as z_file:
+                        with tarfile.open(os.path.join(tmpdirname, "archive"), mode="r:gz") as z_file:
                             for member in z_file.getnames():
                                 member_files = z_file.extractfile(member)
+
+                                if not member_files:
+                                    continue
+
                                 to_be_uploaded.append(
                                     {
                                         "filename": member,
                                         "data": member_files.read(),
                                     }
                                 )
+
                             return_data["success"] = True
+
                     except Exception as e:
                         return_data["files"].append(
                             {
@@ -1436,6 +1445,7 @@ class Tools(AppBase):
             "diff": newdiff,
         }
 
+
     def merge_lists(self, list_one, list_two, set_field="", sort_key_list_one="", sort_key_list_two=""):
         if isinstance(list_one, str):
             try:
@@ -1450,7 +1460,13 @@ class Tools(AppBase):
                 self.logger.info("Failed to parse list2 as json: %s" % e)
 
         if not isinstance(list_one, list) or not isinstance(list_two, list):
-            return {"success": False, "message": "Input lists need to be valid JSON lists."}
+            if isinstance(list_one, dict) and isinstance(list_two, dict):
+                for key, value in list_two.items():
+                    list_one[key] = value
+            
+                return list_one
+
+            return {"success": False, "message": "Both input lists need to be valid JSON lists."}
 
         if len(list_one) != len(list_two):
             return {"success": False, "message": "Lists length must be the same. %d vs %d" % (len(list_one), len(list_two))}
@@ -1498,6 +1514,9 @@ class Tools(AppBase):
             }
 
         return list_one
+
+    def merge_json_objects(self, list_one, list_two, set_field="", sort_key_list_one="", sort_key_list_two=""):
+        self.merge_lists(self, list_one, list_two, set_field="", sort_key_list_one="", sort_key_list_two="")
 
     def fix_json(self, json_data):
         try:

@@ -25,18 +25,78 @@ class Subflow(AppBase):
         super().__init__(redis, logger, console_logger)
 
     # Should run user input
-    #def run_userinput(self, sms, email, subflow, argument):
-    #    url = "%s/api/v1/workflows/%s/execute" % (self.url, workflow)
+    def run_userinput(self, user_apikey, sms="", email="", subflow="", information="", startnode="", backend_url=""):
+        #url = "%s/api/v1/workflows/%s/execute" % (self.url, workflow)
 
-    #    if len(sms) > 0:
+        headers = {
+            "Authorization": "Bearer %s" % user_apikey,
+            "User-Agent": "Shuffle Userinput 1.0.0"
+        }
+
+        result = {
+            "success": True,
+            "source": "userinput",
+            "reason": "Userinput data sent and workflow paused. Waiting for user input before continuing workflow."
+        }
+
+        url = self.url
+        if len(str(backend_url)) > 0:
+            url = "%s" % (backend_url)
+
+        if len(email):
+            jsondata = {
+                "targets": [],
+                "body": information,
+                "subject": "User input required",
+                "type": "User input",
+                "start": startnode,
+                "workflow_id": self.full_execution["workflow"]["id"],
+                "reference_execution": self.full_execution["execution_id"],
+            }
+
+            for item in email.split(","):
+                jsondata["targets"].append(item.strip())
+
+            print("Should run email with targets: %s", jsondata["targets"])
+
+            ret = requests.post("%s/api/v1/functions/sendmail" % url, json=jsondata, headers=headers)
+            if ret.status_code != 200:
+                print("Failed sending email. Data: %s" % ret.text)
+
+        if len(sms) > 0:
+            print("Should run SMS: %s", sms)
+
+            jsondata = {
+                "numbers": [],
+                "body": information,
+                "type": "User input",
+                "start": startnode,
+                "workflow_id": self.full_execution["workflow"]["id"],
+                "reference_execution": self.full_execution["execution_id"],
+            }
+
+            for item in sms.split(","):
+                jsondata["numbers"].append(item.strip())
+
+            print("Should send sms with targets: %s", jsondata["numbers"])
+
+            ret = requests.post("%s/api/v1/functions/sendsms" % url, json=jsondata, headers=headers)
+            if ret.status_code != 200:
+                print("Failed sending email. Data: %s" % ret.text)
+
+        if len(subflow):
+            print("Should run subflow: %s", subflow) 
+
+        if len(information):
+            print("Should run arg: %s", information)
+
+        return json.dumps(result)
 
     def run_subflow(self, user_apikey, workflow, argument, source_workflow="", source_execution="", source_node="", source_auth="", startnode="", backend_url=""):
         #print("STARTNODE: %s" % startnode)
         url = "%s/api/v1/workflows/%s/execute" % (self.url, workflow)
 
-        params = {
-            "User-Agent": "Subflow 1.0.0"
-        }
+        params = {}
         if len(str(source_workflow)) > 0:
             params["source_workflow"] = source_workflow
         else:
@@ -66,9 +126,9 @@ class Subflow(AppBase):
             url = "%s/api/v1/workflows/%s/execute" % (backend_url, workflow)
             print("[INFO] Changed URL to %s for this execution" % url)
         
-
         headers = {
             "Authorization": "Bearer %s" % user_apikey,
+            "User-Agent": "Shuffle Subflow 1.0.0"
         }
 
         if len(str(argument)) == 0:
