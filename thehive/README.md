@@ -2,7 +2,7 @@
 
 ## Configuration
 
-![conf](conf.png)
+![conf](https://github.com/Shuffle/python-apps/blob/master/thehive/conf.png?raw=true)
 
 ### Thehive3
 - Leave **Organisation** empty
