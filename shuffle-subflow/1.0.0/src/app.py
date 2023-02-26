@@ -43,6 +43,9 @@ class Subflow(AppBase):
         if len(str(backend_url)) > 0:
             url = "%s" % (backend_url)
 
+        if len(information):
+            print("Should run arg: %s", information)
+
         if len(email):
             jsondata = {
                 "targets": [],
@@ -93,8 +96,10 @@ class Subflow(AppBase):
         if len(subflow):
             print("Should run subflow: %s", subflow) 
 
-        if len(information):
-            print("Should run arg: %s", information)
+            # Missing startnode (user input trigger)
+            ret = self.run_subflow(self, user_apikey, subflow, information, source_workflow=self.full_execution["workflow"]["id"], source_execution=self.full_execution["execution_id"], source_auth=self.full_execution["authorization"], startnode=startnode, backend_url=backend_url)
+            result["subflow"] = ret 
+
 
         return json.dumps(result)
 
