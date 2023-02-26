@@ -62,6 +62,9 @@ class Subflow(AppBase):
             ret = requests.post("%s/api/v1/functions/sendmail" % url, json=jsondata, headers=headers)
             if ret.status_code != 200:
                 print("Failed sending email. Data: %s" % ret.text)
+                result["email"] = False 
+            else:
+                result["email"] = True
 
         if len(sms) > 0:
             print("Should run SMS: %s", sms)
@@ -83,6 +86,9 @@ class Subflow(AppBase):
             ret = requests.post("%s/api/v1/functions/sendsms" % url, json=jsondata, headers=headers)
             if ret.status_code != 200:
                 print("Failed sending email. Data: %s" % ret.text)
+                result["sms"] = False 
+            else:
+                result["sms"] = True
 
         if len(subflow):
             print("Should run subflow: %s", subflow) 

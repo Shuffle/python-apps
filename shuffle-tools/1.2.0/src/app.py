@@ -102,6 +102,9 @@ class Tools(AppBase):
         })
 
     def parse_list_internal(self, input_list):
+        if isinstance(input_list, list):
+            input_list = ",".join(input_list)
+
         try:
             input_list = json.loads(input_list)
             if isinstance(input_list, list):
@@ -564,6 +567,20 @@ class Tools(AppBase):
 
         return item
 
+    # Check if wildcardstring is in all_ips and support * as wildcard
+    def check_wildcard(self, wildcardstring, matching_string):
+        wildcardstring = str(wildcardstring.lower())
+        if wildcardstring in str(matching_string).lower():
+            return True
+        else:
+            wildcardstring = wildcardstring.replace(".", "\.")
+            wildcardstring = wildcardstring.replace("*", ".*")
+
+            if re.match(wildcardstring, str(matching_string).lower()):
+                return True
+
+        return False
+
     def filter_list(self, input_list, field, check, value, opposite):
         self.logger.info(f"\nRunning function with list {input_list}")
 
@@ -573,7 +590,6 @@ class Tools(AppBase):
         flip = False
         if str(opposite).lower() == "true":
             flip = True
-
 
         try:
             #input_list = eval(input_list)  # nosec
@@ -632,15 +648,9 @@ class Tools(AppBase):
 
                     if str(tmp).lower() == str(value).lower():
                         self.logger.info("APPENDED BECAUSE %s %s %s" % (field, check, value))
-                        if not flip:
-                            new_list.append(item)
-                        else:
-                            failed_list.append(item)
+                        new_list.append(item)
                     else:
-                        if flip:
-                            new_list.append(item)
-                        else:
-                            failed_list.append(item)
+                        failed_list.append(item)
 
                 elif check == "equals any of":
                     self.logger.info("Inside equals any of")
@@ -667,103 +677,52 @@ class Tools(AppBase):
 
                 # IS EMPTY FOR STR OR LISTS
                 elif check == "is empty":
-                    if tmp == "[]":
+                    if str(tmp) == "[]":
                         tmp = []
 
-                    if type(tmp) == list and len(tmp) == 0 and not flip:
+                    if str(tmp) == "{}":
+                        tmp = []
+
+                    if type(tmp) == list and len(tmp) == 0:
                         new_list.append(item)
-                    elif type(tmp) == list and len(tmp) > 0 and flip:
-                        new_list.append(item)
-                    elif type(tmp) == str and not tmp and not flip:
-                        new_list.append(item)
-                    elif type(tmp) == str and tmp and flip:
+                    elif type(tmp) == str and not tmp:
                         new_list.append(item)
                     else:
                         failed_list.append(item)
 
                 # STARTS WITH = FOR STR OR [0] FOR LIST
                 elif check == "starts with":
-                    if type(tmp) == list and tmp[0] == value and not flip:
+                    if type(tmp) == list and tmp[0] == value:
                         new_list.append(item)
-                    elif type(tmp) == list and tmp[0] != value and flip:
-                        new_list.append(item)
-                    elif type(tmp) == str and tmp.startswith(value) and not flip:
-                        new_list.append(item)
-                    elif type(tmp) == str and not tmp.startswith(value) and flip:
+                    elif type(tmp) == str and tmp.startswith(value):
                         new_list.append(item)
                     else:
                         failed_list.append(item)
 
                 # ENDS WITH = FOR STR OR [-1] FOR LIST
                 elif check == "ends with":
-                    if type(tmp) == list and tmp[-1] == value and not flip:
+                    if type(tmp) == list and tmp[-1] == value:
                         new_list.append(item)
-                    elif type(tmp) == list and tmp[-1] != value and flip:
-                        new_list.append(item)
-                    elif type(tmp) == str and tmp.endswith(value) and not flip:
-                        new_list.append(item)
-                    elif type(tmp) == str and not tmp.endswith(value) and flip:
+                    elif type(tmp) == str and tmp.endswith(value):
                         new_list.append(item)
                     else:
                         failed_list.append(item)
 
                 # CONTAINS FIND FOR LIST AND IN FOR STR
                 elif check == "contains":
-                    if type(tmp) == list and value.lower() in tmp and not flip:
-                        new_list.append(item)
-                    elif type(tmp) == list and value.lower() not in tmp and flip:
-                        new_list.append(item)
-                    elif (
-                        type(tmp) == str
-                        and tmp.lower().find(value.lower()) != -1
-                        and not flip
-                    ):
-                        new_list.append(item)
-                    elif (
-                        type(tmp) == str
-                        and tmp.lower().find(value.lower()) == -1
-                        and flip
-                    ):
+                    #if str(value).lower() in str(tmp).lower():
+                    if str(value).lower() in str(tmp).lower() or self.check_wildcard(value, tmp): 
                         new_list.append(item)
                     else:
                         failed_list.append(item)
+
                 elif check == "contains any of":
-                    self.logger.info("Inside contains any of")
+                    value = self.parse_list_internal(value)
                     checklist = value.split(",")
-                    self.logger.info("Checklist and tmp: %s - %s" % (checklist, tmp))
+                    self.logger.info("CHECKLIST: %s. Value: %s" % (checklist, tmp))
                     found = False
-                    for subcheck in checklist:
-                        subcheck = subcheck.strip().lower()
-                        #ext.lower().strip() == value.lower().strip()
-                        if type(tmp) == list and subcheck in tmp and not flip:
-                            new_list.append(item)
-                            found = True
-                            break
-                        elif type(tmp) == list and subcheck in tmp and flip:
-                            failed_list.append(item)
-                            found = True
-                            break
-                        elif type(tmp) == list and subcheck not in tmp and not flip:
-                            new_list.append(item)
-                            found = True
-                            break
-                        elif type(tmp) == list and subcheck not in tmp and flip:
-                            failed_list.append(item)
-                            found = True
-                            break
-                        elif (type(tmp) == str and tmp.lower().find(subcheck) != -1 and not flip):
-                            new_list.append(item)
-                            found = True
-                            break
-                        elif (type(tmp) == str and tmp.lower().find(subcheck) != -1 and flip):
-                            failed_list.append(item)
-                            found = True
-                            break
-                        elif (type(tmp) == str and tmp.lower().find(subcheck) == -1 and not flip):
-                            failed_list.append(item)
-                            found = True
-                            break
-                        elif (type(tmp) == str and tmp.lower().find(subcheck) == -1 and flip):
+                    for checker in checklist:
+                        if str(checker).lower() in str(tmp).lower() or self.check_wildcard(checker, tmp): 
                             new_list.append(item)
                             found = True
                             break
@@ -774,58 +733,20 @@ class Tools(AppBase):
                 # CONTAINS FIND FOR LIST AND IN FOR STR
                 elif check == "field is unique":
                     #self.logger.info("FOUND: %s"
-                    if tmp.lower() not in found_items and not flip:
-                        new_list.append(item)
-                        found_items.append(tmp.lower())
-                    elif tmp.lower() in found_items and flip:
+                    if tmp.lower() not in found_items:
                         new_list.append(item)
                         found_items.append(tmp.lower())
                     else:
                         failed_list.append(item)
 
-                    #tmp = json.dumps(tmp)
-
-                    #for item in new_list:
-                    #if type(tmp) == list and value.lower() in tmp and not flip:
-                    #    new_list.append(item)
-                    #    found = True
-                    #    break
-                    #elif type(tmp) == list and value.lower() not in tmp and flip:
-                    #    new_list.append(item)
-                    #    found = True
-                    #    break
-
                 # CONTAINS FIND FOR LIST AND IN FOR STR
-                elif check == "contains any of":
-                    value = self.parse_list_internal(value)
-                    checklist = value.split(",")
-                    tmp = tmp
-                    self.logger.info("CHECKLIST: %s. Value: %s" % (checklist, tmp))
-                    found = False
-                    for value in checklist:
-                        if value in tmp and not flip:
-                            new_list.append(item)
-                            found = True
-                            break
-                        elif value not in tmp and flip:
-                            new_list.append(item)
-                            found = True
-                            break
-
-                    if not found:
-                        failed_list.append(item)
-
                 elif check == "larger than":
-                    if int(tmp) > int(value) and not flip:
-                        new_list.append(item)
-                    elif int(tmp) > int(value) and flip:
+                    if int(tmp) > int(value):
                         new_list.append(item)
                     else:
                         failed_list.append(item)
                 elif check == "less than":
-                    if int(tmp) < int(value) and not flip:
-                        new_list.append(item)
-                    elif int(tmp) < int(value) and flip:
+                    if int(tmp) < int(value):
                         new_list.append(item)
                     else:
                         failed_list.append(item)
@@ -852,12 +773,7 @@ class Tools(AppBase):
                         for file_id in tmp:
                             filedata = self.get_file(file_id)
                             _, ext = os.path.splitext(filedata["filename"])
-                            if (
-                                ext.lower().strip() == value.lower().strip()
-                                and not flip
-                            ):
-                                file_list.append(file_id)
-                            elif ext.lower().strip() != value.lower().strip() and flip:
+                            if (ext.lower().strip() == value.lower().strip()):
                                 file_list.append(file_id)
                             # else:
                             #    failed_list.append(file_id)
@@ -876,10 +792,8 @@ class Tools(AppBase):
                     elif type(tmp) == str:
                         filedata = self.get_file(tmp)
                         _, ext = os.path.splitext(filedata["filename"])
-                        if ext.lower().strip() == value.lower().strip() and not flip:
+                        if ext.lower().strip() == value.lower().strip():
                             new_list.append(item)
-                        elif ext.lower().strip() != value.lower().strip() and flip:
-                            new_list.append((item, ext))
                         else:
                             failed_list.append(item)
 
@@ -888,11 +802,10 @@ class Tools(AppBase):
                 failed_list.append(item)
             # return
 
-        if check == "equals any of" and flip:
+        if flip:
             tmplist = new_list
             new_list = failed_list
             failed_list = tmplist
-
 
         try:
             return json.dumps(
@@ -1108,7 +1021,7 @@ class Tools(AppBase):
 
                                 source = z_file.open(member)
                                 to_be_uploaded.append(
-                                    {"filename": source.name, "data": source.read()}
+                                    {"filename": source.name.split("/")[-1], "data": source.read()}
                                 )
 
                                 return_data["success"] = True
@@ -1136,7 +1049,7 @@ class Tools(AppBase):
 
                                 source = z_file.open(member)
                                 to_be_uploaded.append(
-                                    {"filename": source.name, "data": source.read()}
+                                    {"filename": source.name.split("/")[-1], "data": source.read()}
                                 )
 
                                 return_data["success"] = True
@@ -1163,7 +1076,7 @@ class Tools(AppBase):
 
                                 to_be_uploaded.append(
                                     {
-                                        "filename": member,
+                                        "filename": member.split("/")[-1],
                                         "data": member_files.read(),
                                     }
                                 )
@@ -1188,7 +1101,7 @@ class Tools(AppBase):
 
                                 to_be_uploaded.append(
                                     {
-                                        "filename": member,
+                                        "filename": member.split("/")[-1],
                                         "data": member_files.read(),
                                     }
                                 )
@@ -1217,7 +1130,7 @@ class Tools(AppBase):
                                 filename = filename.split("/")[-1]
                                 to_be_uploaded.append(
                                     {
-                                        "filename": item["filename"],
+                                        "filename": item["filename"].split("/")[-1],
                                         "data": source.read(),
                                     }
                                 )

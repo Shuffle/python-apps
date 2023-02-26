@@ -27,7 +27,7 @@ actions:
         description: Headers to use 
         multiline: true 
         required: false 
-        example: "Authorization: Bearer asd\nContent-Type: application/json"
+        example: "Content-Type: application/json"
         schema:
           type: string
       - name: username 
@@ -110,7 +110,7 @@ actions:
         description: Headers to use 
         multiline: true 
         required: false 
-        example: "Authorization: Bearer asd\nContent-Type: application/json"
+        example: "Content-Type: application/json"
         schema:
           type: string
       - name: username 
@@ -183,7 +183,7 @@ actions:
         description: Headers to use 
         multiline: true 
         required: false 
-        example: "Authorization: Bearer asd\nContent-Type: application/json"
+        example: "Content-Type: application/json"
         schema:
           type: string
       - name: username 
@@ -256,7 +256,7 @@ actions:
         description: Headers to use 
         multiline: true 
         required: false 
-        example: "Authorization: Bearer asd\nContent-Type: application/json"
+        example: "Content-Type: application/json"
         schema:
           type: string
       - name: username 
@@ -322,7 +322,7 @@ actions:
         description: Headers to use 
         multiline: true 
         required: false 
-        example: "Authorization: Bearer asd\nContent-Type: application/json"
+        example: "Content-Type: application/json"
         schema:
           type: string
       - name: username 
@@ -388,7 +388,7 @@ actions:
         description: Headers to use 
         multiline: true 
         required: false 
-        example: "Authorization: Bearer asd\nContent-Type: application/json"
+        example: "Content-Type: application/json"
         schema:
           type: string
       - name: username 
@@ -454,7 +454,7 @@ actions:
         description: Headers to use 
         multiline: true 
         required: false 
-        example: "Authorization: Bearer asd\nContent-Type: application/json"
+        example: "Content-Type: application/json"
         schema:
           type: string
       - name: username 
