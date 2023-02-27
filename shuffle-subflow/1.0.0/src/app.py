@@ -1,9 +1,5 @@
-import asyncio
-import time
-import random
 import json
 import requests
-import json
 
 from walkoff_app_sdk.app_base import AppBase
 
@@ -43,21 +39,30 @@ class Subflow(AppBase):
         if len(str(backend_url)) > 0:
             url = "%s" % (backend_url)
 
-        if len(information):
-            print("Should run arg: %s", information)
+        print("Found backend url: %s" % url)
+        #if len(information):
+        #    print("Should run arg: %s", information)
 
         if len(subflow):
-            print("Should run subflow: %s", subflow) 
+            #print("Should run subflow: %s", subflow) 
 
             # Missing startnode (user input trigger)
+            #print("Subflows to run from userinput: ", subflows)
+
             subflows = subflow.split(",")
-            print("Subflows to run from userinput: ", subflows)
             for item in subflows: 
                 # In case of URL being passed, and not just ID
                 if "/" in item:
                     item = item.split("/")[-1]
 
-                ret = self.run_subflow(user_apikey, item, information, source_workflow=self.full_execution["workflow"]["id"], source_execution=self.full_execution["execution_id"], source_auth=self.full_execution["authorization"], startnode=startnode, backend_url=backend_url)
+                argument = json.dumps({
+                    "information": information,
+                    "parent_workflow": self.full_execution["workflow"]["id"],
+                    "continue_url": "%s/api/v1/workflows/%s/execute?authorization=%s&reference_execution=%s&answer=true" % (url, item, user_apikey, self.full_execution["execution_id"]),
+                    "abort_url": "%s/api/v1/workflows/%s/execute?authorization=%s&reference_execution=%s&answer=true" % (url, item, user_apikey, self.full_execution["execution_id"]),
+                })
+
+                ret = self.run_subflow(user_apikey, item, argument, source_workflow=self.full_execution["workflow"]["id"], source_execution=self.full_execution["execution_id"], source_auth=self.full_execution["authorization"], startnode=startnode, backend_url=backend_url)
                 result["subflow"] = ret 
 
         if len(email):
