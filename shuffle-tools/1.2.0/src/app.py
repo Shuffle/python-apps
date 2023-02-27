@@ -57,7 +57,7 @@ class Tools(AppBase):
 
     def base64_conversion(self, string, operation):
         if operation == "encode":
-            encoded_bytes = base64.b64encode(string.encode("utf-8"))
+            encoded_bytes = base64.b64encode(str(string).encode("utf-8"))
             encoded_string = str(encoded_bytes, "utf-8")
             return encoded_string
 
