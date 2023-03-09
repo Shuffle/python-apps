@@ -21,18 +21,26 @@ class Subflow(AppBase):
         super().__init__(redis, logger, console_logger)
 
     # Should run user input
-    def run_userinput(self, user_apikey, sms="", email="", subflow="", information="", startnode="", backend_url=""):
+    def run_userinput(self, user_apikey, sms="", email="", subflow="", information="", startnode="", backend_url="", source_node=""):
         #url = "%s/api/v1/workflows/%s/execute" % (self.url, workflow)
 
         headers = {
             "Authorization": "Bearer %s" % user_apikey,
-            "User-Agent": "Shuffle Userinput 1.0.0"
+            "User-Agent": "Shuffle Userinput 1.1.0"
         }
 
         result = {
             "success": True,
             "source": "userinput",
-            "reason": "Userinput data sent and workflow paused. Waiting for user input before continuing workflow."
+            "reason": "Userinput data sent and workflow paused. Waiting for user input before continuing workflow.",
+            "information": information,
+            "click_info": {
+                "clicked": False,
+                "time": "",
+                "ip": "",
+                "user": "", 
+                "note": "",
+            }
         }
 
         url = self.url
@@ -50,20 +58,29 @@ class Subflow(AppBase):
             #print("Subflows to run from userinput: ", subflows)
 
             subflows = subflow.split(",")
+            frontend_url = url
+            if ":5001" in frontend_url:
+                print("Should change port to 3001.")
+
             for item in subflows: 
                 # In case of URL being passed, and not just ID
                 if "/" in item:
                     item = item.split("/")[-1]
 
+                # Subflow should be the subflow to run
+                # Workflow in the URL should be the source workflow
                 argument = json.dumps({
                     "information": information,
                     "parent_workflow": self.full_execution["workflow"]["id"],
-                    "continue_url": "%s/api/v1/workflows/%s/execute?authorization=%s&reference_execution=%s&answer=true" % (url, item, user_apikey, self.full_execution["execution_id"]),
-                    "abort_url": "%s/api/v1/workflows/%s/execute?authorization=%s&reference_execution=%s&answer=true" % (url, item, user_apikey, self.full_execution["execution_id"]),
+                    "frontend_continue": "%s/workflows/%s/run?authorization=%s&reference_execution=%s&answer=true" % (frontend_url, self.full_execution["workflow"]["id"], user_apikey, self.full_execution["execution_id"]),
+                    "frontend_abort": "%s/workflows/%s/run?authorization=%s&reference_execution=%s&answer=true" % (frontend_url, self.full_execution["workflow"]["id"], user_apikey, self.full_execution["execution_id"]),
+                    "api_continue": "%s/api/v1/workflows/%s/execute?authorization=%s&reference_execution=%s&answer=true" % (frontend_url, self.full_execution["workflow"]["id"], user_apikey, self.full_execution["execution_id"]),
+                    "api_abort": "%s/api/v1/workflows/%s/execute?authorization=%s&reference_execution=%s&answer=true" % (frontend_url, self.full_execution["workflow"]["id"], user_apikey, self.full_execution["execution_id"]),
                 })
 
-                ret = self.run_subflow(user_apikey, item, argument, source_workflow=self.full_execution["workflow"]["id"], source_execution=self.full_execution["execution_id"], source_auth=self.full_execution["authorization"], startnode=startnode, backend_url=backend_url)
+                ret = self.run_subflow(user_apikey, item, argument, source_workflow=self.full_execution["workflow"]["id"], source_execution=self.full_execution["execution_id"], source_auth=self.full_execution["authorization"], startnode=startnode, backend_url=backend_url, source_node=source_node)
                 result["subflow"] = ret 
+                result["subflow_url"] = "%s/workflows/%s" % (frontend_url, item)
 
         if len(email):
             jsondata = {
@@ -74,6 +91,7 @@ class Subflow(AppBase):
                 "start": startnode,
                 "workflow_id": self.full_execution["workflow"]["id"],
                 "reference_execution": self.full_execution["execution_id"],
+                "authorization": self.full_execution["authorization"],
             }
 
             for item in email.split(","):
@@ -98,6 +116,7 @@ class Subflow(AppBase):
                 "start": startnode,
                 "workflow_id": self.full_execution["workflow"]["id"],
                 "reference_execution": self.full_execution["execution_id"],
+                "authorization": self.full_execution["authorization"],
             }
 
             for item in sms.split(","):
@@ -152,7 +171,7 @@ class Subflow(AppBase):
         
         headers = {
             "Authorization": "Bearer %s" % user_apikey,
-            "User-Agent": "Shuffle Subflow 1.0.0"
+            "User-Agent": "Shuffle Subflow 1.1.0"
         }
 
         if len(str(argument)) == 0:
