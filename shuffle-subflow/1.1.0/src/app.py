@@ -8,7 +8,7 @@ class Subflow(AppBase):
     An example of a Walkoff App.
     Inherit from the AppBase class to have Redis, logging, and console logging set up behind the scenes.
     """
-    __version__ = "1.0.0"
+    __version__ = "1.1.0"
     app_name = "subflow"  # this needs to match "name" in api.yaml
 
     def __init__(self, redis, logger, console_logger=None):
@@ -61,6 +61,8 @@ class Subflow(AppBase):
             frontend_url = url
             if ":5001" in frontend_url:
                 print("Should change port to 3001.")
+            if "appspot.com" in frontend_url:
+                frontend_url = "https://shuffler.io"
 
             for item in subflows: 
                 # In case of URL being passed, and not just ID

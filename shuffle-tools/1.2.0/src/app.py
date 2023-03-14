@@ -2290,7 +2290,6 @@ class Tools(AppBase):
             json_input = json.loads(json_input, strict=False)
     
         input_synonyms = self.get_synonyms(input_type)
-    
         parsed_data, important_fields = self.run_key_recursion(json_input, input_synonyms)
     
         # Try base64 decoding and such too?
