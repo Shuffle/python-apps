@@ -265,6 +265,15 @@ actions:
     returns:
       schema:
         type: string
+  - name: analyze_headers 
+    description: 
+    parameters:
+      - name: headers 
+        description: Email headers in any format
+        required: true
+        multiline: true
+        schema:
+          type: string            
     returns:
       schema:
         type: string
