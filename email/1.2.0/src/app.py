@@ -438,10 +438,10 @@ class Email(AppBase):
 
     # Basic function to check headers in an email
     # Can be dumped in in pretty much any format
-    def analyze_headers(headers):
+    def analyze_headers(self, headers):
         # Raw
         if isinstance(headers, str):
-            headers = parse_email_headers(headers)
+            headers = self.parse_email_headers(headers)
             if isinstance(headers, str):
                 headers = json.loads(headers)
     
