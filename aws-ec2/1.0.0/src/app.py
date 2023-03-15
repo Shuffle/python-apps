@@ -62,6 +62,12 @@ class AWSEC2(AppBase):
 
         network_acl = self.ec2.NetworkAcl(NetworkAclId)
         return network_acl.entries
+    # Write your data inside this function
+    def get_nacls(self, access_key, secret_key, region):
+        self.ec2 = self.auth_ec2(access_key, secret_key, region)
+
+        network_acls = self.ec2.NetworkAcl()
+        return network_acls.Associations
 
     # Write your data inside this function
     def block_ip(self, access_key, secret_key, region, NetworkAclId, ip, direction):
