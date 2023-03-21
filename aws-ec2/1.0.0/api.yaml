@@ -64,13 +64,6 @@ actions:
       schema:
         type: string
 
-  - name: get_nacls 
-    description: Gets the rules for an ACLs
-    returns:
-    schema:
-      type: string
- 
- 
   - name: get_rules 
     description: Gets the rules for an ACL ID
     parameters:
