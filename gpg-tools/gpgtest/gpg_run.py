@@ -4,11 +4,11 @@ import zipfile
 import gnupg
 import os
 
-file_id = "file_b2586a47-19fb-449c-9f2b-d24fa16d874d"
+file_id = ""
 
 def get_file(value):
     url = "https://shuffler.io"
-    authorization = "fdf4da42-65d2-4fa5-8a22-8ed25c60ff0d"
+    authorization = ""
     full_execution = {
         "execution_id": "1234",
         "authorization": "",
