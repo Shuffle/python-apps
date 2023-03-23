@@ -82,14 +82,21 @@ def get_file(value):
     else:
         return returns
 
+def cleanup(file_id):
+    tmpdirname = f"/tmp/{file_id}"
+    if os.path.exists(tmpdirname):
+        os.remove(tmpdirname)
+
 def get_auth(file_id):
     item = get_file(file_id)
-    tmpdirname = "/tmp/%s" % file_id
-    if not os.path.exists(tmpdirname):
-        os.mkdir(tmpdirname)
+    tmpdirname = f"/tmp/{file_id}"
 
-    #with tempfile.TemporaryDirectory() as tmpdirname:
+    # Clean up all old stuff
+    if os.path.exists(tmpdirname):
+        os.remove(tmpdirname)
+
     # Get archive and save phisically
+    os.mkdir(tmpdirname)
     with open(os.path.join(tmpdirname, "archive"), "wb") as f:
         f.write(item["data"])
 
