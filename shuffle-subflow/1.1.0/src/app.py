@@ -75,9 +75,9 @@ class Subflow(AppBase):
                     "information": information,
                     "parent_workflow": self.full_execution["workflow"]["id"],
                     "frontend_continue": "%s/workflows/%s/run?authorization=%s&reference_execution=%s&answer=true" % (frontend_url, self.full_execution["workflow"]["id"], user_apikey, self.full_execution["execution_id"]),
-                    "frontend_abort": "%s/workflows/%s/run?authorization=%s&reference_execution=%s&answer=true" % (frontend_url, self.full_execution["workflow"]["id"], user_apikey, self.full_execution["execution_id"]),
+                    "frontend_abort": "%s/workflows/%s/run?authorization=%s&reference_execution=%s&answer=false" % (frontend_url, self.full_execution["workflow"]["id"], user_apikey, self.full_execution["execution_id"]),
                     "api_continue": "%s/api/v1/workflows/%s/execute?authorization=%s&reference_execution=%s&answer=true" % (frontend_url, self.full_execution["workflow"]["id"], user_apikey, self.full_execution["execution_id"]),
-                    "api_abort": "%s/api/v1/workflows/%s/execute?authorization=%s&reference_execution=%s&answer=true" % (frontend_url, self.full_execution["workflow"]["id"], user_apikey, self.full_execution["execution_id"]),
+                    "api_abort": "%s/api/v1/workflows/%s/execute?authorization=%s&reference_execution=%s&answer=false" % (frontend_url, self.full_execution["workflow"]["id"], user_apikey, self.full_execution["execution_id"]),
                 })
 
                 ret = self.run_subflow(user_apikey, item, argument, source_workflow=self.full_execution["workflow"]["id"], source_execution=self.full_execution["execution_id"], source_auth=self.full_execution["authorization"], startnode=startnode, backend_url=backend_url, source_node=source_node)
