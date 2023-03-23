@@ -4,11 +4,11 @@ import zipfile
 import gnupg
 import os
 
-file_id = ""
+file_id = "file_b2586a47-19fb-449c-9f2b-d24fa16d874d"
 
 def get_file(value):
     url = "https://shuffler.io"
-    authorization = ""
+    authorization = "fdf4da42-65d2-4fa5-8a22-8ed25c60ff0d"
     full_execution = {
         "execution_id": "1234",
         "authorization": "",
@@ -94,12 +94,26 @@ def get_auth(file_id):
         f.write(item["data"])
 
     # Grab files before, upload them later
+    gpgfound = False
     with zipfile.ZipFile(os.path.join(tmpdirname, "archive")) as z_file:
         print("Past zip extraction")
         for member in z_file.namelist():
+            print(member)
+            if member == ".gpg":
+                gpgfound = True 
+
             z_file.extract(member, tmpdirname)
 
-    gpg = gnupg.GPG(gnupghome=tmpdirname)
+    os.remove(os.path.join(tmpdirname, "archive"))
+
+    if gpgfound: 
+        tmpdirname = os.path.join(tmpdirname, ".gpg")
+
+    try:
+        gpg = gnupg.GPG(gnupghome=tmpdirname)
+    except TypeError:
+        gpg = gnupg.GPG(homedir=tmpdirname)
+
     return gpg
 
 get_auth(file_id)
