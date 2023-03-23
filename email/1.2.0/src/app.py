@@ -468,11 +468,17 @@ class Email(AppBase):
                     })
     
             headers = newheaders
+
     
         spf = False
         dkim = False
         dmarc = False
         spoofed = False
+
+        analyzed_headers = {
+            "success": True,
+        }
+
         for item in headers:
             if "name" in item:
                 item["key"] = item["name"]
@@ -501,21 +507,41 @@ class Email(AppBase):
             # Fix spoofed!
             if item["key"] == "from":
                 print("From: " + item["value"])
+
+                if "<" in item["value"]:
+                    item["value"] = item["value"].split("<")[1]
+
                 for subitem in headers:
                     if "name" in subitem:
                         subitem["key"] = subitem["name"]
+
+                    subitem["key"] = subitem["key"].lower()
     
                     if subitem["key"] == "reply-to":
-                        print("Reply-To: " + subitem["value"])
-                        break
-           
-        analyzed_headers = {
-            "success": True,
-            "spf": spf,
-            "dkim": dkim,
-            "dmarc": dmarc,
-            "spoofed": spoofed
-        }
+
+                        if "<" in subitem["value"]:
+                            subitem["value"] = subitem["value"].split("<")[1]
+
+                        if item["value"] != subitem["value"]:
+                            spoofed = True
+                            analyzed_headers["spoofed_reason"] = "Reply-To is different than From"
+                            break
+
+                    if subitem["key"] == "mail-reply-to":
+                        print("Reply-To: " + subitem["value"], item["value"])
+
+                        if "<" in subitem["value"]:
+                            subitem["value"] = subitem["value"].split("<")[1]
+
+                        if item["value"] != subitem["value"]:
+                            spoofed = True
+                            analyzed_headers["spoofed_reason"] = "Mail-Reply-To is different than From"
+                            break
+
+        analyzed_headers["spf"] = spf
+        analyzed_headers["dkim"] = dkim
+        analyzed_headers["dmarc"] = dmarc
+        analyzed_headers["spoofed"] = spoofed
     
         # Should be a dictionary
         return analyzed_headers 

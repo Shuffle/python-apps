@@ -79,9 +79,7 @@ class Gpg(AppBase):
             )
         )
 
-        gpg = gnupg.GPG(
-            gnupghome=os.path.join("/app/local/", gpg_home), gpgbinary="/usr/bin/gpg"
-        )
+        gpg = gnupg.GPG(gnupghome=os.path.join("/app/local/", gpg_home), gpgbinary="/usr/bin/gpg")
 
         with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
             with open(tmpfile.name, "wb") as f:

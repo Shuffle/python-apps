@@ -63,10 +63,16 @@ def analyze_headers(headers):
 
         headers = newheaders
 
+
     spf = False
     dkim = False
     dmarc = False
     spoofed = False
+
+    analyzed_headers = {
+        "success": True,
+    }
+
     for item in headers:
         if "name" in item:
             item["key"] = item["name"]
@@ -95,21 +101,41 @@ def analyze_headers(headers):
         # Fix spoofed!
         if item["key"] == "from":
             print("From: " + item["value"])
+
+            if "<" in item["value"]:
+                item["value"] = item["value"].split("<")[1]
+
             for subitem in headers:
                 if "name" in subitem:
                     subitem["key"] = subitem["name"]
 
+        
+                subitem["key"] = subitem["key"].lower()
+                print("Found: ", subitem["key"])
+
                 if subitem["key"] == "reply-to":
-                    print("Reply-To: " + subitem["value"])
-                    break
-       
-    analyzed_headers = {
-        "success": True,
-        "spf": spf,
-        "dkim": dkim,
-        "dmarc": dmarc,
-        "spoofed": spoofed
-    }
+                    if "<" in subitem["value"]:
+                        subitem["value"] = subitem["value"].split("<")[1]
+
+                    print("Reply-To: " + subitem["value"], item["value"])
+                    if item["value"] != subitem["value"]:
+                        spoofed = True
+                        analyzed_headers["spoofed_reason"] = "Reply-To is different than From"
+                        break
+
+                if subitem["key"] == "mail-reply-to":
+                    if "<" in subitem["value"]:
+                        subitem["value"] = subitem["value"].split("<")[1]
+
+                    if item["value"] != subitem["value"]:
+                        spoofed = True
+                        analyzed_headers["spoofed_reason"] = "Mail-Reply-To is different than From"
+                        break
+
+    analyzed_headers["spf"] = spf
+    analyzed_headers["dkim"] = dkim
+    analyzed_headers["dmarc"] = dmarc
+    analyzed_headers["spoofed"] = spoofed
 
     # Should be a dictionary
     return analyzed_headers 
@@ -119,14 +145,14 @@ with open("hdr.txt", "r") as tmp:
     data = json.loads(tmp.read())
     print(analyze_headers(data))
 
-print()
-
-with open("hdr2.txt", "r") as tmp:
-    data = json.loads(tmp.read())
-    print(analyze_headers(data))
-
-print()
-
-with open("hdr3.txt", "r") as tmp:
-    data = tmp.read()
-    print(analyze_headers(data))
+    print()
+#
+#with open("hdr2.txt", "r") as tmp:
+#    data = json.loads(tmp.read())
+#    print(analyze_headers(data))
+#
+#    print()
+#
+#with open("hdr3.txt", "r") as tmp:
+#    data = tmp.read()
+#    print(analyze_headers(data))

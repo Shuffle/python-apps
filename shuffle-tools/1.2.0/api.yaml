@@ -552,7 +552,7 @@ actions:
       schema:
         type: string
   - name: xml_json_convertor
-    description: Converts xml to json and vice versa
+    description: Converts xml or html to json and vice versa. 
     parameters:
       - name: convertto
         required: true
