@@ -14,5 +14,5 @@ The ZIP archive must contain the entire GnuPG Home Directory, named '.gnupg'
 Getting the ZIP's File ID:
 1. Create your public & Private key with `gpg --full-gen-key`
 2. A GPG Home Dir is created, under `~/.gnupg`
-2. Compress the GPH Home Dir `zip -r gpg.zip .gnupg/`
-3. Upload the ZIP file `gpg.zip` to Shuffle Files and obtain the FileID for the Zip file.
+3. Compress the GPH Home Dir `zip -r gpg.zip .gnupg/`
+4. Upload the ZIP file `gpg.zip` to Shuffle Files and obtain the FileID for the Zip file.
