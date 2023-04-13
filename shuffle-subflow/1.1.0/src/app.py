@@ -44,8 +44,11 @@ class Subflow(AppBase):
         }
 
         url = self.url
+        if len(self.base_url) > 0:
+            url = self.base_url
+
         if len(str(backend_url)) > 0:
-            url = "%s" % (backend_url)
+            url = backend_url
 
         print("Found backend url: %s" % url)
         #if len(information):
@@ -140,6 +143,8 @@ class Subflow(AppBase):
     def run_subflow(self, user_apikey, workflow, argument, source_workflow="", source_execution="", source_node="", source_auth="", startnode="", backend_url=""):
         #print("STARTNODE: %s" % startnode)
         url = "%s/api/v1/workflows/%s/execute" % (self.url, workflow)
+        if len(self.base_url) > 0:
+            url = "%s/api/v1/workflows/%s/execute" % (self.base_url, workflow)
 
         params = {}
         if len(str(source_workflow)) > 0:
