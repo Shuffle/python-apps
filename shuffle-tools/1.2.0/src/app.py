@@ -2331,8 +2331,34 @@ class Tools(AppBase):
             "success": True,
             "password": password,
         }
+    
+    def run_ssh_command(self, host, user_name, private_key_file_id, command):
+        new_file = self.get_file(private_key_file_id)
+        
+        ssh_client = paramiko.SSHClient()
+        ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
+        try:
+            key_data = new_file["data"].decode()
+        except Exception as e:
+            return {"success":"false","message":str(e)}
 
+        private_key_file = io.StringIO()
+        private_key_file.write(key_data)
+        private_key_file.seek(0)
+        private_key = paramiko.RSAKey.from_private_key(private_key_file)
+        
+        try:
+            ssh_client.connect(hostname=host, username=user_name, pkey= private_key)
+        except Exception as e:
+            return {"success":"false","message":str(e)}
+
+        try:
+            stdin, stdout, stderr = ssh_client.exec_command(str(command))
+        except Exception as e:
+            return {"success":"false","message":str(e)}
+
+        return {"success":"true","output": stdout.read().decode()}
 
 
 if __name__ == "__main__":
