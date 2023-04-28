@@ -358,6 +358,73 @@ class ActiveDirectory(AppBase):
                     "reason": "Failed adding ACCOUNTDISABLED to user: %s" % e,
                 }
 
+    def lock_user(self,server,domain,port,login_user,password,base_dn,use_ssl,samaccountname,search_base):
+        
+        if search_base:
+            base_dn = search_base
+
+        c = self.__ldap_connection(server, port, domain, login_user, password, use_ssl)
+
+        c.search(base_dn, f"(SAMAccountName={samaccountname})")
+
+        if len(c.entries) == 0:
+            return {"success":"false","message":f"User {samaccountname} not found"}
+
+        user_dn = c.entries[0].entry_dn
+
+        c.modify(user_dn, {'userAccountControl':[(MODIFY_REPLACE,[514])]})
+
+        result = c.result
+        result["success"] = True
+
+        return result
+    
+    def unlock_user(self,server,domain,port,login_user,password,base_dn,use_ssl,samaccountname,search_base):
+        
+        if search_base:
+            base_dn = search_base
+
+        c = self.__ldap_connection(server, port, domain, login_user, password, use_ssl)
+
+        c.search(base_dn, f"(SAMAccountName={samaccountname})")
+
+        if len(c.entries) == 0:
+            return {"success":"false","message":f"User {samaccountname} not found"}
+
+        user_dn = c.entries[0].entry_dn
+
+        c.modify(user_dn, {'userAccountControl':[(MODIFY_REPLACE,[0])]})
+
+        result = c.result
+        result["success"] = True
+
+        return result
+    
+    def change_user_password_at_next_login(self,server,domain,port,login_user,password,base_dn,use_ssl,samaccountname,search_base,new_user_password,repeat_new_user_password):
+        
+        if search_base:
+            base_dn = search_base
+
+        if str(new_user_password) != str(repeat_new_user_password):
+            return {"success":"false","message":"new_user_password and repeat_new_user_password does not match."}
+
+        c = self.__ldap_connection(server, port, domain, login_user, password, use_ssl)
+
+        c.search(base_dn, f"(SAMAccountName={samaccountname})")
+
+        if len(c.entries) == 0:
+            return {"success":"false","message":f"User {samaccountname} not found"}
+
+        user_dn = c.entries[0].entry_dn
+
+        c.modify(user_dn, {'pwdLastSet':(MODIFY_REPLACE, [0])})
+        c.extend.microsoft.modify_password(user_dn, new_user_password.encode('utf-16-le'))
+
+        result = c.result
+        result["success"] = True
+
+        return result
+
 
 if __name__ == "__main__":
     ActiveDirectory.run()
