@@ -1076,6 +1076,13 @@ actions:
         example: '192.168.55.11'
         schema:
           type: string
+      - name: port 
+        description: A port on which SSH service is running
+        required: false
+        multiline: false 
+        example: 'Default is 22'
+        schema:
+          type: string
       - name: user_name
         description: User on remote system
         required: true
@@ -1085,9 +1092,16 @@ actions:
           type: string
       - name: private_key_file_id
         description: Private key file ID
-        required: true
+        required: false
         multiline: false 
         example: 'file_c5c87a50-4146-40e2-a698-78cf13bf65c0'
+        schema:
+          type: string
+      - name: password
+        description: Password for SSH user. Use either password or private key. 
+        required: false
+        multiline: false 
+        example: '***'
         schema:
           type: string
       - name: command
