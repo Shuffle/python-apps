@@ -59,6 +59,12 @@ class Tools(AppBase):
 
     def base64_conversion(self, string, operation):
         if operation == "encode":
+            # Try JSON decoding
+            try:
+                string = json.dumps(json.loads(string))
+            except:
+                pass
+
             encoded_bytes = base64.b64encode(str(string).encode("utf-8"))
             encoded_string = str(encoded_bytes, "utf-8")
             return encoded_string
@@ -68,6 +74,12 @@ class Tools(AppBase):
                 decoded_bytes = base64.b64decode(string)
                 try:
                     decoded_bytes = str(decoded_bytes, "utf-8")
+                except:
+                    pass
+
+                # Check if json
+                try:
+                    decoded_bytes = json.loads(decoded_bytes)
                 except:
                     pass
 
@@ -2334,9 +2346,7 @@ class Tools(AppBase):
             "password": password,
         }
     
-    def run_ssh_command(self, host, port,user_name, private_key_file_id, password, command):
-        new_file = self.get_file(private_key_file_id)
-        
+    def run_ssh_command(self, host, port, user_name, private_key_file_id, password, command):
         ssh_client = paramiko.SSHClient()
         ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
@@ -2346,6 +2356,8 @@ class Tools(AppBase):
             port = 22
 
         if private_key_file_id:
+            new_file = self.get_file(private_key_file_id)
+
             try:
                 key_data = new_file["data"].decode()
             except Exception as e:

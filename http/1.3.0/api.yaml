@@ -163,7 +163,7 @@ actions:
         type: string
       example: "404 NOT FOUND"
   - name: PATCH
-    description: Runs a PATCHrequest towards the specified endpoint
+    description: Runs a PATCH request towards the specified endpoint
     parameters:
       - name: url 
         description: The URL to post to

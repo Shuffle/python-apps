@@ -496,7 +496,7 @@ class Email(AppBase):
             if "dmarc" in item["key"]:
                 print("dmarc: ", item["key"])
     
-            if item["key"] == "authentication-results":
+            if item["key"].lower() == "authentication-results":
                 if "spf=pass" in item["value"]:
                     spf = True
                 if "dkim=pass" in item["value"]:

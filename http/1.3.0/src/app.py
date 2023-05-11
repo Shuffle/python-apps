@@ -256,7 +256,6 @@ class HTTP(AppBase):
 
         return self.return_file(request.text)
 
-    # UNTESTED BELOW HERE
     def PUT(self, url, headers="", body="", username="", password="", verify=True, http_proxy="", https_proxy="", timeout=5, to_file=False):
         url = self.fix_url(url)
 
