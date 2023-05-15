@@ -1,7 +1,6 @@
 # Shuffle tools App documentation
 Shuffle tools is a utility app that simplifies your understanding of what happens in a node and also allows you to test on the fly.
 
-
 ## Actions
 The Shuffle-tools app comes with a multitude of different actions, here we will check a few out and give a brief description. 
 
