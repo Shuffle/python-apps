@@ -169,9 +169,17 @@ class MSExcel(AppBase):
         try:
             print("Filename: %s" % filedata["filename"])
             if "csv" in filedata["filename"]:
-                filedata["data"] = filedata["data"].decode("utf-8")
+                try:
+                    filedata["data"] = filedata["data"].decode("utf-8")
+                except:
+                    try:
+                        filedata["data"] = filedata["data"].decode("utf-16")
+                    except:
+                        filedata["data"] = filedata["data"].decode("latin-1")
+
                 returndata = csv_parse(filedata["data"])
                 return returndata
+
         except Exception as e:
             print("Error parsing file with csv parser for file %s: %s" % (filedata["filename"], e))
     
@@ -185,7 +193,7 @@ class MSExcel(AppBase):
         except Exception as e:
             return {
                 "success": False,
-                "reason": "The file is invalid. Are you sure it's a valid excel file? CSV files are not supported."
+                "reason": "The file is invalid. Are you sure it's a valid excel file? CSV files are not supported.",
                 "exception": "Error: %s" % e,
             }
 

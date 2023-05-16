@@ -971,10 +971,16 @@ class Tools(AppBase):
             try:
                 return filedata["data"].decode("utf-16")
             except:
-                return {
-                    "success": False,
-                    "reason": "Got the file, but the encoding can't be printed",
-                }
+                try:
+                    return filedata["data"].decode("utf-8")
+                except:
+                    try:
+                        return filedata["data"].decode("latin-1")
+                    except:
+                        return {
+                            "success": False,
+                            "reason": "Got the file, but the encoding can't be printed",
+                        }
 
     def download_remote_file(self, url, custom_filename=""):
         ret = requests.get(url, verify=False)  # nosec
