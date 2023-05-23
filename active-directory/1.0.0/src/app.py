@@ -7,6 +7,9 @@ from ldap3 import (
     MODIFY_REPLACE,
     ALL_ATTRIBUTES,
 )
+from ldap3.extend.microsoft.addMembersToGroups import ad_add_members_to_groups as addUsersInGroups
+from ldap3.extend.microsoft.removeMembersFromGroups import ad_remove_members_from_groups as removeUsersFromGroups
+
 from walkoff_app_sdk.app_base import AppBase
 
 class ActiveDirectory(AppBase):
@@ -424,6 +427,56 @@ class ActiveDirectory(AppBase):
         result["success"] = True
 
         return result
+
+    def add_user_to_group(self, server, domain, port, login_user, password, base_dn, use_ssl, samaccountname, search_base, group_name):
+        
+        if search_base:
+            base_dn = search_base
+
+        c = self.__ldap_connection(server, port, domain, login_user, password, use_ssl)
+
+        c.search(base_dn, f"(SAMAccountName={samaccountname})")
+        if len(c.entries) == 0:
+            return {"success":"false","message":f"User {samaccountname} not found"}
+        user_dn = c.entries[0].entry_dn
+
+        search_filter = f'(&(objectClass=group)(cn={group_name}))'
+        c.search(base_dn, search_filter, attributes=["distinguishedName"])
+        if len(c.entries) == 0:
+            return {"success":"false","message":f"Group {group_name} not found"}
+        group_dn = c.entries[0]["distinguishedName"]
+        print(group_dn)
+
+        res = addUsersInGroups(c, user_dn, str(group_dn),fix=True)
+        if res == True:
+            return {"success":"true","message":f"User {samaccountname} was added to group {group_name}"}
+        else:
+            return {"success":"false","message":f"Could not add user to group"}
+
+    def remove_user_from_group(self, server, domain, port, login_user, password, base_dn, use_ssl, samaccountname, search_base, group_name):
+        
+        if search_base:
+            base_dn = search_base
+
+        c = self.__ldap_connection(server, port, domain, login_user, password, use_ssl)
+
+        c.search(base_dn, f"(SAMAccountName={samaccountname})")
+        if len(c.entries) == 0:
+            return {"success":"false","message":f"User {samaccountname} not found"}
+        user_dn = c.entries[0].entry_dn
+
+        search_filter = f'(&(objectClass=group)(cn={group_name}))'
+        c.search(base_dn, search_filter, attributes=["distinguishedName"])
+        if len(c.entries) == 0:
+            return {"success":"false","message":f"Group {group_name} not found"}
+        group_dn = c.entries[0]["distinguishedName"]
+        print(group_dn)
+
+        res = removeUsersFromGroups(c, user_dn, str(group_dn),fix=True)
+        if res == True:
+            return {"success":"true","message":f"User {samaccountname} was removed from group {group_name}"}
+        else:
+            return {"success":"false","message":f"Could not remove user to group"}
 
 
 if __name__ == "__main__":
