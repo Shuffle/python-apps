@@ -1,5 +1,5 @@
-walkoff_version: 1.5.0
-app_version: 1.5.0
+walkoff_version: 1.6.0
+app_version: 1.6.0
 name: twilio
 description: Send SMS through Twilio
 tags:
@@ -86,14 +86,14 @@ actions:
         required: true
         schema:
           type: string
-      - name: from
+      - name: From
         description: The senders phone number.
         multiline: false
         example: "+1234567890"
         required: true
         schema:
           type: string
-      - name: to
+      - name: To
         description: The message receiver phone number.
         multiline: false
         example: "+9876543210"
