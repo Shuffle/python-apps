@@ -137,7 +137,7 @@ class TWILIO(AppBase):
             return request.text
 
 
-    def POST(self, url, headers="", body="", username="", password="", timeout=5, to_file=False):
+    def Send_SMS(self, url, headers="", body="", username="", password="", timeout=5, to_file=False):
         url = self.fix_url(url)
 
         parsed_headers = self.splitheaders(headers)
