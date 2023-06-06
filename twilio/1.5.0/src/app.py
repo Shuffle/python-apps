@@ -11,7 +11,7 @@ import subprocess
 from walkoff_app_sdk.app_base import AppBase
 
 class TWILIO(AppBase):
-    __version__ = "1.4.0"
+    __version__ = "1.5.0"
     app_name = "twilio"
 
     def __init__(self, redis, logger, console_logger=None):
@@ -137,12 +137,14 @@ class TWILIO(AppBase):
             return request.text
 
 
-    def Send_SMS(self, url, headers="", body="", username="", password="", timeout=5, to_file=False):
+    def Send_SMS(self, url, headers="", username="", password="", body="", From="", To="", timeout=5, to_file=False):
         url = self.fix_url(url)
 
         parsed_headers = self.splitheaders(headers)
         parsed_headers["User-Agent"] = "Shuffle Automation"
         body = self.checkbody(body)
+
+        data = {'Body' : body, 'From' : From, 'To' : To}
 
         auth=None
         if username or password:
@@ -163,7 +165,7 @@ class TWILIO(AppBase):
         else:
             to_file = False
 
-        request = requests.post(url, headers=parsed_headers, auth=auth, data=body, timeout=timeout)
+        request = requests.post(url, headers=parsed_headers, auth=auth, data=data, timeout=timeout)
         if not to_file:
             return self.prepare_response(request)
 

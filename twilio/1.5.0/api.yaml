@@ -1,5 +1,5 @@
-walkoff_version: 1.4.0
-app_version: 1.4.0
+walkoff_version: 1.5.0
+app_version: 1.5.0
 name: twilio
 description: Send SMS through Twilio
 tags:
@@ -15,19 +15,19 @@ authentication:
   parameters:
     - name: url
       description: Twilio API URL.
-      example: "https://api.twilio.com/2010-04-01/Accounts/TWILIO_ACCOUNT_SID"
+      example: "https://api.twilio.com/2010-04-01/Accounts/TWILIO_ACCOUNT_SID/Messages.json"
       required: true
       schema:
         type: string
     - name: username
-      description: The username to use
+      description: Your Twilio account SID
       multiline: false
       required: true
       example: "Username"
       schema:
         type: string
     - name: password
-      description: The password to use
+      description: Your Twilio account secret
       multiline: false
       required: true
       example: "*****"
