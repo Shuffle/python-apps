@@ -1,5 +1,5 @@
 walkoff_version: 1.3.0
-app_version: 2.1.0
+app_version: 1.3.0
 name: twilio
 description: Send SMS through Twilio
 tags:
