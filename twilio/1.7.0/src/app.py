@@ -1,17 +1,11 @@
-import time
 import json
 import ast
-import random
-import socket
-import uncurl
-import asyncio
 import requests
-import subprocess
 
 from walkoff_app_sdk.app_base import AppBase
 
 class TWILIO(AppBase):
-    __version__ = "1.6.0"
+    __version__ = "1.7.0"
     app_name = "twilio"
 
     def __init__(self, redis, logger, console_logger=None):
@@ -124,27 +118,43 @@ class TWILIO(AppBase):
             except:
                 pass
 
-            return json.dumps({
+            return {
                 "success": True,
                 "status": request.status_code,
                 "url": request.url,
                 "headers": parsedheaders,
                 "body": jsondata,
                 "cookies":cookies,
-            })
+            }
         except Exception as e:
             print(f"[WARNING] Failed in request: {e}")
-            return request.text
+            return {
+                "success": False,
+                "status": "XXX",
+                "error": request.text
+            }
 
 
-    def Send_SMS(self, url, headers="", username="", password="", body="", From="", To="", timeout=5, to_file=False):
+    def summarize_responses(one_response, summary):
+        summary["results"].append(one_response)
+
+        # if ONE request fails, summary is marked as failed
+        if False == one_response["success"]:
+            summary["success"] = False
+
+        # if one status code is not 200, use this failure status code for summary
+        if "200" != one_response["status"]:
+            summary["status"] = one_response["status"]
+
+        return summary
+
+
+    def Send_SMS(self, url, headers="", username="", password="", body="", From="", To="", timeout=5):
         url = self.fix_url(url)
 
         parsed_headers = self.splitheaders(headers)
         parsed_headers["User-Agent"] = "Shuffle Automation"
         body = self.checkbody(body)
-
-        data = {'Body' : body, 'From' : From, 'To' : To}
 
         auth=None
         if username or password:
@@ -155,21 +165,23 @@ class TWILIO(AppBase):
             else:
                 auth = requests.auth.HTTPBasicAuth(username, password)
 
-        if not timeout:
-            timeout = 5
-        if timeout:
-            timeout = int(timeout)
+        timeout = int(timeout)
 
-        if to_file == "true":
-            to_file = True
-        else:
-            to_file = False
+        summary = {
+            "success": True,
+            "status": "200",
+            "url": url,
+            "results": []
+        }
 
-        request = requests.post(url, headers=parsed_headers, auth=auth, data=data, timeout=timeout)
-        if not to_file:
-            return self.prepare_response(request)
+        # send Twilio API request for every single receiver number
+        for receiver in To.split(","):
+            data = {'Body' : body, 'From' : From, 'To' : receiver.strip()}
+            request = requests.post(url, headers=parsed_headers, auth=auth, data=data, timeout=timeout)
+            response = self.prepare_response(request)
+            summary = self.summarize_responses(response, summary)
 
-        return self.return_file(request.text)
+        return json.dumps(summary)
 
 
 # Run the actual thing after we've checked params

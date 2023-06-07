@@ -1,7 +1,7 @@
-walkoff_version: 1.6.0
-app_version: 1.6.0
+walkoff_version: 1.7.0
+app_version: 1.7.0
 name: twilio
-description: Send SMS through Twilio
+description: Send SMS from Shuffle through Twilio.com
 tags:
   - HTTP
 categories:
@@ -47,7 +47,7 @@ actions:
       - name: url
         description: Twilio API URL
         multiline: false
-        example: "https://api.twilio.com/2010-04-01/Accounts/TWILIO_ACCOUNT_SID"
+        example: "https://api.twilio.com/2010-04-01/Accounts/TWILIO_ACCOUNT_SID/Messages.json"
         required: true
         schema:
           type: string
@@ -59,21 +59,21 @@ actions:
         schema:
           type: string
       - name: username
-        description: The username to use
+        description: Your Twilio account SID
         multiline: false
         required: true
         example: "Username"
         schema:
           type: string
       - name: password
-        description: The password to use
+        description: Your Twilio account secret
         multiline: false
         required: true
         example: "*****"
         schema:
           type: string
       - name: timeout
-        description: Add a timeout for the request, in seconds
+        description: Add a timeout (in seconds) for the request
         multiline: false
         required: false
         example: "10"
@@ -87,16 +87,16 @@ actions:
         schema:
           type: string
       - name: From
-        description: The senders phone number.
+        description: The senders phone number, see Your Twilio account for accepted phone numbers.
         multiline: false
         example: "+1234567890"
         required: true
         schema:
           type: string
       - name: To
-        description: The message receiver phone number.
+        description: The message receiver phone number (or a comma separated list of phone numbers).
         multiline: false
-        example: "+9876543210"
+        example: "+9876543210,+1928374650"
         required: true
         schema:
           type: string
