@@ -5,7 +5,7 @@ import requests
 from walkoff_app_sdk.app_base import AppBase
 
 class TWILIO(AppBase):
-    __version__ = "1.7.0"
+    __version__ = "1.8.0"
     app_name = "twilio"
 
     def __init__(self, redis, logger, console_logger=None):
@@ -165,7 +165,10 @@ class TWILIO(AppBase):
             else:
                 auth = requests.auth.HTTPBasicAuth(username, password)
 
-        timeout = int(timeout)
+        if not timeout:
+            timeout = 5
+        if timeout:
+            timeout = int(timeout)
 
         summary = {
             "success": True,

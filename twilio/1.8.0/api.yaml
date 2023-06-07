@@ -1,5 +1,5 @@
-walkoff_version: 1.7.0
-app_version: 1.7.0
+walkoff_version: 1.8.0
+app_version: 1.8.0
 name: twilio
 description: Send SMS from Shuffle through Twilio.com
 tags:
