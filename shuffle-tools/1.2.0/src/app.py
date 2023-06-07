@@ -2390,7 +2390,7 @@ class Tools(AppBase):
         except Exception as e:
             return {"success":"false","message":str(e)}
 
-        return {"success":"true","output": stdout.read().decode()}
+        return {"success":"true","output": stdout.read().decode(errors='ignore')}
 
 
 if __name__ == "__main__":
