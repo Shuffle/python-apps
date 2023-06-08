@@ -7,9 +7,9 @@ tags:
 categories:
   - HTTP
 contact_info:
-  name: "Stefan Rank-Kunitz"
-  url: https://www.digifors.de/
-  email: "stefan.rank-kunitz@digifors.de"
+  name: "Entwicklungsleiter"
+  url: https://github.com/Entwicklungsleiter
+  email: "50797003+Entwicklungsleiter@users.noreply.github.com"
 authentication:
   required: true
   parameters:
