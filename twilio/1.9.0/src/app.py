@@ -5,7 +5,7 @@ import requests
 from walkoff_app_sdk.app_base import AppBase
 
 class TWILIO(AppBase):
-    __version__ = "1.8.0"
+    __version__ = "1.9.0"
     app_name = "twilio"
 
     def __init__(self, redis, logger, console_logger=None):
@@ -135,7 +135,7 @@ class TWILIO(AppBase):
             }
 
 
-    def summarize_responses(one_response, summary):
+    def summarize_responses(self, one_response, summary):
         summary["results"].append(one_response)
 
         # if ONE request fails, summary is marked as failed
