@@ -1,0 +1,107 @@
+walkoff_version: 1.9.0
+app_version: 1.9.0
+name: twilio
+description: Send SMS from Shuffle through Twilio.com
+tags:
+  - HTTP
+categories:
+  - HTTP
+contact_info:
+  name: "Entwicklungsleiter"
+  url: https://github.com/Entwicklungsleiter
+  email: "50797003+Entwicklungsleiter@users.noreply.github.com"
+authentication:
+  required: true
+  parameters:
+    - name: url
+      description: Twilio API URL.
+      example: "https://api.twilio.com/2010-04-01/Accounts/TWILIO_ACCOUNT_SID/Messages.json"
+      required: true
+      schema:
+        type: string
+    - name: username
+      description: Your Twilio account SID
+      multiline: false
+      required: true
+      example: "Username"
+      schema:
+        type: string
+    - name: password
+      description: Your Twilio account secret
+      multiline: false
+      required: true
+      example: "*****"
+      schema:
+        type: string
+    - name: headers
+      description: Headers to use
+      multiline: true
+      required: false
+      example: "Content-Type: application/x-www-form-urlencoded"
+      schema:
+        type: string
+actions:
+  - name: Send_SMS
+    description: sends an SMS to Twilio API endpoint
+    parameters:
+      - name: url
+        description: Twilio API URL
+        multiline: false
+        example: "https://api.twilio.com/2010-04-01/Accounts/TWILIO_ACCOUNT_SID/Messages.json"
+        required: true
+        schema:
+          type: string
+      - name: headers
+        description: Headers to use
+        multiline: true
+        required: false
+        example: "Content-Type: application/x-www-form-urlencoded"
+        schema:
+          type: string
+      - name: username
+        description: Your Twilio account SID
+        multiline: false
+        required: true
+        example: "Username"
+        schema:
+          type: string
+      - name: password
+        description: Your Twilio account secret
+        multiline: false
+        required: true
+        example: "*****"
+        schema:
+          type: string
+      - name: timeout
+        description: Add a timeout (in seconds) for the request
+        multiline: false
+        required: false
+        example: "10"
+        schema:
+          type: bool
+      - name: body
+        description: The message to send.
+        multiline: true
+        example: "I did not have any sexual relationship with Miss Lewinsky!"
+        required: true
+        schema:
+          type: string
+      - name: From
+        description: The senders phone number, see Your Twilio account for accepted phone numbers.
+        multiline: false
+        example: "+1234567890"
+        required: true
+        schema:
+          type: string
+      - name: To
+        description: The message receiver phone number (or a comma separated list of phone numbers).
+        multiline: false
+        example: "+9876543210,+1928374650"
+        required: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+      example: "404 NOT FOUND"
+large_image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADkAAAA5CAYAAACMGIOFAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyNpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDIxIDc5LjE1NDkxMSwgMjAxMy8xMC8yOS0xMTo0NzoxNiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChNYWNpbnRvc2gpIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjREOTUwQkUyQUQwNDExRTM4QUY0RDlBODA0OUZGNENBIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjREOTUwQkUzQUQwNDExRTM4QUY0RDlBODA0OUZGNENBIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6NEQ5NTBCRTBBRDA0MTFFMzhBRjREOUE4MDQ5RkY0Q0EiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6NEQ5NTBCRTFBRDA0MTFFMzhBRjREOUE4MDQ5RkY0Q0EiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz4jmx8hAAAGI0lEQVR42uRbXUwd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
