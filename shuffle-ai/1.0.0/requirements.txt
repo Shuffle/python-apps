@@ -1,0 +1,3 @@
+pytesseract
+pdf2image
+pypdf2

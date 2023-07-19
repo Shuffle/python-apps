@@ -394,12 +394,15 @@ class Email(AppBase):
         print("File: %s" % file_path)
         if file_extension.lower() == 'eml':
             print('working with .eml file')
-            ep = eml_parser.EmlParser()
+            ep = eml_parser.EmlParser(include_attachment_data=True, include_raw_body=True)
             try:
                 parsed_eml = ep.decode_email_bytes(file_path['data'])
+                if str(parsed_eml["header"]["date"]) == "1970-01-01 00:00:00+00:00":
+                    return {"success":False,"reason":"Not an EML file, or EML doesn't have a timestamp (required)"}
+
                 return json.dumps(parsed_eml, default=json_serial)   
             except Exception as e:
-                return {"Success":"False","Message":f"Exception occured: {e}"} 
+                return {"success":False,"Message":f"Exception occured: {e}"} 
         elif file_extension.lower() == 'msg':
             print('working with .msg file')
             try:
@@ -423,9 +426,9 @@ class Email(AppBase):
                 result['body_data'] = msg.body
                 return result
             except Exception as e:
-                return {"Success":"False","Message":f"Exception occured: {e}"}    
+                return {"success":False,"Message":f"Exception occured: {e}"}    
         else:
-            return {"Success":"False","Message":f"No file handler for file extension {file_extension}"}    
+            return {"success":False,"Message":f"No file handler for file extension {file_extension}"}    
 
     def parse_email_headers(self, email_headers):
         try:
