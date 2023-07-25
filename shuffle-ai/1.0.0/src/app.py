@@ -13,6 +13,36 @@ class Tools(AppBase):
     def __init__(self, redis, logger, console_logger=None):
         super().__init__(redis, logger, console_logger)
 
+    def autoformat_text(self, apikey, text, formatting="auto"):
+        headers = {
+            "Authorization": "Bearer %s" % apikey,
+        }
+
+        if not formatting:
+            formatting = "auto"
+    
+        output_formatting= "Format the following data to be a good email that can be sent to customers. Don't make it too business sounding."
+        if formatting != "auto":
+            output_formatting = formatting
+    
+        ret = requests.post(
+            "https://shuffler.io/api/v1/conversation", 
+            json={
+                "query": text, 
+                "formatting": output_formatting,
+                "output_format": "formatting"
+            },
+            headers=headers,
+        )
+    
+        if ret.status_code != 200:
+            print(ret.text)
+            return {
+                "success": False,
+                "reason": "Status code for auto-formatter is not 200"
+            }
+    
+        return ret.text
 
     def extract_text_from_pdf(self, file_id):
         def extract_pdf_text(pdf_path):

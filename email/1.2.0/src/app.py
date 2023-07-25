@@ -394,7 +394,7 @@ class Email(AppBase):
         print("File: %s" % file_path)
         if file_extension.lower() == 'eml':
             print('working with .eml file')
-            ep = eml_parser.EmlParser(include_attachment_data=True, include_raw_body=True)
+            ep = eml_parser.EmlParser(include_attachment_data=True, include_raw_body=True, parse_attachment=True)
             try:
                 parsed_eml = ep.decode_email_bytes(file_path['data'])
                 if str(parsed_eml["header"]["date"]) == "1970-01-01 00:00:00+00:00":

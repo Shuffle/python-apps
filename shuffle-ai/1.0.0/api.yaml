@@ -11,6 +11,33 @@ contact_info:
   url: https://shuffler.io
   email: support@shuffler.io
 actions:
+  - name: autoformat_text 
+    description: Input ANY kind of data in the format you want, and the format you want it in. Default is a business-y email. Uses ShuffleGPT, which is based on OpenAI and our own model.
+    parameters:
+      - name: apikey 
+        description: Your https://shuffler.io apikey
+        required: true
+        multiline: false 
+        example: ""
+        schema:
+          type: string
+      - name: text
+        description: The text you want to be converted (ANY format)
+        required: true
+        multiline: true 
+        example: "Bad IPs are 1.2.3.4 and there's no good way to format this. JSON works too!"
+        schema:
+          type: string
+      - name: formatting 
+        description: The format to use. 
+        required: false 
+        multiline: true 
+        example: "Make it work as a ticket we can put in service now that is human readable for security analysts"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
   - name: extract_text_from_pdf 
     description: Returns text from a pdf
     parameters:
