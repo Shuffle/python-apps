@@ -135,7 +135,7 @@ class Tools(AppBase):
             image = Image.open(temp.name)
             image = image.resize((500,300))
             custom_config = r'-l eng --oem 3 --psm 6'
-            text = pytesseract.image_to_string(image,config=custom_config
+            text = pytesseract.image_to_string(image,config=custom_config)
 
             data = {
                 "success": True,

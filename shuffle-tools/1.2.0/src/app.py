@@ -1456,7 +1456,7 @@ class Tools(AppBase):
         return list_one
 
     def merge_json_objects(self, list_one, list_two, set_field="", sort_key_list_one="", sort_key_list_two=""):
-        self.merge_lists(self, list_one, list_two, set_field="", sort_key_list_one="", sort_key_list_two="")
+        return self.merge_lists(list_one, list_two, set_field=set_field, sort_key_list_one=sort_key_list_one, sort_key_list_two=sort_key_list_two)
 
     def fix_json(self, json_data):
         try:
