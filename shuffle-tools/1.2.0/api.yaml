@@ -166,7 +166,7 @@ actions:
           type: string
       - name: field
         description: The field to check
-        required: false
+        required: true 
         multiline: false
         example: "data"
         schema:
@@ -192,7 +192,7 @@ actions:
           type: string
       - name: value
         description: The value to check with
-        required: false
+        required: true 
         multiline: false
         example: "1.2.3.4"
         schema:
