@@ -400,38 +400,19 @@ class Email(AppBase):
         else:
             extract_attachments = False
 
-        if ".msg" in file_path["filename"]:
-            print('working with .msg file')
+        # Makes msg into eml
+        if ".msg" in file_path["filename"] or "." not in file_path["filename"]:
+            print(f"[DEBUG] Working with .msg file {file_path['filename']}. Filesize: {len(file_path['data'])}")
             try:
                 result = {}
                 msg = MsOxMessage(file_path['data'])
 
-                # Create tempfile to overwrite the data with the extracted email (msg -> eml)
-                # Write to file
                 emldata = msg.get_email_mime_content()
                 file_path["data"] = emldata.encode()
 
-                #frozen = jsonpickle.encode(msg_properties_dict, unpicklable = False)
-                #json_response = json.loads(frozen)
-                #if json_response.get("attachments"):
-                #    for i in json_response["attachments"]:
-                #        if isinstance(i,dict):
-                #            if i.get('data') and 'text' in i.get('AttachMimeTag'):
-                #                value = i.get('data').get('py/b64')
-                #                i['data']['content'] = base64.b64decode(value).decode()
-
-                #result['attachments'] = json_response['attachments']
-
-                #ep = eml_parser.EmlParser()
-
-                #temp = ep.decode_email_bytes(bytes(msg.get_email_mime_content(),'utf-8'))
-                #result['body'] = temp['body']
-                #msg1 = extract_msg.openMsg(file_path['data'])
-                #result["header"] = dict(msg1.header.items())
-                #result['body_data'] = msg.body
-
             except Exception as e:
-                return {"success":False,"reason":f"Exception occured during msg parsing: {e}"}    
+                if ".msg" in file_path["filename"]:
+                    return {"success":False, "reason":f"Exception occured during msg parsing: {e}"}    
 
         ep = eml_parser.EmlParser(
             include_attachment_data=True, 
@@ -442,7 +423,7 @@ class Email(AppBase):
             print("Pre email")
             parsed_eml = ep.decode_email_bytes(file_path['data'])
             if str(parsed_eml["header"]["date"]) == "1970-01-01 00:00:00+00:00" and len(parsed_eml["header"]["subject"]) == 0:
-                return {"success":False,"reason":"Not a valid EML/MSG file, or the file have a timestamp or subject defined (required)."}
+                return {"success":False,"reason":"Not a valid EML/MSG file, or the file have a timestamp or subject defined (required).", "date": str(parsed_eml["header"]["date"]), "subject": str(parsed_eml["header"]["subject"])}
 
             # Put attachments in the shuffle file system
             print("Pre attachment")
@@ -473,7 +454,7 @@ class Email(AppBase):
             print("Post attachment")
             return json.dumps(parsed_eml, default=json_serial)   
         except Exception as e:
-            return {"success":False,"reason":f"An exception occured during EML parsing: {e}. Please contact support"} 
+            return {"success":False, "reason": f"An exception occured during EML parsing: {e}. Please contact support"} 
     
         return {"success": False, "reason": "No email has been defined for this file type"}
                
@@ -528,6 +509,12 @@ class Email(AppBase):
 
         analyzed_headers = {
             "success": True,
+            "details": {
+                "spf": "",
+                "dkim": "",
+                "dmarc": "",
+                "spoofed": "",
+            }
         }
 
         for item in headers:
@@ -537,17 +524,29 @@ class Email(AppBase):
             item["key"] = item["key"].lower()
     
             if "spf" in item["key"]:
+                analyzed_headers["details"]["spf"] = spf
                 if "pass " in item["value"].lower():
                     spf = True
     
             if "dkim" in item["key"]:
+                analyzed_headers["details"]["dkim"] = dkim
                 if "pass " in item["value"].lower():
                     dkim = True
     
             if "dmarc" in item["key"]:
+                analyzed_headers["details"]["dmarc"] = dmarc
                 print("dmarc: ", item["key"])
     
             if item["key"].lower() == "authentication-results":
+                if "spf" in item["value"].lower():
+                    analyzed_headers["details"]["spf"] = spf
+
+                if "dkim" in item["value"].lower():
+                    analyzed_headers["details"]["dkim"] = dkim
+
+                if "dmarc" in item["value"].lower():
+                    analyzed_headers["details"]["dmarc"] = dmarc
+
                 if "spf=pass" in item["value"]:
                     spf = True
                 if "dkim=pass" in item["value"]:
@@ -576,7 +575,9 @@ class Email(AppBase):
                         if item["value"] != subitem["value"]:
                             spoofed = True
                             analyzed_headers["spoofed_reason"] = "Reply-To is different than From"
+                            analyzed_headers["details"]["spoofed"] = subitem["value"]
                             break
+
 
                     if subitem["key"] == "mail-reply-to":
                         print("Reply-To: " + subitem["value"], item["value"])
@@ -587,6 +588,7 @@ class Email(AppBase):
                         if item["value"] != subitem["value"]:
                             spoofed = True
                             analyzed_headers["spoofed_reason"] = "Mail-Reply-To is different than From"
+                            analyzed_headers["details"]["spoofed"] = subitem["value"]
                             break
 
         analyzed_headers["spf"] = spf

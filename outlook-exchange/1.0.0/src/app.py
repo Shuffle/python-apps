@@ -198,13 +198,12 @@ class Owa(AppBase):
             account=account,
             subject=subject,
             body=body,
-            to_recipients=[
-                Mailbox(email_address=address) for address in recipient.split(", ")
-            ],
-            cc_recipients=[
-                Mailbox(email_address=address) for address in ccrecipient.split(", ")
-            ],
+            to_recipients=[]
         )
+
+        for address in recipient.split(", "):
+            address = address.strip()
+            m.to_recipients.append(Mailbox(email_address=address))
 
         file_uids = str(attachments).split()
         if len(file_uids) > 0:
