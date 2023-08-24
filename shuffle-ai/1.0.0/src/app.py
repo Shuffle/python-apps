@@ -44,6 +44,59 @@ class Tools(AppBase):
     
         return ret.text
 
+    def generate_report(self, apikey, input_data, report_title, report_name="generated_report.html"):
+        headers = {
+            "Authorization": "Bearer %s" % apikey,
+        }
+
+        if not report_name:
+            report_name = "generated_report.html"
+
+        if "." in report_name and not ".html" in report_name:
+            report_name = report_name.split(".")[0]
+
+        if not "html" in report_name:
+            report_name = report_name + ".html"
+
+        report_name = report_name.replace(" ", "_", -1)
+
+        if not formatting:
+            formatting = "auto"
+    
+        output_formatting= "Format the following text into an HTML report with relevant graphs and tables. Title of the report should be {report_title}."
+        ret = requests.post(
+            "https://shuffler.io/api/v1/conversation", 
+            json={
+                "query": text, 
+                "formatting": output_formatting,
+                "output_format": "formatting"
+            },
+            headers=headers,
+        )
+    
+        if ret.status_code != 200:
+            print(ret.text)
+            return {
+                "success": False,
+                "reason": "Status code for auto-formatter is not 200"
+            }
+
+        # Make it into a shuffle file with self.set_files()
+        new_file = {
+            "name": report_name,
+            "data": ret.text,
+        }
+
+        retdata = self.set_files([new_file])
+        if retdata["success"]:
+            return retdata
+
+        return {
+            "success": False,
+            "reason": "Failed to upload file"
+        }
+
+
     def extract_text_from_pdf(self, file_id):
         def extract_pdf_text(pdf_path):
             with open(pdf_path, 'rb') as file:

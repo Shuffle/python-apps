@@ -38,6 +38,40 @@ actions:
     returns:
       schema:
         type: string
+  - name: generate_report 
+    description: Input ANY kind of data in the format you want, and it will make an HTML report for you. This can be downloaded from the File location.
+    parameters:
+      - name: apikey 
+        description: Your https://shuffler.io apikey
+        required: true
+        multiline: false 
+        example: ""
+        schema:
+          type: string
+      - name: input_data 
+        description: The text you want to be converted (ANY format)
+        required: true
+        multiline: true 
+        example: "Bad IPs are 1.2.3.4 and there's no good way to format this. JSON works too!"
+        schema:
+          type: string
+      - name: report_title
+        description: The report title to be used in the report
+        required: true 
+        multiline: true 
+        example: "Statistics for October"
+        schema:
+          type: string
+      - name: report_name 
+        description: The name of the HTML file 
+        required: false
+        multiline: true 
+        example: "statistics.html"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
   - name: extract_text_from_pdf 
     description: Returns text from a pdf
     parameters:
