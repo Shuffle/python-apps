@@ -37,6 +37,9 @@ import struct
 
 import paramiko
 
+import concurrent.futures
+import multiprocessing
+
 from walkoff_app_sdk.app_base import AppBase
 
 class Tools(AppBase):
@@ -2386,7 +2389,7 @@ class Tools(AppBase):
             except Exception as e:
                 return {"success":"false","message":str(e)}
         else:
-            print("AUTH WITH PASSWORD")
+            #print("AUTH WITH PASSWORD")
             try:
                 ssh_client.connect(hostname=host,username=user_name,port=port, password=str(password))
             except Exception as e:
@@ -2398,6 +2401,109 @@ class Tools(AppBase):
             return {"success":"false","message":str(e)}
 
         return {"success":"true","output": stdout.read().decode(errors='ignore')}
+    
+    def split_list(self, arr, length):
+
+        num_arrays = len(arr) // length
+        remainder = len(arr) % length
+
+        arrays = []
+        start = 0
+
+        for _ in range(num_arrays):
+            sub_array = arr[start:start+length]
+            arrays.append(sub_array)
+            start += length
+
+        if remainder > 0:
+            sub_array = arr[start:]
+            arrays.append(sub_array)
+
+        return arrays
+    
+    def split_text(self,text):
+        lines = text.split("\n")
+        num = 10
+        new_text = ""
+        new_text_list = []
+        for line in lines:
+            num -= 1
+            new_text += line + "\n"
+            if num == 0:
+                new_text_list.append(new_text.strip("\n"))
+                num = 10
+                new_text = ""
+        return new_text_list
+    
+    def _with_concurency(self,txt_data, ioc_types):
+
+        cpu_count = multiprocessing.cpu_count()
+        #print("cpu count:",cpu_count)
+        start = time.perf_counter()
+        executor = concurrent.futures.ProcessPoolExecutor(cpu_count)
+        futures = [executor.submit(find_iocs, row, included_ioc_types=ioc_types) for row in txt_data]
+        results = [future.result() for future in futures]
+        #print("Total time taken:",time.perf_counter()-start)
+        return self._format_result(results)
+    
+    def _format_result(self,result):
+        final_result = {}
+        
+        for res in result:
+            for key,val in res.items():
+                if key in final_result:
+                    if isinstance(val, list) and len(val) > 0:
+                        for i in val:
+                            final_result[key].append(i)
+                    elif isinstance(val, dict):
+                        #print(key,":::",val)
+                        if key in final_result:
+                            if isinstance(val, dict):
+                                for k,v in val.items():
+                                    #print("k:",k,"v:",v)
+                                    val[k].append(v)
+                        #print(val)
+                    #final_result[key].append([i for i in val if len(val) > 0])
+                else:
+                    final_result[key] = val
+
+        return final_result
+    
+    def quick_parse_ioc(self,file_id,input_type=None):
+        file_data = self.get_file(file_id)
+
+        DEFAULT_IOC_TYPES = [
+        "cves",
+        "domains",
+        "ipv4s",
+        "md5s",
+        "urls"
+        ]
+
+        if input_type == "":
+            input_type = DEFAULT_IOC_TYPES
+        else:
+            input_type = input_type.split(",")
+                
+        if file_data.get("data"):
+            file_data = file_data["data"].decode()
+        else:
+            return {"success":"false","message":"file not found"}
+
+        file_data = self.split_text(file_data)
+        
+        # if (len(input_list) > 50):
+        #     start = time.perf_counter()
+        #     input_list = self.split_list(input_list, 50)
+        #     executor = concurrent.futures.ProcessPoolExecutor(4)
+        #     futures = [executor.submit(self.with_concurency, row) for row in input_list]
+        #     results = [future.result() for future in futures]
+        #     print(" Overall Total time taken:",time.perf_counter()-start)
+        #     return results
+        # else:
+        
+        res = self._with_concurency(file_data,ioc_types=input_type)
+        return res
 
 
 if __name__ == "__main__":
