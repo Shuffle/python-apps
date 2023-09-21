@@ -277,26 +277,6 @@ actions:
     returns:
       schema:
         type: string
-  - name: quick_parse_ioc
-    description: Faster IOC parsing with few default types and concurrent processing.
-    parameters:
-      - name: file_id
-        description: file_id
-        required: true
-        multiline: false
-        example: ""
-        schema:
-          type: string
-      - name: input_type
-        description: By default cves,domains,ipv4s,ipv6s,md5s and urls will be parsed.
-        required: false
-        multiline: false
-        example: "md5s,ipv4s,domains"
-        schema:
-          type: string
-    returns:
-      schema:
-        type: string
   - name: parse_file_ioc
     description: Parse IOC's based on https://github.com/fhightower/ioc-finder
     parameters:

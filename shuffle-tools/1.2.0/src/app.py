@@ -72,15 +72,22 @@ class Tools(AppBase):
 
         elif operation == "to image":
             # Decode the base64 into an image and upload it as a file
-            decoded_bytes = base64.b64decode(a).encode("utf-8").decode("unicode_escape")
+            decoded_bytes = base64.b64decode(string)
 
+            # Make the bytes into unicode escaped bytes 
+            # UnicodeDecodeError - 'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+            try:
+                decoded_bytes = str(decoded_bytes, "utf-8")
+            except:
+                pass
+
+            filename = "base64_image.png"
             file = {
-                "filename": member.split("/")[-1],
+                "filename": filename,
                 "data": decoded_bytes, 
             }
 
             fileret = self.set_files([file])
-            filename = "base64_image.png"
             value = {"success": True, "filename": filename, "file_id": fileret}
             if len(fileret) == 1:
                 value = {"success": True, "filename": filename, "file_id": fileret[0]}
@@ -268,68 +275,6 @@ class Tools(AppBase):
         else:
             return "Invalid input"
         return return_value
-
-    # https://github.com/fhightower/ioc-finder
-    def parse_ioc(self, input_string, input_type="all"):
-        #if len(input_string) > 2500000 and (input_type == "" or input_type == "all"):
-        #    return {
-        #        "success": False,
-        #        "reason": "Data too large (%d). Please reduce it below 2.5 Megabytes to use this action or specify the input type" % len(input_string)
-        #    }
-
-        # https://github.com/fhightower/ioc-finder/blob/6ff92a73a60e9233bf09b530ccafae4b4415b08a/ioc_finder/ioc_finder.py#L433
-        ioc_types = ["domains", "urls", "email_addresses", "ipv6s", "ipv4s", "ipv4_cidrs", "md5s", "sha256s", "sha1s", "cves"]
-        input_string = str(input_string)
-        if input_type == "":
-            input_type = "all"
-        else:
-            input_type = input_type.split(",")
-            for item in input_type:
-                item = item.strip()
-
-            ioc_types = input_type
-
-        iocs = find_iocs(input_string, included_ioc_types=ioc_types)
-        newarray = []
-        for key, value in iocs.items():
-            if input_type != "all":
-                if key not in input_type:
-                    continue
-
-            if len(value) > 0:
-                for item in value:
-                    # If in here: attack techniques. Shouldn't be 3 levels so no
-                    # recursion necessary
-                    if isinstance(value, dict):
-                        for subkey, subvalue in value.items():
-                            if len(subvalue) > 0:
-                                for subitem in subvalue:
-                                    data = {
-                                        "data": subitem,
-                                        "data_type": "%s_%s" % (key[:-1], subkey),
-                                    }
-                                    if data not in newarray:
-                                        newarray.append(data)
-                    else:
-                        data = {"data": item, "data_type": key[:-1]}
-                        if data not in newarray:
-                            newarray.append(data)
-
-        # Reformatting IP
-        for item in newarray:
-            if "ip" in item["data_type"]:
-                item["data_type"] = "ip"
-                try:
-                    item["is_private_ip"] = ipaddress.ip_address(item["data"]).is_private
-                except:
-                    self.logger.info("Error parsing %s" % item["data"])
-
-        try:
-            newarray = json.dumps(newarray)
-        except json.decoder.JSONDecodeError as e:
-            return "Failed to parse IOC's: %s" % e
-
-        return newarray
 
     def parse_list(self, items, splitter="\n"):
         if splitter == "":
@@ -556,10 +501,14 @@ class Tools(AppBase):
             globals_copy["print"] = custom_print
 
             # Add self to globals_copy
-            if "self" in globals_copy:
-                del globals_copy["self"]
+            for key, value in locals().items():
+                if key not in all_globals:
+                    all_globals[key] = value
 
-            globals_copy["self"] = self
+            #if "self" in globals_copy:
+            #    del globals_copy["self"]
+            #globals_copy["self"] = self
+
             exec(code, globals_copy)
 
             s = f.getvalue()
@@ -573,13 +522,19 @@ class Tools(AppBase):
             try:
                 return {
                     "success": True,
-                    "message": s.strip(),
+                    "message": json.loads(s.strip()),
                 }
             except Exception as e:
-                return {
-                    "success": True,
-                    "message": s,
-                }
+                try:
+                    return {
+                        "success": True,
+                        "message": s.strip(),
+                    }
+                except Exception as e:
+                    return {
+                        "success": True,
+                        "message": s,
+                    }
                 
         except Exception as e:
             return {
@@ -2493,15 +2448,18 @@ class Tools(AppBase):
 
         return final_result
     
-    def quick_parse_ioc(self,file_id,input_type=None):
+    def quick_parse_ioc(self, file_id, input_type=None):
         file_data = self.get_file(file_id)
 
         DEFAULT_IOC_TYPES = [
-        "cves",
-        "domains",
-        "ipv4s",
-        "md5s",
-        "urls"
+            "cves",
+            "domains",
+            "ipv4s",
+            "md5s",
+            "sha1s",
+            "sha256s",
+            "urls"
+            "email_addresses",
         ]
 
         if input_type == "":
@@ -2515,10 +2473,126 @@ class Tools(AppBase):
             return {"success":"false","message":"file not found"}
 
         file_data = self.split_text(file_data)
-        
-        
-        res = self._with_concurency(file_data,ioc_types=input_type)
+        res = self._with_concurency(file_data, ioc_types=input_type)
         return res
+
+    def parse_ioc_new(self, input_string, input_type="all"):
+        ioc_types = ["domains", "urls", "email_addresses", "ipv6s", "ipv4s", "ipv4_cidrs", "md5s", "sha256s", "sha1s", "cves"]
+        input_string = str(input_string)
+        #if input_type == "":
+        #    input_type = "all"
+        #else:
+        #    input_type = input_type.split(",")
+        #    for item in input_type:
+        #        item = item.strip()
+
+        #    ioc_types = input_type
+
+        file_data = self.split_text(input_string)
+        iocs = self._with_concurency(file_data, ioc_types=input_type)
+        #return res
+        #iocs = find_iocs(input_string, included_ioc_types=ioc_types)
+        newarray = []
+        for key, value in iocs.items():
+            if input_type != "all":
+                if key not in input_type:
+                    continue
+
+            if len(value) > 0:
+                for item in value:
+                    # If in here: attack techniques. Shouldn't be 3 levels so no
+                    # recursion necessary
+                    if isinstance(value, dict):
+                        for subkey, subvalue in value.items():
+                            if len(subvalue) > 0:
+                                for subitem in subvalue:
+                                    data = {
+                                        "data": subitem,
+                                        "data_type": "%s_%s" % (key[:-1], subkey),
+                                    }
+                                    if data not in newarray:
+                                        newarray.append(data)
+                    else:
+                        data = {"data": item, "data_type": key[:-1]}
+                        if data not in newarray:
+                            newarray.append(data)
+
+        # Reformatting IP
+        for item in newarray:
+            if "ip" in item["data_type"]:
+                item["data_type"] = "ip"
+                try:
+                    item["is_private_ip"] = ipaddress.ip_address(item["data"]).is_private
+                except:
+                    self.logger.info("Error parsing %s" % item["data"])
+
+        try:
+            newarray = json.dumps(newarray)
+        except json.decoder.JSONDecodeError as e:
+            return "Failed to parse IOC's: %s" % e
+
+        return newarray
+
+    def parse_ioc(self, input_string, input_type="all"):
+        #if len(input_string) > 2500000 and (input_type == "" or input_type == "all"):
+        #    return {
+        #        "success": False,
+        #        "reason": "Data too large (%d). Please reduce it below 2.5 Megabytes to use this action or specify the input type" % len(input_string)
+        #    }
+
+        # https://github.com/fhightower/ioc-finder/blob/6ff92a73a60e9233bf09b530ccafae4b4415b08a/ioc_finder/ioc_finder.py#L433
+        ioc_types = ["domains", "urls", "email_addresses", "ipv6s", "ipv4s", "ipv4_cidrs", "md5s", "sha256s", "sha1s", "cves"]
+        input_string = str(input_string)
+        if input_type == "":
+            input_type = "all"
+        else:
+            input_type = input_type.split(",")
+            for item in input_type:
+                item = item.strip()
+
+            ioc_types = input_type
+
+        iocs = find_iocs(input_string, included_ioc_types=ioc_types)
+        newarray = []
+        for key, value in iocs.items():
+            if input_type != "all":
+                if key not in input_type:
+                    continue
+
+            if len(value) > 0:
+                for item in value:
+                    # If in here: attack techniques. Shouldn't be 3 levels so no
+                    # recursion necessary
+                    if isinstance(value, dict):
+                        for subkey, subvalue in value.items():
+                            if len(subvalue) > 0:
+                                for subitem in subvalue:
+                                    data = {
+                                        "data": subitem,
+                                        "data_type": "%s_%s" % (key[:-1], subkey),
+                                    }
+                                    if data not in newarray:
+                                        newarray.append(data)
+                    else:
+                        data = {"data": item, "data_type": key[:-1]}
+                        if data not in newarray:
+                            newarray.append(data)
+
+        # Reformatting IP
+        for item in newarray:
+            if "ip" in item["data_type"]:
+                item["data_type"] = "ip"
+                try:
+                    item["is_private_ip"] = ipaddress.ip_address(item["data"]).is_private
+                except:
+                    self.logger.info("Error parsing %s" % item["data"])
+
+        try:
+            newarray = json.dumps(newarray)
+        except json.decoder.JSONDecodeError as e:
+            return "Failed to parse IOC's: %s" % e
+
+        return newarray
 
 if __name__ == "__main__":
     Tools.run()
