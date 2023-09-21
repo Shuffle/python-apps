@@ -85,6 +85,19 @@ actions:
     returns:
       schema:
         type: string
+  - name: delete_cache_value
+    description: Delete a value saved to your organization in Shuffle
+    parameters:
+      - name: key
+        description: The key to delete 
+        required: true
+        multiline: false
+        example: "timestamp"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
   - name: send_sms_shuffle
     description: Send an SMS from Shuffle
     parameters:
@@ -158,14 +171,14 @@ actions:
     skip_multicheck: true
     parameters:
       - name: input_list
-        description: The list to check
+        description: The list to filter from. Don't use .# into this.
         required: true
         multiline: false
         example: '[{"data": "1.2.3.4"}, {"data": "1.2.3.5"}]'
         schema:
           type: string
       - name: field
-        description: The field to check
+        description: The field to check in the input list
         required: true 
         multiline: false
         example: "data"
@@ -173,7 +186,7 @@ actions:
           type: string
       - name: check
         description: Type of check
-        required: true
+        required: false 
         example: "equals"
         options:
           - equals
@@ -199,7 +212,7 @@ actions:
           type: string
       - name: opposite
         description: Whether to add or to NOT add
-        required: true
+        required: false 
         options:
           - False
           - True
@@ -921,6 +934,7 @@ actions:
         options:
           - encode
           - decode
+          - "to image"
         schema:
           type: string
   - name: get_timestamp 

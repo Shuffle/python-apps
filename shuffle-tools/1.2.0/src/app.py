@@ -1,4 +1,4 @@
-import asyncio
+import hmac
 import datetime
 import json
 import time
@@ -13,8 +13,6 @@ import ipaddress
 import hashlib
 from io import StringIO
 from contextlib import redirect_stdout
-from liquid import Liquid
-import liquid
 import random
 import string
 
@@ -71,6 +69,23 @@ class Tools(AppBase):
             encoded_bytes = base64.b64encode(str(string).encode("utf-8"))
             encoded_string = str(encoded_bytes, "utf-8")
             return encoded_string
+
+        elif operation == "to image":
+            # Decode the base64 into an image and upload it as a file
+            decoded_bytes = base64.b64decode(a).encode("utf-8").decode("unicode_escape")
+
+            file = {
+                "filename": member.split("/")[-1],
+                "data": decoded_bytes, 
+            }
+
+            fileret = self.set_files([file])
+            filename = "base64_image.png"
+            value = {"success": True, "filename": filename, "file_id": fileret}
+            if len(fileret) == 1:
+                value = {"success": True, "filename": filename, "file_id": fileret[0]}
+
+            return value
 
         elif operation == "decode":
             try:
@@ -510,7 +525,7 @@ class Tools(AppBase):
             return re.sub(regex, replace_string, input_data)
 
     def execute_python(self, code):
-        self.logger.info(f"Python code {len(code)} {code}. If uuid, we'll try to download and use the file.")
+        self.logger.info(f"Python code {len(code)}. If uuid, we'll try to download and use the file.")
 
         if len(code) == 36 and "-" in code:
             filedata = self.get_file(code)
@@ -539,6 +554,12 @@ class Tools(AppBase):
             # Add globals in it too
             globals_copy = globals().copy()
             globals_copy["print"] = custom_print
+
+            # Add self to globals_copy
+            if "self" in globals_copy:
+                del globals_copy["self"]
+
+            globals_copy["self"] = self
             exec(code, globals_copy)
 
             s = f.getvalue()
@@ -1907,6 +1928,9 @@ class Tools(AppBase):
             self.logger.info("Value couldn't be parsed")
             return response.text
 
+    def delete_cache_value(self, key):
+        return self.delete_cache(key)
+
     def get_cache_value(self, key):
         org_id = self.full_execution["workflow"]["execution_org"]["id"]
         url = "%s/api/v1/orgs/%s/get_cache" % (self.url, org_id)
@@ -2492,19 +2516,9 @@ class Tools(AppBase):
 
         file_data = self.split_text(file_data)
         
-        # if (len(input_list) > 50):
-        #     start = time.perf_counter()
-        #     input_list = self.split_list(input_list, 50)
-        #     executor = concurrent.futures.ProcessPoolExecutor(4)
-        #     futures = [executor.submit(self.with_concurency, row) for row in input_list]
-        #     results = [future.result() for future in futures]
-        #     print(" Overall Total time taken:",time.perf_counter()-start)
-        #     return results
-        # else:
         
         res = self._with_concurency(file_data,ioc_types=input_type)
         return res
-
 
 if __name__ == "__main__":
     Tools.run()
