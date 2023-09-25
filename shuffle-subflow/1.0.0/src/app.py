@@ -172,6 +172,12 @@ class Subflow(AppBase):
         else:
             print("No startnode")
 
+        if len(self.full_execution["execution_id"]) > 0 and self.full_execution["execution_id"] != source_execution:
+            params["source_execution"] = self.full_execution["execution_id"]
+
+        if len(self.full_execution["authorization"]) > 0 and self.full_execution["authorization"] != source_auth:
+            params["source_auth"] = self.full_execution["authorization"]
+
         if len(str(backend_url)) > 0:
             url = "%s/api/v1/workflows/%s/execute" % (backend_url, workflow)
             print("[INFO] Changed URL to %s for this execution" % url)
