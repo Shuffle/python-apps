@@ -501,13 +501,11 @@ class Tools(AppBase):
             globals_copy["print"] = custom_print
 
             # Add self to globals_copy
-            for key, value in locals().items():
-                if key not in all_globals:
-                    all_globals[key] = value
+            for key, value in locals().copy().items():
+                if key not in globals_copy:
+                    globals_copy[key] = value
 
-            #if "self" in globals_copy:
-            #    del globals_copy["self"]
-            #globals_copy["self"] = self
+            globals_copy["self"] = self
 
             exec(code, globals_copy)
 
