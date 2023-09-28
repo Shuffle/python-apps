@@ -52,14 +52,14 @@ actions:
         description: The SMTP login username
         multiline: false
         example: "frikky@shuffler.io"
-        required: true
+        required: false 
         schema:
           type: string
       - name: password
         description: The password to log in with SMTP
         multiline: false
         example: "******************"
-        required: true
+        required: false 
         schema:
           type: string
       - name: smtp_host
