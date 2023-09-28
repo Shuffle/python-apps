@@ -656,7 +656,7 @@ class Tools(AppBase):
                     self.logger.info("Checklist and tmp: %s - %s" % (checklist, tmp))
                     found = False
                     for subcheck in checklist:
-                        subcheck = subcheck.strip()
+                        subcheck = str(subcheck).strip()
 
                         #ext.lower().strip() == value.lower().strip()
                         if type(tmp) == list and subcheck in tmp:
@@ -667,8 +667,17 @@ class Tools(AppBase):
                             new_list.append(item)
                             found = True
                             break
+                        elif type(tmp) == int and str(tmp) == subcheck:
+                            new_list.append(item)
+                            found = True
+                            break
                         else:
-                            print("Nothing matching")
+                            if str(tmp) == str(subcheck):
+                                new_list.append(item)
+                                found = True
+                                break
+                            else:
+                                print("Nothing matching")
 
                     if not found:
                         failed_list.append(item)
