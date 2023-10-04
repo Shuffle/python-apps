@@ -362,7 +362,7 @@ class Tools(AppBase):
         elif "," in keys:
             splitdata = keys.split(",")
 
-         def delete_key(json_object, keys):
+        def delete_key(json_object, keys):
             if len(keys) == 1:
                 del json_object[keys[0]]
             else:
