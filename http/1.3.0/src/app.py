@@ -63,12 +63,8 @@ class HTTP(AppBase):
             split_headers = headers.split("\n") 
             self.logger.info(split_headers)
             for header in split_headers:
-                if ": " in header:
-                    splititem = ": "
-                elif ":" in header:
+                if ":" in header:
                     splititem = ":"
-                elif "= " in header:
-                    splititem = "= "
                 elif "=" in header:
                     splititem = "="
                 else:
@@ -76,8 +72,8 @@ class HTTP(AppBase):
                     continue
 
                 splitheader = header.split(splititem)
-                if len(splitheader) == 2:
-                    parsed_headers[splitheader[0]] = splitheader[1]
+                if len(splitheader) >= 2:
+                    parsed_headers[splitheader[0]] = splititem.join(splitheader[1:])
                 else:
                     self.logger.info("Skipping header %s with split %s cus only one item" % (header, splititem))
                     continue
