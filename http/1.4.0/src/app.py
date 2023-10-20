@@ -331,6 +331,7 @@ class HTTP(AppBase):
         parsed_headers = self.splitheaders(headers)
         parsed_headers["User-Agent"] = "Shuffle Automation"
         verify = self.checkverify(verify)
+        body = self.checkbody(body)
         proxies = None
         if http_proxy: 
             proxies["http"] = http_proxy
@@ -356,7 +357,7 @@ class HTTP(AppBase):
         else:
             to_file = False 
 
-        request = requests.delete(url, headers=parsed_headers, auth=auth, verify=verify, proxies=proxies, timeout=timeout)
+        request = requests.delete(url, headers=parsed_headers, data=body, auth=auth, verify=verify, proxies=proxies, timeout=timeout)
         if not to_file:
             return self.prepare_response(request)
 

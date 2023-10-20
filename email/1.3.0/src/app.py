@@ -75,7 +75,7 @@ class Email(AppBase):
         return requests.post(url, headers=headers, json=data).text
 
     def send_email_smtp(
-        self, username, password, smtp_host, recipient, subject, body, smtp_port, attachments="", ssl_verify="True", body_type="html"
+        self, smtp_host, recipient, subject, body, smtp_port, attachments="", username="", password="", ssl_verify="True", body_type="html"
     ):
         if type(smtp_port) == str:
             try:
