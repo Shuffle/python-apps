@@ -25,6 +25,16 @@ actions:
     returns:
       schema:
         type: string
+  - name: execute_python
+    description: Runs python with the data input. Any prints will be returned.
+    parameters:
+      - name: code
+        description: The code to run. Can be a file ID from within Shuffle.
+        required: true
+        multiline: true
+        example: print("hello world")
+        schema:
+          type: string
   - name: check_cache_contains 
     description: Checks Shuffle cache whether a user-provided key contains a value. Returns ALL the values previously appended.
     parameters:
@@ -982,16 +992,7 @@ actions:
         example: '{"data": "Hello world"}'
         schema:
           type: string
-  - name: execute_python
-    description: Runs python with the data input. Any prints will be returned.
-    parameters:
-      - name: code
-        description: The code to run. Can be a file ID from within Shuffle.
-        required: true
-        multiline: true
-        example: print("hello world")
-        schema:
-          type: string
+
   - name: run_math_operation
     description: Takes a math input and gives you the result
     parameters:

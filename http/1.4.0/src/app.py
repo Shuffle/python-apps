@@ -45,18 +45,6 @@ class HTTP(AppBase):
             return item
 
         return item
-        #try: 
-        #    if not statement.startswith("curl "):
-        #        statement = "curl %s" % statement
-
-        #    data = uncurl.parse(statement)
-        #    request = eval(data)
-        #    if isinstance(request, requests.models.Response):
-        #        return request.text
-        #    else:
-        #        return "Unable to parse the curl parameter. Remember to start with curl "
-        #except:
-        #    return "An error occurred during curl parsing"
 
     def splitheaders(self, headers):
         parsed_headers = {}
