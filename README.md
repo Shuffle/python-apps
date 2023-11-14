@@ -1,7 +1,7 @@
 # Shuffle Apps
-This is a repository for apps to be used in [Shuffle](https://github.com/frikky/shuffle)
+All public apps are available in the search, engine either in your local instance or on [https://shuffler.io/search?tab=apps](https://shuffler.io/search?tab=apps). This is a repository for apps to be used in [Shuffle](https://github.com/frikky/shuffle)
 
-**PS:** These apps should be valid with WALKOFF, but the SDK is different, meaning you have to change the FIRST line in each Dockerfile (FROM frikky/shuffle:app_sdk).
+**PS:** These apps should be valid with WALKOFF (from NSA), but the SDK is different, meaning you have to change the FIRST line in each Dockerfile (FROM frikky/shuffle:app_sdk) to make it compatible with Shuffle.
 
 ## App Creation 
 App creation can be done with the Shuffle App Creator (exports as OpenAPI) or Python, which makes it possible to connect _literally_ any tool. Always prioritize using the App Creator when applicable. 
