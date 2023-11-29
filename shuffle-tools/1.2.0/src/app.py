@@ -277,6 +277,15 @@ class Tools(AppBase):
         return return_value
 
     def parse_list(self, items, splitter="\n"):
+        # Check if it's already a list first
+        try:
+            newlist = json.loads(items)
+            if isinstance(newlist, list):
+                return newlist
+
+        except Exception as e:
+            self.logger.info("[WARNING] Parse error - fallback: %s" % e)
+
         if splitter == "":
             splitter = "\n"
 
