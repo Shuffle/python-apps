@@ -6,6 +6,16 @@ on:
       - opened
 
 jobs:
+  add-label:
+    name: Add label to issue
+    runs-on: ubuntu-latest
+    steps:
+    - uses: github/issue-labeler@v3.3 #May not be the latest version
+      with:
+        configuration-path: .github/labeler.yml
+        repo-token: ${{ secrets.ADD_TO_PROJECT_PAT }}
+        enable-versioned-regex: 0
+
   add-to-project:
     name: Add issue to project
     runs-on: ubuntu-latest
