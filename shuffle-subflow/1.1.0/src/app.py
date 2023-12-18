@@ -142,7 +142,7 @@ class Subflow(AppBase):
 
         return json.dumps(result)
 
-    def run_subflow(self, user_apikey, workflow, argument, source_workflow="", source_execution="", source_node="", source_auth="", startnode="", backend_url=""):
+    def run_subflow(self, user_apikey, workflow, argument, source_workflow="", source_execution="", source_node="", source_auth="", startnode="", backend_url="", check_result=""):
         #print("STARTNODE: %s" % startnode)
         url = "%s/api/v1/workflows/%s/execute" % (self.url, workflow)
         if len(self.base_url) > 0:
