@@ -67,7 +67,8 @@ class Subflow(AppBase):
                 print("Should change port to 3001.")
             if "appspot.com" in frontend_url:
                 frontend_url = "https://shuffler.io"
-
+            if "run.app" in frontend_url:
+                frontend_url = "https://shuffler.io"
 
             for item in subflows: 
                 # In case of URL being passed, and not just ID
@@ -106,7 +107,7 @@ class Subflow(AppBase):
 
             print("Should run email with targets: %s", jsondata["targets"])
 
-            ret = requests.post("%s/api/v1/functions/sendmail" % url, json=jsondata, headers=headers, verify=False)
+            ret = requests.post("%s/api/v1/functions/sendmail" % url, json=jsondata, headers=headers, verify=False, proxies=self.proxy_config)
             if ret.status_code != 200:
                 print("Failed sending email. Data: %s" % ret.text)
                 result["email"] = False 
@@ -131,7 +132,7 @@ class Subflow(AppBase):
 
             print("Should send sms with targets: %s", jsondata["numbers"])
 
-            ret = requests.post("%s/api/v1/functions/sendsms" % url, json=jsondata, headers=headers, verify=False)
+            ret = requests.post("%s/api/v1/functions/sendsms" % url, json=jsondata, headers=headers, verify=False, proxies=self.proxy_config)
             if ret.status_code != 200:
                 print("Failed sending email. Data: %s" % ret.text)
                 result["sms"] = False 
@@ -190,7 +191,7 @@ class Subflow(AppBase):
         }
 
         if len(str(argument)) == 0:
-            ret = requests.post(url, headers=headers, params=params, verify=False)
+            ret = requests.post(url, headers=headers, params=params, verify=False, proxies=self.proxy_config)
         else:
             if not isinstance(argument, list) and not isinstance(argument, dict):
                 try:
@@ -200,14 +201,14 @@ class Subflow(AppBase):
 
             #print(f"ARG: {argument}")
             try:
-                ret = requests.post(url, headers=headers, params=params, json=argument, verify=False)
+                ret = requests.post(url, headers=headers, params=params, json=argument, verify=False, proxies=self.proxy_config)
                 print(f"Successfully sent argument of length {len(str(argument))} as JSON")
             except:
                 try:
-                    ret = requests.post(url, headers=headers, json=argument, params=params, verify=False)
+                    ret = requests.post(url, headers=headers, json=argument, params=params, verify=False, proxies=self.proxy_config)
                     print("Successfully sent as JSON (2)")
                 except:
-                    ret = requests.post(url, headers=headers, data=argument, params=params, verify=False)
+                    ret = requests.post(url, headers=headers, data=argument, params=params, verify=False, proxies=self.proxy_config)
                     print("Successfully sent as data (3)")
 
         print("Status: %d" % ret.status_code)
