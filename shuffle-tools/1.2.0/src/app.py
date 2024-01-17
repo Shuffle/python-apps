@@ -169,7 +169,7 @@ class Tools(AppBase):
 
         url = "https://shuffler.io/api/v1/functions/sendsms"
         headers = {"Authorization": "Bearer %s" % apikey}
-        return requests.post(url, headers=headers, json=data).text
+        return requests.post(url, headers=headers, json=data, verify=False).text
 
     # This is an email function of Shuffle
     def send_email_shuffle(self, apikey, recipients, subject, body, attachments=""):
@@ -205,7 +205,7 @@ class Tools(AppBase):
 
         url = "https://shuffler.io/api/v1/functions/sendmail"
         headers = {"Authorization": "Bearer %s" % apikey}
-        return requests.post(url, headers=headers, json=data).text
+        return requests.post(url, headers=headers, json=data, verify=False).text
 
     def repeat_back_to_me(self, call):
         return call
@@ -906,6 +906,7 @@ class Tools(AppBase):
             "%s/api/v1/files/%s?execution_id=%s"
             % (self.url, file_id, self.current_execution_id),
             headers=headers,
+            verify=False,
         )
         self.logger.info(f"RET: {ret}")
 
@@ -922,6 +923,7 @@ class Tools(AppBase):
             "%s/api/v1/files/%s?execution_id=%s"
             % (self.url, file_id, self.current_execution_id),
             headers=headers,
+            verify=False,
         )
         return ret.text
 
@@ -984,7 +986,7 @@ class Tools(AppBase):
                         }
 
     def download_remote_file(self, url, custom_filename=""):
-        ret = requests.get(url, verify=False)  # nosec
+        ret = requests.get(url, verify=False, verify=False)  # nosec
         filename = url.split("/")[-1]
         if "?" in filename:
             filename = filename.split("?")[0]
@@ -1699,7 +1701,7 @@ class Tools(AppBase):
         else:
             append = False 
 
-        get_response = requests.post(url, json=data)
+        get_response = requests.post(url, json=data, verify=False)
         try:
             allvalues = get_response.json()
             try:
@@ -1714,7 +1716,7 @@ class Tools(AppBase):
                     data["value"] = json.dumps(new_value)
 
                     set_url = "%s/api/v1/orgs/%s/set_cache" % (self.url, org_id)
-                    set_response = requests.post(set_url, json=data)
+                    set_response = requests.post(set_url, json=data, verify=False)
                     try:
                         allvalues = set_response.json()
                         #allvalues["key"] = key
@@ -1806,7 +1808,7 @@ class Tools(AppBase):
                 #return allvalues
 
                 set_url = "%s/api/v1/orgs/%s/set_cache" % (self.url, org_id)
-                response = requests.post(set_url, json=data)
+                response = requests.post(set_url, json=data, verify=False)
                 exception = ""
                 try:
                     allvalues = response.json()
@@ -1878,7 +1880,7 @@ class Tools(AppBase):
             "value": value,
         }
 
-        response = requests.post(url, json=data)
+        response = requests.post(url, json=data, verify=False)
         try:
             allvalues = response.json()
             allvalues["key"] = key
@@ -1912,7 +1914,7 @@ class Tools(AppBase):
             "key": key,
         }
 
-        value = requests.post(url, json=data)
+        value = requests.post(url, json=data, verify=False)
         try:
             allvalues = value.json()
             self.logger.info("VAL1: ", allvalues)
@@ -1961,7 +1963,7 @@ class Tools(AppBase):
             "value": value,
         }
 
-        response = requests.post(url, json=data)
+        response = requests.post(url, json=data, verify=False)
         try:
             allvalues = response.json()
             allvalues["key"] = key
@@ -2088,7 +2090,7 @@ class Tools(AppBase):
 
         data = "grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=%s" % jwt
 
-        return requests.post(url, data=data, headers=headers).text
+        return requests.post(url, data=data, headers=headers, verify=False).text
 
     # Based on https://google-auth.readthedocs.io/en/master/reference/google.auth.crypt.html
     def get_jwt_from_file(self, file_id, jwt_audience, scopes, complete_request=True):
