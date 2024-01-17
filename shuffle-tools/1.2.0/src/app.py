@@ -986,7 +986,7 @@ class Tools(AppBase):
                         }
 
     def download_remote_file(self, url, custom_filename=""):
-        ret = requests.get(url, verify=False, verify=False)  # nosec
+        ret = requests.get(url, verify=False)  # nosec
         filename = url.split("/")[-1]
         if "?" in filename:
             filename = filename.split("?")[0]
