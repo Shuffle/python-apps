@@ -1887,6 +1887,7 @@ class Tools(AppBase):
             #return allvalues
 
         except Exception as e:
+            print("[ERROR] Failed to get cache: %s" % e)
             return {
                 "success": False,
                 "key": key,
