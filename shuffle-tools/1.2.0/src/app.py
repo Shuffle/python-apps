@@ -756,9 +756,30 @@ class Tools(AppBase):
 
                 # CONTAINS FIND FOR LIST AND IN FOR STR
                 elif check == "larger than":
-                    if int(tmp) > int(value):
-                        new_list.append(item)
-                    else:
+                    list_set = False
+                    try:
+                        if str(tmp).isdigit() and str(value).isdigit():
+                            if int(tmp) > int(value):
+                                new_list.append(item)
+                                list_set = True
+                    except AttributeError as e:
+                        self.logger.info("FAILED CHECKING LARGER THAN: %s" % e)
+                        pass
+
+                    try:
+                        value = len(json.loads(value))
+                    except Exception as e:
+                        self.logger.info(f"[WARNING] Failed to convert destination to list: {e}")
+
+                    try:
+                        # Check if it's a list in autocast and if so, check the length
+                        if len(json.loads(tmp)) > int(value):
+                            new_list.append(item)
+                            list_set = True
+                    except Exception as e:
+                        self.logger.info(f"[WARNING] Failed to check if larger than as list: {e}")
+
+                    if not list_set:
                         failed_list.append(item)
                 elif check == "less than":
                     if int(tmp) < int(value):
