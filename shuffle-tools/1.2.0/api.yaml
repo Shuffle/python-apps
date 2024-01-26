@@ -214,8 +214,8 @@ actions:
         schema:
           type: string
       - name: value
-        description: The value to check with
-        required: true 
+        description: The value to compare with
+        required: false 
         multiline: false
         example: "1.2.3.4"
         schema:
