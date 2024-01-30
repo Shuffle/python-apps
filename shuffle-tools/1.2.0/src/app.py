@@ -1797,37 +1797,47 @@ class Tools(AppBase):
                 if allvalues["value"] == None or allvalues["value"] == "null":
                     allvalues["value"] = "[]"
 
+                allvalues["value"] = str(allvalues["value"])
+
                 try:
                     parsedvalue = json.loads(allvalues["value"])
                 except json.decoder.JSONDecodeError as e:
-                    parsedvalue = []
+                    parsedvalue = [str(allvalues["value"])]
+                except Exception as e:
+                    print("Error parsing JSON - overriding: %s" % e)
+                    parsedvalue = [str(allvalues["value"])]
 
-                #return parsedvalue
+                print("In ELSE2: '%s'" % parsedvalue)
                     
-                for item in parsedvalue:
-                    #return "%s %s" % (item, value)
-                    if item == value:
-                        if not append:
-                            return {
-                                "success": True,
-                                "found": True,
-                                "reason": "Found and not appending!",
-                                "key": key,
-                                "search": value,
-                                "value": json.loads(allvalues["value"]),
-                            }
-                        else:
-                            return {
-                                "success": True,
-                                "found": True,
-                                "reason": "Found, was appending, but item already exists",
-                                "key": key,
-                                "search": value,
-                                "value": json.loads(allvalues["value"]),
-                            }
-                            
-                        # Lol    
-                        break
+                try:
+                    for item in parsedvalue:
+                        #return "%s %s" % (item, value)
+                        if item == value:
+                            if not append:
+                                return {
+                                    "success": True,
+                                    "found": True,
+                                    "reason": "Found and not appending!",
+                                    "key": key,
+                                    "search": value,
+                                    "value": json.loads(allvalues["value"]),
+                                }
+                            else:
+                                return {
+                                    "success": True,
+                                    "found": True,
+                                    "reason": "Found, was appending, but item already exists",
+                                    "key": key,
+                                    "search": value,
+                                    "value": json.loads(allvalues["value"]),
+                                }
+                                
+                            # Lol    
+                            break
+                except Exception as e:
+                    print("Error in check_cache_contains: %s" % e)
+                    parsedvalue = [str(parsedvalue)]
+                    append = True
 
                 if not append:
                     return {
@@ -1839,21 +1849,12 @@ class Tools(AppBase):
                         "value": json.loads(allvalues["value"]),
                     }
 
-                #parsedvalue = json.loads(allvalues["value"])
-                #if parsedvalue == None:
-                #    parsedvalue = []
-
-                #return parsedvalue
                 new_value = parsedvalue
                 if new_value == None:
                     new_value = [value]
 
                 new_value.append(value)
-
-                #return new_value 
-
                 data["value"] = json.dumps(new_value)
-                #return allvalues
 
                 set_url = "%s/api/v1/orgs/%s/set_cache" % (self.url, org_id)
                 response = requests.post(set_url, json=data, verify=False)
@@ -1887,11 +1888,11 @@ class Tools(AppBase):
             #return allvalues
 
         except Exception as e:
-            print("[ERROR] Failed to get cache: %s" % e)
+            print("[ERROR] Failed to handle cache contains: %s" % e)
             return {
                 "success": False,
                 "key": key,
-                "reason": f"Failed to get cache: {e}",
+                "reason": f"Failed to handle cache contains. Is the original value a list?: {e}",
                 "search": value,
                 "found": False,
             }
@@ -1966,11 +1967,11 @@ class Tools(AppBase):
         value = requests.post(url, json=data, verify=False)
         try:
             allvalues = value.json()
-            self.logger.info("VAL1: ", allvalues)
+            #self.logger.info("VAL1: ", allvalues)
             allvalues["key"] = key
-            self.logger.info("VAL2: ", allvalues)
+            #self.logger.info("VAL2: ", allvalues)
 
-            if allvalues["success"] == True:
+            if allvalues["success"] == True and len(allvalues["value"]) > 0:
                 allvalues["found"] = True
             else:
                 allvalues["success"] = True 
