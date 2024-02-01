@@ -154,14 +154,16 @@ class HTTP(AppBase):
             except:
                 pass
 
-            return json.dumps({
-                "success": True,
+            parseddata = {
                 "status": request.status_code,
+                "body": jsondata,
                 "url": request.url,
                 "headers": parsedheaders,
-                "body": jsondata,
                 "cookies":cookies,
-            })
+                "success": True,
+            }
+
+            return json.dumps(parseddata)
         except Exception as e:
             print(f"[WARNING] Failed in request: {e}")
             return request.text
