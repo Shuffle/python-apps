@@ -2461,7 +2461,7 @@ class Tools(AppBase):
 
             ioc_types = input_type
 
-        iocs = find_iocs(input_string, included_ioc_types=ioc_types)
+        iocs = find_iocs(str(input_string), included_ioc_types=ioc_types)
         newarray = []
         for key, value in iocs.items():
             if input_type != "all":
