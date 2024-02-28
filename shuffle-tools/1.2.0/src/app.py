@@ -684,8 +684,6 @@ class Tools(AppBase):
                                 new_list.append(item)
                                 found = True
                                 break
-                            else:
-                                print("Nothing matching")
 
                     if not found:
                         failed_list.append(item)
@@ -1533,7 +1531,7 @@ class Tools(AppBase):
                 del json_data[key]
 
         except Exception as e:
-            print("[DEBUG] Problem in JSON (fix_json): %s" % e)
+            pass
 
         return json_data
 
@@ -1587,8 +1585,6 @@ class Tools(AppBase):
     ):
         if timestamp== "None":
             return False
-
-        print("Converting input date.")
    
         if date_format == "autodetect":
             input_dt = dateutil_parser(timestamp).replace(tzinfo=None)
@@ -1632,12 +1628,7 @@ class Tools(AppBase):
             comparison_dt = formatted_dt + delta
             #comparison_dt = datetime.datetime.utcnow()
 
-        print("{} {} {} is {}. Delta: {}".format(offset, units, direction, comparison_dt, delta))
-
         diff = int((input_dt - comparison_dt).total_seconds())
-        print(
-            "\nDifference between {} and {} is {} seconds ({} days)\n".format(timestamp, comparison_dt, diff, int(diff/86400))
-        )
 
         if units == "seconds":
             diff = diff
@@ -1674,19 +1665,6 @@ class Tools(AppBase):
             result = 0 <= diff
             if direction == "ahead" and diff != 0:
                 result = not (result)
-
-        print(
-            "At {}, is {} {} to    {} {} {}? {}. Diff {}".format(
-                formatted_dt,
-                timestamp,
-                equality_test,
-                offset,
-                units,
-                direction,
-                result,
-                diff,
-            )
-        )
 
         parsed_string = "%s %s %s %s" % (equality_test, offset, units, direction)
         newdiff = diff
@@ -1804,11 +1782,8 @@ class Tools(AppBase):
                 except json.decoder.JSONDecodeError as e:
                     parsedvalue = [str(allvalues["value"])]
                 except Exception as e:
-                    print("Error parsing JSON - overriding: %s" % e)
                     parsedvalue = [str(allvalues["value"])]
 
-                print("In ELSE2: '%s'" % parsedvalue)
-                    
                 try:
                     for item in parsedvalue:
                         #return "%s %s" % (item, value)
@@ -1835,7 +1810,6 @@ class Tools(AppBase):
                             # Lol    
                             break
                 except Exception as e:
-                    print("Error in check_cache_contains: %s" % e)
                     parsedvalue = [str(parsedvalue)]
                     append = True
 
@@ -1888,7 +1862,6 @@ class Tools(AppBase):
             #return allvalues
 
         except Exception as e:
-            print("[ERROR] Failed to handle cache contains: %s" % e)
             return {
                 "success": False,
                 "key": key,
@@ -2197,7 +2170,6 @@ class Tools(AppBase):
             #signer = crypt.RSASigner.from_service_account_file(sa_keyfile)
             signer = crypt.RSASigner.from_string(sa_keyfile)
             jwt_token = jwt.encode(signer, payload)
-            # print(jwt_token.decode('utf-8'))
             return jwt_token
     
     
@@ -2435,7 +2407,6 @@ class Tools(AppBase):
             except Exception as e:
                 return {"success":"false","message":str(e)}
         else:
-            #print("AUTH WITH PASSWORD")
             try:
                 ssh_client.connect(hostname=host,username=user_name,port=port, password=str(password))
             except Exception as e:
@@ -2540,14 +2511,10 @@ class Tools(AppBase):
                         for i in val:
                             final_result[key].append(i)
                     elif isinstance(val, dict):
-                        #print(key,":::",val)
                         if key in final_result:
                             if isinstance(val, dict):
                                 for k,v in val.items():
-                                    #print("k:",k,"v:",v)
                                     val[k].append(v)
-                        #print(val)
-                    #final_result[key].append([i for i in val if len(val) > 0])
                 else:
                     final_result[key] = val
 
@@ -2560,7 +2527,6 @@ class Tools(AppBase):
 
         # Workers dont matter..?
         # What can we use instead? 
-        print("Strings:", len(array_of_strings))
 
         workers = 4
         with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as executor:
@@ -2577,7 +2543,6 @@ class Tools(AppBase):
             # Retrieve the results if needed
             results = [future.result() for future in futures]
         
-        #print("Total time taken:", time.perf_counter()-start)
         return self._format_result(results)
 
     # FIXME: Make this good and actually faster than normal
@@ -2646,7 +2611,7 @@ class Tools(AppBase):
             try:
                 newarray[i]["is_private_ip"] = ipaddress.ip_address(item["data"]).is_private
             except Exception as e:
-                print("Error parsing %s: %s" % (item["data"], e))
+                pass
 
         try:
             newarray = json.dumps(newarray)
