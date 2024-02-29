@@ -1649,6 +1649,20 @@ class Tools(AppBase):
             "key": key,
         }
 
+        allvalues = {}
+        try:
+            for item in self.local_storage:
+                if item["execution_id"] == self.current_execution_id and item["key"] == key:
+                    # Max keeping the local cache properly for 5 seconds due to workflow continuations
+                    elapsed_time = time.time() - item["time_set"]
+                    if elapsed_time > 5:
+                        break
+
+                    allvalues = item["data"]
+
+        except Exception as e:
+            print("[ERROR] Failed cache contains for current execution id local storage: %s" % e)
+
         if isinstance(value, dict) or isinstance(value, list):
             try:
                 value = json.dumps(value)
@@ -1665,9 +1679,13 @@ class Tools(AppBase):
         else:
             append = False 
 
-        get_response = requests.post(url, json=data, verify=False)
+        if "success" not in allvalues:
+            get_response = requests.post(url, json=data, verify=False)
+
         try:
-            allvalues = get_response.json()
+            if "success" not in allvalues:
+                allvalues = get_response.json()
+
             try:
                 if allvalues["value"] == None or allvalues["value"] == "null":
                     allvalues["value"] = "[]"
@@ -1685,6 +1703,7 @@ class Tools(AppBase):
                         allvalues = set_response.json()
                         #allvalues["key"] = key
                         #return allvalues
+
 
                         return {
                             "success": True,
@@ -1727,6 +1746,14 @@ class Tools(AppBase):
                         #return "%s %s" % (item, value)
                         if item == value:
                             if not append:
+                                try:
+                                    newdata = json.loads(json.dumps(data))
+                                    newdata["time_set"] = time.time()
+                                    newdata["data"] = allvalues
+                                    self.local_storage.append(newdata)
+                                except Exception as e:
+                                    print("[ERROR] Failed in local storage append: %s" % e)
+
                                 return {
                                     "success": True,
                                     "found": True,
@@ -1798,6 +1825,7 @@ class Tools(AppBase):
             #return allvalues
 
         except Exception as e:
+            print("[ERROR] Failed check cache contains: %s" % e)
             return {
                 "success": False,
                 "key": key,
