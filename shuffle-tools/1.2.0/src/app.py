@@ -111,7 +111,6 @@ class Tools(AppBase):
             except Exception as e:
                 #return string.decode("utf-16")
 
-                self.logger.info(f"[WARNING] Error in normal decoding: {e}")
                 return {
                     "success": False,
                     "reason": f"Error decoding the base64: {e}",
@@ -121,7 +120,6 @@ class Tools(AppBase):
                 #    if str(newvar).startswith("b'") and str(newvar).endswith("'"):
                 #        newvar = newvar[2:-1]
                 #except Exception as e:
-                #    self.logger.info(f"Encoding issue in base64: {e}")
                 #return newvar
 
                 #try:
@@ -200,7 +198,7 @@ class Tools(AppBase):
             
                 data["attachments"] = files
             except Exception as e:
-                self.logger.info(f"Error in attachment parsing for email: {e}")
+                pass
                 
 
         url = "https://shuffler.io/api/v1/functions/sendmail"
@@ -303,7 +301,6 @@ class Tools(AppBase):
         return str(len(item))
 
     def set_json_key(self, json_object, key, value):
-        self.logger.info(f"OBJ: {json_object}\nKEY: {key}\nVAL: {value}")
         if isinstance(json_object, str):
             try:
                 json_object = json.loads(json_object)
@@ -350,7 +347,6 @@ class Tools(AppBase):
                 buildstring += f"[\"{subkey}\"]" 
 
             buildstring += f" = {value}"
-            self.logger.info("BUILD: %s" % buildstring)
 
             #output = 
             exec(buildstring)
@@ -434,7 +430,6 @@ class Tools(AppBase):
             }
 
             matches = re.findall(regex, input_data)
-            self.logger.info(f"{matches}")
             found = False
             for item in matches:
                 if isinstance(item, str):
@@ -467,19 +462,12 @@ class Tools(AppBase):
         self, input_data, regex, replace_string="", ignore_case="False"
     ):
 
-        #self.logger.info("=" * 80)
-        #self.logger.info(f"Regex: {regex}")
-        #self.logger.info(f"replace_string: {replace_string}")
-        #self.logger.info("=" * 80)
-
         if ignore_case.lower().strip() == "true":
             return re.sub(regex, replace_string, input_data, flags=re.IGNORECASE)
         else:
             return re.sub(regex, replace_string, input_data)
 
     def execute_python(self, code):
-        self.logger.info(f"Python code {len(code)}. If uuid, we'll try to download and use the file.")
-
         if len(code) == 36 and "-" in code:
             filedata = self.get_file(code)
             if filedata["success"] == False:
@@ -523,7 +511,6 @@ class Tools(AppBase):
             #try:
             #    s = s.encode("utf-8")
             #except Exception as e:
-            #    self.logger.info(f"Failed utf-8 encoding response: {e}")
 
             try:
                 return {
@@ -559,7 +546,6 @@ class Tools(AppBase):
         stdout = process.communicate()
         item = ""
         if len(stdout[0]) > 0:
-            self.logger.info("[DEBUG] Succesfully ran bash!")
             item = stdout[0]
         else:
             self.logger.info(f"[ERROR] FAILED to run bash command {code}!")
@@ -588,7 +574,6 @@ class Tools(AppBase):
         return False
 
     def filter_list(self, input_list, field, check, value, opposite):
-        self.logger.info(f"\nRunning function with list {input_list}")
 
         # Remove hashtags on the fly
         # E.g. #.fieldname or .#.fieldname
@@ -621,7 +606,6 @@ class Tools(AppBase):
         if str(value).lower() == "null" or str(value).lower() == "none":
             value = "none"
 
-        self.logger.info(f"\nRunning with check \"%s\" on list of length %d\n" % (check, len(input_list)))
         found_items = []
         new_list = []
         failed_list = []
@@ -642,10 +626,8 @@ class Tools(AppBase):
                     try:
                         tmp = json.dumps(tmp)
                     except json.decoder.JSONDecodeError as e:
-                        self.logger.info("FAILED DECODING: %s" % e)
                         pass
 
-                #self.logger.info("PRE CHECKS FOR TMP: %")
 
                 # EQUALS JUST FOR STR
                 if check == "equals":
@@ -653,15 +635,12 @@ class Tools(AppBase):
                     # value = tmp.lower()
 
                     if str(tmp).lower() == str(value).lower():
-                        self.logger.info("APPENDED BECAUSE %s %s %s" % (field, check, value))
                         new_list.append(item)
                     else:
                         failed_list.append(item)
 
                 elif check == "equals any of":
-                    self.logger.info("Inside equals any of")
                     checklist = value.split(",")
-                    self.logger.info("Checklist and tmp: %s - %s" % (checklist, tmp))
                     found = False
                     for subcheck in checklist:
                         subcheck = str(subcheck).strip()
@@ -732,7 +711,6 @@ class Tools(AppBase):
                 elif check == "contains any of":
                     value = self.parse_list_internal(value)
                     checklist = value.split(",")
-                    self.logger.info("CHECKLIST: %s. Value: %s" % (checklist, tmp))
                     found = False
                     for checker in checklist:
                         if str(checker).lower() in str(tmp).lower() or self.check_wildcard(checker, tmp): 
@@ -745,7 +723,6 @@ class Tools(AppBase):
 
                 # CONTAINS FIND FOR LIST AND IN FOR STR
                 elif check == "field is unique":
-                    #self.logger.info("FOUND: %s"
                     if tmp.lower() not in found_items:
                         new_list.append(item)
                         found_items.append(tmp.lower())
@@ -761,13 +738,12 @@ class Tools(AppBase):
                                 new_list.append(item)
                                 list_set = True
                     except AttributeError as e:
-                        self.logger.info("FAILED CHECKING LARGER THAN: %s" % e)
                         pass
 
                     try:
                         value = len(json.loads(value))
                     except Exception as e:
-                        self.logger.info(f"[WARNING] Failed to convert destination to list: {e}")
+                        pass
 
                     try:
                         # Check if it's a list in autocast and if so, check the length
@@ -775,7 +751,7 @@ class Tools(AppBase):
                             new_list.append(item)
                             list_set = True
                     except Exception as e:
-                        self.logger.info(f"[WARNING] Failed to check if larger than as list: {e}")
+                        pass
 
                     if not list_set:
                         failed_list.append(item)
@@ -793,13 +769,12 @@ class Tools(AppBase):
                                 new_list.append(item)
                                 list_set = True
                     except AttributeError as e:
-                        self.logger.info("FAILED CHECKING LARGER THAN: %s" % e)
                         pass
 
                     try:
                         value = len(json.loads(value))
                     except Exception as e:
-                        self.logger.info(f"[WARNING] Failed to convert destination to list: {e}")
+                        pass
 
                     try:
                         # Check if it's a list in autocast and if so, check the length
@@ -807,7 +782,7 @@ class Tools(AppBase):
                             new_list.append(item)
                             list_set = True
                     except Exception as e:
-                        self.logger.info(f"[WARNING] Failed to check if larger than as list: {e}")
+                        pass
 
                     if not list_set:
                         failed_list.append(item)
@@ -859,7 +834,6 @@ class Tools(AppBase):
                             failed_list.append(item)
 
             except Exception as e:
-                self.logger.info("[WARNING] FAILED WITH EXCEPTION: %s" % e)
                 failed_list.append(item)
             # return
 
@@ -954,7 +928,6 @@ class Tools(AppBase):
             headers=headers,
             verify=False,
         )
-        self.logger.info(f"RET: {ret}")
 
         return ret.text
 
@@ -963,7 +936,6 @@ class Tools(AppBase):
         headers = {
             "Authorization": "Bearer %s" % self.authorization,
         }
-        self.logger.info("HEADERS: %s" % headers)
 
         ret = requests.delete(
             "%s/api/v1/files/%s?execution_id=%s"
@@ -974,8 +946,6 @@ class Tools(AppBase):
         return ret.text
 
     def create_file(self, filename, data):
-        self.logger.info("Inside function")
-
         try:
             if str(data).startswith("b'") and str(data).endswith("'"):
                 data = data[2:-1]
@@ -1013,7 +983,6 @@ class Tools(AppBase):
         if filedata is None:
             return "File is empty?"
 
-        self.logger.info("INSIDE APP DATA: %s" % filedata)
         try:
             return filedata["data"].decode()
         except:
@@ -1064,7 +1033,6 @@ class Tools(AppBase):
             item = self.get_file(file_id)
             return_ids = None
 
-            self.logger.info("Working with fileformat %s" % fileformat)
             with tempfile.TemporaryDirectory() as tmpdirname:
 
                 # Get archive and save phisically
@@ -1076,13 +1044,10 @@ class Tools(AppBase):
                 # Zipfile for zipped archive
                 if fileformat.strip().lower() == "zip":
                     try:
-                        self.logger.info("Starting zip extraction")
                         with zipfile.ZipFile(os.path.join(tmpdirname, "archive")) as z_file:
                             if password:
-                                self.logger.info("In zip extraction with password")
                                 z_file.setpassword(bytes(password.encode()))
 
-                            self.logger.info("Past zip extraction")
                             for member in z_file.namelist():
                                 filename = os.path.basename(member)
                                 if not filename:
@@ -1216,10 +1181,8 @@ class Tools(AppBase):
                 else:
                     return "No such format: %s" % fileformat
 
-            self.logger.info("Breaking as this only handles one archive at a time.")
             if len(to_be_uploaded) > 0:
                 return_ids = self.set_files(to_be_uploaded)
-                self.logger.info(f"Got return ids from files: {return_ids}")
 
                 for i in range(len(return_ids)):
                     return_data["archive_id"] = file_id
@@ -1239,7 +1202,6 @@ class Tools(AppBase):
                             }
                         )
             else:
-                self.logger.info(f"No file ids to upload.")
                 return_data["success"] = False
                 return_data["files"].append(
                     {
@@ -1273,7 +1235,6 @@ class Tools(AppBase):
                     "reason": "Make sure to send valid file ids. Example: file_13eea837-c56a-4d52-a067-e673c7186483,file_13eea837-c56a-4d52-a067-e673c7186484",
                 }
 
-            self.logger.info("picking {}".format(file_ids))
             # GET all items from shuffle
             items = [self.get_file(file_id) for file_id in file_ids]
 
@@ -1283,14 +1244,12 @@ class Tools(AppBase):
             # Dump files on disk, because libs want path :(
             with tempfile.TemporaryDirectory() as tmpdir:
                 paths = []
-                self.logger.info("Number 1")
                 for item in items:
                     with open(os.path.join(tmpdir, item["filename"]), "wb") as f:
                         f.write(item["data"])
                         paths.append(os.path.join(tmpdir, item["filename"]))
 
                 # Create archive temporary
-                self.logger.info("{} items to inflate".format(len(items)))
                 with tempfile.NamedTemporaryFile() as archive:
 
                     if fileformat == "zip":
@@ -1336,7 +1295,6 @@ class Tools(AppBase):
             try:
                 list_one = json.loads(list_one)
             except json.decoder.JSONDecodeError as e:
-                self.logger.info("Failed to parse list1 as json: %s" % e)
                 if list_one == None:
                     list_one = []
                 else:
@@ -1352,7 +1310,6 @@ class Tools(AppBase):
             try:
                 list_two = json.loads(list_two)
             except json.decoder.JSONDecodeError as e:
-                self.logger.info("Failed to parse list2 as json: %s" % e)
                 if list_one == None:
                     list_one = []
                 else:
@@ -1376,7 +1333,6 @@ class Tools(AppBase):
             try:
                 list_one = json.loads(list_one)
             except json.decoder.JSONDecodeError as e:
-                self.logger.info("Failed to parse list1 as json: %s" % e)
                 return {
                     "success": False,
                     "reason": "list_one is not a valid list."
@@ -1386,7 +1342,6 @@ class Tools(AppBase):
             try:
                 list_two = json.loads(list_two)
             except json.decoder.JSONDecodeError as e:
-                self.logger.info("Failed to parse list2 as json: %s" % e)
                 return {
                     "success": False,
                     "reason": "list_two is not a valid list."
@@ -1433,13 +1388,13 @@ class Tools(AppBase):
             try:
                 list_one = json.loads(list_one)
             except json.decoder.JSONDecodeError as e:
-                self.logger.info("Failed to parse list1 as json: %s" % e)
+                pass
 
         if isinstance(list_two, str):
             try:
                 list_two = json.loads(list_two)
             except json.decoder.JSONDecodeError as e:
-                self.logger.info("Failed to parse list2 as json: %s" % e)
+                pass
 
         if not isinstance(list_one, list) or not isinstance(list_two, list):
             if isinstance(list_one, dict) and isinstance(list_two, dict):
@@ -1454,19 +1409,15 @@ class Tools(AppBase):
             return {"success": False, "message": "Lists length must be the same. %d vs %d" % (len(list_one), len(list_two))}
 
         if len(sort_key_list_one) > 0:
-            self.logger.info("Sort 1 %s by key: %s" % (list_one, sort_key_list_one))
             try:
                 list_one = sorted(list_one, key=lambda k: k.get(sort_key_list_one), reverse=True)
             except:
-                self.logger.info("Failed to sort list one")
                 pass
 
         if len(sort_key_list_two) > 0:
-            #self.logger.info("Sort 2 %s by key: %s" % (list_two, sort_key_list_two))
             try:
                 list_two = sorted(list_two, key=lambda k: k.get(sort_key_list_two), reverse=True)
             except:
-                self.logger.info("Failed to sort list one")
                 pass
 
         # Loops for each item in sub array and merges items together
@@ -1474,16 +1425,13 @@ class Tools(AppBase):
         base_key = "shuffle_auto_merge"
         try:
             for i in range(len(list_one)):
-                #self.logger.info(list_two[i])
                 if isinstance(list_two[i], dict):
                     for key, value in list_two[i].items():
                         list_one[i][key] = value
                 elif isinstance(list_two[i], str) and list_two[i] == "":
                     continue
                 elif isinstance(list_two[i], str) or isinstance(list_two[i], int) or isinstance(list_two[i], bool):
-                    self.logger.info("IN SETTER FOR %s" % list_two[i])
                     if len(set_field) == 0:
-                        self.logger.info("Define a JSON key to set for List two (Set Field)")
                         list_one[i][base_key] = list_two[i]
                     else:
                         set_field = set_field.replace(" ", "_", -1)
@@ -1561,13 +1509,6 @@ class Tools(AppBase):
             }
 
     def date_to_epoch(self, input_data, date_field, date_format):
-
-        self.logger.info(
-            "Executing with {} on {} with format {}".format(
-                input_data, date_field, date_format
-            )
-        )
-
         if isinstance(input_data, str):
             result = json.loads(input_data)
         else:
@@ -1683,7 +1624,6 @@ class Tools(AppBase):
 
 
     def run_math_operation(self, operation):
-        self.logger.info("Operation: %s" % operation)
         result = eval(operation)
         return result
 
@@ -1693,8 +1633,6 @@ class Tools(AppBase):
             mapping = json.loads(input_data)
         else:
             mapping = input_data
-
-        self.logger.info(f"Got mapping {json.dumps(mapping, indent=2)}")
 
         result = markupsafe.escape(mapping)
         return mapping
@@ -1715,7 +1653,7 @@ class Tools(AppBase):
             try:
                 value = json.dumps(value)
             except Exception as e:
-                self.logger.info(f"[WARNING] Error in JSON dumping (cache contains): {e}")
+                pass
         
         if not isinstance(value, str):
             value = str(value)
@@ -1856,8 +1794,6 @@ class Tools(AppBase):
                     "search": value,
                     "key": key
                 }
-                            
-                self.logger.info("Handle all values!") 
 
             #return allvalues
 
@@ -1891,6 +1827,7 @@ class Tools(AppBase):
                 value = json.dumps(value)
             except Exception as e:
                 self.logger.info(f"[WARNING] Error in JSON dumping (set cache): {e}")
+
         elif not isinstance(value, str):
             value = str(value)
 
@@ -1940,9 +1877,7 @@ class Tools(AppBase):
         value = requests.post(url, json=data, verify=False)
         try:
             allvalues = value.json()
-            #self.logger.info("VAL1: ", allvalues)
             allvalues["key"] = key
-            #self.logger.info("VAL2: ", allvalues)
 
             if allvalues["success"] == True and len(allvalues["value"]) > 0:
                 allvalues["found"] = True
@@ -1955,7 +1890,6 @@ class Tools(AppBase):
                 allvalues["value"] = parsedvalue
 
             except:
-                self.logger.info("Parsing of value as JSON failed")
                 pass
 
             return json.dumps(allvalues)
@@ -2026,7 +1960,6 @@ class Tools(AppBase):
         parsedstring = []
         try:
             for key, value in json_object.items():
-                self.logger.info("KV: %s:%s" % (key, value))
                 if isinstance(value, str) or isinstance(value, int) or isinstance(value, bool):
                     if include_key == True:
                         parsedstring.append("%s:%s" % (key, value))
@@ -2047,15 +1980,11 @@ class Tools(AppBase):
         return fullstring
 
     def cidr_ip_match(self, ip, networks):
-        self.logger.info("Executing with\nIP: {},\nNetworks: {}".format(ip, networks))
 
         if isinstance(networks, str):
             try:
                 networks = json.loads(networks)
             except json.decoder.JSONDecodeError as e:
-                self.logger.info("Failed to parse networks list as json: {}. Type: {}".format(
-                    e, type(networks)
-                ))
                 return {
                     "success": False,
                     "reason": "Networks is not a valid list: {}".format(networks),
@@ -2079,7 +2008,7 @@ class Tools(AppBase):
     def get_timestamp(self, time_format):
         timestamp = int(time.time())
         if time_format == "unix" or time_format == "epoch":
-            self.logger.info("Running default timestamp %s" % timestamp)
+            pass
 
         return timestamp
 
@@ -2090,12 +2019,12 @@ class Tools(AppBase):
         try:
             md5_value = hashlib.md5(str(value).encode('utf-8')).hexdigest()
         except Exception as e:
-            self.logger.info(f"Error in md5sum: {e}")
+            pass
 
         try:
             sha256_value = hashlib.sha256(str(value).encode('utf-8')).hexdigest()
         except Exception as e:
-            self.logger.info(f"Error in sha256: {e}")
+            pass
 
         parsedvalue = {
             "success": True,
@@ -2465,7 +2394,7 @@ class Tools(AppBase):
                 try:
                     item["is_private_ip"] = ipaddress.ip_address(item["data"]).is_private
                 except:
-                    self.logger.info("Error parsing %s" % item["data"])
+                    pass
 
         try:
             newarray = json.dumps(newarray)
