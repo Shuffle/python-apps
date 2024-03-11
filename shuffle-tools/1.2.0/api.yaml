@@ -1094,6 +1094,18 @@ actions:
          - false
         schema:
           type: string
+  - name: merge_incoming_branches 
+    description: 'Merges the data of incoming branches. Uses the input type to determine how to merge the data, and removes duplicates'
+    parameters:
+      - name: input_type 
+        description: What type to use
+        required: false
+        multiline: false 
+        example: 'list'
+        options:
+         - list 
+        schema:
+          type: string
   - name: run_ssh_command 
     description: 'Run a command on remote machine with SSH'
     parameters:

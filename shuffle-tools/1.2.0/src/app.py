@@ -1845,7 +1845,6 @@ class Tools(AppBase):
     ## subkey = "hi", value = "test3", overwrite=False
     ## {"subkey": "hi", "value": ["test2", "test3"]}
 
-    #def set_cache_value(self, key, value):
     def change_cache_subkey(self, key, subkey, value, overwrite):
         org_id = self.full_execution["workflow"]["execution_org"]["id"]
         url = "%s/api/v1/orgs/%s/set_cache" % (self.url, org_id)
@@ -1925,7 +1924,6 @@ class Tools(AppBase):
             self.logger.info("Value couldn't be parsed, or json dump of value failed")
             return value.text
 
-    # FIXME: Add option for org only & sensitive data (not to be listed)
     def set_cache_value(self, key, value):
         org_id = self.full_execution["workflow"]["execution_org"]["id"]
         url = "%s/api/v1/orgs/%s/set_cache" % (self.url, org_id)
@@ -2020,7 +2018,7 @@ class Tools(AppBase):
 
         try:
             ip_networks = list(map(ipaddress.ip_network, networks))
-            ip_address = ipaddress.ip_address(ip)
+            ip_address = ipaddress.ip_address(ip, False)
         except ValueError as e:
             return "IP or some networks are not in valid format.\nError: {}".format(e)
 
@@ -2576,6 +2574,69 @@ class Tools(AppBase):
             return "Failed to parse IOC's: %s" % e
 
         return newarray
+
+    def merge_incoming_branches(self, input_type="list"):
+        wf = self.full_execution["workflow"]
+        if "branches" not in wf or not wf["branches"]:
+            return {
+                "success": False,
+                "reason": "No branches found"
+            }
+
+        if "results" not in self.full_execution or not self.full_execution["results"]:
+            return {
+                "success": False,
+                "reason": "No results for previous actions not found"
+            }
+
+        if not input_type:
+            input_type = "list"
+
+        branches = wf["branches"]
+        cur_action = self.action
+        #print("Found %d branches" % len(branches))
+
+        results = []
+        for branch in branches:
+            if branch["destination_id"] != cur_action["id"]:
+                continue
+
+            # Find result for the source
+            source_id = branch["source_id"]
+
+            for res in self.full_execution["results"]:
+                if res["action"]["id"] != source_id:
+                    continue
+
+                try:
+                    parsed = json.loads(res["result"])
+                    results.append(parsed)
+                except Exception as e:
+                    results.append(res["result"])
+
+                break
+
+        if input_type == "list":
+            newlist = []
+            for item in results:
+                if not isinstance(item, list):
+                    continue
+
+                for subitem in item:
+                    if subitem in newlist:
+                        continue
+
+                    newlist.append(subitem)
+                #newlist.append(item)
+
+            results = newlist
+        else:
+            return {
+                "success": False,
+                "reason": "No results from source branches with type %s" % input_type
+            }
+
+        return results
 
     def list_cidr_ips(self, cidr):
         defaultreturn = {
