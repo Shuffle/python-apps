@@ -981,7 +981,16 @@ class Tools(AppBase):
     def get_file_value(self, filedata):
         filedata = self.get_file(filedata)
         if filedata is None:
-            return "File is empty?"
+            return {
+                "success": False,
+                "reason": "File not found",
+            }
+
+        if "data" not in filedata:
+            return {
+                "success": False,
+                "reason": "File content not found. File might be empty or not exist",
+            }
 
         try:
             return filedata["data"].decode()
@@ -998,6 +1007,7 @@ class Tools(AppBase):
                         return {
                             "success": False,
                             "reason": "Got the file, but the encoding can't be printed",
+                            "size": len(filedata["data"]),
                         }
 
     def download_remote_file(self, url, custom_filename=""):

@@ -384,8 +384,25 @@ class Email(AppBase):
                 "messages": json.dumps(emails, default=default),
             }
 
+    def parse_eml(self, filedata, extract_attachments=False):
+        parsedfile = {
+            "success": True,
+            "filename": "email.eml",
+            "data": filedata,
+        }
+
+        return self.parse_email_file(parsedfile, extract_attachments)
+
     def parse_email_file(self, file_id, extract_attachments=False):
-        file_path = self.get_file(file_id)
+        file_path = {
+            "success": False,
+        }
+
+        if isinstance(file_id, dict) and "data" in file_id:
+            file_path = file_id
+        else:
+            file_path = self.get_file(file_id)
+
         if file_path["success"] == False:
             return {
                 "success": False,

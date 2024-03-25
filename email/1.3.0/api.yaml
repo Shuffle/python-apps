@@ -233,6 +233,25 @@ actions:
         required: false 
         schema:
           type: bool    
+  - name: parse_eml
+    description: Takes an eml string and parses it to JSON
+    parameters:
+      - name: filedata 
+        description: The EML string data
+        required: true
+        multiline: true
+        example: 'EML string data'
+        schema:
+          type: string
+      - name: extract_attachments 
+        description: Whether to extract the attachments straight into files
+        required: true
+        options:
+          - true 
+          - false 
+        example: 'true'
+        schema:
+          type: string
   - name: parse_email_file
     description: Takes a file from shuffle and analyzes it if it's a valid .eml or .msg
     parameters:
