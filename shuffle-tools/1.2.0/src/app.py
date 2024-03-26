@@ -366,13 +366,27 @@ class Tools(AppBase):
         elif "," in keys:
             splitdata = keys.split(",")
 
+        def delete_key(json_object, keys):
+            if len(keys) == 1:
+                del json_object[keys[0]]
+            else:
+                delete_key(json_object[keys[0]], keys[1:])
+        
+        def validate_data(json_object, keys):
+            for index, key in enumerate(keys):
+                if not json_object.get(key):
+                    self.logger.info(f"[ERROR] Key {key} doesn't exist")
+                    return False
+                elif not isinstance(json_object.get(key), dict) and index != len(keys)-1:
+                    self.logger.info(f"[ERROR] Invalid data key {key}")
+                    return False
+            return True
+
         for key in splitdata:
             key = key.strip()
-            try:
-                del json_object[key]
-            except:
-                self.logger.info(f"[ERROR] Key {key} doesn't exist")
-
+            keys = key.split('.')
+            if validate_data(json_object=json_object, keys=keys):
+                delete_key(json_object=json_object, keys=keys)
         return json_object
 
     def replace_value(self, input_data, translate_from, translate_to, else_value=""):
