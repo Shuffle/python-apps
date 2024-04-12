@@ -2394,6 +2394,8 @@ class Tools(AppBase):
             input_type = input_type.split(",")
             for item in input_type:
                 item = item.strip()
+                if not item.endswith("s"):
+                    item = "%ss" % item
 
             ioc_types = input_type
 

@@ -1,8 +1,9 @@
+import json
+import PyPDF2
+import tempfile
+import requests
 import pytesseract
 from pdf2image import convert_from_path
-import PyPDF2
-import json
-import tempfile
 
 from walkoff_app_sdk.app_base import AppBase
 
@@ -59,10 +60,6 @@ class Tools(AppBase):
             report_name = report_name + ".html"
 
         report_name = report_name.replace(" ", "_", -1)
-
-        if not formatting:
-            formatting = "auto"
-    
         output_formatting= "Format the following text into an HTML report with relevant graphs and tables. Title of the report should be {report_title}."
         ret = requests.post(
             "https://shuffler.io/api/v1/conversation", 
@@ -216,6 +213,80 @@ class Tools(AppBase):
             "success": False,
             "reason": "Not implemented yet"
         }
+
+    def run_schemaless(self, category, action, app_name="", fields=""):
+        """
+		action := shuffle.CategoryAction{ 
+			Label: step.Name,
+			Category: step.Category,
+			AppName: step.AppName,
+			Fields: step.Fields,
+
+			Environment: step.Environment,
+
+			SkipWorkflow: true,
+		}
+        """
+
+        data = {
+            "label": action,
+            "category": category,
+
+            "app_name": "",
+            "fields": [],
+
+            "skip_workflow": True,
+        }
+
+        if app_name:
+            data["app_name"] = app_name
+
+        if fields:
+            if isinstance(fields, list):
+                data["fields"] = fields
+
+            elif isinstance(fields, dict):
+                for key, value in fields.items(): 
+                    data["fields"].append({
+                        "key": key,
+                        "value": str(value),
+                    })
+
+            else:
+                try:
+                    loadedfields = json.loads(fields)
+                    for key, value in loadedfields.items(): 
+                        data["fields"].append({
+                            "key": key,
+                            "value": value,
+                        })
+
+                except Exception as e:
+                    print("[ERROR] Failed to load fields as JSON: %s" % e)
+                    return json.dumps({
+                        "success": False,
+                        "reason": "Ensure Fields are valid JSON",
+                        "type": type(fields),
+                        "details": "%s" % e,
+                    })
+
+
+        baseurl = "%s/api/v1/apps/categories/run" % self.base_url
+        baseurl += "?execution_id=%s&authorization=%s" % (self.current_execution_id, self.authorization) 
+
+        print("[DEBUG] Running schemaless action with URL '%s', category %s and action label %s" % (baseurl, category, action))
+
+        headers = {}
+        request = requests.post(
+            baseurl,
+            json=data,
+            headers=headers,
+        )
+
+        try: 
+            return request.json()
+        except:
+            return request.text
 
 if __name__ == "__main__":
     Tools.run()

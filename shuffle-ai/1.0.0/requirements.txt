@@ -1,3 +1,4 @@
 pytesseract
 pdf2image
 pypdf2
+requests

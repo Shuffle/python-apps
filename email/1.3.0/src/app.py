@@ -409,6 +409,19 @@ class Email(AppBase):
                 "reason": "Couldn't get file with ID %s" % file_id
             }
 
+        #print("PRE: ", file_path)
+
+        # Check if data is in base64 and decode it
+        # If it ends with = then it may be bas64
+
+        if str(file_path["data"]).endswith("="):
+            try:
+                file_path["data"] = base64.b64decode(file_path["data"])
+            except Exception as e:
+                print(f"Failed to decode base64: {e}")
+
+        #print("POST: ", file_path)
+
         #print("File: %s" % file_path)
         print('working with .eml file? %s' % file_path["filename"])
 

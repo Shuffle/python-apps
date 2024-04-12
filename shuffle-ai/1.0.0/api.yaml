@@ -98,6 +98,36 @@ actions:
     returns:
       schema:
         type: string
+  - name: run_schemaless 
+    description: Runs an automatically translated action  
+    parameters:
+      - name: category 
+        description: The category the action is in
+        required: true
+        multiline: false 
+        schema:
+          type: string
+      - name: action 
+        description: The action label to run
+        required: true
+        multiline: false 
+        schema:
+          type: string
+      - name: app_name 
+        description: The app to run the action in
+        required: false 
+        multiline: false 
+        schema:
+          type: string
+      - name: fields 
+        description: The additional fields to add 
+        required: false 
+        multiline: false 
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
   - name: transcribe_audio 
     description: Returns text from audio 
     parameters:
