@@ -86,7 +86,7 @@ actions:
       - name: cc_emails
         description: cc_emails
         multiline: false
-        example: "test@gmail.com"
+        example: "frikky@shuffler.io,frikky@shuffler.io"
         required: false
         schema:
           type: string

@@ -114,7 +114,7 @@ class Email(AppBase):
         msg["Subject"] = subject
         
         if cc_emails:
-            msg["cc"] = cc_emails
+            msg["Cc"] = cc_emails
         
         msg.attach(MIMEText(body, body_type))
 
@@ -165,7 +165,7 @@ class Email(AppBase):
         self.logger.info("Successfully sent email with subject %s to %s" % (subject, recipient))
         return {
             "success": True, 
-            "reason": "Email sent to %s!" % recipient,
+            "reason": "Email sent to %s, %s!" %(recipient,cc_emails) if cc_emails else "Email sent to %s!" % recipient,
             "attachments": attachment_count
         }
 
