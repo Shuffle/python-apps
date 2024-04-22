@@ -75,7 +75,7 @@ class Email(AppBase):
         return requests.post(url, headers=headers, json=data).text
 
     def send_email_smtp(
-        self, smtp_host, recipient, cc_emails ,subject, body, smtp_port, attachments="", username="", password="", ssl_verify="True", body_type="html", 
+        self, smtp_host, recipient, subject, body, smtp_port, attachments="", username="", password="", ssl_verify="True", body_type="html", cc_emails=""
     ):
         if type(smtp_port) == str:
             try:
@@ -113,7 +113,7 @@ class Email(AppBase):
         msg["To"] = recipient
         msg["Subject"] = subject
         
-        if cc_emails:
+        if cc_emails != None and len(cc_emails) > 0:
             msg["Cc"] = cc_emails
         
         msg.attach(MIMEText(body, body_type))
