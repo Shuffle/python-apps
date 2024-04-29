@@ -18,13 +18,12 @@ An app for interacting with Google Workspace or GWS.
        - Note down the email address associated with the service account you just created it'll be used in the authentication in Shuffle.
   4) Adding permissions to the service account from GWS console.
 	    - Signin to the Google Workspace admin console.
-		 -  In the Admin console, locate the sidebar and navigate to Security > API controls. This area allows you to manage third-party and internal application access to your Google Workspace data.
-		 - Under the Domain-wide delegation section, click on “Manage Domain Wide Delegation” to view and configure client access.
-		 - If the service account client ID is not listed, you will add it; if it is already listed but you need to update permissions, click on the service account’s client ID.
-		 - To add a new client ID:
-		- Click on Add new.
-		- Enter the Client ID of the service account you noted earlier when creating the service account in GCP.
-		- In the OAuth Scopes field, enter the scopes required for your service account to function correctly. OAuth Scopes specify the permissions that your application requests. 
+		- In the Admin console, locate the sidebar and navigate to Security > API controls. This area allows you to manage third-party and internal application access to your Google Workspace data.
+		- Under the Domain-wide delegation section, click on “Manage Domain Wide Delegation” to view and configure client access.
+		- If the service account client ID is not listed, you will add it; if it is already listed but you need to update permissions, click on the service account’s client ID. To add a new client ID:
+			- Click on Add new.
+			- Enter the Client ID of the service account you noted earlier when creating the service account in GCP.
+			- In the OAuth Scopes field, enter the scopes required for your service account to function correctly. OAuth Scopes specify the permissions that your application requests. 
 		- Depending on the actions you want to use below are the OAuth scopes required.
 
 | Action              | OAuth Scope                                                                                                                                 |
