@@ -2642,6 +2642,15 @@ class Tools(AppBase):
                 #newlist.append(item)
 
             results = newlist
+        elif input_type == "dict":
+            new_dict = {}
+            for item in results:
+                if not isinstance(item, dict): 
+                    continue
+
+                new_dict = self.merge_lists(new_dict, item)
+
+            results = json.dumps(new_dict)
         else:
             return {
                 "success": False,

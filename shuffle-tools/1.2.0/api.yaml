@@ -282,7 +282,7 @@ actions:
         required: false
         multiline: false
         example: "domains,urls,email_addresses,ipv4s,ipv4_cidrs,ipv6s,md5s,sha256s,sha1s,cves"
-        value: "domains,urls,ipv4s,md5s,sha1s"
+        value: "domains,urls,ipv4s,md5s,sha1s,email_addresses"
         multiselect: true
         schema:
           type: string
@@ -1106,6 +1106,7 @@ actions:
         example: 'list'
         options:
          - list 
+         - dict
         schema:
           type: string
   - name: run_ssh_command 
