@@ -498,5 +498,149 @@ class MsIdentityAccess(AppBase):
 
         return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code, "error_response":ret.text}        
 
+    def disable_user_account(self, tenant_id, client_id, client_secret, user_email_or_id):
+        graph_url = "https://graph.microsoft.com"
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
+
+        graph_url = f"https://graph.microsoft.com/beta/users/{user_email_or_id}"
+
+        headers = {
+            "Content-type": "application/json"
+        }
+        request_body = {
+            "accountEnabled": "False"
+        }
+
+        ret = session.patch(graph_url, json=request_body,headers=headers)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code, "error_response":ret.text}             
+
+    def update_user_job_title(self, tenant_id, client_id, client_secret, user_email_or_id, user_job_title):
+        graph_url = "https://graph.microsoft.com"
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
+
+        graph_url = f"https://graph.microsoft.com/beta/users/{user_email_or_id}"
+
+        headers = {
+            "Content-type": "application/json"
+        }
+        request_body = {
+            "jobTitle": user_job_title
+        }
+
+        ret = session.patch(graph_url, json=request_body,headers=headers)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code, "error_response":ret.text}
+
+    def update_user_department(self, tenant_id, client_id, client_secret, user_email_or_id, user_department):
+        graph_url = "https://graph.microsoft.com"
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
+
+        graph_url = f"https://graph.microsoft.com/beta/users/{user_email_or_id}"
+
+        headers = {
+            "Content-type": "application/json"
+        }
+        request_body = {
+            "department": user_department
+        }
+
+        ret = session.patch(graph_url, json=request_body,headers=headers)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code, "error_response":ret.text}
+
+    def update_user_employee_type(self, tenant_id, client_id, client_secret, user_email_or_id, user_employee_type):
+        graph_url = "https://graph.microsoft.com"
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
+
+        graph_url = f"https://graph.microsoft.com/beta/users/{user_email_or_id}"
+
+        headers = {
+            "Content-type": "application/json"
+        }
+        request_body = {
+            "employeeType": user_employee_type
+        }
+
+        ret = session.patch(graph_url, json=request_body,headers=headers)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code, "error_response":ret.text}
+    
+    def update_user_leave_date(self, tenant_id, client_id, client_secret, user_email_or_id, user_leave_date):
+        graph_url = "https://graph.microsoft.com"
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
+
+        graph_url = f"https://graph.microsoft.com/beta/users/{user_email_or_id}"
+
+        headers = {
+            "Content-type": "application/json"
+        }
+        request_body = {
+            "employeeLeaveDateTime": user_leave_date
+        }
+
+        ret = session.patch(graph_url, json=request_body,headers=headers)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code, "error_response":ret.text}
+    
+    def get_user_direct_groups(self, tenant_id, client_id, client_secret, user_email_or_id):
+        graph_url = "https://graph.microsoft.com"
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
+
+        graph_url = f"https://graph.microsoft.com/beta/users/{user_email_or_id}/memberOf?$filter=NOT(groupTypes/any(c:c eq 'DynamicMembership'))&$count=true"
+
+        headers = {
+            "ConsistencyType": "eventual"
+        }
+
+        ret = session.get(graph_url,headers=headers)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code, "error_response":ret.text}
+
+    def remove_user_from_group(self, tenant_id, client_id, client_secret, user_id, group_id):
+        graph_url = "https://graph.microsoft.com"
+        session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
+
+        graph_url = f"https://graph.microsoft.com/beta/groups/{group_id}/members/{user_id}/$ref"
+
+        ret = session.delete(graph_url)
+        print(ret.status_code)
+        print(ret.text)
+        if ret.status_code < 300:
+            data = ret.json()
+            return data
+
+        return {"success": False, "reason": "Bad status code %d - expecting 200." % ret.status_code, "error_response":ret.text}
+
 if __name__ == "__main__":
     MsIdentityAccess.run()

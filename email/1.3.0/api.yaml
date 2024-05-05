@@ -83,6 +83,13 @@ actions:
         required: true
         schema:
           type: string
+      - name: cc_emails
+        description: cc_emails
+        multiline: false
+        example: "frikky@shuffler.io,frikky@shuffler.io"
+        required: false
+        schema:
+          type: string
       - name: subject
         description: The subject of the email
         multiline: false
