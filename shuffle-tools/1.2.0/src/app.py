@@ -94,48 +94,46 @@ class Tools(AppBase):
             return value
 
         elif operation == "decode":
+            decoded_bytes = "" 
+
+            # For loop this. It's stupid.
             try:
                 decoded_bytes = base64.b64decode(string)
-                try:
-                    decoded_bytes = str(decoded_bytes, "utf-8")
-                except:
-                    pass
-
-                # Check if json
-                try:
-                    decoded_bytes = json.loads(decoded_bytes)
-                except:
-                    pass
-
-                return decoded_bytes
             except Exception as e:
-                #return string.decode("utf-16")
+                if "incorrect padding" in str(e).lower():
+                    try:
+                        decoded_bytes = base64.b64decode(string + "=")
+                    except Exception as e:
+                        if "incorrect padding" in str(e).lower():
+                            try:
+                                decoded_bytes = base64.b64decode(string + "==")
+                            except Exception as e:
+                                if "incorrect padding" in str(e).lower():
+                                    try:
+                                        decoded_bytes = base64.b64decode(string + "===")
+                                    except Exception as e:
+                                        if "incorrect padding" in str(e).lower():
+                                            return "Invalid Base64"
 
-                return {
-                    "success": False,
-                    "reason": f"Error decoding the base64: {e}",
-                }
-                #newvar = binascii.a2b_base64(string)
-                #try:
-                #    if str(newvar).startswith("b'") and str(newvar).endswith("'"):
-                #        newvar = newvar[2:-1]
-                #except Exception as e:
-                #return newvar
 
-                #try:
-                #    return newvar
-                #except:
-                #    pass
+            decoded_bytes = base64.b64decode(string)
+            try:
+                decoded_bytes = str(decoded_bytes, "utf-8")
+            except:
+                pass
 
-            return {
-                "success": False,
-                "reason": "Error decoding the base64",
-            }
+            # Check if json
+            try:
+                decoded_bytes = json.loads(decoded_bytes)
+            except:
+                pass
 
-        return json.dumps({
+            return decoded_bytes
+
+        return {
             "success": False,
-            "reason": "No base64 to be converted",
-        })
+            "reason": "Invalid operation",
+        }
 
     def parse_list_internal(self, input_list):
         if isinstance(input_list, list):
@@ -565,7 +563,7 @@ class Tools(AppBase):
         if wildcardstring in str(matching_string).lower():
             return True
         else:
-            wildcardstring = wildcardstring.replace(".", "\.")
+            wildcardstring = wildcardstring.replace(".", "\\.")
             wildcardstring = wildcardstring.replace("*", ".*")
 
             if re.match(wildcardstring, str(matching_string).lower()):
