@@ -633,6 +633,22 @@ class Email(AppBase):
         # Should be a dictionary
         return analyzed_headers 
 
+    # This is an SMS function of Shuffle
+    def send_sms_shuffle(self, apikey, phone_numbers, body):
+        phone_numbers = self.parse_list_internal(phone_numbers)
+
+        targets = [phone_numbers]
+        if ", " in phone_numbers:
+            targets = phone_numbers.split(", ")
+        elif "," in phone_numbers:
+            targets = phone_numbers.split(",")
+
+        data = {"numbers": targets, "body": body}
+
+        url = "https://shuffler.io/api/v1/functions/sendsms"
+        headers = {"Authorization": "Bearer %s" % apikey}
+        return requests.post(url, headers=headers, json=data, verify=False).text
+
 
 # Run the actual thing after we've checked params
 def run(request):
