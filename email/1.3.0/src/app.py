@@ -395,6 +395,10 @@ class Email(AppBase):
             "data": filedata,
         }
 
+        # Encode the data as utf-8 if it's not base64
+        if not str(parsedfile["data"]).endswith("="):
+            parsedfile["data"] = parsedfile["data"].encode("utf-8")
+
         return self.parse_email_file(parsedfile, extract_attachments)
 
     def parse_email_file(self, file_id, extract_attachments=False):
@@ -412,8 +416,6 @@ class Email(AppBase):
                 "success": False,
                 "reason": "Couldn't get file with ID %s" % file_id
             }
-
-        #print("PRE: ", file_path)
 
         # Check if data is in base64 and decode it
         # If it ends with = then it may be bas64
@@ -434,6 +436,16 @@ class Email(AppBase):
         else:
             extract_attachments = False
 
+        # Replace raw newlines \\r\\n with actual newlines
+        # The data is a byte string, so we need to decode it to utf-8
+        try:
+            print("Pre size: %d" % len(file_path["data"]))
+            file_path["data"] = file_path["data"].decode("utf-8").replace("\\r\\n", "\n").encode("utf-8")
+            print("Post size: %d" % len(file_path["data"]))
+        except Exception as e:
+            print(f"Failed to decode file: {e}")
+            pass
+
         # Makes msg into eml
         if ".msg" in file_path["filename"] or "." not in file_path["filename"]:
             print(f"[DEBUG] Working with .msg file {file_path['filename']}. Filesize: {len(file_path['data'])}")
@@ -448,6 +460,7 @@ class Email(AppBase):
                 if ".msg" in file_path["filename"]:
                     return {"success":False, "reason":f"Exception occured during msg parsing: {e}"}    
 
+
         ep = eml_parser.EmlParser(
             include_attachment_data=True, 
             include_raw_body=True 
@@ -456,8 +469,8 @@ class Email(AppBase):
         try:
             print("Pre email")
             parsed_eml = ep.decode_email_bytes(file_path['data'])
-            if str(parsed_eml["header"]["date"]) == "1970-01-01 00:00:00+00:00" and len(parsed_eml["header"]["subject"]) == 0:
-                return {"success":False,"reason":"Not a valid EML/MSG file, or the file have a timestamp or subject defined (required).", "date": str(parsed_eml["header"]["date"]), "subject": str(parsed_eml["header"]["subject"])}
+            #if str(parsed_eml["header"]["date"]) == "1970-01-01 00:00:00+00:00" and len(parsed_eml["header"]["subject"]) == 0:
+            #    return {"success":False,"reason":"Not a valid EML/MSG file, or the file have a timestamp or subject defined (required).", "date": str(parsed_eml["header"]["date"]), "subject": str(parsed_eml["header"]["subject"])}
 
             # Put attachments in the shuffle file system
             print("Pre attachment")

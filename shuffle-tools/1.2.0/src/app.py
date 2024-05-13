@@ -94,29 +94,44 @@ class Tools(AppBase):
             return value
 
         elif operation == "decode":
-            decoded_bytes = "" 
+
+            if "-" in string:
+                string = string.replace("-", "+", -1)
+
+            if "_" in string:
+                string = string.replace("_", "/", -1)
+
+            # Fix padding
+            if len(string) % 4 != 0:
+                string += "=" * (4 - len(string) % 4)
+
 
             # For loop this. It's stupid.
+            decoded_bytes = "" 
             try:
                 decoded_bytes = base64.b64decode(string)
             except Exception as e:
-                if "incorrect padding" in str(e).lower():
-                    try:
-                        decoded_bytes = base64.b64decode(string + "=")
-                    except Exception as e:
-                        if "incorrect padding" in str(e).lower():
-                            try:
-                                decoded_bytes = base64.b64decode(string + "==")
-                            except Exception as e:
-                                if "incorrect padding" in str(e).lower():
-                                    try:
-                                        decoded_bytes = base64.b64decode(string + "===")
-                                    except Exception as e:
-                                        if "incorrect padding" in str(e).lower():
-                                            return "Invalid Base64"
+                return json.dumps({
+                    "success": False,
+                    "reason": "Invalid Base64 - %s" % e,
+                })
+
+                #if "incorrect padding" in str(e).lower():
+                #    try:
+                #        decoded_bytes = base64.b64decode(string + "=")
+                #    except Exception as e:
+                #        if "incorrect padding" in str(e).lower():
+                #            try:
+                #                decoded_bytes = base64.b64decode(string + "==")
+                #            except Exception as e:
+                #                if "incorrect padding" in str(e).lower():
+                #                    try:
+                #                        decoded_bytes = base64.b64decode(string + "===")
+                #                    except Exception as e:
+                #                        if "incorrect padding" in str(e).lower():
+                #                            return "Invalid Base64"
 
 
-            decoded_bytes = base64.b64decode(string)
             try:
                 decoded_bytes = str(decoded_bytes, "utf-8")
             except:
