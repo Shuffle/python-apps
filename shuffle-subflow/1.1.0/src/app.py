@@ -191,7 +191,6 @@ class Subflow(AppBase):
         }
 
         if len(auth_override) > 0:
-            print("Overriding auth with: %s" % auth_override)
             headers["appauth"] = auth_override
 
         if len(str(argument)) == 0:
