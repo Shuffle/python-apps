@@ -140,7 +140,7 @@ class Subflow(AppBase):
 
         return json.dumps(result)
 
-    def run_subflow(self, user_apikey, workflow, argument, source_workflow="", source_execution="", source_node="", source_auth="", startnode="", backend_url=""):
+    def run_subflow(self, user_apikey, workflow, argument, source_workflow="", source_execution="", source_node="", source_auth="", startnode="", backend_url="", auth_override=""):
         #print("STARTNODE: %s" % startnode)
         url = "%s/api/v1/workflows/%s/execute" % (self.url, workflow)
         if len(self.base_url) > 0:
@@ -186,6 +186,9 @@ class Subflow(AppBase):
             "Authorization": "Bearer %s" % user_apikey,
             "User-Agent": "Shuffle Subflow 1.0.0"
         }
+
+        if len(auth_override) > 0:
+            headers["appauth"] = auth_override
 
         if len(str(argument)) == 0:
             ret = requests.post(url, headers=headers, params=params)
