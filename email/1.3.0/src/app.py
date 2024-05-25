@@ -556,12 +556,16 @@ class Email(AppBase):
 
         analyzed_headers = {
             "success": True,
+            "sender": "",
+            "receiver": "",
+            "subject": "",
+            "date": "",
             "details": {
                 "spf": "",
                 "dkim": "",
                 "dmarc": "",
                 "spoofed": "",
-            }
+            },
         }
 
         for item in headers:
@@ -569,6 +573,19 @@ class Email(AppBase):
                 item["key"] = item["name"]
     
             item["key"] = item["key"].lower()
+
+            # Handle sender/receiver
+            if item["key"] == "from" or item["key"] == "sender" or item["key"] == "delivered-to":
+                analyzed_headers["sender"] = item["value"]
+
+            if item["key"] == "to" or item["key"] == "receiver" or item["key"] == "delivered-to":
+                analyzed_headers["receiver"] = item["value"]
+
+            if item["key"] == "subject" or item["key"] == "title":
+                analyzed_headers["subject"] = item["value"]
+
+            if item["key"] == "date": 
+                analyzed_headers["date"] = item["value"]
     
             if "spf" in item["key"]:
                 analyzed_headers["details"]["spf"] = spf
