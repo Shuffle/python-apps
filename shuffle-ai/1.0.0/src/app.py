@@ -215,6 +215,8 @@ class Tools(AppBase):
         }
 
     def run_schemaless(self, category, action, app_name="", fields=""):
+        self.logger.info("[DEBUG] Running schemaless action with category '%s' and action label '%s'" % (category, action))
+
         """
 		action := shuffle.CategoryAction{ 
 			Label: step.Name,
@@ -253,6 +255,12 @@ class Tools(AppBase):
                     })
 
             else:
+                fields = str(fields).strip()
+                if not fields.startswith("{") and not fields.startswith("["):
+                    fields = json.dumps({
+                        "data": fields,
+                    })
+
                 try:
                     loadedfields = json.loads(fields)
                     for key, value in loadedfields.items(): 
@@ -262,11 +270,10 @@ class Tools(AppBase):
                         })
 
                 except Exception as e:
-                    print("[ERROR] Failed to load fields as JSON: %s" % e)
+                    self.logger.info("[ERROR] Failed to load fields as JSON: %s" % e)
                     return json.dumps({
                         "success": False,
-                        "reason": "Ensure Fields are valid JSON",
-                        "type": type(fields),
+                        "reason": "Ensure 'Fields' are valid JSON",
                         "details": "%s" % e,
                     })
 
@@ -274,7 +281,7 @@ class Tools(AppBase):
         baseurl = "%s/api/v1/apps/categories/run" % self.base_url
         baseurl += "?execution_id=%s&authorization=%s" % (self.current_execution_id, self.authorization) 
 
-        print("[DEBUG] Running schemaless action with URL '%s', category %s and action label %s" % (baseurl, category, action))
+        self.logger.info("[DEBUG] Running schemaless action with URL '%s', category %s and action label %s" % (baseurl, category, action))
 
         headers = {}
         request = requests.post(
