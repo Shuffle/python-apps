@@ -518,6 +518,8 @@ class Email(AppBase):
     # Basic function to check headers in an email
     # Can be dumped in in pretty much any format
     def analyze_headers(self, headers):
+        self.logger.info("Input headers: %s" % headers)
+
         # Raw
         if isinstance(headers, str):
             headers = self.parse_email_headers(headers)
@@ -531,6 +533,11 @@ class Email(AppBase):
             headers = headers["header"]
             if "header" in headers:
                 headers = headers["header"]
+
+        if "headers" in headers:
+            headers = headers["headers"]
+            if "headers" in headers:
+                headers = headers["headers"]
         
         if not isinstance(headers, list):
             newheaders = []
@@ -548,6 +555,7 @@ class Email(AppBase):
     
             headers = newheaders
 
+        #self.logger.info("Parsed headers: %s" % headers)
     
         spf = False
         dkim = False
