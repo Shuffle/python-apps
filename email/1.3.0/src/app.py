@@ -665,13 +665,8 @@ class Email(AppBase):
 
     # This is an SMS function of Shuffle
     def send_sms_shuffle(self, apikey, phone_numbers, body):
-        phone_numbers = self.parse_list_internal(phone_numbers)
-
-        targets = [phone_numbers]
-        if ", " in phone_numbers:
-            targets = phone_numbers.split(", ")
-        elif "," in phone_numbers:
-            targets = phone_numbers.split(",")
+        phone_numbers = phone_numbers.replace(" ", "")
+        targets = phone_numbers.split(",")
 
         data = {"numbers": targets, "body": body}
 
