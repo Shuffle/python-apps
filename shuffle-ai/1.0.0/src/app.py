@@ -291,6 +291,25 @@ class Tools(AppBase):
         )
 
         try: 
+            self.logger.info("Starting url checker")
+            if "parameters" in self.action:
+                response_headers = request.headers
+                for key, value in response_headers.items():
+                    if not str(key).lower().endswith("-url"):
+                        continue
+
+                    self.action["parameters"].append({
+                        "name": key,
+                        "value": value,
+                    })
+
+                    self.logger.info("[DEBUG] Response header: %s: %s" % (key, value))
+            else:
+                self.logger.info("[DEBUG] No parameters in action. Can't append url headers.")
+        except Exception as e:
+            self.logger.info("[ERROR] Failed to get response headers: %s" % e)
+
+        try: 
             return request.json()
         except:
             return request.text
