@@ -35,6 +35,55 @@ actions:
         example: print("hello world")
         schema:
           type: string
+
+  - name: dedup_and_merge 
+    description: Merges data from multiple workflows within a set timeframe. Returns action as SKIPPED if the data is a duplicate. Returns with a list of all data if the data at the end
+    parameters:
+      - name: key
+        description: The key to use for deduplication
+        required: true
+        multiline: false
+        example: "ticketname+username"
+        schema:
+          type: string
+      - name: value 
+        description: The full value of the item
+        required: true
+        multiline: true 
+        example: "1208301599081"
+        schema:
+          type: string
+      - name: timeout 
+        description: The timeout before returning
+        required: true
+        options:
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
+          - 8
+          - 9
+          - 10
+          - 15
+          - 20
+          - 25 
+        multiline: false
+        example: "1"
+        schema:
+          type: string
+      - name: set_skipped 
+        description: Whether to set the action SKIPPED or not IF it matches another workflow in the same timeframe
+        required: true
+        options:
+          - true
+          - false
+        multiline: false
+        example: "true"
+        schema:
+          type: string
+
   - name: check_cache_contains 
     description: Checks Shuffle cache whether a user-provided key contains a value. Returns ALL the values previously appended.
     parameters:
