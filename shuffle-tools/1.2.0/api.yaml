@@ -184,47 +184,47 @@ actions:
     returns:
       schema:
         type: string
-  - name: send_email_shuffle
-    description: Send an email from Shuffle
-    parameters:
-      - name: apikey
-        description: Your https://shuffler.io organization apikey
-        multiline: false
-        example: "https://shuffler.io apikey"
-        required: true
-        schema:
-          type: string
-      - name: recipients
-        description: The recipients of the email
-        multiline: false
-        example: "test@example.com,frikky@shuffler.io"
-        required: true
-        schema:
-          type: string
-      - name: subject
-        description: The subject to use
-        multiline: false
-        example: "SOS this is an alert :o"
-        required: true
-        schema:
-          type: string
-      - name: body
-        description: The body to add to the email
-        multiline: true
-        example: "This is an email alert from Shuffler.io :)"
-        required: true
-        schema:
-          type: string
-      - name: attachments 
-        description: The ID of files in Shuffle to add as attachments 
-        multiline: false
-        example: "file_id1,file_id2,file_id3"
-        required: false 
-        schema:
-          type: string
-    returns:
-      schema:
-        type: string
+  #- name: send_email_shuffle
+  #  description: Send an email from Shuffle
+  #  parameters:
+  #    - name: apikey
+  #      description: Your https://shuffler.io organization apikey
+  #      multiline: false
+  #      example: "https://shuffler.io apikey"
+  #      required: true
+  #      schema:
+  #        type: string
+  #    - name: recipients
+  #      description: The recipients of the email
+  #      multiline: false
+  #      example: "test@example.com,frikky@shuffler.io"
+  #      required: true
+  #      schema:
+  #        type: string
+  #    - name: subject
+  #      description: The subject to use
+  #      multiline: false
+  #      example: "SOS this is an alert :o"
+  #      required: true
+  #      schema:
+  #        type: string
+  #    - name: body
+  #      description: The body to add to the email
+  #      multiline: true
+  #      example: "This is an email alert from Shuffler.io :)"
+  #      required: true
+  #      schema:
+  #        type: string
+  #    - name: attachments 
+  #      description: The ID of files in Shuffle to add as attachments 
+  #      multiline: false
+  #      example: "file_id1,file_id2,file_id3"
+  #      required: false 
+  #      schema:
+  #        type: string
+  #  returns:
+  #    schema:
+  #      type: string
   - name: filter_list
     description: Takes a list and filters based on your data
     skip_multicheck: true

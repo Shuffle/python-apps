@@ -198,6 +198,7 @@ class Tools(AppBase):
             "subject": subject, 
             "body": body, 
             "type": "alert",
+            "email_app": True,
         }
 
         # Read the attachments
@@ -214,9 +215,9 @@ class Tools(AppBase):
                 pass
                 
 
-        url = "https://shuffler.io/api/v1/functions/sendmail"
+        url = "https://shuffler.io/functions/sendmail"
         headers = {"Authorization": "Bearer %s" % apikey}
-        return requests.post(url, headers=headers, json=data, verify=False).text
+        return requests.post(url, headers=headers, json=data).text
 
     def repeat_back_to_me(self, call):
         return call
