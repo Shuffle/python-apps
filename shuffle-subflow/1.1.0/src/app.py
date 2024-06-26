@@ -29,6 +29,7 @@ class Subflow(AppBase):
             "User-Agent": "Shuffle Userinput 1.1.0",
         }
 
+
         result = {
             "success": True,
             "source": "userinput",
@@ -40,6 +41,11 @@ class Subflow(AppBase):
                 "ip": "",
                 "user": "", 
                 "note": "",
+            },
+            "links": {
+                "frontend_no_answer": "",
+                "api_continue": "",
+                "api_abort": "",
             }
         }
 
@@ -50,26 +56,32 @@ class Subflow(AppBase):
         if len(str(backend_url)) > 0:
             url = backend_url
 
+        frontend_url = url
+        if ":5001" in frontend_url:
+            print("Should change port to 3001.")
+        if "appspot.com" in frontend_url:
+            frontend_url = "https://shuffler.io"
+        if "run.app" in frontend_url:
+            frontend_url = "https://shuffler.io"
+        if "ngrok" in frontend_url:
+            frontend_url = ""
+
+        explore_path = "%s/workflows/%s/run?authorization=%s&reference_execution=%s&source_node=%s" % (frontend_url, self.full_execution["workflow"]["id"], self.full_execution["authorization"], self.full_execution["execution_id"], source_node)
+        frontend_continue_url = "%s/workflows/%s/run?authorization=%s&reference_execution=%s&answer=true&source_node=%s" % (frontend_url, self.full_execution["workflow"]["id"], self.full_execution["authorization"], self.full_execution["execution_id"], source_node)
+        frontend_abort_url = "%s/workflows/%s/run?authorization=%s&reference_execution=%s&answer=false&source_node=%s" % (frontend_url, self.full_execution["workflow"]["id"], self.full_execution["authorization"], self.full_execution["execution_id"], source_node)
+        api_continue_url = "%s/api/v1/workflows/%s/execute?authorization=%s&reference_execution=%s&answer=true&source_node=%s" % (frontend_url, self.full_execution["workflow"]["id"], self.full_execution["authorization"], self.full_execution["execution_id"], source_node)
+        api_abort_url = "%s/api/v1/workflows/%s/execute?authorization=%s&reference_execution=%s&answer=false&source_node=%s" % (frontend_url, self.full_execution["workflow"]["id"], self.full_execution["authorization"], self.full_execution["execution_id"], source_node)
+
+        result["links"]["frontend_no_answer"] = explore_path
+        result["links"]["frontend_continue"] = frontend_continue_url
+        result["links"]["frontend_abort"] = frontend_abort_url
+        result["links"]["api_continue"] = api_continue_url
+        result["links"]["api_abort"] = api_abort_url
+
         print("Found backend url: %s" % url)
-        #print("AUTH: %s" % self.full_execution["authorization"])
-        #if len(information):
-        #    print("Should run arg: %s", information)
-
         if len(subflow) > 0:
-            #print("Should run subflow: %s", subflow) 
-
-            # Missing startnode (user input trigger)
-            #print("Subflows to run from userinput: ", subflows)
 
             subflows = subflow.split(",")
-            frontend_url = url
-            if ":5001" in frontend_url:
-                print("Should change port to 3001.")
-            if "appspot.com" in frontend_url:
-                frontend_url = "https://shuffler.io"
-            if "run.app" in frontend_url:
-                frontend_url = "https://shuffler.io"
-
             for item in subflows: 
                 # In case of URL being passed, and not just ID
                 if "/" in item:
@@ -80,10 +92,10 @@ class Subflow(AppBase):
                 argument = json.dumps({
                     "information": information,
                     "parent_workflow": self.full_execution["workflow"]["id"],
-                    "frontend_continue": "%s/workflows/%s/run?authorization=%s&reference_execution=%s&answer=true&source_node=%s" % (frontend_url, self.full_execution["workflow"]["id"], self.full_execution["authorization"], self.full_execution["execution_id"], source_node),
-                    "frontend_abort": "%s/workflows/%s/run?authorization=%s&reference_execution=%s&answer=false&source_node=%s" % (frontend_url, self.full_execution["workflow"]["id"], self.full_execution["authorization"], self.full_execution["execution_id"], source_node),
-                    "api_continue": "%s/api/v1/workflows/%s/execute?authorization=%s&reference_execution=%s&answer=true&source_node=%s" % (frontend_url, self.full_execution["workflow"]["id"], self.full_execution["authorization"], self.full_execution["execution_id"], source_node),
-                    "api_abort": "%s/api/v1/workflows/%s/execute?authorization=%s&reference_execution=%s&answer=false&source_node=%s" % (frontend_url, self.full_execution["workflow"]["id"], self.full_execution["authorization"], self.full_execution["execution_id"], source_node),
+                    "frontend_continue": frontend_continue_url,
+                    "frontend_abort": frontend_abort_url,
+                    "api_continue": api_continue_url,
+                    "api_abort": api_abort_url,
                 })
 
                 ret = self.run_subflow(user_apikey, item, argument, source_workflow=self.full_execution["workflow"]["id"], source_execution=self.full_execution["execution_id"], source_auth=self.full_execution["authorization"], startnode=startnode, backend_url=backend_url, source_node=source_node)

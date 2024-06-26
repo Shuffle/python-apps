@@ -2480,6 +2480,8 @@ class Tools(AppBase):
         else:
             input_type = input_type.split(",")
             for i in range(len(input_type)):
+                item = input_type[i]
+
                 item = item.strip()
                 if not item.endswith("s"):
                     item = "%ss" % item
