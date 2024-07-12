@@ -134,7 +134,7 @@ class MsIdentityAccess(AppBase):
             return {"success": False, "reason": "Couldn't find any password methods to reset password, but DID revoke their sessions (2)"}
 
         registered_password_id = retdata["value"][0]["id"]
-        graph_url = f"https://graph.microsoft.com/v1.0/users/{user_email_or_id}/authentication/passwordMethods/{registered_password_id}/resetPassword"
+        graph_url = f"https://graph.microsoft.com/v1.0/users/{user_email_or_id}/authentication/methods/{registered_password_id}/resetPassword"
         headers = {
             "Content-type": "application/json"
         }
@@ -480,7 +480,7 @@ class MsIdentityAccess(AppBase):
         graph_url = "https://graph.microsoft.com"
         session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
 
-        graph_url = f"https://graph.microsoft.com/beta/users/{user_email_or_id}/authentication/passwordMethods/{registered_password_id}/resetPassword"
+        graph_url = f"https://graph.microsoft.com/beta/users/{user_email_or_id}/authentication/methods/{registered_password_id}/resetPassword"
 
         headers = {
             "Content-type": "application/json"
