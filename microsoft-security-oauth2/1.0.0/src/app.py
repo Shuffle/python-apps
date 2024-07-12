@@ -36,7 +36,7 @@ class MicrosoftSecurity(AppBase):
         graph_url = "https://graph.microsoft.com"
         session = self.authenticate(access_token, refresh_token)
 
-        url = "https://graph.microsoft.com/beta/users/%s/authentication/passwordMethods/%s/resetPassword" % (userId, passwordId)
+        url = "https://graph.microsoft.com/beta/users/%s/authentication/methods/%s/resetPassword" % (userId, passwordId)
         response = session.post(url)
         print(response.status_code)
         return response.text
