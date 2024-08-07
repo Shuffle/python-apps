@@ -1106,25 +1106,25 @@ actions:
     returns:
       schema:
         type: string
-  - name: get_standardized_data 
-    description: 'Used to run standardized synonym translations of data to make it easier to use in automation. This can be done automatically in subflows as well'
-    parameters:
-      - name: json_input 
-        description: The full JSON blob to automatically translate
-        required: true
-        multiline: true
-        example: '{"ref": "1234"}'
-        schema:
-          type: string
-      - name: input_type 
-        description: The data type of the input
-        required: true
-        multiline: true
-        example: 'cases'
-        options:
-         - cases
-        schema:
-          type: string
+          #- name: get_standardized_data 
+          #  description: 'Used to run standardized synonym translations of data to make it easier to use in automation. This can be done automatically in subflows as well'
+          #  parameters:
+          #    - name: json_input 
+          #      description: The full JSON blob to automatically translate
+          #      required: true
+          #      multiline: true
+          #      example: '{"ref": "1234"}'
+          #      schema:
+          #        type: string
+          #    - name: input_type 
+          #      description: The data type of the input
+          #      required: true
+          #      multiline: true
+          #      example: 'cases'
+          #      options:
+          #       - cases
+          #      schema:
+          #        type: string
   - name: generate_random_string 
     description: 'Used to generate passwords and random strings'
     parameters:
