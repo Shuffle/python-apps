@@ -7,6 +7,7 @@ from ldap3 import (
     MODIFY_REPLACE,
     ALL_ATTRIBUTES,
 )
+
 from ldap3.extend.microsoft.addMembersToGroups import ad_add_members_to_groups as addUsersInGroups
 from ldap3.extend.microsoft.removeMembersFromGroups import ad_remove_members_from_groups as removeUsersFromGroups
 
