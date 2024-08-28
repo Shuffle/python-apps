@@ -89,9 +89,9 @@ class MSComplianceCenter(AppBase):
         graph_url = "https://graph.microsoft.com"
         session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         if top:
-            graph_url = f"https://graph.microsoft.com/v1.0/security/alerts?$top={top}"
+            graph_url = f"https://graph.microsoft.com/v1.0/security/alerts_v2?$top={top}"
         else:
-            graph_url = f"https://graph.microsoft.com/v1.0/security/alerts?$top=10"
+            graph_url = f"https://graph.microsoft.com/v1.0/security/alerts_v2?$top=10"
         ret = session.get(graph_url)
         print(ret.status_code)
         print(ret.text)
@@ -105,9 +105,9 @@ class MSComplianceCenter(AppBase):
         graph_url = "https://graph.microsoft.com"
         session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         if top:
-            graph_url = f"https://graph.microsoft.com/v1.0/security/alerts?$filter=Severity eq '{severity}'&$top={top}"
+            graph_url = f"https://graph.microsoft.com/v1.0/security/alerts_v2?$filter=Severity eq '{severity}'&$top={top}"
         else:
-            graph_url = f"https://graph.microsoft.com/v1.0/security/alerts?$filter=Severity eq '{severity}'&$top=5"
+            graph_url = f"https://graph.microsoft.com/v1.0/security/alerts_v2?$filter=Severity eq '{severity}'&$top=5"
         ret = session.get(graph_url)
         print(ret.status_code)
         print(ret.text)
@@ -129,9 +129,9 @@ class MSComplianceCenter(AppBase):
         graph_url = "https://graph.microsoft.com"
         session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
         if top:
-            graph_url = f"https://graph.microsoft.com/v1.0/security/alerts?$filter=vendorInformation/provider eq '{vendor_code[vendor]}'&$top={top}"
+            graph_url = f"https://graph.microsoft.com/v1.0/security/alerts_v2?$filter=vendorInformation/provider eq '{vendor_code[vendor]}'&$top={top}"
         else:
-            graph_url = f"https://graph.microsoft.com/v1.0/security/alerts?$filter=vendorInformation/provider eq '{vendor_code[vendor]}'&$top=5" 
+            graph_url = f"https://graph.microsoft.com/v1.0/security/alerts_v2?$filter=vendorInformation/provider eq '{vendor_code[vendor]}'&$top=5" 
         ret = session.get(graph_url)
         print(ret.status_code)
         print(ret.text)
@@ -446,7 +446,7 @@ class MSComplianceCenter(AppBase):
     def create_custodian(self, tenant_id, client_id, client_secret, case_id, email, apply_hold_to_sources):
         graph_url = "https://graph.microsoft.com"
         session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
-        graph_url = f"https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}/custodians/"
+        graph_url = f"https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}/custodians"
 
         headers = {
             "Content-Type": "application/json",
@@ -523,7 +523,7 @@ class MSComplianceCenter(AppBase):
     def list_legalholds(self, tenant_id, client_id, client_secret,case_id):
         graph_url = "https://graph.microsoft.com"
         session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
-        graph_url = f"https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}/legalholds"
+        graph_url = f"https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}/legalHolds"
 
         ret = session.get(graph_url)
         print(ret.status_code)
@@ -537,7 +537,7 @@ class MSComplianceCenter(AppBase):
     def get_legalhold(self, tenant_id, client_id, client_secret, case_id, legalhold_id):
         graph_url = "https://graph.microsoft.com"
         session = self.authenticate(tenant_id, client_id, client_secret, graph_url)
-        graph_url = f"https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}/custodians/{legalhold_id}"
+        graph_url = f"https://graph.microsoft.com/beta/compliance/ediscovery/cases/{case_id}/legalHolds/{legalhold_id}"
 
         ret = session.get(graph_url)
         print(ret.status_code)
