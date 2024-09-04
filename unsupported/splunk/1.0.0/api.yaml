@@ -1,0 +1,62 @@
+walkoff_version: 1.0.0
+app_version: 1.0.0
+name: splunk 
+description: Splunk integration with WALKOFF 
+tags:
+  - SIEM 
+  - search 
+categories:
+  - SIEM 
+contact_info:
+  name: "@frikkylikeme" 
+  url: https://github.com/frikky
+authentication:
+  required: true
+  parameters:
+    - name: url 
+      description: The Splunk URL 
+      required: true
+      example: "http://splunk:8081"
+      schema:
+        type: string 
+    - name: username 
+      description: The Splunk username
+      example: username@splunk.com 
+      required: true
+      schema:
+        type: string 
+    - name: password 
+      description: The Splunk password
+      required: true
+      example: "******"
+      schema:
+        type: string 
+
+actions:
+  - name: SplunkQuery 
+    description: Returns the amount of search results
+    parameters:
+      - name: query 
+        description: The Splunk query to run 
+        required: true
+        schema:
+          type: string 
+      - name: result_limit 
+        description: Splunk amount limit 
+        required: false
+        schema:
+          type: string 
+      - name: earliest_time 
+        description: The timeframe to use (e.g. -48h) 
+        required: false
+        schema:
+          type: string 
+      - name: latest_time 
+        description: The timeframe to use (e.g. -48h) 
+        required: false
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+large_image: data:image/jpg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAcFBgYGBQcGBgYICAcJCxIMCwoKCxcQEQ0SGxccHBoXGhkdISokHR8oIBkaJTIlKCwtLzAvHSM0ODQuNyouLy7/2wBDAQgICAsKCxYMDBYuHhoeLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi7/wAARCABkAGQDAREAAhEBAxEB/8QAGQABAAMBAQAAAAAAAAAAAAAAAAIEBQYD/8QALRAAAQQCAQMBCAEFAAAAAAAAAAECAwQFERIGITFBExQiMlFhcYGxFRYjQkP/xAAaAQEAAwEBAQAAAAAAAAAAAAAAAQIDBAUG/8QAIxEBAAICAgICAgMAAAAAAAAAAAECAxESIQQxQVETIhQj8P/aAAwDAQACEQMRAD8A0T5l5IAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABJsb3Nc5rHOa35lRqqifn6E6k0iQAACT45I9c43N2m05NVNoTMTHs0iQAAAAAkxrnvaxqbc5UaifVVJiNzobWUwUeNclebJwuu/ByrpG7tyXXZ3hTfLgjH1Nu/prfFx632tWOl2VL7aNzM1IZpNeyRWOVXb+v0Tfbv5L28Xjbja0bWnDqdTK/i6NjGYjqqnaaiSxwt8L2VOLtKhrjpOPHkrZelZrW8S5/M4eXFy1I5J2SLZjSRqtRU4oq613OXLhnHMRM+2F8c1137aX9o2lyVnHtuQ84IGzK5WqiKiqqa+3jybfw7c5pv1G2n4J5TXarP0+n9JsZGnk61xtdP8zI0VOH4VfJSfH/Sb1tE6VnF+s2id6b3UuNsZS7ha0GkRKSOkkd8sbe21U6PIxTktSI+muSs2msR9OXoY5bdi3UrzVppWJqJXScEkXf8Apvyv2U5KYuVprGtsK03MxClarWKkyw2YXwyp5a9ulM7Vms6tGlZiYnUvEqgAAThbzlYzm2Pk5E5uXSN7+VUmI3JDuLz2yYVrc3YpzZCKZjak0EqPfI3kndden5/k9G87x/2zEzE9Oq3df39/CfVGK996oSdt2rHGxI/bJLKjHRInfel87T6E+Ri5Zt7j42nLTlfe07mYpX4uqHxTxo11dkUPJyIsukd3RF891JvmpeMmp+EzkrbkrZ2GtmIsTkIMjTjghhayb2kunM0qKvw+VX7FM1YyxW0WjUQreIvxmJati9SXPZiRLcHB+NaxrvaJpzvi7J38m1slPyXnfw0m0crd/Dl+nZ4I+muoYpZo2SSQIjGuciK5dL4T1OLBMRhyRtz45iKWdHdy+Pe+lirM8bqVyk2KWSN6bif21tU8J+TrvmpMxjmephtN69Vn1MOLZj6TMhZgt5SJkEH/AFiTmsvfsjUT1/g4Ix1i0xa3Uf7pzRWNzEysZnNR3KUOOrQye7Qu5Nlsv5yu/fon2L5c8WrFKx1H37Wvk3HGGGczIAAAJwuSOZkmvlcjl166XZMdTtMe2l1Jk48xlZLzIXRNcxreLlRVTSGvkZYy35RC+W/O22UYsz9IA/QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/2Q==
