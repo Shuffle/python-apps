@@ -135,6 +135,11 @@ class Tools(AppBase):
             "reason": "Something failed in reading and parsing the pdf. See error logs for more info",
         }
 
+        # Check type of pdf_data["data"]
+        if not isinstance(pdf_data["data"], bytes):
+            self.logger.info("Encoding data to bytes for the bytestream reader")
+            pdf_data["data"] = pdf_data["data"].encode()
+
         # Make a tempfile for the file data from self.get_file
         # Make a tempfile with tempfile library
         with tempfile.NamedTemporaryFile() as temp:
@@ -162,12 +167,24 @@ class Tools(AppBase):
 
     def extract_text_from_image(self, file_id):
         # Check if it's a pdf
-        # If it is, use extract_text_from_pdf
-        # If it's not, use pytesseract
-        if self.get_file(file_id)["name"].endswith(".pdf"):
-            return self.extract_text_from_pdf(file_id)
 
         pdf_data = self.get_file(file_id)
+        if "filename" not in pdf_data:
+            available_fields = []
+            for key, value in pdf_data.items():
+                available_fields.append(key)
+
+            return {
+                "success": False,
+                "reason": "File not found",
+                "details": f"Available fields: {available_fields}",
+            }
+
+        # If it is, use extract_text_from_pdf
+        # If it's not, use pytesseract
+        if pdf_data["filename"].endswith(".pdf"):
+            return self.extract_text_from_pdf(file_id)
+
         defaultdata = {
             "success": False,
             "file_id": file_id,
