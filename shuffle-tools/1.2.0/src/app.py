@@ -2787,7 +2787,28 @@ class Tools(AppBase):
         }
 
         return returnvalue
-    
+
+    def if_else_routing(self, conditions):
+        # True by default
+        to_return = {
+            "success": True,
+            "run_else": True,
+        }
+
+        if len(conditions) == 0:
+            conditions = []
+
+        for condition in conditions:
+            pass
+
+        # Loop conditions
+        # Return them without a loop to make it EASY to understand
+        # Validation should be: 
+        # Continuation based on .id.valid
+        # .valid -> true/false
+        # If no id exists, use name?
+
+        return to_return
 
 if __name__ == "__main__":
     Tools.run()

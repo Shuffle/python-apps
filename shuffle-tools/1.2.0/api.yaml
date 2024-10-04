@@ -1203,6 +1203,19 @@ actions:
         example: 'ls -la'
         schema:
           type: string
+  - name: if_else_routing
+    description: Routes based on if-else statements
+    parameters:
+      - name: conditions 
+        description: The conditions to be met
+        required: true
+        multiline: true
+        example: "REPEATING: Hello world"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
     #- name: parse_ioc_new 
     #  description: Parse IOC's based on https://github.com/fhightower/ioc-finder
     #  parameters:
