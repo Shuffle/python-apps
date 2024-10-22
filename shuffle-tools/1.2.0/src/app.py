@@ -2788,7 +2788,11 @@ class Tools(AppBase):
 
         return returnvalue
 
-    def if_else_routing(self, conditions):
+    def switch(self, conditions):
+        # Check if conditions is a list or not
+        if not isinstance(conditions, list):
+            conditions = [conditions]
+
         # True by default
         to_return = {
             "success": True,

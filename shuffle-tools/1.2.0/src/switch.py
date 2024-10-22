@@ -1,5 +1,5 @@
 # self, sourcevalue, condition, destinationvalue
-def run_validation(sourcevalue, check, destinationvalue):
+def validate_condition(sourcevalue, check, destinationvalue):
     if check == "=" or check == "==" or check.lower() == "equals":
         if str(sourcevalue).lower() == str(destinationvalue).lower():
             return True
@@ -113,7 +113,7 @@ def evaluate_conditions(condition_structure):
         destination = condition_structure['destination']
 
         # self.
-        return run_validation(source, condition, destination)
+        return validate_condition(source, condition, destination)
     
     # Recursive case: Logical operator
     elif operator == "AND":
