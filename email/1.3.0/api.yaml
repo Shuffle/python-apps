@@ -24,7 +24,7 @@ actions:
       - name: recipients
         description: The recipients of the email
         multiline: false
-        example: "test@example.com,frikky@shuffler.io"
+        example: "test@example.com,support@shuffler.io"
         required: true
         schema:
           type: string
@@ -51,7 +51,7 @@ actions:
       - name: username
         description: The SMTP login username
         multiline: false
-        example: "frikky@shuffler.io"
+        example: "support@shuffler.io"
         required: false 
         schema:
           type: string
@@ -79,14 +79,14 @@ actions:
       - name: recipient
         description: The receiver(s) of the email
         multiline: false
-        example: "frikky@shuffler.io,frikky@shuffler.io"
+        example: "support@shuffler.io,test@shuffler.io"
         required: true
         schema:
           type: string
       - name: cc_emails
         description: cc_emails
         multiline: false
-        example: "frikky@shuffler.io,frikky@shuffler.io"
+        example: "support@shuffler.io,test@shuffler.io"
         required: false
         schema:
           type: string
@@ -138,7 +138,7 @@ actions:
       - name: username
         description: The SMTP login username
         multiline: false
-        example: "frikky@shuffler.io"
+        example: "support@shuffler.io"
         required: true
         schema:
           type: string
