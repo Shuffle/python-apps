@@ -77,8 +77,8 @@ class Subflow(AppBase):
                 argument = json.dumps({
                     "information": information,
                     "parent_workflow": self.full_execution["workflow"]["id"],
-                    "frontend_continue": "%s/workflows/%s/run?authorization=%s&reference_execution=%s&answer=true" % (frontend_url, self.full_execution["workflow"]["id"], self.full_execution["authorization"], self.full_execution["execution_id"]),
-                    "frontend_abort": "%s/workflows/%s/run?authorization=%s&reference_execution=%s&answer=false" % (frontend_url, self.full_execution["workflow"]["id"], self.full_execution["authorization"], self.full_execution["execution_id"]),
+                    "frontend_continue": "%s/forms/%s?authorization=%s&reference_execution=%s&answer=true" % (frontend_url, self.full_execution["workflow"]["id"], self.full_execution["authorization"], self.full_execution["execution_id"]),
+                    "frontend_abort": "%s/forms/%s?authorization=%s&reference_execution=%s&answer=false" % (frontend_url, self.full_execution["workflow"]["id"], self.full_execution["authorization"], self.full_execution["execution_id"]),
                     "api_continue": "%s/api/v1/workflows/%s/execute?authorization=%s&reference_execution=%s&answer=true" % (frontend_url, self.full_execution["workflow"]["id"], self.full_execution["authorization"], self.full_execution["execution_id"]),
                     "api_abort": "%s/api/v1/workflows/%s/execute?authorization=%s&reference_execution=%s&answer=false" % (frontend_url, self.full_execution["workflow"]["id"], self.full_execution["authorization"], self.full_execution["execution_id"]),
                 })
