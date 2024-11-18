@@ -37,8 +37,8 @@ import paramiko
 import concurrent.futures
 import multiprocessing
 
-#from walkoff_app_sdk.app_base import AppBase
-from shuffle_sdk import AppBase
+from walkoff_app_sdk.app_base import AppBase
+#from shuffle_sdk import AppBase
 
 class Tools(AppBase):
     __version__ = "1.2.0"
