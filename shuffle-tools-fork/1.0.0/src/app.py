@@ -97,7 +97,7 @@ class Tools(AppBase):
                 print(f"Failed to install {package}: {str(e)}")
 
     def execute_python(self, code, packages=[]) -> dict:
-        if os.getenv("ALLOW_PACKAGE_INSTALL") == "true":
+        if os.getenv("SHUFFLE_ALLOW_PACKAGE_INSTALL") == "true":
             allow_package_install = True
             
         if packages:
