@@ -102,16 +102,17 @@ class Tools(AppBase):
             except Exception as e:
                 print(f"Failed to install {package}: {str(e)}")
 
-    def execute_python(self, code, packages=[]) -> dict:
+    def execute_python(self, code, packages) -> dict:
         if os.getenv("SHUFFLE_ALLOW_PACKAGE_INSTALL") == "true":
             allow_package_install = True
             
+        packages = packages.split("\n") if packages else []
+ 
         if packages:
             if allow_package_install:
                 self.install_packages(packages)
                 self.dynamic_import(packages)
-
-        
+ 
         if len(code) == 36 and "-" in code:
             filedata = self.get_file(code)
             if filedata["success"] == False:
