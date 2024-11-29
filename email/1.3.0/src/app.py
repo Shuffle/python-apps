@@ -74,15 +74,15 @@ class Email(AppBase):
         headers = {"Authorization": "Bearer %s" % apikey}
         return requests.post(url, headers=headers, json=data).text
 
-    def send_email_smtp(
-        self, smtp_host, recipient, subject, body, smtp_port, attachments="", username="", password="", ssl_verify="True", body_type="html", cc_emails=""
-    ):
+    def send_email_smtp(self, smtp_host, recipient, subject, body, smtp_port, attachments="", username="", password="", ssl_verify="True", body_type="html", cc_emails=""):
+        self.logger.info("Sending email to %s with subject %s" % (recipient, subject))
         if type(smtp_port) == str:
             try:
                 smtp_port = int(smtp_port)
             except ValueError:
                 return "SMTP port needs to be a number (Current: %s)" % smtp_port
 
+        self.logger.info("Pre SMTP setup")
         try:
             s = smtplib.SMTP(host=smtp_host, port=smtp_port)
         except socket.gaierror as e:
@@ -95,6 +95,7 @@ class Email(AppBase):
         else:
             s.starttls()
 
+        self.logger.info("Pre SMTP auth")
         if len(username) > 1 or len(password) > 1:
             try:
                 s.login(username, password)
@@ -108,6 +109,7 @@ class Email(AppBase):
             body_type = "html"
 
         # setup the parameters of the message
+        self.logger.info("Pre mime multipart")
         msg = MIMEMultipart()
         msg["From"] = username
         msg["To"] = recipient
@@ -116,10 +118,12 @@ class Email(AppBase):
         if cc_emails != None and len(cc_emails) > 0:
             msg["Cc"] = cc_emails
         
+        self.logger.info("Pre mime check")
         msg.attach(MIMEText(body, body_type))
 
         # Read the attachments
         attachment_count = 0
+        self.logger.info("Pre attachments")
         try:
             if attachments != None and len(attachments) > 0:
                 print("Got attachments: %s" % attachments)
@@ -153,7 +157,7 @@ class Email(AppBase):
         except Exception as e:
             self.logger.info(f"Error in attachment parsing for email: {e}")
 
-
+        self.logger.info("Pre send msg")
         try:
             s.send_message(msg)
         except smtplib.SMTPDataError as e: 
