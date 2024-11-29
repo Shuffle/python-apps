@@ -38,6 +38,9 @@ import paramiko
 import concurrent.futures
 import multiprocessing
 
+from pip._internal import main as pip_main
+from pip._internal.commands.show import search_packages_info
+
 from walkoff_app_sdk.app_base import AppBase
 
 class Tools(AppBase):
@@ -54,8 +57,58 @@ class Tools(AppBase):
         :param console_logger:
         """
         super().__init__(redis, logger, console_logger)
+        
+    def get_missing_packages(required_packages: list) -> list:
+        """
+        Returns a list of packages that aren't currently installed.
+        
+        Args:
+            required_packages: List of package names (can include version specs)
+            
+        Returns:
+            List of package names that aren't installed
+        """
+        missing = []
+        for package in required_packages:
+            # Remove version specifiers if present (e.g., 'pandas>=1.0.0' -> 'pandas')
+            package_name = package.split('==')[0].split('>=')[0].split('<=')[0].split('>')[0].split('<')[0].strip()
+            
+            # Check if package exists in environment
+            if not list(search_packages_info([package_name])):
+                missing.append(package)
+                
+        return missing
+        
+    def install_packages(self, packages=[]) -> None:
+        """
+        Install Python packages using pip's Python interface.
+        
+        Args:
+            packages: List of package names to install
+        """
+        
+        packages_not_found = self.get_missing_packages(packages)
+        
+        for package in packages_not_found:
+            try:
+                pip_main(['install', package])
+                print(f"Successfully installed {package}")
+            except Exception as e:
+                print(f"Failed to install {package}: {str(e)}")
 
-    def execute_python(self, code):
+    def execute_python(self, code, packages=[]) -> dict:
+        if os.getenv("ALLOW_PACKAGE_INSTALL") == "true":
+            allow_package_install = True
+            
+        if packages:
+            if allow_package_install:
+                self.install_packages(packages)
+            else:
+                return {
+                    "success": False,
+                    "message": "Package installation is disabled in this environment",
+                }
+        
         if len(code) == 36 and "-" in code:
             filedata = self.get_file(code)
             if filedata["success"] == False:
