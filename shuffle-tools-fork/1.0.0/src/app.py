@@ -9,6 +9,7 @@ import subprocess
 import tempfile
 import zipfile
 import base64
+import importlib
 import ipaddress
 import hashlib
 import shufflepy
@@ -58,6 +59,11 @@ class Tools(AppBase):
         """
         super().__init__(redis, logger, console_logger)
         
+    def dynamic_import(package_name: str):
+        """Import a package and return the module"""
+        return importlib.import_module(package_name.split('==')[0].split('>=')[0].split('<=')[0].split('>')[0].split('<')[0])
+
+        
     def get_missing_packages(required_packages: list) -> list:
         """
         Returns a list of packages that aren't currently installed.
@@ -103,11 +109,8 @@ class Tools(AppBase):
         if packages:
             if allow_package_install:
                 self.install_packages(packages)
-            else:
-                return {
-                    "success": False,
-                    "message": "Package installation is disabled in this environment",
-                }
+                self.dynamic_import(packages)
+
         
         if len(code) == 36 and "-" in code:
             filedata = self.get_file(code)
