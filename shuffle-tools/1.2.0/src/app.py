@@ -1504,7 +1504,7 @@ class Tools(AppBase):
             return {"success": False, "message": "Both input lists need to be valid JSON lists."}
 
         if len(list_one) != len(list_two):
-            return {"success": False, "message": "Lists length must be the same. %d vs %d" % (len(list_one), len(list_two))}
+            return {"success": False, "message": "Lists length must be the same. %d vs %d. Are you trying to add them to a single list? Use add_list_to_list" % (len(list_one), len(list_two))}
 
         if len(sort_key_list_one) > 0:
             try:
