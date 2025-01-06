@@ -2182,8 +2182,17 @@ class Tools(AppBase):
 
         return fullstring
 
-    def cidr_ip_match(self, ip, networks):
+    def autofix_network(self, ip_with_cidr):
+        try:
+            # Parse the input as an IPv4 network object
+            network = ipaddress.IPv4Network(ip_with_cidr, strict=False)
+            # Return the corrected network address
+            return str(network)
+        except ValueError as e:
+            print(f"Error: {e}")
+            return None
 
+    def cidr_ip_match(self, ip, networks):
         if isinstance(networks, str):
             try:
                 networks = json.loads(networks)
@@ -2193,9 +2202,18 @@ class Tools(AppBase):
                     "reason": "Networks is not a valid list: {}".format(networks),
                 }
 
+        new_networks = []
+        for network in networks:
+            new_network = self.autofix_network(network)
+            if new_network:
+                new_networks.append(new_network)
+
+        networks = new_networks
+
         try:
             ip_networks = list(map(ipaddress.ip_network, networks))
-            ip_address = ipaddress.ip_address(ip, False)
+            #ip_address = ipaddress.ip_address(ip, False)
+            ip_address = ipaddress.ip_address(ip)
         except ValueError as e:
             return "IP or some networks are not in valid format.\nError: {}".format(e)
 
