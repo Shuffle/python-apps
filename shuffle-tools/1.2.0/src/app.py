@@ -1807,6 +1807,7 @@ class Tools(AppBase):
 
     def check_cache_contains(self, key, value, append):
         org_id = self.full_execution["workflow"]["execution_org"]["id"]
+        url = "%s/api/v1/orgs/%s/get_cache" % (self.url, org_id)
         data = {
             "workflow_id": self.full_execution["workflow"]["id"],
             "execution_id": self.current_execution_id,
@@ -1854,6 +1855,10 @@ class Tools(AppBase):
             if "success" not in allvalues:
                 #allvalues = get_response.json()
                 allvalues = self.shared_cache
+
+            if "success" not in allvalues:
+                get_response = requests.post(url, json=data, verify=False)
+                allvalues = get_response.json()
 
             try:
                 if allvalues["value"] == None or allvalues["value"] == "null":
