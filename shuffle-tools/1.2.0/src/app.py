@@ -1920,7 +1920,7 @@ class Tools(AppBase):
                 try:
                     for item in parsedvalue:
                         #return "%s %s" % (item, value)
-                        self.logger.info(f"{item} == {value}")
+                        #self.logger.info(f"{item} == {value}")
                         if str(item) == str(value):
                             if not append:
                                 try:
