@@ -1981,7 +1981,14 @@ class Tools(AppBase):
                     allvalues["value"].append(value)
                 exception = ""
                 try:
+                    # FIXME: This is a hack, but it works
                     if directcall:
+                        new_value = parsedvalue
+                        if new_value == None:
+                            new_value = [value]
+
+                        data["value"] = json.dumps(new_value)
+
                         set_url = "%s/api/v1/orgs/%s/set_cache" % (self.url, org_id)
                         response = requests.post(set_url, json=data, verify=False)
                         allvalues = response.json()
@@ -1991,7 +1998,7 @@ class Tools(AppBase):
                     return {
                         "success": True,
                         "found": False,
-                        "reason": "Appended as it didn't exist",
+                        "reason": f"Appended as it didn't exist",
                         "key": key,
                         "search": value,
                         "value": parsedvalue,
