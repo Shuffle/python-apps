@@ -1,7 +1,7 @@
 # Build testing
-NAME=frikky/shuffle:shuffle-tools_1.1.0
+NAME=frikky/shuffle:shuffle-tools_1.2.0
 docker rmi $NAME --force
-docker build . -t frikky/shuffle:shuffle-tools_1.1.0
+docker build . -t frikky/shuffle:shuffle-tools_1.2.0
 
 # Run testing
 #docker run -e SHUFFLE_SWARM_CONFIG=run -e SHUFFLE_APP_EXPOSED_PORT=33334 frikky/shuffle:shuffle-tools_1.1.0 
