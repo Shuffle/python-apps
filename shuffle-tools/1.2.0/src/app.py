@@ -1816,6 +1816,7 @@ class Tools(AppBase):
             "search": str(value),
             "key": key,
         }
+        directcall = False
 
         allvalues = {}
         try:
@@ -1859,6 +1860,7 @@ class Tools(AppBase):
             if "success" not in allvalues:
                 get_response = requests.post(url, json=data, verify=False)
                 allvalues = get_response.json()
+                directcall = True
 
             try:
                 if allvalues["value"] == None or allvalues["value"] == "null":
@@ -1977,11 +1979,13 @@ class Tools(AppBase):
                 if value not in allvalues["value"] and isinstance(allvalues["value"], list):
                     self.cache_update_buffer.append(value)
                     allvalues["value"].append(value)
-                #set_url = "%s/api/v1/orgs/%s/set_cache" % (self.url, org_id)
-                #response = requests.post(set_url, json=data, verify=False)
                 exception = ""
                 try:
-                    #allvalues = response.json()
+                    if directcall:
+                        set_url = "%s/api/v1/orgs/%s/set_cache" % (self.url, org_id)
+                        response = requests.post(set_url, json=data, verify=False)
+                        allvalues = response.json()
+
                     #return allvalues
 
                     return {
