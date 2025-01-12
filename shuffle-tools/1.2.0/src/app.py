@@ -1807,6 +1807,7 @@ class Tools(AppBase):
 
     def check_cache_contains(self, key, value, append):
         org_id = self.full_execution["workflow"]["execution_org"]["id"]
+        url = "%s/api/v1/orgs/%s/get_cache" % (self.url, org_id)
         data = {
             "workflow_id": self.full_execution["workflow"]["id"],
             "execution_id": self.current_execution_id,
@@ -1815,6 +1816,7 @@ class Tools(AppBase):
             "search": str(value),
             "key": key,
         }
+        directcall = False
 
         allvalues = {}
         try:
@@ -1854,6 +1856,11 @@ class Tools(AppBase):
             if "success" not in allvalues:
                 #allvalues = get_response.json()
                 allvalues = self.shared_cache
+
+            if "success" not in allvalues:
+                get_response = requests.post(url, json=data, verify=False)
+                allvalues = get_response.json()
+                directcall = True
 
             try:
                 if allvalues["value"] == None or allvalues["value"] == "null":
@@ -1920,7 +1927,7 @@ class Tools(AppBase):
                 try:
                     for item in parsedvalue:
                         #return "%s %s" % (item, value)
-                        self.logger.info(f"{item} == {value}")
+                        #self.logger.info(f"{item} == {value}")
                         if str(item) == str(value):
                             if not append:
                                 try:
@@ -1972,17 +1979,26 @@ class Tools(AppBase):
                 if value not in allvalues["value"] and isinstance(allvalues["value"], list):
                     self.cache_update_buffer.append(value)
                     allvalues["value"].append(value)
-                #set_url = "%s/api/v1/orgs/%s/set_cache" % (self.url, org_id)
-                #response = requests.post(set_url, json=data, verify=False)
                 exception = ""
                 try:
-                    #allvalues = response.json()
+                    # FIXME: This is a hack, but it works
+                    if directcall:
+                        new_value = parsedvalue
+                        if new_value == None:
+                            new_value = [value]
+
+                        data["value"] = json.dumps(new_value)
+
+                        set_url = "%s/api/v1/orgs/%s/set_cache" % (self.url, org_id)
+                        response = requests.post(set_url, json=data, verify=False)
+                        allvalues = response.json()
+
                     #return allvalues
 
                     return {
                         "success": True,
                         "found": False,
-                        "reason": "Appended as it didn't exist",
+                        "reason": f"Appended as it didn't exist",
                         "key": key,
                         "search": value,
                         "value": parsedvalue,
