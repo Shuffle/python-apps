@@ -692,15 +692,6 @@ class Tools(AppBase):
             response_data["value"] = parsed
         return get_response.json()
 
-    def check_compression(self, obj, threshold=1_000_000):
-        data_btyes = json.dumps(obj).encode("utf-8")
-        if len(data_btyes) > threshold:
-            return True
-        return False
-
-    def compress_data(self, obj):
-        data_btyes = json.dumps(obj).encode("utf-8")
-        compressed_data = gzip.compress(data_btyes)
 
     def update_cache(self, key):
         org_id = self.full_execution["workflow"]["execution_org"]["id"]
