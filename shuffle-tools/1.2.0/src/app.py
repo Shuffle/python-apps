@@ -993,9 +993,6 @@ class Tools(AppBase):
                     "valid": new_list,
                     "invalid": failed_list,
                 }
-#            if self.check_compression(data):
-#                data = self.compress_data(data)
-#                return data
 
             return json.dumps(data)
             # new_list = json.dumps(new_list)
