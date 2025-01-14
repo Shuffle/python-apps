@@ -1956,7 +1956,7 @@ class Tools(AppBase):
                         "reason": "Not found, not appending (2)!",
                         "key": key,
                         "search": value,
-                        "value": json.loads(allvalues["value"]),
+                        "value": allvalues["value"],
                     }
 
                 #parsedvalue.append(value)
