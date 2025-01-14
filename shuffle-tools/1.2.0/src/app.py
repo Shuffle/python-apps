@@ -720,16 +720,6 @@ class Tools(AppBase):
             response_data["value"] = parsed
         return get_response.json()
 
-    def check_compression(self, obj, threshold=1_000_000):
-        data_btyes = json.dumps(obj).encode("utf-8")
-        if len(data_btyes) > threshold:
-            return True
-        return False
-
-    def compress_data(self, obj):
-        data_btyes = json.dumps(obj).encode("utf-8")
-        compressed_data = gzip.compress(data_btyes)
-        return base64.b64encode(compressed_data).decode("utf-8")
 
     def update_cache(self, key):
         org_id = self.full_execution["workflow"]["execution_org"]["id"]
@@ -1031,9 +1021,6 @@ class Tools(AppBase):
                     "valid": new_list,
                     "invalid": failed_list,
                 }
-            if self.check_compression(data):
-                data = self.compress_data(data)
-                return data
 
             return json.dumps(data)
             # new_list = json.dumps(new_list)
@@ -1997,7 +1984,7 @@ class Tools(AppBase):
                         "reason": "Not found, not appending (2)!",
                         "key": key,
                         "search": value,
-                        "value": json.loads(allvalues["value"]),
+                        "value": allvalues["value"],
                     }
 
                 #parsedvalue.append(value)
