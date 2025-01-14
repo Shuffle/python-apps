@@ -613,7 +613,7 @@ class Tools(AppBase):
                 if "'return' outside function" in str(e):
                     return {
                         "success": False,
-                        "message": f"Instead of using 'return' without a function, use 'exit()' to return when not inside a function. Raw Syntax error: {e}",
+                        "message": f"SyntaxError - Shuffle Recommendation: Instead of using 'return' without a function, use 'exit()' to return when not inside a function. Raw Syntax error: {e}",
                     }
                 else:
                     return {
