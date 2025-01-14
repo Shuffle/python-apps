@@ -11,8 +11,6 @@ import smtplib
 import time
 import random
 import eml_parser
-import mailparser
-import extract_msg
 import jsonpickle
 
 from glom import glom
@@ -392,6 +390,18 @@ class Email(AppBase):
                 "messages": json.dumps(emails, default=default),
             }
 
+    def remove_similar_items(self, items):
+        # Sort items by length in descending order
+        items = sorted(items, key=len, reverse=True)
+        result = []
+
+        for domain in items:
+            # Check if the domain is part of any domain already in the result
+            if not any(domain in main for main in result):
+                result.append(domain)
+        
+        return result
+
     def parse_eml(self, filedata, extract_attachments=False):
         parsedfile = {
             "success": True,
@@ -443,16 +453,16 @@ class Email(AppBase):
         # Replace raw newlines \\r\\n with actual newlines
         # The data is a byte string, so we need to decode it to utf-8
         try:
-            print("Pre size: %d" % len(file_path["data"]))
+            #print("Pre size: %d" % len(file_path["data"]))
             file_path["data"] = file_path["data"].decode("utf-8").replace("\\r\\n", "\n").encode("utf-8")
-            print("Post size: %d" % len(file_path["data"]))
+            #print("Post size: %d" % len(file_path["data"]))
         except Exception as e:
             print(f"Failed to decode file: {e}")
             pass
 
         # Makes msg into eml
         if ".msg" in file_path["filename"] or "." not in file_path["filename"]:
-            print(f"[DEBUG] Working with .msg file {file_path['filename']}. Filesize: {len(file_path['data'])}")
+            self.logger.info(f"[DEBUG] Working with .msg file {file_path['filename']}. Filesize: {len(file_path['data'])}")
             try:
                 result = {}
                 msg = MsOxMessage(file_path['data'])
@@ -471,17 +481,17 @@ class Email(AppBase):
         )
 
         try:
-            print("Pre email")
+            self.logger.info("Pre email")
             parsed_eml = ep.decode_email_bytes(file_path['data'])
             #if str(parsed_eml["header"]["date"]) == "1970-01-01 00:00:00+00:00" and len(parsed_eml["header"]["subject"]) == 0:
             #    return {"success":False,"reason":"Not a valid EML/MSG file, or the file have a timestamp or subject defined (required).", "date": str(parsed_eml["header"]["date"]), "subject": str(parsed_eml["header"]["subject"])}
 
             # Put attachments in the shuffle file system
-            print("Pre attachment")
+            self.logger.info("Pre attachment")
             if extract_attachments == True and "attachment" in parsed_eml:
                 cnt = -1 
 
-                print("[INFO] Uploading %d attachments" % len(parsed_eml["attachment"]))
+                self.logger.info("[INFO] Uploading %d attachments" % len(parsed_eml["attachment"]))
                 for value in parsed_eml["attachment"]:
                     cnt += 1
                     if value["raw"] == None:
@@ -502,7 +512,25 @@ class Email(AppBase):
             if not "attachment" in parsed_eml:
                 parsed_eml["attachment"] = []
 
-            print("Post attachment")
+            self.logger.info("Post attachment. Has body: %s" % ("body" in parsed_eml))
+
+            try:
+                if "body" in parsed_eml and len(parsed_eml["body"]) > 0:
+
+                    for i in range(len(parsed_eml["body"])):
+                        if "uri" in parsed_eml["body"][i] and len(parsed_eml["body"][i]["uri"]) > 0:
+                            parsed_eml["body"][i]["uri"] = self.remove_similar_items(parsed_eml["body"][i]["uri"])
+
+                        if "email" in parsed_eml["body"][i] and len(parsed_eml["body"][i]["email"]) > 0:
+                            parsed_eml["body"][i]["email"] = self.remove_similar_items(parsed_eml["body"][i]["email"])
+
+                        if "domain" in parsed_eml["body"][i] and len(parsed_eml["body"][i]["domain"]) > 0:
+                            parsed_eml["body"][i]["domain"] = self.remove_similar_items(parsed_eml["body"][i]["domain"])
+
+            except Exception as e:
+                self.logger.info(f"[ERROR] Failed to remove similar items: {e}")
+
+            parsed_eml["success"] = True
             return json.dumps(parsed_eml, default=json_serial)   
         except Exception as e:
             return {"success":False, "reason": f"An exception occured during EML parsing: {e}. Please contact support"} 

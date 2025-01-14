@@ -1,9 +1,12 @@
+import os
+import sys
+import builtins
+
 import hmac
 import datetime
 import json
 import time
 import markupsafe
-import os
 import re
 import subprocess
 import tempfile
@@ -40,6 +43,12 @@ import multiprocessing
 
 from walkoff_app_sdk.app_base import AppBase
 #from shuffle_sdk import AppBase
+
+# Override exit(), sys.exit, and os._exit 
+# sys.exit() can be caught, meaning we can have a custom handler for it
+builtins.exit = sys.exit
+os.exit = sys.exit
+os._exit = sys.exit
 
 class Tools(AppBase):
     __version__ = "1.2.0"
@@ -573,7 +582,6 @@ class Tools(AppBase):
                     "message": f"Filename needs to contain .py",
                 }
 
-
         # Write the code to a file
         # 1. Take the data into a file
         # 2. Subprocess execute file?
@@ -594,7 +602,27 @@ class Tools(AppBase):
 
             globals_copy["self"] = self
 
-            exec(code, globals_copy)
+            try:
+                exec(code, globals_copy)
+            except SystemExit as e:
+                # Same as a return
+                pass
+            except SyntaxError as e:
+                # Special handler for return usage. Makes return act as 
+                # an exit()
+                if "'return' outside function" in str(e):
+                    return {
+                        "success": False,
+                        "message": f"Instead of using 'return' without a function, use 'exit()' to return when not inside a function. Raw Syntax error: {e}",
+                    }
+                else:
+                    return {
+                        "success": False,
+                        "message": f"Syntax Error: {e}",
+                    }
+
+            # this doesn't work to capture top-level returns
+            # Reason: SyntaxError makes it crash BEFORE it reaches the return
 
             s = f.getvalue()
             f.close() # why: https://www.youtube.com/watch?v=6SA6S9Ca5-U
@@ -623,7 +651,7 @@ class Tools(AppBase):
         except Exception as e:
             return {
                 "success": False,
-                "message": f"exception: {e}",
+                "message": f"Exception: {e}",
             }
 
     def execute_bash(self, code, shuffle_input):
