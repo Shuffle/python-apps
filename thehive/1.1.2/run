@@ -1,0 +1,17 @@
+#!/bin/sh
+docker stop frikky/shuffle:thehive_1.0.0 --force
+docker rm   frikky/shuffle:thehive_1.0.0 --force
+docker rmi  frikky/shuffle:thehive_1.0.0 --force
+
+docker build . -t frikky/shuffle:thehive_1.0.0
+
+echo "RUNNING!\n\n"
+docker run \
+	--env CALLBACK_URL="http://192.168.239.144:5001" \
+	--env ACTION='{"app_name":"testing","app_version":"1.0.0","errors":[],"id_":"13fa4c3f-8991-3ade-b90d-f326fd4941dd","is_valid":true,"label":"random_number","environment":"onprem","name":"random_number","parameters":[],"position":{"x":178.07868996109607,"y":457.28345902971614},"priority":3}' \
+	--env FUNCTION_APIKEY="asdasd" \
+	--env EXECUTIONID="2349bf96-51ad-68d2-5ca6-75ef8f7ee814" \
+	--env AUTHORIZATION="" \
+	frikky/shuffle:thehive_1.0.0
+
+docker push frikky/shuffle:thehive_1.0.0
