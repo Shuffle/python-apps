@@ -174,7 +174,11 @@ class HTTP(AppBase):
         parsed_headers = self.splitheaders(headers)
         parsed_headers["User-Agent"] = "Shuffle Automation"
         verify = self.checkverify(verify)
+
         proxies = None
+        if http_proxy or https_proxy:
+            proxies = {}
+
         if http_proxy: 
             proxies["http"] = http_proxy
         if https_proxy: 
@@ -213,6 +217,8 @@ class HTTP(AppBase):
         verify = self.checkverify(verify)
         body = self.checkbody(body)
         proxies = None
+        if http_proxy or https_proxy:
+            proxies = {}
         if http_proxy: 
             proxies["http"] = http_proxy
         if https_proxy: 
@@ -251,6 +257,8 @@ class HTTP(AppBase):
         verify = self.checkverify(verify)
         body = self.checkbody(body)
         proxies = None
+        if http_proxy or https_proxy:
+            proxies = {}
         if http_proxy: 
             proxies["http"] = http_proxy
         if https_proxy: 
@@ -290,6 +298,8 @@ class HTTP(AppBase):
         verify = self.checkverify(verify)
         body = self.checkbody(body)
         proxies = None
+        if http_proxy or https_proxy:
+            proxies = {}
         if http_proxy: 
             proxies["http"] = http_proxy
         if https_proxy: 
@@ -328,6 +338,8 @@ class HTTP(AppBase):
         verify = self.checkverify(verify)
         body = self.checkbody(body)
         proxies = None
+        if http_proxy or https_proxy:
+            proxies = {}
         if http_proxy: 
             proxies["http"] = http_proxy
         if https_proxy: 
@@ -366,6 +378,8 @@ class HTTP(AppBase):
         verify = self.checkverify(verify)
         body = self.checkbody(body)
         proxies = None
+        if http_proxy or https_proxy:
+            proxies = {}
         if http_proxy: 
             proxies["http"] = http_proxy
         if https_proxy: 
@@ -404,6 +418,8 @@ class HTTP(AppBase):
         verify = self.checkverify(verify)
         body = self.checkbody(body)
         proxies = None
+        if http_proxy or https_proxy:
+            proxies = {}
         if http_proxy: 
             proxies["http"] = http_proxy
         if https_proxy: 
