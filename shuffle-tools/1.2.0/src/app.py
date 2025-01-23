@@ -1998,7 +1998,7 @@ class Tools(AppBase):
                 try:
                     # FIXME: This is a hack, but it works
                     if directcall:
-                        new_value = parsedvalue
+                        new_value = allvalues["value"]
                         if new_value == None:
                             new_value = [value]
 
@@ -2016,7 +2016,7 @@ class Tools(AppBase):
                         "reason": f"Appended as it didn't exist",
                         "key": key,
                         "search": value,
-                        "value": parsedvalue,
+                        "value": data["value"],
                     }
                 except Exception as e:
                     exception = e
