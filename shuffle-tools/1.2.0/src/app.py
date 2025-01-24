@@ -594,6 +594,8 @@ class Tools(AppBase):
             # Add globals in it too
             globals_copy = globals().copy()
             globals_copy["print"] = custom_print
+            globals_copy["singul"] = self.singul
+            globals_copy["shuffle"] = self.singul
 
             # Add self to globals_copy
             for key, value in locals().copy().items():
