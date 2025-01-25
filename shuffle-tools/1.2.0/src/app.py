@@ -41,8 +41,8 @@ import paramiko
 import concurrent.futures
 import multiprocessing
 
-#from walkoff_app_sdk.app_base import AppBase
-from shuffle_sdk import AppBase
+from walkoff_app_sdk.app_base import AppBase
+#from shuffle_sdk import AppBase
 
 # Override exit(), sys.exit, and os._exit 
 # sys.exit() can be caught, meaning we can have a custom handler for it
