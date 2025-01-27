@@ -594,8 +594,12 @@ class Tools(AppBase):
             # Add globals in it too
             globals_copy = globals().copy()
             globals_copy["print"] = custom_print
-            globals_copy["singul"] = self.singul
-            globals_copy["shuffle"] = self.singul
+            try:
+                globals_copy["singul"] = self.singul
+                globals_copy["shuffle"] = self.singul
+            except Exception as e:
+                self.logger.info(f"Failed to add singul to python globals: {e}")
+
 
             # Add self to globals_copy
             for key, value in locals().copy().items():
