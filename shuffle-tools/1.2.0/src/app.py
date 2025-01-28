@@ -1594,9 +1594,6 @@ class Tools(AppBase):
 
             return {"success": False, "message": "Both input lists need to be valid JSON lists."}
 
-        if len(list_one) != len(list_two):
-            return {"success": False, "message": "Lists length must be the same. %d vs %d. Are you trying to add them to a single list? Use add_list_to_list" % (len(list_one), len(list_two))}
-
         if len(sort_key_list_one) > 0:
             try:
                 list_one = sorted(list_one, key=lambda k: k.get(sort_key_list_one), reverse=True)
@@ -1609,26 +1606,13 @@ class Tools(AppBase):
             except:
                 pass
 
-        # Loops for each item in sub array and merges items together
         # List one is being overwritten
-        base_key = "shuffle_auto_merge"
         try:
-            for i in range(len(list_one)):
-                if isinstance(list_two[i], dict):
-                    for key, value in list_two[i].items():
-                        list_one[i][key] = value
-                elif isinstance(list_two[i], str) and list_two[i] == "":
-                    continue
-                elif isinstance(list_two[i], str) or isinstance(list_two[i], int) or isinstance(list_two[i], bool):
-                    if len(set_field) == 0:
-                        list_one[i][base_key] = list_two[i]
-                    else:
-                        set_field = set_field.replace(" ", "_", -1)
-                        list_one[i][set_field] = list_two[i]
+            list_one = list_one + list_two
         except Exception as e:
             return {
                 "success": False,
-                "reason": "An error occurred while merging the lists. PS: List one can NOT be a list of integers. If this persists, contact us at support@shuffler.io",
+                "reason": "An error occurred while merging the lists.",
                 "exception": f"{e}",
             }
 
