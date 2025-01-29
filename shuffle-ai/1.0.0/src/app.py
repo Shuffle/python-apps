@@ -1,11 +1,28 @@
 import json
-import PyPDF2
 import tempfile
 import requests
-import pytesseract
-from pdf2image import convert_from_path
 
-from walkoff_app_sdk.app_base import AppBase
+try:
+    import pytesseract
+except Exception as e:
+    print("Skipping pytesseract import: %s" % e)
+
+try:
+    import PyPDF2
+except Exception as e:
+    print("Skipping PyPDF2 import: %s" % e)
+
+try:
+    from pdf2image import convert_from_path
+except Exception as e:
+    print("Skipping pdf2image import: %s" % e)
+
+try:
+    import ollama
+except Exception as e:
+    print("Skipping ollama import: %s" % e)
+
+from shuffle_sdk import AppBase
 
 class Tools(AppBase):
     __version__ = "1.0.0"
@@ -13,6 +30,53 @@ class Tools(AppBase):
 
     def __init__(self, redis, logger, console_logger=None):
         super().__init__(redis, logger, console_logger)
+
+    def run_llm(self, question, model="llama3.2"):
+        models = []
+        response = ollama.chat(model=model, messages=[
+            {
+                "role": "user", "content": question,
+            }
+        ])
+
+        return response["message"]["content"]
+
+    def security_assistant(self):
+        # Currently testing outside the Shuffle environment
+        # using assistants and local LLMs
+
+        return "Not implemented"
+
+    def shuffle_cloud_inference(self, apikey, text, formatting="auto"):
+        headers = {
+            "Authorization": "Bearer %s" % apikey,
+        }
+
+        if not formatting:
+            formatting = "auto"
+    
+        output_formatting= "Format the following data to be a good email that can be sent to customers. Don't make it too business sounding."
+        if formatting != "auto":
+            output_formatting = formatting
+    
+        ret = requests.post(
+            "https://shuffler.io/api/v1/conversation", 
+            json={
+                "query": text, 
+                "formatting": output_formatting,
+                "output_format": "formatting"
+            },
+            headers=headers,
+        )
+    
+        if ret.status_code != 200:
+            print(ret.text)
+            return {
+                "success": False,
+                "reason": "Status code for auto-formatter is not 200"
+            }
+    
+        return ret.text
 
     def autoformat_text(self, apikey, text, formatting="auto"):
         headers = {

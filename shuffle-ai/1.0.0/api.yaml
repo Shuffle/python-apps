@@ -11,7 +11,18 @@ contact_info:
   url: https://shuffler.io
   email: support@shuffler.io
 actions:
-  - name: autoformat_text 
+  - name: run_llm 
+    description: "Runs a local LLM based on ollama with any of their models from https://github.com/ollama/ollama?tab=readme-ov-file#model-library"
+    parameters:
+      - name: question 
+        description: "The input question to the model"
+        required: true
+        multiline: true
+        example: ""
+        schema:
+          type: string
+
+  - name: shuffle_cloud_inference
     description: Input ANY kind of data in the format you want, and the format you want it in. Default is a business-y email. Uses ShuffleGPT, which is based on OpenAI and our own model.
     parameters:
       - name: apikey 
