@@ -1,6 +1,6 @@
 FROM python:3.10-slim
 
-# Install all alpine build tools needed for our pip installs
+# Install all build tools needed for our pip installs
 RUN apt update 
 RUN apt install -y clang g++ make automake autoconf libtool cmake 
 
