@@ -31,8 +31,8 @@ class Tools(AppBase):
     def __init__(self, redis, logger, console_logger=None):
         super().__init__(redis, logger, console_logger)
 
-    def run_llm(self, question, model="llama3.2"):
-        models = []
+    #def run_llm(self, question, model="llama3.2"):
+    def run_llm(self, question, model="deepseek-v3"):
         response = ollama.chat(model=model, messages=[
             {
                 "role": "user", "content": question,

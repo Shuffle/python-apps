@@ -65,7 +65,7 @@ RUN ls -alh /usr/bin
 RUN which ollama
 
 #RUN /usr/local/bin/ollama pull llama3.2
-RUN ollama serve & sleep 2 && ollama pull llama3
+RUN ollama serve & sleep 2 && ollama pull nezahatkorkmaz/deepseek-v3
 
 #RUN rm /usr/local/bin/ollama
 #RUN cd tesseract && ./autogen.sh && ./configure --build=x86_64-alpine-linux-musl --host=x86_64-alpine-linux-musl && make && make install && cd /tmp/src
