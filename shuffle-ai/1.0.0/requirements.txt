@@ -3,5 +3,5 @@ pytesseract
 pdf2image
 pypdf2
 requests
-ollama
 
+llama-cpp-python

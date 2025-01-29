@@ -1,3 +1,4 @@
+import os
 import json
 import tempfile
 import requests
@@ -18,9 +19,9 @@ except Exception as e:
     print("Skipping pdf2image import: %s" % e)
 
 try:
-    import ollama
+    import llama_cpp 
 except Exception as e:
-    print("Skipping ollama import: %s" % e)
+    print("Skipping llama_cpp import: %s" % e)
 
 from shuffle_sdk import AppBase
 
@@ -32,14 +33,48 @@ class Tools(AppBase):
         super().__init__(redis, logger, console_logger)
 
     #def run_llm(self, question, model="llama3.2"):
-    def run_llm(self, question, model="deepseek-v3"):
-        response = ollama.chat(model=model, messages=[
-            {
-                "role": "user", "content": question,
-            }
-        ])
+    #def run_llm(self, question, model="deepseek-v3"):
+    def run_llm(self, question, model="/models/Llama-3.2-3B.Q8_0.gguf"):
+        self.logger.info("[DEBUG] Running LLM with model '%s'" % model)
 
-        return response["message"]["content"]
+        if not os.path.exists(model):
+            return {
+                "success": False,
+                "reason": "Model not found at path %s" % model,
+                "details": "Ensure the model path is correct"
+            }
+
+        llm = llama_cpp.Llama(model_path=model)
+
+        # https://github.com/abetlen/llama-cpp-python 
+        output = llm.create_chat_completion(
+            messages = [
+                {"role": "system", "content": "You are an assistant who outputs in JSON format.."},
+                {
+                    "role": "user",
+                    "content": question,
+                }
+            ]
+        )
+
+        return output
+
+
+        #model = ctransformers.AutoModelForCausalLM.from_pretrained(
+        #    model_path_or_repo_id=model,
+        #    #model_type="deepseek-v3"
+        #)
+
+        #resp = model(full_question)
+        #return resp 
+
+        #response = ollama.chat(model=model, messages=[
+        #    {
+        #        "role": "user", "content": question,
+        #    }
+        #])
+
+        #return response["message"]["content"]
 
     def security_assistant(self):
         # Currently testing outside the Shuffle environment
