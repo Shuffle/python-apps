@@ -12,7 +12,7 @@ contact_info:
   email: support@shuffler.io
 actions:
   - name: run_llm 
-    description: "Runs a local LLM based on ollama with any of their models from https://github.com/ollama/ollama?tab=readme-ov-file#model-library"
+    description: "Runs a local LLM, with a GPU or CPU (slow). Default model is set up in Dockerfile" 
     parameters:
       - name: question 
         description: "The input question to the model"
@@ -21,11 +21,11 @@ actions:
         example: ""
         schema:
           type: string
-      - name: model 
-        description: "The model to run"
+      - name: system_message 
+        description: "The system message use, if any"
         required: false 
         multiline: false 
-        example: "deepseek-v3"
+        example: ""
         schema:
           type: string
 

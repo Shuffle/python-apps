@@ -25,6 +25,50 @@ except Exception as e:
 
 from shuffle_sdk import AppBase
 
+#model = "/models/Llama-3.2-3B.Q8_0.gguf" # Larger 
+#model = "/models/Llama-3.2-3B.Q2_K.gguf" # Smol
+
+#model = "/models/DeepSeek-R1-Distill-Llama-8B-Q8_0.gguf" # Larger 8-bit
+model = "/models/DeepSeek-R1-Distill-Llama-8B-Q2_K.gguf" # Smaller
+if os.getenv("MODEL_PATH"):
+    model = os.getenv("MODEL_PATH")
+
+def load_llm_model(model):
+    if not os.path.exists(model):
+        model_name = model.split("/")[-1]
+        # Check $HOME/downloads/{model}
+
+        home_path = os.path.expanduser("~")
+        print(home_path)
+
+        if os.path.exists(f"{home_path}/downloads/{model_name}"):
+            model = f"{home_path}/downloads/{model_name}"
+        else:
+            return {
+                "success": False,
+                "reason": "Model not found at path %s" % model,
+                "details": "Ensure the model path is correct"
+            }
+
+    # Check for GPU layers
+    llm = None
+    gpu_layers = os.getenv("GPU_LAYERS")
+    if gpu_layers:
+        gpu_layers = int(gpu_layers)
+        if gpu_layers > 0:
+            print("GPU Layers: %s" % gpu_layers)
+            llm = llama_cpp.Llama(model_path=model, n_gpu_layers=gpu_layers)
+        else:
+            llm = llama_cpp.Llama(model_path=model)
+    else:
+        # Check if GPU available
+        #print("No GPU layers set.")
+        llm = llama_cpp.Llama(model_path=model)
+
+    return llm
+
+llm = load_llm_model(model)
+
 class Tools(AppBase):
     __version__ = "1.0.0"
     app_name = "Shuffle AI"  
@@ -34,22 +78,23 @@ class Tools(AppBase):
 
     #def run_llm(self, question, model="llama3.2"):
     #def run_llm(self, question, model="deepseek-v3"):
-    def run_llm(self, question, model="/models/Llama-3.2-3B.Q8_0.gguf"):
-        self.logger.info("[DEBUG] Running LLM with model '%s'" % model)
+    def run_llm(self, question, system_message=""):
+        global llm
+        global model
 
-        if not os.path.exists(model):
-            return {
-                "success": False,
-                "reason": "Model not found at path %s" % model,
-                "details": "Ensure the model path is correct"
-            }
+        if not system_message:
+            system_message = "Be a friendly assistant",
 
-        llm = llama_cpp.Llama(model_path=model)
+        self.logger.info("[DEBUG] Running LLM with model '%s'. To overwrite path, use environment variable MODEL_PATH=<path>" % model)
 
         # https://github.com/abetlen/llama-cpp-python 
         output = llm.create_chat_completion(
+            max_tokens=100,
             messages = [
-                {"role": "system", "content": "You are an assistant who outputs in JSON format.."},
+                {
+                    "role": "system",
+                    "content": system_message,
+                },
                 {
                     "role": "user",
                     "content": question,
@@ -57,24 +102,23 @@ class Tools(AppBase):
             ]
         )
 
+        self.logger.info("[DEBUG] LLM output: %s" % output)
+
+        new_message = ""
+        if "choices" in output and len(output["choices"]) > 0:
+            new_message = output["choices"][0]["message"]["content"]
+
+        parsed_output = {
+            "success": True,
+            "model": output["model"],
+            "tokens": output["tokens"],
+            "output": new_message,
+        }
+
+        if not os.getenv("GPU_LAYERS"):
+            parsed_output["debug"] = "GPU_LAYERS not set. Running on CPU. Set GPU_LAYERS to the number of GPU layers to use (e.g. 8)."
+
         return output
-
-
-        #model = ctransformers.AutoModelForCausalLM.from_pretrained(
-        #    model_path_or_repo_id=model,
-        #    #model_type="deepseek-v3"
-        #)
-
-        #resp = model(full_question)
-        #return resp 
-
-        #response = ollama.chat(model=model, messages=[
-        #    {
-        #        "role": "user", "content": question,
-        #    }
-        #])
-
-        #return response["message"]["content"]
 
     def security_assistant(self):
         # Currently testing outside the Shuffle environment

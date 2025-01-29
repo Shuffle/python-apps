@@ -17,7 +17,14 @@ RUN apt install -y file openssl bash tini libpng-dev aspell-en
 RUN apt install -y git clang g++ make automake autoconf libtool cmake 
 RUN apt install -y autoconf-archive wget
 RUN mkdir -p /models
-RUN wget https://huggingface.co/QuantFactory/Llama-3.2-3B-GGUF/resolve/main/Llama-3.2-3B.Q8_0.gguf?download=true -O /models/Llama-3.2-3B.Q8_0.gguf
+
+# Larger model 
+RUN wget https://huggingface.co/unsloth/DeepSeek-R1-Distill-Llama-8B-GGUF/resolve/main/DeepSeek-R1-Distill-Llama-8B-Q2_K.gguf
+ENV MODEL_PATH="/models/DeepSeek-R1-Distill-Llama-8B-Q2_K.gguf"
+
+# https://huggingface.co/unsloth/DeepSeek-R1-Distill-Llama-8B-GGUF/resolve/main/DeepSeek-R1-Distill-Llama-8B-Q8_0.gguf
+#RUN wget https://huggingface.co/QuantFactory/Llama-3.2-3B-GGUF/resolve/main/Llama-3.2-3B.Q2_K.gguf?download=true -O /models/Llama-3.2-3B.Q8_0.gguf
+#RUN wget https://huggingface.co/QuantFactory/Llama-3.2-3B-GGUF/resolve/main/Llama-3.2-3B.Q2_K.gguf?download=true -O /models/Llama-3.2-3B.Q8_0.gguf
 
 # Install all of our pip packages in a single directory that we can copy to our base image later
 RUN mkdir /install
@@ -71,9 +78,6 @@ ENV GIN_MODE=release
 ENV SHUFFLE_APP_SDK_TIMEOUT=300
 #ENV LD_LIBRARY_PATH=/usr/local/lib/python3.10/site-packages/ctransformers/lib/basic/libctransformers.so
 #RUN chmod 755 /usr/local/lib/python3.10/site-packages/ctransformers/lib/basic/libctransformers.so
-
-#RUN apt install -y libffi-dev 
-
 
 COPY src /app
 WORKDIR /app
