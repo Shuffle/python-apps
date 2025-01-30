@@ -2606,14 +2606,39 @@ class Tools(AppBase):
 
         return {"success":"true","output": stdout.read().decode(errors='ignore')}
 
+    def cleanup_ioc_data(self, input_data):
+        # Remove unecessary parts like { and }, quotes etc
+        input_data = str(input_data)
+        input_data = input_data.replace("{", "")
+        input_data = input_data.replace("}", "")
+        input_data = input_data.replace("\"", "")
+        input_data = input_data.replace("'", "")
+        input_data = input_data.replace(" ", "")
+        input_data = input_data.replace("\t", "")
+        input_data = input_data.replace("\n", "")
+
+        # Remove html tags 
+        input_data = re.sub(r'<[^>]*>', '', input_data)
+
+        return input_data
+
+
     def parse_ioc(self, input_string, input_type="all"):
         ioc_types = ["domains", "urls", "email_addresses", "ipv4s", "ipv4_cidrs", "md5s", "sha256s", "sha1s", "cves"]
+        #ioc_types = ["ipv4s"]
+
+        try:
+            input_string = self.cleanup_ioc_data(input_string)
+        except Exception as e:
+            self.logger.info("[ERROR] Failed to cleanup ioc data: %s" % e)
 
         # Remember overriding ioc types we care about
         if input_type == "" or input_type == "all":
             input_type = "all"
         else:
             input_type = input_type.split(",")
+
+            new_input_types = []
             for i in range(len(input_type)):
                 item = input_type[i]
 
@@ -2621,11 +2646,23 @@ class Tools(AppBase):
                 if not item.endswith("s"):
                     item = "%ss" % item
 
-                input_type[i] = item
+                if item not in ioc_types:
+                    continue
 
-            ioc_types = input_type
+                new_input_types.append(item)
+
+            ioc_types = new_input_types 
+
+        # Not used for anything after cleanup fixes
+        max_size = 7500000 
+        #if len(input_string) > max_size:
+        #    input_string = input_string[:max_size]
+
+        self.logger.info("[DEBUG] Parsing data of length %d with types %s. Max size: %d" % (len(input_string), ioc_types, max_size))
 
         iocs = find_iocs(str(input_string), included_ioc_types=ioc_types)
+        self.logger.info("[DEBUG] Found %d iocs" % len(iocs))
+
         newarray = []
         for key, value in iocs.items():
             if input_type != "all":
