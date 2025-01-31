@@ -19,7 +19,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 
-from walkoff_app_sdk.app_base import AppBase
+#from walkoff_app_sdk.app_base import AppBase
+from shuffle_sdk import AppBase 
 
 def json_serial(obj):
     if isinstance(obj, datetime.datetime):
