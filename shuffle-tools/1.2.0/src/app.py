@@ -2624,7 +2624,7 @@ class Tools(AppBase):
 
 
     def parse_ioc(self, input_string, input_type="all"):
-        ioc_types = ["domains", "urls", "email_addresses", "ipv4s", "ipv4_cidrs", "md5s", "sha256s", "sha1s", "cves"]
+        ioc_types = ["domains", "urls", "email_addresses", "ipv4s", "ipv6s", "ipv4_cidrs", "md5s", "sha256s", "sha1s", "cves"]
         #ioc_types = ["ipv4s"]
 
         try:
@@ -2652,6 +2652,8 @@ class Tools(AppBase):
                 new_input_types.append(item)
 
             ioc_types = new_input_types 
+            if len(ioc_types) == 0:
+                input_type = "all"
 
         # Not used for anything after cleanup fixes
         max_size = 7500000 
@@ -2667,6 +2669,7 @@ class Tools(AppBase):
         for key, value in iocs.items():
             if input_type != "all":
                 if key not in input_type:
+                    print("Invalid key: %s" % key)
                     continue
 
             if len(value) > 0:

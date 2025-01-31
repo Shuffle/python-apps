@@ -164,11 +164,16 @@ class Email(AppBase):
                 "success": False,
                 "reason": f"Failed to send mail: {e}"
             }
+        except Exception as e:
+            return {
+                "success": False,
+                "reason": f"Failed to send mail (2): {e}"
+            }
 
         self.logger.info("Successfully sent email with subject %s to %s" % (subject, recipient))
         return {
             "success": True, 
-            "reason": "Email sent to %s, %s!" %(recipient,cc_emails) if cc_emails else "Email sent to %s!" % recipient,
+            "reason": "Email sent to %s, %s!" % (recipient, cc_emails) if cc_emails else "Email sent to %s!" % recipient,
             "attachments": attachment_count
         }
 
