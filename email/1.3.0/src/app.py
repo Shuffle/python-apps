@@ -114,7 +114,7 @@ class Email(AppBase):
         msg["To"] = recipient
         msg["Subject"] = subject
         
-        if cc_emails != None and len(cc_emails) > 0:
+        if cc_emails: 
             msg["Cc"] = cc_emails
         
         self.logger.info("Pre mime check")
@@ -156,7 +156,7 @@ class Email(AppBase):
         except Exception as e:
             self.logger.info(f"Error in attachment parsing for email: {e}")
 
-        self.logger.info("Pre send msg")
+        self.logger.info(f"Pre send msg: {msg}")
         try:
             s.send_message(msg)
         except smtplib.SMTPDataError as e: 
