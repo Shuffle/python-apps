@@ -104,7 +104,7 @@ class Email(AppBase):
                 else:
                     return {
                         "success": False,
-                        "reason": f"General auth exception: {e}"
+                        "reason": f"General login exception: {e}"
                     }
 
             except smtplib.SMTPAuthenticationError as e:
@@ -123,6 +123,12 @@ class Email(AppBase):
         self.logger.info("Pre mime multipart")
         msg = MIMEMultipart()
         msg["From"] = username
+        if len(username) == 0:
+            return {
+                "success": False,
+                "reason": "No username provided (sender). Please provide a username."
+            }
+
         msg["To"] = recipient
         msg["Subject"] = subject
         

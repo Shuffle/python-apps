@@ -52,7 +52,7 @@ actions:
         description: The SMTP login username
         multiline: false
         example: "support@shuffler.io"
-        required: false 
+        required: true 
         schema:
           type: string
       - name: password
