@@ -2613,9 +2613,10 @@ class Tools(AppBase):
         input_data = input_data.replace("}", "")
         input_data = input_data.replace("\"", "")
         input_data = input_data.replace("'", "")
-        input_data = input_data.replace(" ", "")
-        input_data = input_data.replace("\t", "")
-        input_data = input_data.replace("\n", "")
+
+        input_data = input_data.replace("\t", " ")
+        input_data = input_data.replace("  ", " ")
+        input_data = input_data.replace("\n\n", "\n")
 
         # Remove html tags 
         input_data = re.sub(r'<[^>]*>', '', input_data)
@@ -2661,9 +2662,11 @@ class Tools(AppBase):
         #    input_string = input_string[:max_size]
 
         self.logger.info("[DEBUG] Parsing data of length %d with types %s. Max size: %d" % (len(input_string), ioc_types, max_size))
+        self.logger.info(f"STRING: {input_string}")
 
-        iocs = find_iocs(str(input_string), included_ioc_types=ioc_types)
-        self.logger.info("[DEBUG] Found %d iocs" % len(iocs))
+        #iocs = find_iocs(str(input_string), included_ioc_types=ioc_types)
+        iocs = find_iocs(str(input_string))
+        self.logger.info("[DEBUG] Found %d ioc types" % len(iocs))
 
         newarray = []
         for key, value in iocs.items():
@@ -2672,24 +2675,27 @@ class Tools(AppBase):
                     print("Invalid key: %s" % key)
                     continue
 
-            if len(value) > 0:
-                for item in value:
-                    # If in here: attack techniques. Shouldn't be 3 levels so no
-                    # recursion necessary
-                    if isinstance(value, dict):
-                        for subkey, subvalue in value.items():
-                            if len(subvalue) > 0:
-                                for subitem in subvalue:
-                                    data = {
-                                        "data": subitem,
-                                        "data_type": "%s_%s" % (key[:-1], subkey),
-                                    }
-                                    if data not in newarray:
-                                        newarray.append(data)
-                    else:
-                        data = {"data": item, "data_type": key[:-1]}
-                        if data not in newarray:
-                            newarray.append(data)
+            print(key, value)
+            if len(value) == 0:
+                continue
+
+            for item in value:
+                # If in here: attack techniques. Shouldn't be 3 levels so no
+                # recursion necessary
+                if isinstance(value, dict):
+                    for subkey, subvalue in value.items():
+                        if len(subvalue) > 0:
+                            for subitem in subvalue:
+                                data = {
+                                    "data": subitem,
+                                    "data_type": "%s_%s" % (key[:-1], subkey),
+                                }
+                                if data not in newarray:
+                                    newarray.append(data)
+                else:
+                    data = {"data": item, "data_type": key[:-1]}
+                    if data not in newarray:
+                        newarray.append(data)
 
         # Reformatting IP
         for item in newarray:

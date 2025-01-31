@@ -126,7 +126,7 @@ class Email(AppBase):
         if len(username) == 0:
             return {
                 "success": False,
-                "reason": "No username provided (sender). Please provide a username."
+                "reason": "No username provided (sender). Please provide a username. Required since January 2025."
             }
 
         msg["To"] = recipient
