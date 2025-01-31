@@ -99,10 +99,13 @@ class Email(AppBase):
             try:
                 s.login(username, password)
             except smtplib.SMTPAuthenticationError as e:
-                return {
-                    "success": False,
-                    "reason": f"Bad username or password: {e}"
-                }
+                if len(password) == 0:
+                    self.logger.info("No password provided. Continuing as auth may not be necessary.")
+                else:
+                    return {
+                        "success": False,
+                        "reason": f"Bad username or password: {e}"
+                    }
 
         if body_type == "" or len(body_type) < 3:
             body_type = "html"
