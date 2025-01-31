@@ -98,9 +98,18 @@ class Email(AppBase):
         if len(username) > 1 or len(password) > 1:
             try:
                 s.login(username, password)
+            except Exception as e:
+                if len(password) == 0:
+                    self.logger.info("[WARNING] Auth failed (2). No password provided. Continuing as auth may not be necessary.")
+                else:
+                    return {
+                        "success": False,
+                        "reason": f"General auth exception: {e}"
+                    }
+
             except smtplib.SMTPAuthenticationError as e:
                 if len(password) == 0:
-                    self.logger.info("No password provided. Continuing as auth may not be necessary.")
+                    self.logger.info("[WARNING] Auth failed. No password provided. Continuing as auth may not be necessary.")
                 else:
                     return {
                         "success": False,
