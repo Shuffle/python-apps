@@ -78,7 +78,7 @@ class Tools(AppBase):
 
     #def run_llm(self, question, model="llama3.2"):
     #def run_llm(self, question, model="deepseek-v3"):
-    def run_llm(self, question, system_message=""):
+    def run_llm(self, input, system_message=""):
         global llm
         global model
 
@@ -97,7 +97,7 @@ class Tools(AppBase):
                 },
                 {
                     "role": "user",
-                    "content": question,
+                    "content": input,
                 }
             ]
         )

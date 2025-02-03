@@ -18,7 +18,7 @@ actions:
   - name: run_llm 
     description: "Runs a local LLM, with a GPU or CPU (slow). Default model is set up in Dockerfile" 
     parameters:
-      - name: question 
+      - name: input 
         description: "The input question to the model"
         required: true
         multiline: true
