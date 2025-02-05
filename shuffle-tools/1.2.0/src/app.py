@@ -2546,7 +2546,7 @@ class Tools(AppBase):
             "changed_fields": important_fields,
         }
 
-    def generate_random_string(length=16, special_characters=True):
+    def generate_random_string(self, length=16, special_characters=True):
         try:
             length = int(length)
         except:

@@ -51,21 +51,21 @@ def load_llm_model(model):
             }
 
     # Check for GPU layers
-    llm = None
+    innerllm = None
     gpu_layers = os.getenv("GPU_LAYERS")
     if gpu_layers:
         gpu_layers = int(gpu_layers)
         if gpu_layers > 0:
             print("GPU Layers: %s" % gpu_layers)
-            llm = llama_cpp.Llama(model_path=model, n_gpu_layers=gpu_layers)
+            innerllm = llama_cpp.Llama(model_path=model, n_gpu_layers=gpu_layers)
         else:
-            llm = llama_cpp.Llama(model_path=model)
+            innerllm = llama_cpp.Llama(model_path=model)
     else:
         # Check if GPU available
         #print("No GPU layers set.")
-        llm = llama_cpp.Llama(model_path=model)
+        innerllm = llama_cpp.Llama(model_path=model)
 
-    return llm
+    return innerllm
 
 llm = load_llm_model(model)
 
@@ -76,8 +76,6 @@ class Tools(AppBase):
     def __init__(self, redis, logger, console_logger=None):
         super().__init__(redis, logger, console_logger)
 
-    #def run_llm(self, question, model="llama3.2"):
-    #def run_llm(self, question, model="deepseek-v3"):
     def run_llm(self, input, system_message=""):
         global llm
         global model
@@ -88,19 +86,27 @@ class Tools(AppBase):
         self.logger.info("[DEBUG] Running LLM with model '%s'. To overwrite path, use environment variable MODEL_PATH=<path>" % model)
 
         # https://github.com/abetlen/llama-cpp-python 
-        output = llm.create_chat_completion(
-            max_tokens=100,
-            messages = [
-                {
-                    "role": "system",
-                    "content": system_message,
-                },
-                {
-                    "role": "user",
-                    "content": input,
-                }
-            ]
-        )
+        try:
+            self.logger.info("[DEBUG] LLM: %s" % llm)
+            output = llm.create_chat_completion(
+                max_tokens=100,
+                messages = [
+                    {
+                        "role": "system",
+                        "content": system_message,
+                    },
+                    {
+                        "role": "user",
+                        "content": input,
+                    }
+                ]
+            )
+        except Exception as e:
+            return {
+                "success": False,
+                "reason": f"Failed to run local LLM. Check logs in this execution for more info: {self.current_execution_id}",
+                "details": f"{e}"
+            }
 
         self.logger.info("[DEBUG] LLM output: %s" % output)
 
