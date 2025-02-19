@@ -2931,6 +2931,9 @@ class Tools(AppBase):
 
         return results
 
+    def bodyparse_test(self, body):
+        return body
+
     def list_cidr_ips(self, cidr):
         defaultreturn = {
             "success": False,

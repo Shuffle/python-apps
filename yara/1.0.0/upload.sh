@@ -26,6 +26,7 @@ gcloud run deploy yara \
 	--region=europe-west2 \
 	--max-instances=1 \
 	--set-env-vars=SHUFFLE_APP_EXPOSED_PORT=8080,SHUFFLE_SWARM_CONFIG=run,SHUFFLE_LOGS_DISABLED=true --source=./  \
+	--service-account=shuffle-apps@shuffler.iam.gserviceaccount.com \
 	--timeout=1800s
 
 # With image

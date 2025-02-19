@@ -427,6 +427,9 @@ class Email(AppBase):
         return result
 
     def parse_eml(self, filedata, extract_attachments=False):
+        if filedata.startswith("file_"):
+            return self.parse_email_file(filedata, extract_attachments)
+
         parsedfile = {
             "success": True,
             "filename": "email.eml",

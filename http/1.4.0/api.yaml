@@ -88,7 +88,20 @@ actions:
     returns:
       schema:
         type: string
-      example: "404 NOT FOUND"
+      example: |
+        {
+          "status": 200,
+          "body": {
+            "example": "json"
+            "data": "json"
+          },
+          "url": "https://example.com",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "cookies": {},
+          "success": true
+        }
   - name: POST 
     description: Runs a POST request towards the specified endpoint
     parameters:
