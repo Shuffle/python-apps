@@ -27,7 +27,7 @@ class ActiveDirectory(AppBase):
         super().__init__(redis, logger, console_logger)
 
     def __ldap_connection(self, server, port, domain, login_user, password, use_ssl):
-        use_SSL = False if use_ssl.lower() == "false" else False
+        use_SSL = False if use_ssl.lower() == "false" else True 
         login_dn = domain + "\\" + login_user
 
         s = Server(server, port=int(port), use_ssl=use_SSL)
