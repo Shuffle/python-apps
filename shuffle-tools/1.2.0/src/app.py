@@ -1826,7 +1826,7 @@ class Tools(AppBase):
         result = markupsafe.escape(mapping)
         return mapping
 
-    def check_cache_contains(self, key, value, append):
+    def check_cache_contains(self, key, value, append, category=""):
         org_id = self.full_execution["workflow"]["execution_org"]["id"]
         url = "%s/api/v1/orgs/%s/get_cache" % (self.url, org_id)
         data = {
@@ -1837,8 +1837,11 @@ class Tools(AppBase):
             "search": str(value),
             "key": key,
         }
-        directcall = False
 
+        if category:
+            data["category"] = category
+
+        directcall = False
         allvalues = {}
         try:
             for item in self.local_storage:
@@ -1879,6 +1882,9 @@ class Tools(AppBase):
                 allvalues = self.shared_cache
 
             if "success" not in allvalues:
+                if category:
+                    data["category"] = category
+
                 get_response = requests.post(url, json=data, verify=False)
                 allvalues = get_response.json()
                 directcall = True
@@ -1893,22 +1899,28 @@ class Tools(AppBase):
                 if append == True:
                     new_value = [str(value)]
                     data["value"] = json.dumps(new_value)
+                    if category:
+                        data["category"] = category
 
                     set_url = "%s/api/v1/orgs/%s/set_cache" % (self.url, org_id)
                     set_response = requests.post(set_url, json=data, verify=False)
                     try:
                         allvalues = set_response.json()
                         self.shared_cache = self.preload_cache(key=key)
-                        #allvalues["key"] = key
-                        #return allvalues
 
+                        
+                        newvalue = data["value"]
+                        try:
+                            newvalue = json.loads(data["value"])
+                        except json.JSONDecodeError:
+                            pass
 
                         return {
                             "success": True,
                             "found": False,
                             "key": key,
                             "search": value,
-                            "value": new_value,
+                            "value": newvalue,
                         }
                     except Exception as e:
                         return {
@@ -2000,6 +2012,7 @@ class Tools(AppBase):
                 if value not in allvalues["value"] and isinstance(allvalues["value"], list):
                     self.cache_update_buffer.append(value)
                     allvalues["value"].append(value)
+
                 exception = ""
                 try:
                     # FIXME: This is a hack, but it works
@@ -2009,12 +2022,18 @@ class Tools(AppBase):
                             new_value = [value]
 
                         data["value"] = json.dumps(new_value)
+                        if category:
+                            data["category"] = category
 
                         set_url = "%s/api/v1/orgs/%s/set_cache" % (self.url, org_id)
                         response = requests.post(set_url, json=data, verify=False)
                         allvalues = response.json()
 
-                    #return allvalues
+                    newvalue = data["value"]
+                    try:
+                        newvalue = json.loads(data["value"])
+                    except:
+                        pass
 
                     return {
                         "success": True,
@@ -2022,7 +2041,7 @@ class Tools(AppBase):
                         "reason": f"Appended as it didn't exist",
                         "key": key,
                         "search": value,
-                        "value": data["value"],
+                        "value": newvalue,
                     }
                 except Exception as e:
                     exception = e
@@ -2059,7 +2078,7 @@ class Tools(AppBase):
     ## subkey = "hi", value = "test3", overwrite=False
     ## {"subkey": "hi", "value": ["test2", "test3"]}
 
-    def change_cache_subkey(self, key, subkey, value, overwrite):
+    def change_cache_subkey(self, key, subkey, value, overwrite, category=""):
         org_id = self.full_execution["workflow"]["execution_org"]["id"]
         url = "%s/api/v1/orgs/%s/set_cache" % (self.url, org_id)
 
@@ -2081,6 +2100,9 @@ class Tools(AppBase):
             "value": value,
         }
 
+        if category:
+            data["category"] = category
+
         response = requests.post(url, json=data, verify=False)
         try:
             allvalues = response.json()
@@ -2101,10 +2123,10 @@ class Tools(AppBase):
             self.logger.info("Value couldn't be parsed")
             return response.text
 
-    def delete_cache_value(self, key):
-        return self.delete_cache(key)
+    def delete_cache_value(self, key, category=""):
+        return self.delete_cache(key, category=category)
 
-    def get_cache_value(self, key):
+    def get_cache_value(self, key, category=""):
         org_id = self.full_execution["workflow"]["execution_org"]["id"]
         url = "%s/api/v1/orgs/%s/get_cache" % (self.url, org_id)
         data = {
@@ -2114,6 +2136,9 @@ class Tools(AppBase):
             "org_id": org_id,
             "key": key,
         }
+
+        if category:
+            data["category"] = category
 
         value = requests.post(url, json=data, verify=False)
         try:
@@ -2138,7 +2163,7 @@ class Tools(AppBase):
             self.logger.info("Value couldn't be parsed, or json dump of value failed")
             return value.text
 
-    def set_cache_value(self, key, value):
+    def set_cache_value(self, key, value, category=""):
         org_id = self.full_execution["workflow"]["execution_org"]["id"]
         url = "%s/api/v1/orgs/%s/set_cache" % (self.url, org_id)
 
@@ -2160,6 +2185,9 @@ class Tools(AppBase):
             "value": value,
         }
 
+        if category:
+            data["category"] = category
+
         response = requests.post(url, json=data, verify=False)
         try:
             allvalues = response.json()
@@ -2174,6 +2202,9 @@ class Tools(AppBase):
                     allvalues["value"] = str(value)
             else:
                 allvalues["value"] = str(value)
+
+            if category:
+                allvalues["category"] = category
 
             return json.dumps(allvalues)
         except:

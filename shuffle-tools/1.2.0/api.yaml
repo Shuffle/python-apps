@@ -111,6 +111,13 @@ actions:
         example: "timestamp"
         schema:
           type: string
+      - name: category 
+        description: The category to get the value from. Not required.
+        required: false 
+        multiline: false
+        example: "tickets"
+        schema:
+          type: string
   - name: get_cache_value
     description: Get a value saved to your organization in Shuffle
     parameters:
@@ -119,6 +126,13 @@ actions:
         required: true
         multiline: false
         example: "timestamp"
+        schema:
+          type: string
+      - name: category 
+        description: The category to get the value from. Not required.
+        required: false 
+        multiline: false
+        example: "tickets"
         schema:
           type: string
     returns:
@@ -141,6 +155,13 @@ actions:
         example: "1621959545"
         schema:
           type: string
+      - name: category 
+        description: The category to get the value from. Not required.
+        required: false 
+        multiline: false
+        example: "tickets"
+        schema:
+          type: string
     returns:
       schema:
         type: string
@@ -152,6 +173,13 @@ actions:
         required: true
         multiline: false
         example: "timestamp"
+        schema:
+          type: string
+      - name: category 
+        description: The category to get the value from. Not required.
+        required: false 
+        multiline: false
+        example: "tickets"
         schema:
           type: string
     returns:
