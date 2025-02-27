@@ -67,7 +67,21 @@ class Email(AppBase):
         elif "," in recipients:
             targets = recipients.split(",")
 
-        data = {"targets": targets, "body": body, "subject": subject, "type": "alert", "email_app": True}
+        newtargets = []
+        for target in targets:
+            newtarget = target.strip()
+            if newtarget: 
+                newtargets.append(newtarget)
+
+        targets = newtargets
+
+        data = {
+            "targets": targets, 
+            "body": body, 
+            "subject": subject, 
+            "type": "alert", 
+            "email_app": True,
+        }
 
         url = "https://shuffler.io/functions/sendmail"
         headers = {"Authorization": "Bearer %s" % apikey}
