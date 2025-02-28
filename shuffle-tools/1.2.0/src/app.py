@@ -2730,7 +2730,9 @@ class Tools(AppBase):
 
         # Reformatting IP
         for item in newarray:
-            if "ip" in item["data_type"]:
+            if "cidr" in item["data_type"]:
+                pass
+            elif "ip" in item["data_type"]:
                 item["data_type"] = "ip"
                 try:
                     item["is_private_ip"] = ipaddress.ip_address(item["data"]).is_private
