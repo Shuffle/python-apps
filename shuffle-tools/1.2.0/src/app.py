@@ -2697,7 +2697,7 @@ class Tools(AppBase):
 
         #iocs = find_iocs(str(input_string), included_ioc_types=ioc_types)
         iocs = find_iocs(str(input_string))
-        self.logger.info("[DEBUG] Found %d ioc types" % len(iocs))
+        #self.logger.info("[DEBUG] Found %d ioc types" % len(iocs))
 
         newarray = []
         for key, value in iocs.items():
