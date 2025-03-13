@@ -1,14 +1,8 @@
-import socket
-import asyncio
-import time
-import random
 import json
-import uuid
-import time
 import requests
 
-from walkoff_app_sdk import csv_parse 
-from walkoff_app_sdk.app_base import AppBase
+from shuffle_sdk import AppBase
+from shuffle_sdk import csv_parse
 
 from openpyxl import Workbook, load_workbook
 
