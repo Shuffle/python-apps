@@ -138,8 +138,8 @@ class MSExcel(AppBase):
     
         # grab the active worksheet
         ws = wb.active
-        for item in ws.iter_rows():
-            print(item)
+        #for item in ws.iter_rows():
+        #    print(item)
     
         csvdata = ""
         for row in ws.values:
@@ -156,7 +156,7 @@ class MSExcel(AppBase):
         csvdata = csvdata[:-1]
     
         print()
-        print("Data:\n%s\n" % csvdata)
+        print("Data length:\n(%s)\n" % len(csvdata))
 
         return csvdata
 
