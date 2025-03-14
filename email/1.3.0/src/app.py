@@ -95,6 +95,12 @@ class Email(AppBase):
             except ValueError:
                 return "SMTP port needs to be a number (Current: %s)" % smtp_port
 
+        if "office365.com" in smtp_host:
+            return {
+                "success": False,
+                "reason": "Office 365 does not easily support SMTP anymore, and recommends the Graph API. Please use the Outlook Office365 app in Shuffle with the 'send email' action."
+            }
+
         self.logger.info("Pre SMTP setup")
         try:
             s = smtplib.SMTP(host=smtp_host, port=smtp_port)

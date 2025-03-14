@@ -31,13 +31,34 @@ authentication:
         type: string
 actions:
   - name: get_excel_file_data 
-    description: Gets data from all cells in an excel file as a list. If CSV, returns it as a CSV list
+    description: Gets data from all cells in an excel file as a list. If CSV, returns it as a CSV list. Max 25.000 lines in total due to timeouts.
     auth_not_required: true
     parameters:
       - name: file_id
         description: The file id of the file
         multiline: false
         required: true
+        schema:
+          type: string
+      - name: to_list 
+        description: Whether the output should be a list or not
+        multiline: false
+        required: false 
+        options:
+          - true
+          - false
+        schema:
+          type: string
+      - name: sheets 
+        description: The sheets to use. Comma separated.
+        multiline: false
+        required: false 
+        schema:
+          type: string
+      - name: max_rows 
+        description: The maximum number of rows to return
+        multiline: false
+        required: false 
         schema:
           type: string
     returns:
