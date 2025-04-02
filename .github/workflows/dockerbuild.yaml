@@ -24,7 +24,7 @@ jobs:
         for i in flist:
           a,v = i.split('/')
           # Look for folders only
-          if 'unsupported' in v:
+          if 'unsupported' in v or 'unsupported' in a:
             continue
 
           if '.md' in v:
