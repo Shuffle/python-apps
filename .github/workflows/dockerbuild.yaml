@@ -38,7 +38,7 @@ jobs:
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -47,9 +47,9 @@ jobs:
         uses: docker/setup-buildx-action@v1
       -
         name: Login to DockerHub
-        uses: docker/login-action@v1 
+        uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_LOGIN_USER }}
+          username: frikky
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 #        Use below configuration for ghcr.io
 #        with:
@@ -60,7 +60,7 @@ jobs:
         name: Build and push Master
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
         id: docker_build_master
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v6
         with:
           context: ${{ matrix.app }}/${{ matrix.version }}
           file: ${{ matrix.app }}/${{ matrix.version }}/Dockerfile          
@@ -74,7 +74,7 @@ jobs:
         name: Build and push Feature PR
         if: ${{ github.event_name == 'pull_request' }}
         id: docker_build_feature
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v6
         with:
           context: ${{ matrix.app }}/${{ matrix.version }}
           file: ${{ matrix.app }}/${{ matrix.version }}/Dockerfile          
