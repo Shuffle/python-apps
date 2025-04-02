@@ -23,6 +23,13 @@ jobs:
         ret = []
         for i in flist:
           a,v = i.split('/')
+          # Look for folders only
+          if 'unsupported' in v:
+            continue
+
+          if '.md' in v:
+            continue
+
           ret.append({'app':a, 'version':v })
         print(json.dumps({'include': ret}))
         EOF
