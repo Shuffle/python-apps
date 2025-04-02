@@ -1,2 +1,2 @@
 uncurl==0.0.10
-shuffle_sdk==0.0.18
+shuffle_sdk
