@@ -1,4 +1,4 @@
-name: ci
+name: dockerbuild 
 
 on:
   push:
@@ -49,7 +49,7 @@ jobs:
         name: Login to DockerHub
         uses: docker/login-action@v3
         with:
-          username: frikky
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 #        Use below configuration for ghcr.io
 #        with:
@@ -67,9 +67,9 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.app }}:${{ matrix.version }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.app }}:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/shuffle:${{ matrix.app }}_${{ matrix.version }}
+            frikky/${{ matrix.app }}:${{ matrix.version }}
+            frikky/${{ matrix.app }}:latest
+            frikky/shuffle:${{ matrix.app }}_${{ matrix.version }}
       -
         name: Build and push Feature PR
         if: ${{ github.event_name == 'pull_request' }}
@@ -81,7 +81,7 @@ jobs:
           platforms: linux/amd64,linux/arm64,linux/386
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.app }}:${{ github.head_ref }}
+            frikky/${{ matrix.app }}:${{ github.head_ref }}
       -
         name: Image digest
         run: |
