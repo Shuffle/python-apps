@@ -1,4 +1,4 @@
-requests==2.25.1
+requests==2.32.2
 eml-parser==1.14.7
 msg-parser==1.2.0
 mail-parser==3.15.0
