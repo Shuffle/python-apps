@@ -1,0 +1,61 @@
+walkoff_version: 1.0.0
+app_version: 1.0.0
+name: aws_sqs_app
+description: App para interagir com Amazon SQS usando boto3 e IAM role
+contact_info:
+  name: Seu Nome
+  url: https://github.com/I-ddandrade/python-apps
+  email: diego.andrade@meliuz.com.br
+actions:
+  - name: list_sqs_queues
+    description: Lista todas as filas SQS disponíveis
+    parameters:
+      - name: region
+        description: Região AWS (ex. us-east-1)
+        type: string
+        required: false
+        default: us-east-1
+    returns:
+      schema:
+        type: string
+  
+  - name: send_sqs_message
+    description: Envia uma mensagem para uma fila SQS
+    parameters:
+      - name: queue_url
+        description: URL completa da fila SQS
+        type: string
+        required: true
+      - name: message_body
+        description: Corpo da mensagem a ser enviada
+        type: string
+        required: true
+      - name: region
+        description: Região AWS (ex. us-east-1)
+        type: string
+        required: false
+        default: us-east-1
+    returns:
+      schema:
+        type: string
+  
+  - name: receive_sqs_messages
+    description: Recebe mensagens de uma fila SQS
+    parameters:
+      - name: queue_url
+        description: URL completa da fila SQS
+        type: string
+        required: true
+      - name: region
+        description: Região AWS (ex. us-east-1)
+        type: string
+        required: false
+        default: us-east-1
+      - name: max_messages
+        description: Número máximo de mensagens (1-10)
+        type: integer
+        required: false
+        default: 1
+    returns:
+      schema:
+        type: string
