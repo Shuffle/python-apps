@@ -68,11 +68,16 @@ class Subflow(AppBase):
         if "shuffle-backend" in frontend_url:
             frontend_url = ""
 
+        api_continue_url = "%s/api/v1/workflows/%s/execute?authorization=%s&reference_execution=%s&answer=true&source_node=%s" % (frontend_url, self.full_execution["workflow"]["id"], self.full_execution["authorization"], self.full_execution["execution_id"], source_node)
+        api_abort_url = "%s/api/v1/workflows/%s/execute?authorization=%s&reference_execution=%s&answer=false&source_node=%s" % (frontend_url, self.full_execution["workflow"]["id"], self.full_execution["authorization"], self.full_execution["execution_id"], source_node)
+
+        # Remove subdomain before .shuffler.io so that https://*.shuffler.io -> https://shuffler.io
+        if ".shuffler.io" in frontend_url:
+            frontend_url = "https://shuffler.io"
+
         explore_path = "%s/forms/%s?authorization=%s&reference_execution=%s&source_node=%s" % (frontend_url, self.full_execution["workflow"]["id"], self.full_execution["authorization"], self.full_execution["execution_id"], source_node)
         frontend_continue_url = "%s/forms/%s?authorization=%s&reference_execution=%s&answer=true&source_node=%s" % (frontend_url, self.full_execution["workflow"]["id"], self.full_execution["authorization"], self.full_execution["execution_id"], source_node)
         frontend_abort_url = "%s/forms/%s?authorization=%s&reference_execution=%s&answer=false&source_node=%s" % (frontend_url, self.full_execution["workflow"]["id"], self.full_execution["authorization"], self.full_execution["execution_id"], source_node)
-        api_continue_url = "%s/api/v1/workflows/%s/execute?authorization=%s&reference_execution=%s&answer=true&source_node=%s" % (frontend_url, self.full_execution["workflow"]["id"], self.full_execution["authorization"], self.full_execution["execution_id"], source_node)
-        api_abort_url = "%s/api/v1/workflows/%s/execute?authorization=%s&reference_execution=%s&answer=false&source_node=%s" % (frontend_url, self.full_execution["workflow"]["id"], self.full_execution["authorization"], self.full_execution["execution_id"], source_node)
 
         result["links"]["frontend_no_answer"] = explore_path
         result["links"]["frontend_continue"] = frontend_continue_url
