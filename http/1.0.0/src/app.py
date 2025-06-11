@@ -8,7 +8,7 @@ import asyncio
 import requests
 import subprocess
 
-from walkoff_app_sdk.app_base import AppBase
+from shuffle_sdk import AppBase 
 
 class HTTP(AppBase):
     __version__ = "1.0.0"
