@@ -1,4 +1,4 @@
-requests==2.32.2
+requests==2.32.4
 google-auth==1.28.0
 google-auth-oauthlib==0.4.3
 google-auth-httplib2==0.0.4
