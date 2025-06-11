@@ -2632,10 +2632,19 @@ class Tools(AppBase):
 
         try:
             stdin, stdout, stderr = ssh_client.exec_command(str(command))
+            try:
+                errorLog = stderr.read().decode(errors='ignore')
+            except Exception as e:
+                errorLog = f"Failed to read stderr {e}"
+            try:
+                output = stdout.read().decode(errors='ignore')
+            except Exception as e:
+                output = f"Failed to read stdout {e}"
+
         except Exception as e:
             return {"success":"false","message":str(e)}
 
-        return {"success":"true","output": stdout.read().decode(errors='ignore')}
+        return {"success":"true","output": output, "error_logs": errorLog}
 
     def cleanup_ioc_data(self, input_data):
         # Remove unecessary parts like { and }, quotes etc
