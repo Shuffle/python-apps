@@ -75,9 +75,9 @@ class Subflow(AppBase):
         if ".shuffler.io" in frontend_url:
             frontend_url = "https://shuffler.io"
 
-        explore_path = "%s/forms/%s?authorization=%s&reference_execution=%s&source_node=%s" % (frontend_url, self.full_execution["workflow"]["id"], self.full_execution["authorization"], self.full_execution["execution_id"], source_node)
-        frontend_continue_url = "%s/forms/%s?authorization=%s&reference_execution=%s&answer=true&source_node=%s" % (frontend_url, self.full_execution["workflow"]["id"], self.full_execution["authorization"], self.full_execution["execution_id"], source_node)
-        frontend_abort_url = "%s/forms/%s?authorization=%s&reference_execution=%s&answer=false&source_node=%s" % (frontend_url, self.full_execution["workflow"]["id"], self.full_execution["authorization"], self.full_execution["execution_id"], source_node)
+        explore_path = "%s/forms/%s?authorization=%s&reference_execution=%s&source_node=%s&backend_url=%s" % (frontend_url, self.full_execution["workflow"]["id"], self.full_execution["authorization"], self.full_execution["execution_id"], source_node, backend_url)
+        frontend_continue_url = "%s/forms/%s?authorization=%s&reference_execution=%s&answer=true&source_node=%s&backend_url=%s" % (frontend_url, self.full_execution["workflow"]["id"], self.full_execution["authorization"], self.full_execution["execution_id"], source_node, backend_url)
+        frontend_abort_url = "%s/forms/%s?authorization=%s&reference_execution=%s&answer=false&source_node=%s&backend_url=%s" % (frontend_url, self.full_execution["workflow"]["id"], self.full_execution["authorization"], self.full_execution["execution_id"], source_node, backend_url)
 
         result["links"]["frontend_no_answer"] = explore_path
         result["links"]["frontend_continue"] = frontend_continue_url
