@@ -1,0 +1,55 @@
+app_version: 1.0.0
+name: postgress
+description: postgress integration. Compatible with SQL databases.
+contact_info:
+  name: "@d4rkw0lv3s"
+  url: https://github.com/D4rkw0lv3s
+  email: d4rkw0lv3s@outlook.pt
+tags:
+  - postgress
+categories:
+  - Intel
+  - Network
+actions:
+  - name: run_query
+    description: Create a new database
+    parameters:
+        - name: host
+          description: mysql server ip or fqdn
+          example: "myserver.com or 127.0.0.1"
+          required: true
+          schema:
+            type: string
+        - name: port
+          description: mysql database
+          example: "my_database"
+          required: false
+          schema:
+            type: string
+        - name: dbname
+          description: mysql database
+          example: "my_database"
+          required: false
+          schema:
+            type: string
+        - name: user
+          description: mysql database
+          example: "my_database"
+          required: false
+          schema:
+            type: string
+        - name: password
+          description: mysql database
+          example: "my_database"
+          required: false
+          schema:
+            type: string
+        - name: query
+          description: mysql database
+          example: "my_database"
+          required: false
+          schema:
+            type: string
+    return:
+      schema:
+        type: string
