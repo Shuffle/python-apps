@@ -382,7 +382,11 @@ class Email(AppBase):
                 output_dict["imap_id"] = id_list[i]
 
                 # Add message-id as top returned field
-                output_dict["message_id"] = parsed_eml["header"]["header"]["message-id"][0]
+                try:
+                    output_dict["message_id"] = parsed_eml["header"]["header"]["message-id"][0]
+                except Exception as _:
+                    output_dict["message_id"] = ""
+
 
                 if upload_email_shuffle:
                     self.logger.info("Uploading email to shuffle")
