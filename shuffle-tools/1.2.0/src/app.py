@@ -811,6 +811,7 @@ class Tools(AppBase):
                         failed_list.append(item)
 
                 elif check == "equals any of":
+                    value = self.parse_list_internal(value)
                     checklist = value.split(",")
                     found = False
                     for subcheck in checklist:
