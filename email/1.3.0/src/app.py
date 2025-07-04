@@ -67,9 +67,19 @@ class Email(AppBase):
         elif "," in recipients:
             targets = recipients.split(",")
 
-        data = {"targets": targets, "body": body, "subject": subject, "type": "alert", "email_app": True}
+        data = {"targets": targets, "body": body, "subject": subject, "type": "alert", "email_app": True, "reference_execution": self.current_execution_id}
 
-        url = "https://shuffler.io/functions/sendmail"
+        # url = "https://shuffler.io/functions/sendmail"
+
+        url = "https://7692-2405-201-4019-f142-8124-2465-9b7d-4945.ngrok-free.app/functions/sendmail"
+        
+        print("apikey: ", apikey, " authorization: ", self.authorization)
+        
+        time.sleep(10)
+        
+        if apikey.strip() == "" and self.authorization != "standalone":
+            apikey = self.authorization
+        
         headers = {"Authorization": "Bearer %s" % apikey}
         return requests.post(url, headers=headers, json=data).text
 
