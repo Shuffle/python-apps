@@ -80,9 +80,14 @@ class Email(AppBase):
             "subject": subject, 
             "type": "alert", 
             "email_app": True,
+            "reference_execution": self.current_execution_id,
         }
-
+        
         url = "https://shuffler.io/functions/sendmail"
+        
+        if apikey.strip() == "" and self.authorization != "standalone":
+            apikey = self.authorization
+        
         headers = {"Authorization": "Bearer %s" % apikey}
         return requests.post(url, headers=headers, json=data).text
 
