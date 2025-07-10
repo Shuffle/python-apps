@@ -811,6 +811,7 @@ class Tools(AppBase):
                         failed_list.append(item)
 
                 elif check == "equals any of":
+                    value = self.parse_list_internal(value)
                     checklist = value.split(",")
                     found = False
                     for subcheck in checklist:
@@ -2632,10 +2633,19 @@ class Tools(AppBase):
 
         try:
             stdin, stdout, stderr = ssh_client.exec_command(str(command))
+            try:
+                errorLog = stderr.read().decode(errors='ignore')
+            except Exception as e:
+                errorLog = f"Failed to read stderr {e}"
+            try:
+                output = stdout.read().decode(errors='ignore')
+            except Exception as e:
+                output = f"Failed to read stdout {e}"
+
         except Exception as e:
             return {"success":"false","message":str(e)}
 
-        return {"success":"true","output": stdout.read().decode(errors='ignore')}
+        return {"success":"true","output": output, "error_logs": errorLog}
 
     def cleanup_ioc_data(self, input_data):
         # Remove unecessary parts like { and }, quotes etc
@@ -2697,7 +2707,7 @@ class Tools(AppBase):
 
         #iocs = find_iocs(str(input_string), included_ioc_types=ioc_types)
         iocs = find_iocs(str(input_string))
-        self.logger.info("[DEBUG] Found %d ioc types" % len(iocs))
+        #self.logger.info("[DEBUG] Found %d ioc types" % len(iocs))
 
         newarray = []
         for key, value in iocs.items():
@@ -2730,7 +2740,9 @@ class Tools(AppBase):
 
         # Reformatting IP
         for item in newarray:
-            if "ip" in item["data_type"]:
+            if "cidr" in item["data_type"]:
+                pass
+            elif "ip" in item["data_type"]:
                 item["data_type"] = "ip"
                 try:
                     item["is_private_ip"] = ipaddress.ip_address(item["data"]).is_private

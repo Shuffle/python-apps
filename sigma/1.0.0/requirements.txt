@@ -1,2 +1,2 @@
-requests==2.25.1
+requests==2.32.4
 sigmatools==0.20

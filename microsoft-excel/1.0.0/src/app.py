@@ -1,14 +1,8 @@
-import socket
-import asyncio
-import time
-import random
 import json
-import uuid
-import time
 import requests
 
-from walkoff_app_sdk import csv_parse 
-from walkoff_app_sdk.app_base import AppBase
+from shuffle_sdk import AppBase
+from shuffle_sdk import csv_parse
 
 from openpyxl import Workbook, load_workbook
 
@@ -133,13 +127,12 @@ class MSExcel(AppBase):
             sheet = "Sheet1"
     
         #wb = Workbook(basename)
-        wb = load_workbook(basename)
-        print("Sheets: %s" % wb.sheetnames)
-    
+        wb = load_workbook(basename, read_only=True)
+
         # grab the active worksheet
         ws = wb.active
-        for item in ws.iter_rows():
-            print(item)
+        #for item in ws.iter_rows():
+        #    print(item)
     
         csvdata = ""
         for row in ws.values:
@@ -155,19 +148,25 @@ class MSExcel(AppBase):
             csvdata = csvdata[:-1]+"\n"
         csvdata = csvdata[:-1]
     
-        print()
-        print("Data:\n%s\n" % csvdata)
+        print("Data length: (%s)" % len(csvdata))
 
         return csvdata
 
-    def get_excel_file_data(self, file_id):
+    def get_excel_file_data(self, file_id, to_list=True, sheets="", max_rows=100000, skip_rows=0):
         filedata = self.get_file(file_id)
         if filedata["success"] != True:
-            print(f"Bad info from file: {filedata}") 
+            print(f"[ERROR] Bad info from file: {filedata}") 
             return filedata
 
+        if not sheets:
+            sheets = ""
+
+        sheets = sheets.lower()
+        max_rows = int(max_rows)
+        skip_rows = int(skip_rows)
+
         try:
-            print("Filename: %s" % filedata["filename"])
+            #print("Filename: %s" % filedata["filename"])
             if "csv" in filedata["filename"]:
                 try:
                     filedata["data"] = filedata["data"].decode("utf-8")
@@ -189,23 +188,41 @@ class MSExcel(AppBase):
     
         #wb = Workbook(basename)
         try:
-            wb = load_workbook(basename)
+            wb = load_workbook(basename, read_only=True)
         except Exception as e:
             return {
                 "success": False,
                 "reason": "The file is invalid. Are you sure it's a valid excel file? CSV files are not supported.",
                 "exception": "Error: %s" % e,
             }
-
-        print("Sheets: %s" % wb.sheetnames)
     
+        # Default
+        #max_count = 25000
+        #if os.getenv("SHUFFLE_APP_SDK_TIMEOUT") > 240:
+        # Limits are ~no longer relevant if to_list=True
+
+        cnt = 0
+        skipped_cnt = 0 
         output_data = []
         for ws in wb.worksheets:
-            print(f"Title: {ws.title}")
+            if ws.title.lower() not in sheets and sheets != "":
+                continue
     
             # grab the active worksheet
             csvdata = ""
+            if cnt-skipped_cnt > skip_rows:
+                break
+
+            list_data = []
             for row in ws.values:
+                cnt += 1
+                if cnt < skip_rows:
+                    skipped_cnt += 1
+                    continue
+
+                if cnt-skipped_cnt > max_rows:
+                    break
+
                 for value in row:
                     #print(value)
                     if value == None:
@@ -215,15 +232,30 @@ class MSExcel(AppBase):
                     else:
                         csvdata += str(value)+","
     
-                csvdata = csvdata[:-1]+"\n"
-            csvdata = csvdata[:-1]
-    
-            print()
-            print("Data:\n%s\n" % csvdata)
-            output_data.append({
+                list_data.append(csvdata)
+                if to_list == False:
+                    csvdata = csvdata[:-1]+"\n"
+                else:
+                    csvdata = ""
+
+            #csvdata = csvdata[:-1]
+
+            output = {
                 "sheet": ws.title,
                 "data": csvdata,
-            })
+            }
+
+            if to_list == False:
+                print("Data len (%s): %d" % (ws.title, len(csvdata)))
+                output_data.append(output)
+            else:
+                print("Data len (%s): %d" % (ws.title, len(list_data)))
+                output_data.append({
+                    "sheet": ws.title,
+                    "data": list_data,
+                })
+
+        print("Done! Returning data of length: %d" % len(output_data))
     
         return output_data
         

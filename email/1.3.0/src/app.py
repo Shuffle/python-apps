@@ -19,7 +19,6 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 
-#from walkoff_app_sdk.app_base import AppBase
 from shuffle_sdk import AppBase 
 
 def json_serial(obj):
@@ -67,8 +66,23 @@ class Email(AppBase):
         elif "," in recipients:
             targets = recipients.split(",")
 
-        data = {"targets": targets, "body": body, "subject": subject, "type": "alert", "email_app": True, "reference_execution": self.current_execution_id}
+        newtargets = []
+        for target in targets:
+            newtarget = target.strip()
+            if newtarget: 
+                newtargets.append(newtarget)
 
+        targets = newtargets
+
+        data = {
+            "targets": targets, 
+            "body": body, 
+            "subject": subject, 
+            "type": "alert", 
+            "email_app": True,
+            "reference_execution": self.current_execution_id,
+        }
+        
         url = "https://shuffler.io/functions/sendmail"
         
         if apikey.strip() == "" and self.authorization != "standalone":
@@ -84,6 +98,12 @@ class Email(AppBase):
                 smtp_port = int(smtp_port)
             except ValueError:
                 return "SMTP port needs to be a number (Current: %s)" % smtp_port
+
+        if "office365.com" in smtp_host:
+            return {
+                "success": False,
+                "reason": "Office 365 does not easily support SMTP anymore, and recommends the Graph API. Please use the Outlook Office365 app in Shuffle with the 'send email' action."
+            }
 
         self.logger.info("Pre SMTP setup")
         try:
@@ -367,7 +387,11 @@ class Email(AppBase):
                 output_dict["imap_id"] = id_list[i]
 
                 # Add message-id as top returned field
-                output_dict["message_id"] = parsed_eml["header"]["header"]["message-id"][0]
+                try:
+                    output_dict["message_id"] = parsed_eml["header"]["header"]["message-id"][0]
+                except Exception as _:
+                    output_dict["message_id"] = ""
+
 
                 if upload_email_shuffle:
                     self.logger.info("Uploading email to shuffle")

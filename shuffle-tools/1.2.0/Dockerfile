@@ -11,8 +11,7 @@ RUN apk --no-cache add --update alpine-sdk libffi libffi-dev musl-dev openssl-de
 RUN mkdir /install
 WORKDIR /install
 COPY requirements.txt /requirements.txt
-#RUN pip install --no-cache-dir --prefix="/install" -r /requirements.txt
-RUN pip install --prefix="/install" -r /requirements.txt
+RUN python3 -m pip install --no-cache-dir --upgrade --prefix="/install" -r /requirements.txt 
 
 # Switch back to our base image and copy in all of our built packages and source code
 FROM base
