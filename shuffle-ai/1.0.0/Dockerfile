@@ -1,4 +1,4 @@
-FROM python:3.10-slim
+FROM python:3.14.0rc1-slim
 
 ### Install Tesseract
 ENV SHELL=/bin/bash
