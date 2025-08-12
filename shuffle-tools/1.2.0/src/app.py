@@ -2124,8 +2124,14 @@ class Tools(AppBase):
             self.logger.info("Value couldn't be parsed")
             return response.text
 
+    def delete_datastore_value(self, key, category=""):
+        return self.delete_cache(key, category=category)
+
     def delete_cache_value(self, key, category=""):
         return self.delete_cache(key, category=category)
+
+    def get_datastore_value(self, key, category=""):
+        return self.get_cache_value(key, category=category)
 
     def get_cache_value(self, key, category=""):
         org_id = self.full_execution["workflow"]["execution_org"]["id"]
@@ -2135,7 +2141,7 @@ class Tools(AppBase):
             "execution_id": self.current_execution_id,
             "authorization": self.authorization,
             "org_id": org_id,
-            "key": key,
+            "key": str(key),
         }
 
         if category:
@@ -2164,6 +2170,99 @@ class Tools(AppBase):
             self.logger.info("Value couldn't be parsed, or json dump of value failed")
             return value.text
 
+    def set_datastore_value(self, key, value, category=""):
+        return set_cache_value(self, key, value, category=category)
+
+    # Check if a specific key exists in a datastore category or not
+    # Otherwise appends it automatically
+    def search_datastore_category(self, input_list, key, category):
+        returnvalue = {
+            "success": False,
+            "category": category,
+            "new": [],
+            "exists": [],
+        }
+
+        if len(key) == 0 or len(category) == 0:
+            returnvalue["reason"] = "Key and/or Category is empty"
+            return returnvalue
+
+        data = []
+        if isinstance(input_list, dict):
+            input_list = [input_list]
+
+        if not isinstance(input_list, list):
+            try:
+                input_list = json.loads(str(input_list))
+            except Exception as e:
+                returnvalue["reason"] = f"Input list is not a valid JSON list: {input_list}",
+                returnvalue["details"] = str(e)
+                return returnvalue 
+
+        org_id = self.full_execution["workflow"]["execution_org"]["id"]
+        cnt = -1
+        for item in input_list:
+            cnt += 1
+            if not isinstance(item, dict):
+                try:
+                    item = json.loads(str(item))
+                except Exception as e:
+                    self.logger.info("[ERROR][%s] Failed to parse item as JSON: %s" % (self.current_execution_id, e))
+                    continue
+
+            input_list[cnt] = item
+            if key not in item:
+                returnvalue["reason"] = "Couldn't find key '%s' in every item. Make sure to use a key that exists in every entry." % (key),
+                return returnvalue
+
+            data.append({
+                "workflow_id": self.full_execution["workflow"]["id"],
+                "execution_id": self.current_execution_id,
+                "authorization": self.authorization,
+                "org_id": org_id,
+                "key": str(item[key]),
+                "value": json.dumps(item),
+                "category": category,
+            })
+
+        url = f"{self.url}/api/v2/datastore?bulk=true&execution_id={self.current_execution_id}&authorization={self.authorization}"
+        response = requests.post(url, json=data, verify=False)
+        if response.status_code != 200:
+            returnvalue["reason"] = "Failed to check datastore key exists"
+            returnvalue["details"] = response.text
+            returnvalue["status"] = response.status_code
+            return returnvalue
+
+        data = ""
+        try: 
+            data = response.json()
+        except json.decoder.JSONDecodeError as e:
+            return response.text 
+
+        if "keys_existed" not in data:
+            return data
+
+        returnvalue["success"] = True
+        for datastore_item in input_list:
+            found = False
+            for existing_item in data["keys_existed"]:
+                if existing_item["key"] != datastore_item[key]:
+                    continue
+
+                if existing_item["existed"]:
+                    returnvalue["exists"].append(datastore_item)
+                else:
+                    returnvalue["new"].append(datastore_item)
+
+                found = True 
+                break
+
+            if not found:
+                print("[ERROR][%s] Key %s not found in datastore response, adding as new" % (self.current_execution_id, datastore_item[key]))
+                returnvalue["new"].append(datastore_item)
+
+        return json.dumps(returnvalue, indent=4)
+
     def set_cache_value(self, key, value, category=""):
         org_id = self.full_execution["workflow"]["execution_org"]["id"]
         url = "%s/api/v1/orgs/%s/set_cache" % (self.url, org_id)
@@ -2182,7 +2281,7 @@ class Tools(AppBase):
             "execution_id": self.current_execution_id,
             "authorization": self.authorization,
             "org_id": org_id,
-            "key": key,
+            "key": str(key),
             "value": value,
         }
 

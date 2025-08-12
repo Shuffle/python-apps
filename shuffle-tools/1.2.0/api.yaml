@@ -36,51 +36,28 @@ actions:
         schema:
           type: string
 
-  - name: dedup_and_merge 
-    description: Merges data from multiple workflows within a set timeframe. Returns action as SKIPPED if the data is a duplicate. Returns with a list of all data if the data at the end
+  - name: search_datastore_category 
+    description: Checks whether keys within a list are already in datastore, and returns whether they existed or not. They will be automatically appended.
     parameters:
+      - name: input_list
+        description: The list to check from. Don't use .# in this.
+        required: true
+        multiline: true 
+        example: '[{"data": "1.2.3.4"}, {"data": "1.2.3.5"}]'
+        schema:
+          type: string
       - name: key
-        description: The key to use for deduplication
+        description: The key to use for deduplication. MUST be a part of each key in the input_list.
         required: true
         multiline: false
         example: "ticketname+username"
         schema:
           type: string
-      - name: value 
-        description: The full value of the item
+      - name: category 
+        description: The category you want to upload to. This can be a new category, or an existing one.
         required: true
-        multiline: true 
-        example: "1208301599081"
-        schema:
-          type: string
-      - name: timeout 
-        description: The timeout before returning
-        required: true
-        options:
-          - 2
-          - 3
-          - 4
-          - 5
-          - 6
-          - 7
-          - 8
-          - 9
-          - 10
-          - 15
-          - 20
-          - 25 
-        multiline: false
-        example: "1"
-        schema:
-          type: string
-      - name: set_skipped 
-        description: Whether to set the action SKIPPED or not IF it matches another workflow in the same timeframe
-        required: true
-        options:
-          - true
-          - false
-        multiline: false
-        example: "true"
+        multiline: false 
+        example: "tickets"
         schema:
           type: string
 
@@ -253,6 +230,54 @@ actions:
   #  returns:
   #    schema:
   #      type: string
+  - name: dedup_and_merge 
+    description: Merges data from multiple apps within a set timeframe. Returns action as SKIPPED if the data is a duplicate. Returns with a list of all data if the data at the end
+    parameters:
+      - name: key
+        description: The key to use for deduplication
+        required: true
+        multiline: false
+        example: "ticketname+username"
+        schema:
+          type: string
+      - name: value 
+        description: The full value of the item
+        required: true
+        multiline: true 
+        example: "1208301599081"
+        schema:
+          type: string
+      - name: timeout 
+        description: The timeout before returning
+        required: true
+        options:
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
+          - 8
+          - 9
+          - 10
+          - 15
+          - 20
+          - 25 
+        multiline: false
+        example: "1"
+        schema:
+          type: string
+      - name: set_skipped 
+        description: Whether to set the action SKIPPED or not IF it matches another workflow in the same timeframe
+        required: true
+        options:
+          - true
+          - false
+        multiline: false
+        example: "true"
+        schema:
+          type: string
+
   - name: filter_list
     description: Takes a list and filters based on your data
     skip_multicheck: true
