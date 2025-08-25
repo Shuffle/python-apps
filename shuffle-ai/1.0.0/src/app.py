@@ -89,7 +89,7 @@ except Exception as e:
         "reason": "Failed to load LLM model %s" % model,
     }
 
-class Tools(AppBase):
+class ShuffleAI(AppBase):
     __version__ = "1.0.0"
     app_name = "Shuffle AI"  
 
@@ -430,6 +430,7 @@ class Tools(AppBase):
     def run_schemaless(self, category, action, app_name="", fields=""):
         self.logger.info("[DEBUG] Running schemaless action with category '%s' and action label '%s'" % (category, action))
 
+        # Not necessary anymore
         """
 		action := shuffle.CategoryAction{ 
 			Label: step.Name,
@@ -462,9 +463,16 @@ class Tools(AppBase):
 
             elif isinstance(fields, dict):
                 for key, value in fields.items(): 
+                    parsedvalue = str(value)
+                    try:
+                        if str(value).startswith("{") or str(value).startswith("["):
+                            parsedvalue = json.dumps(value)
+                    except:
+                        pass
+
                     data["fields"].append({
                         "key": key,
-                        "value": str(value),
+                        "value": parsedvalue,
                     })
 
             else:
@@ -530,4 +538,4 @@ class Tools(AppBase):
             return request.text
 
 if __name__ == "__main__":
-    Tools.run()
+    ShuffleAI.run()

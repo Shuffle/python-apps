@@ -1,7 +1,7 @@
-shuffle_sdk==0.0.11
+shuffle-sdk==0.0.28
+
 pytesseract
 pdf2image
 pypdf2
-requests
 
 llama-cpp-python
