@@ -3,5 +3,3 @@ shuffle-sdk==0.0.28
 pytesseract
 pdf2image
 pypdf2
-
-llama-cpp-python
