@@ -15,23 +15,23 @@ contact_info:
   url: https://shuffler.io
   email: support@shuffler.io
 actions:
-  - name: run_llm 
-    description: "Runs a local LLM, with a GPU or CPU (slow). Default model is set up in Dockerfile" 
-    parameters:
-      - name: input 
-        description: "The input question to the model"
-        required: true
-        multiline: true
-        example: ""
-        schema:
-          type: string
-      - name: system_message 
-        description: "The system message use, if any"
-        required: false 
-        multiline: false 
-        example: ""
-        schema:
-          type: string
+  #- name: run_llm 
+  #  description: "Runs a local LLM, with a GPU or CPU (slow). Default model is set up in Dockerfile" 
+  #  parameters:
+  #    - name: input 
+  #      description: "The input question to the model"
+  #      required: true
+  #      multiline: true
+  #      example: ""
+  #      schema:
+  #        type: string
+  #    - name: system_message 
+  #      description: "The system message use, if any"
+  #      required: false 
+  #      multiline: false 
+  #      example: ""
+  #      schema:
+  #        type: string
 
   - name: shuffle_cloud_inference
     description: Input ANY kind of data in the format you want, and the format you want it in. Default is a business-y email. Uses ShuffleGPT, which is based on OpenAI and our own model.
