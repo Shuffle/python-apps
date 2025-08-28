@@ -11,7 +11,7 @@ from ldap3 import (
 from ldap3.extend.microsoft.addMembersToGroups import ad_add_members_to_groups as addUsersInGroups
 from ldap3.extend.microsoft.removeMembersFromGroups import ad_remove_members_from_groups as removeUsersFromGroups
 
-from walkoff_app_sdk.app_base import AppBase
+from shuffle_sdk import AppBase
 
 class ActiveDirectory(AppBase):
     __version__ = "1.0.1"
@@ -464,15 +464,15 @@ class ActiveDirectory(AppBase):
         c.search(base_dn, f"(SAMAccountName={samaccountname})")
         if len(c.entries) == 0:
             return {"success":"false","message":f"User {samaccountname} not found"}
-        user_dn = c.entries[0].entry_dn
 
+        user_dn = c.entries[0].entry_dn
         search_filter = f'(&(objectClass=group)(cn={group_name}))'
         c.search(base_dn, search_filter, attributes=["distinguishedName"])
         if len(c.entries) == 0:
             return {"success":"false","message":f"Group {group_name} not found"}
+
         group_dn = c.entries[0]["distinguishedName"]
         print(group_dn)
-
         res = removeUsersFromGroups(c, user_dn, str(group_dn),fix=True)
         if res == True:
             return {"success":"true","message":f"User {samaccountname} was removed from group {group_name}"}
