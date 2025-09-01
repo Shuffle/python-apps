@@ -2227,6 +2227,7 @@ class Tools(AppBase):
 
         url = f"{self.url}/api/v2/datastore?bulk=true&execution_id={self.current_execution_id}&authorization={self.authorization}"
         response = requests.post(url, json=data, verify=False)
+
         if response.status_code != 200:
             returnvalue["reason"] = "Failed to check datastore key exists"
             returnvalue["details"] = response.text
@@ -2240,16 +2241,20 @@ class Tools(AppBase):
             return response.text 
 
         if "keys_existed" not in data:
-            return data
+            returnvalue["error"] = "Invalid response from backend during bulk update of keys"
+            returnvalue["details"] = data
 
+            return returnvalue 
+
+        not_found_keys = []
         returnvalue["success"] = True
         for datastore_item in input_list:
             found = False
             for existing_item in data["keys_existed"]:
-                if existing_item["key"] != datastore_item[key]:
+                if str(existing_item["key"]) != str(datastore_item[key]):
                     continue
 
-                if existing_item["existed"]:
+                if existing_item["existed"] == True:
                     returnvalue["exists"].append(datastore_item)
                 else:
                     returnvalue["new"].append(datastore_item)
@@ -2259,7 +2264,12 @@ class Tools(AppBase):
 
             if not found:
                 print("[ERROR][%s] Key %s not found in datastore response, adding as new" % (self.current_execution_id, datastore_item[key]))
-                returnvalue["new"].append(datastore_item)
+                #returnvalue["new"].append(datastore_item)
+                not_found_keys.append(datastore_item[key])
+
+        if len(not_found_keys) > 0:
+            returnvalue["unhandled_keys"] = not_found_keys
+            returnvalue["reason"] = "Something went wrong updating the unhandled_keys. Please contact support@shuffler.io if this persists."
 
         return json.dumps(returnvalue, indent=4)
 
