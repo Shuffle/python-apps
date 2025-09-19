@@ -1,7 +1,7 @@
 import json
 import requests
 
-from walkoff_app_sdk.app_base import AppBase
+from shuffle_sdk import AppBase
 
 class Subflow(AppBase):
     """
