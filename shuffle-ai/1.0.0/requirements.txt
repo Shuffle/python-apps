@@ -1,4 +1,4 @@
-shuffle-sdk==0.0.28
+shuffle-sdk==0.0.30
 
 pytesseract
 pdf2image
