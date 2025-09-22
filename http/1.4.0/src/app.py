@@ -191,9 +191,12 @@ class HTTP(AppBase):
                 auth = requests.auth.HTTPBasicAuth(username, password)
 
         if not timeout:
-            timeout = 5
-        if timeout:
-            timeout = int(timeout)
+            timeout = 25 
+        else:
+            try:
+                timeout = int(timeout)
+            except:
+                timeout = 25
 
         if to_file == "true":
             to_file = True
@@ -229,9 +232,12 @@ class HTTP(AppBase):
                 auth = requests.auth.HTTPBasicAuth(username, password)
 
         if not timeout:
-            timeout = 5
-        if timeout:
-            timeout = int(timeout)
+            timeout = 25 
+        else:
+            try:
+                timeout = int(timeout)
+            except:
+                timeout = 25
 
         if to_file == "true":
             to_file = True
@@ -268,9 +274,12 @@ class HTTP(AppBase):
                 auth = requests.auth.HTTPBasicAuth(username, password)
 
         if not timeout:
-            timeout = 5
-        if timeout:
-            timeout = int(timeout)
+            timeout = 25 
+        else:
+            try:
+                timeout = int(timeout)
+            except:
+                timeout = 25
 
         if to_file == "true":
             to_file = True
@@ -306,9 +315,12 @@ class HTTP(AppBase):
                 auth = requests.auth.HTTPBasicAuth(username, password)
 
         if not timeout:
-            timeout = 5
-        if timeout:
-            timeout = int(timeout)
+            timeout = 25 
+        else:
+            try:
+                timeout = int(timeout)
+            except:
+                timeout = 25
 
         if to_file == "true":
             to_file = True
@@ -344,9 +356,12 @@ class HTTP(AppBase):
                 auth = requests.auth.HTTPBasicAuth(username, password)
 
         if not timeout:
-            timeout = 5
-        if timeout:
-            timeout = int(timeout)
+            timeout = 25 
+        else:
+            try:
+                timeout = int(timeout)
+            except:
+                timeout = 25
 
         if to_file == "true":
             to_file = True
@@ -382,9 +397,12 @@ class HTTP(AppBase):
                 auth = requests.auth.HTTPBasicAuth(username, password)
 
         if not timeout:
-            timeout = 5
-        if timeout:
-            timeout = int(timeout)
+            timeout = 25 
+        else:
+            try:
+                timeout = int(timeout)
+            except:
+                timeout = 25
 
         if to_file == "true":
             to_file = True
@@ -420,10 +438,12 @@ class HTTP(AppBase):
                 auth = requests.auth.HTTPBasicAuth(username, password)
 
         if not timeout:
-            timeout = 5
-        
-        if timeout:
-            timeout = int(timeout)
+            timeout = 25 
+        else:
+            try:
+                timeout = int(timeout)
+            except:
+                timeout = 25
 
         if to_file == "true":
             to_file = True
