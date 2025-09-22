@@ -1,2 +1,2 @@
+shuffle-sdk
 ldap3==2.9.1
-shuffle-sdk==0.0.30
