@@ -2304,6 +2304,13 @@ class Tools(AppBase):
             allvalues["key"] = key
             #allvalues["value"] = json.loads(json.dumps(value))
 
+            allvalues["existed"] = False  
+            if "keys_existed" in allvalues:
+                for key_info in allvalues["keys_existed"]:
+                    if key_info["key"] == key:
+                        allvalues["existed"] = key_info["existed"]
+                        break
+
             if (value.startswith("{") and value.endswith("}")) or (value.startswith("[") and value.endswith("]")):
                 try:
                     allvalues["value"] = json.loads(value)
