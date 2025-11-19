@@ -6,6 +6,7 @@ from ldap3 import (
     Connection,
     MODIFY_REPLACE,
     ALL_ATTRIBUTES,
+    NTLM
 )
 
 from ldap3.extend.microsoft.addMembersToGroups import ad_add_members_to_groups as addUsersInGroups
@@ -31,8 +32,7 @@ class ActiveDirectory(AppBase):
         login_dn = domain + "\\" + login_user
 
         s = Server(server, port=int(port), use_ssl=use_SSL)
-        c = Connection(s, user=login_dn, password=password, auto_bind=True)
-
+        c = Connection(s, user=login_dn, password=password, authentication=NTLM, auto_bind=True)
         return c
 
     # Decode UserAccountControl code
