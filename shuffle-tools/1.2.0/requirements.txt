@@ -1,7 +1,7 @@
 ioc_finder==7.3.0
 py7zr==0.22.0
 rarfile==4.2
-pyminizip==0.2.6
+pyzipper==0.3.6
 requests==2.32.3
 xmltodict==0.14.2
 json2xml==5.0.5
