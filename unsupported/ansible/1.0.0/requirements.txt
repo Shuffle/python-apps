@@ -1,2 +1,2 @@
-requests==2.32.4
-ansible==8.5.0
+requests==2.32.5
+ansible==12.2.0
