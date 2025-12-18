@@ -1,12 +1,11 @@
 ioc_finder==7.3.0
 py7zr==0.22.0
 rarfile==4.2
-pyminizip==0.2.6
-requests==2.32.4
+pyzipper==0.3.6
+requests==2.32.3
 xmltodict==0.14.2
 json2xml==5.0.5
 ipaddress==1.0.23
 google.auth==2.37.0
 paramiko==3.5.0
-shuffle-sdk
-
+shuffle-sdk==0.0.31

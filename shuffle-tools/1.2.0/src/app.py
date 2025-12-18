@@ -30,7 +30,7 @@ from google.auth import crypt
 from google.auth import jwt
 
 import py7zr
-import pyminizip
+import pyzipper
 import rarfile
 import requests
 import tarfile
@@ -1447,9 +1447,19 @@ class Tools(AppBase):
 
                     if fileformat == "zip":
                         archive_name = "archive.zip" if not name else name
-                        pyminizip.compress_multiple(
-                            paths, [], archive.name, password, 5
-                        )
+
+                        pwd = password if isinstance(password, (bytes, bytearray)) else password.encode()
+
+                        with pyzipper.AESZipFile(
+                            archive.name,
+                            "w",
+                            compression=pyzipper.ZIP_DEFLATED
+                            ) as zf:
+                                zf.setpassword(pwd)
+                                zf.setencryption(pyzipper.WZ_AES, nbits=256)
+
+                                for path in paths:
+                                    zf.write(path, arcname=os.path.basename(path))
 
                     elif fileformat == "7zip":
                         archive_name = "archive.7z" if not name else name
