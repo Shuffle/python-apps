@@ -1125,7 +1125,7 @@ class Tools(AppBase):
         )
         return ret.text
 
-    def create_file(self, filename, data):
+    def create_file(self, filename, data, category=""):
         try:
             if str(data).startswith("b'") and str(data).endswith("'"):
                 data = data[2:-1]
@@ -1144,6 +1144,7 @@ class Tools(AppBase):
         filedata = {
             "filename": filename,
             "data": data,
+            "namespace": category,
         }
 
         fileret = self.set_files([filedata])
@@ -1158,8 +1159,9 @@ class Tools(AppBase):
         return self.get_file_category_ids(file_category)
 
     # Input is WAS a file, hence it didn't get the files 
-    def get_file_value(self, filedata):
-        filedata = self.get_file(filedata)
+    # Category doesn't matter as it uses file ID, which is unique anyway
+    def get_file_value(self, filedata, category=""):
+        filedata = self.get_file(filedata, category)
         if filedata is None:
             return {
                 "success": False,
@@ -1190,7 +1192,7 @@ class Tools(AppBase):
                             "size": len(filedata["data"]),
                         }
 
-    def download_remote_file(self, url, custom_filename=""):
+    def download_remote_file(self, url, custom_filename="", category=""):
         ret = requests.get(url, verify=False)  # nosec
         filename = url.split("/")[-1]
         if "?" in filename:
@@ -1204,6 +1206,7 @@ class Tools(AppBase):
                 {
                     "filename": filename,
                     "data": ret.content,
+                    "namespace": category,
                 }
             ]
         )
@@ -1826,6 +1829,9 @@ class Tools(AppBase):
 
         result = markupsafe.escape(mapping)
         return mapping
+
+    def check_datastore_contains(self, key, value, append, category=""):
+        return check_cache_contains(self, key, value, append, category)
 
     def check_cache_contains(self, key, value, append, category=""):
         org_id = self.full_execution["workflow"]["execution_org"]["id"]

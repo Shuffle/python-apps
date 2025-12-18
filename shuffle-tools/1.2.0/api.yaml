@@ -61,41 +61,7 @@ actions:
         schema:
           type: string
 
-  - name: check_cache_contains 
-    description: Checks Shuffle cache whether a user-provided key contains a value. Returns ALL the values previously appended.
-    parameters:
-      - name: key
-        description: The key to get
-        required: true
-        multiline: false
-        example: "alert_ids"
-        schema:
-          type: string
-      - name: value 
-        description: The value to check for and append if applicable
-        required: true
-        multiline: false
-        example: "1208301599081"
-        schema:
-          type: string
-      - name: append 
-        description: Whether to auto-append the value if it doesn't exist in the cache
-        required: true
-        options:
-          - true
-          - false 
-        multiline: false
-        example: "timestamp"
-        schema:
-          type: string
-      - name: category 
-        description: The category to get the value from. Not required.
-        required: false 
-        multiline: false
-        example: "tickets"
-        schema:
-          type: string
-  - name: get_cache_value
+  - name: get_datastore_value
     description: Get a value saved to your organization in Shuffle
     parameters:
       - name: key
@@ -115,7 +81,7 @@ actions:
     returns:
       schema:
         type: string
-  - name: set_cache_value
+  - name: set_datastore_value
     description: Set a value to be saved to your organization in Shuffle.
     parameters:
       - name: key
@@ -142,7 +108,8 @@ actions:
     returns:
       schema:
         type: string
-  - name: delete_cache_value
+
+  - name: delete_datastore_value
     description: Delete a value saved to your organization in Shuffle
     parameters:
       - name: key
@@ -567,6 +534,13 @@ actions:
         required: true
         multiline: true
         example: "EventID,username\n4137,frikky"
+        schema:
+          type: string 
+      - name: category
+        description: The category the file belongs to 
+        required: false
+        multiline: false 
+        example: "yara-rules"
         schema:
           type: string 
   - name: download_remote_file
@@ -1269,6 +1243,143 @@ actions:
     returns:
       schema:
         type: string
+
+  - name: check_datastore_contains 
+    description: We recommend "Search datastore category" instead. Checks Shuffle datastore whether a user-provided key contains a value. Returns ALL the values previously appended. 
+    parameters:
+      - name: key
+        description: The key to get
+        required: true
+        multiline: false
+        example: "alert_ids"
+        schema:
+          type: string
+      - name: value 
+        description: The value to check for and append if applicable
+        required: true
+        multiline: false
+        example: "1208301599081"
+        schema:
+          type: string
+      - name: append 
+        description: Whether to auto-append the value if it doesn't exist in the cache
+        required: true
+        options:
+          - true
+          - false 
+        multiline: false
+        example: "timestamp"
+        schema:
+          type: string
+      - name: category 
+        description: The category to get the value from. Not required.
+        required: false 
+        multiline: false
+        example: "tickets"
+        schema:
+          type: string 
+  - name: get_cache_value
+    description: Get a value saved to your organization in Shuffle. Deprecated for "get_datastore_value"
+    parameters:
+      - name: key
+        description: The key to get
+        required: true
+        multiline: false
+        example: "timestamp"
+        schema:
+          type: string
+      - name: category 
+        description: The category to get the value from. Not required.
+        required: false 
+        multiline: false
+        example: "tickets"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: delete_cache_value
+    description: Delete a value saved to your organization in Shuffle. Deprecated for "delete_datastore_value"
+    parameters:
+      - name: key
+        description: The key to delete 
+        required: true
+        multiline: false
+        example: "timestamp"
+        schema:
+          type: string
+      - name: category 
+        description: The category to get the value from. Not required.
+        required: false 
+        multiline: false
+        example: "tickets"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+
+  - name: set_cache_value
+    description: Set a value to be saved to your organization in Shuffle. Deprecated for "set_datastore_value"
+    parameters:
+      - name: key
+        description: The key to set the value for
+        required: true
+        multiline: false
+        example: "timestamp"
+        schema:
+          type: string
+      - name: value
+        description: The value to set
+        required: true
+        multiline: true
+        example: "1621959545"
+        schema:
+          type: string
+      - name: category 
+        description: The category to get the value from. Not required.
+        required: false 
+        multiline: false
+        example: "tickets"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: check_cache_contains 
+    description: Checks Shuffle cache whether a user-provided key contains a value. Returns ALL the values previously appended. Deprecated for "check datastore contains"
+    parameters:
+      - name: key
+        description: The key to get
+        required: true
+        multiline: false
+        example: "alert_ids"
+        schema:
+          type: string
+      - name: value 
+        description: The value to check for and append if applicable
+        required: true
+        multiline: false
+        example: "1208301599081"
+        schema:
+          type: string
+      - name: append 
+        description: Whether to auto-append the value if it doesn't exist in the cache
+        required: true
+        options:
+          - true
+          - false 
+        multiline: false
+        example: "timestamp"
+        schema:
+          type: string
+      - name: category 
+        description: The category to get the value from. Not required.
+        required: false 
+        multiline: false
+        example: "tickets"
+        schema:
+          type: string
     #- name: parse_ioc_new 
     #  description: Parse IOC's based on https://github.com/fhightower/ioc-finder
     #  parameters:
