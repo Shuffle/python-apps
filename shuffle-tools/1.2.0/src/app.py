@@ -2149,6 +2149,55 @@ class Tools(AppBase):
     def get_datastore_value(self, key, category=""):
         return self.get_cache_value(key, category=category)
 
+    def get_ioc(self, ioc, data_type=""):
+        if len(data_type) == 0:
+            ioc_types = ["domains", "urls", "email_addresses", "ipv4s", "ipv6s", "ipv4_cidrs", "md5s", "sha256s", "sha1s", "cves"]
+
+            iocs = find_iocs(str(input_string))
+            for key, value in iocs.items():
+                for item in value:
+                    if item.lower() == ioc.lower():
+                        print("[DEBUG] Found IOC %s in type %s" % (ioc, key))
+                        data_type = key[:-1]
+                        break
+
+                if len(data_type) > 0:
+                    break
+
+        org_id = self.full_execution["workflow"]["execution_org"]["id"]
+        url = "%s/api/v1/orgs/%s/get_cache" % (self.url, org_id)
+        data = {
+            "workflow_id": self.full_execution["workflow"]["id"],
+            "execution_id": self.current_execution_id,
+            "authorization": self.authorization,
+            "org_id": org_id,
+            "key": str(key),
+            "category": "ioc_%s" % data_type.replace(" ", "_").lower(),
+        }
+
+        value = requests.post(url, json=data, verify=False)
+        try:
+            allvalues = value.json()
+            allvalues["key"] = key
+
+            if allvalues["success"] == True and len(allvalues["value"]) > 0:
+                allvalues["found"] = True
+            else:
+                allvalues["success"] = True 
+                allvalues["found"] = False 
+
+            try:
+                parsedvalue = json.loads(allvalues["value"])
+                allvalues["value"] = parsedvalue
+
+            except:
+                pass
+
+            return json.dumps(allvalues)
+        except:
+            self.logger.info("Value couldn't be parsed, or json dump of value failed")
+            return value.text
+
     def get_cache_value(self, key, category=""):
         org_id = self.full_execution["workflow"]["execution_org"]["id"]
         url = "%s/api/v1/orgs/%s/get_cache" % (self.url, org_id)
@@ -2848,7 +2897,6 @@ class Tools(AppBase):
                     print("Invalid key: %s" % key)
                     continue
 
-            print(key, value)
             if len(value) == 0:
                 continue
 
