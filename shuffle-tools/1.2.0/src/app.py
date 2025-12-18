@@ -2153,7 +2153,7 @@ class Tools(AppBase):
         if len(data_type) == 0:
             ioc_types = ["domains", "urls", "email_addresses", "ipv4s", "ipv6s", "ipv4_cidrs", "md5s", "sha256s", "sha1s", "cves"]
 
-            iocs = find_iocs(str(input_string))
+            iocs = find_iocs(str(ioc))
             for key, value in iocs.items():
                 for item in value:
                     if item.lower() == ioc.lower():
