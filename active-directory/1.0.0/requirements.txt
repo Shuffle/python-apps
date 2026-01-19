@@ -1,2 +1,3 @@
 shuffle-sdk
 ldap3==2.9.1
+pycryptodome

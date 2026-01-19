@@ -1,18 +1,23 @@
 import json
+import hashlib
 import ldap3
 import asyncio
-from ldap3 import (
-    Server,
-    Connection,
-    MODIFY_REPLACE,
-    ALL_ATTRIBUTES,
-    NTLM
+from ldap3 import Server, Connection, MODIFY_REPLACE, ALL_ATTRIBUTES, NTLM
+
+try:
+    from Crypto.Hash import MD4 as CryptoMD4
+except ImportError:
+    CryptoMD4 = None
+
+from ldap3.extend.microsoft.addMembersToGroups import (
+    ad_add_members_to_groups as addUsersInGroups,
+)
+from ldap3.extend.microsoft.removeMembersFromGroups import (
+    ad_remove_members_from_groups as removeUsersFromGroups,
 )
 
-from ldap3.extend.microsoft.addMembersToGroups import ad_add_members_to_groups as addUsersInGroups
-from ldap3.extend.microsoft.removeMembersFromGroups import ad_remove_members_from_groups as removeUsersFromGroups
-
 from shuffle_sdk import AppBase
+
 
 class ActiveDirectory(AppBase):
     __version__ = "1.0.1"
@@ -28,11 +33,28 @@ class ActiveDirectory(AppBase):
         super().__init__(redis, logger, console_logger)
 
     def __ldap_connection(self, server, port, domain, login_user, password, use_ssl):
-        use_SSL = False if use_ssl.lower() == "false" else True 
+        use_SSL = False if use_ssl.lower() == "false" else True
         login_dn = domain + "\\" + login_user
 
         s = Server(server, port=int(port), use_ssl=use_SSL)
-        c = Connection(s, user=login_dn, password=password, authentication=NTLM, auto_bind=True)
+
+        if CryptoMD4 and not getattr(hashlib, "__active_directory_md4_patch__", False):
+            try:
+                import ldap3.utils.ntlm as ldap3_ntlm
+
+                def _md4_hash(data):
+                    md4 = CryptoMD4.new()
+                    md4.update(data)
+                    return md4.digest()
+
+                ldap3_ntlm.hashlib.md4 = _md4_hash
+                hashlib.__active_directory_md4_patch__ = True
+            except Exception:
+                pass
+
+        c = Connection(
+            s, user=login_dn, password=password, authentication=NTLM, auto_bind=True
+        )
         return c
 
     # Decode UserAccountControl code
@@ -137,21 +159,28 @@ class ActiveDirectory(AppBase):
 
             result = json.loads(c.response_to_json())
             if len(result["entries"]) == 0:
-                return json.dumps({
-                    "success": False,
-                    "result": result, 
-                    "reason": "No user found for %s" % samaccountname,
-                })
+                return json.dumps(
+                    {
+                        "success": False,
+                        "result": result,
+                        "reason": "No user found for %s" % samaccountname,
+                    }
+                )
 
         except Exception as e:
-            return json.dumps({
-                "success": False,
-                "reason": "Failed to get users in user attributes: %s" % e,
-            })
-
+            return json.dumps(
+                {
+                    "success": False,
+                    "reason": "Failed to get users in user attributes: %s" % e,
+                }
+            )
 
         result = result["entries"][0]
-        result["attributes"]["userAccountControl"] = self.__getUserAccountControlAttributes(result["attributes"]["userAccountControl"])
+        result["attributes"]["userAccountControl"] = (
+            self.__getUserAccountControlAttributes(
+                result["attributes"]["userAccountControl"]
+            )
+        )
 
         return json.dumps(result)
 
@@ -180,7 +209,19 @@ class ActiveDirectory(AppBase):
                 server, port, domain, login_user, password, use_ssl
             )
 
-            result = json.loads( self.user_attributes( server, port, domain, login_user, password, base_dn, use_ssl, samaccountname, search_base,))
+            result = json.loads(
+                self.user_attributes(
+                    server,
+                    port,
+                    domain,
+                    login_user,
+                    password,
+                    base_dn,
+                    use_ssl,
+                    samaccountname,
+                    search_base,
+                )
+            )
 
             user_dn = result["dn"]
             c.extend.microsoft.modify_password(user_dn, new_password)
@@ -243,7 +284,6 @@ class ActiveDirectory(AppBase):
         samaccountname,
         search_base,
     ):
-
         if search_base:
             base_dn = search_base
 
@@ -299,7 +339,6 @@ class ActiveDirectory(AppBase):
         samaccountname,
         search_base,
     ):
-
         if search_base:
             base_dn = search_base
 
@@ -326,7 +365,6 @@ class ActiveDirectory(AppBase):
                 "success": False,
                 "reason": "Failed to get result attributes: %s" % e,
             }
-            
 
         if "ACCOUNTDISABLED" in userAccountControl:
             try:
@@ -362,8 +400,18 @@ class ActiveDirectory(AppBase):
                     "reason": "Failed adding ACCOUNTDISABLED to user: %s" % e,
                 }
 
-    def lock_user(self,server,domain,port,login_user,password,base_dn,use_ssl,samaccountname,search_base):
-        
+    def lock_user(
+        self,
+        server,
+        domain,
+        port,
+        login_user,
+        password,
+        base_dn,
+        use_ssl,
+        samaccountname,
+        search_base,
+    ):
         if search_base:
             base_dn = search_base
 
@@ -372,19 +420,29 @@ class ActiveDirectory(AppBase):
         c.search(base_dn, f"(SAMAccountName={samaccountname})")
 
         if len(c.entries) == 0:
-            return {"success":"false","message":f"User {samaccountname} not found"}
+            return {"success": "false", "message": f"User {samaccountname} not found"}
 
         user_dn = c.entries[0].entry_dn
 
-        c.modify(user_dn, {'userAccountControl':[(MODIFY_REPLACE,[514])]})
+        c.modify(user_dn, {"userAccountControl": [(MODIFY_REPLACE, [514])]})
 
         result = c.result
         result["success"] = True
 
         return result
-    
-    def unlock_user(self,server,domain,port,login_user,password,base_dn,use_ssl,samaccountname,search_base):
-        
+
+    def unlock_user(
+        self,
+        server,
+        domain,
+        port,
+        login_user,
+        password,
+        base_dn,
+        use_ssl,
+        samaccountname,
+        search_base,
+    ):
         if search_base:
             base_dn = search_base
 
@@ -393,44 +451,72 @@ class ActiveDirectory(AppBase):
         c.search(base_dn, f"(SAMAccountName={samaccountname})")
 
         if len(c.entries) == 0:
-            return {"success":"false","message":f"User {samaccountname} not found"}
+            return {"success": "false", "message": f"User {samaccountname} not found"}
 
         user_dn = c.entries[0].entry_dn
 
-        c.modify(user_dn, {'userAccountControl':[(MODIFY_REPLACE,[0])]})
+        c.modify(user_dn, {"userAccountControl": [(MODIFY_REPLACE, [0])]})
 
         result = c.result
         result["success"] = True
 
         return result
-    
-    def change_user_password_at_next_login(self,server,domain,port,login_user,password,base_dn,use_ssl,samaccountname,search_base,new_user_password,repeat_new_user_password):
-        
+
+    def change_user_password_at_next_login(
+        self,
+        server,
+        domain,
+        port,
+        login_user,
+        password,
+        base_dn,
+        use_ssl,
+        samaccountname,
+        search_base,
+        new_user_password,
+        repeat_new_user_password,
+    ):
         if search_base:
             base_dn = search_base
 
         if str(new_user_password) != str(repeat_new_user_password):
-            return {"success":"false","message":"new_user_password and repeat_new_user_password does not match."}
+            return {
+                "success": "false",
+                "message": "new_user_password and repeat_new_user_password does not match.",
+            }
 
         c = self.__ldap_connection(server, port, domain, login_user, password, use_ssl)
 
         c.search(base_dn, f"(SAMAccountName={samaccountname})")
 
         if len(c.entries) == 0:
-            return {"success":"false","message":f"User {samaccountname} not found"}
+            return {"success": "false", "message": f"User {samaccountname} not found"}
 
         user_dn = c.entries[0].entry_dn
 
-        c.modify(user_dn, {'pwdLastSet':(MODIFY_REPLACE, [0])})
-        c.extend.microsoft.modify_password(user_dn, new_user_password.encode('utf-16-le'))
+        c.modify(user_dn, {"pwdLastSet": (MODIFY_REPLACE, [0])})
+        c.extend.microsoft.modify_password(
+            user_dn, new_user_password.encode("utf-16-le")
+        )
 
         result = c.result
         result["success"] = True
 
         return result
 
-    def add_user_to_group(self, server, domain, port, login_user, password, base_dn, use_ssl, samaccountname, search_base, group_name):
-        
+    def add_user_to_group(
+        self,
+        server,
+        domain,
+        port,
+        login_user,
+        password,
+        base_dn,
+        use_ssl,
+        samaccountname,
+        search_base,
+        group_name,
+    ):
         if search_base:
             base_dn = search_base
 
@@ -438,24 +524,38 @@ class ActiveDirectory(AppBase):
 
         c.search(base_dn, f"(SAMAccountName={samaccountname})")
         if len(c.entries) == 0:
-            return {"success":"false","message":f"User {samaccountname} not found"}
+            return {"success": "false", "message": f"User {samaccountname} not found"}
         user_dn = c.entries[0].entry_dn
 
-        search_filter = f'(&(objectClass=group)(cn={group_name}))'
+        search_filter = f"(&(objectClass=group)(cn={group_name}))"
         c.search(base_dn, search_filter, attributes=["distinguishedName"])
         if len(c.entries) == 0:
-            return {"success":"false","message":f"Group {group_name} not found"}
+            return {"success": "false", "message": f"Group {group_name} not found"}
         group_dn = c.entries[0]["distinguishedName"]
         print(group_dn)
 
-        res = addUsersInGroups(c, user_dn, str(group_dn),fix=True)
+        res = addUsersInGroups(c, user_dn, str(group_dn), fix=True)
         if res == True:
-            return {"success":"true","message":f"User {samaccountname} was added to group {group_name}"}
+            return {
+                "success": "true",
+                "message": f"User {samaccountname} was added to group {group_name}",
+            }
         else:
-            return {"success":"false","message":f"Could not add user to group"}
+            return {"success": "false", "message": f"Could not add user to group"}
 
-    def remove_user_from_group(self, server, domain, port, login_user, password, base_dn, use_ssl, samaccountname, search_base, group_name):
-        
+    def remove_user_from_group(
+        self,
+        server,
+        domain,
+        port,
+        login_user,
+        password,
+        base_dn,
+        use_ssl,
+        samaccountname,
+        search_base,
+        group_name,
+    ):
         if search_base:
             base_dn = search_base
 
@@ -463,21 +563,24 @@ class ActiveDirectory(AppBase):
 
         c.search(base_dn, f"(SAMAccountName={samaccountname})")
         if len(c.entries) == 0:
-            return {"success":"false","message":f"User {samaccountname} not found"}
+            return {"success": "false", "message": f"User {samaccountname} not found"}
 
         user_dn = c.entries[0].entry_dn
-        search_filter = f'(&(objectClass=group)(cn={group_name}))'
+        search_filter = f"(&(objectClass=group)(cn={group_name}))"
         c.search(base_dn, search_filter, attributes=["distinguishedName"])
         if len(c.entries) == 0:
-            return {"success":"false","message":f"Group {group_name} not found"}
+            return {"success": "false", "message": f"Group {group_name} not found"}
 
         group_dn = c.entries[0]["distinguishedName"]
         print(group_dn)
-        res = removeUsersFromGroups(c, user_dn, str(group_dn),fix=True)
+        res = removeUsersFromGroups(c, user_dn, str(group_dn), fix=True)
         if res == True:
-            return {"success":"true","message":f"User {samaccountname} was removed from group {group_name}"}
+            return {
+                "success": "true",
+                "message": f"User {samaccountname} was removed from group {group_name}",
+            }
         else:
-            return {"success":"false","message":f"Could not remove user to group"}
+            return {"success": "false", "message": f"Could not remove user to group"}
 
 
 if __name__ == "__main__":
