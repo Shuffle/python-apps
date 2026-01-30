@@ -1,0 +1,320 @@
+app_version: 1.0.0
+name: OpenSearch
+description: Manage OpenSearch indices and documents with mutual TLS authentication.
+contact_info:
+  name: Shuffle
+  url: https://shuffler.io
+  email: support@shuffler.io
+categories:
+  - Search
+  - Databases
+authentication:
+  required: true
+  parameters:
+    - name: base_url
+      description: OpenSearch base URL (e.g. https://opensearch.example.com:9200)
+      example: "https://opensearch.example.com:9200"
+      required: true
+      schema:
+        type: string
+    - name: client_cert
+      description: Client certificate file ID (PEM). If your cert contains the key, upload the same file for client_key.
+      example: "adf5e3d0fd85633be17004735a0a119e"
+      required: true
+      schema:
+        type: file
+    - name: client_key
+      description: Client private key file ID (PEM).
+      example: "9a1b2c3d4e5f67890123456789abcdef"
+      required: true
+      schema:
+        type: file
+    - name: ca_cert
+      description: CA certificate file ID (PEM) for TLS verification.
+      example: "0f91affa651ff09f4e7b0c3d2a1b9c8d"
+      required: false
+      schema:
+        type: file
+    - name: verify
+      description: Verify TLS certificates. Use false to disable verification.
+      example: "true"
+      required: false
+      schema:
+        type: string
+    - name: timeout
+      description: Request timeout in seconds.
+      example: "30"
+      required: false
+      schema:
+        type: string
+actions:
+  - name: cluster_health
+    description: Get cluster health status.
+    parameters: []
+    returns:
+      schema:
+        type: string
+  - name: list_indices
+    description: List indices via _cat/indices.
+    parameters: []
+    returns:
+      schema:
+        type: string
+  - name: get_index
+    description: Get index settings and mappings.
+    parameters:
+      - name: index
+        description: Index name.
+        example: "logs-2025.01.01"
+        required: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: create_index
+    description: Create an index with optional settings/mappings.
+    parameters:
+      - name: index
+        description: Index name.
+        example: "logs-2025.01.01"
+        required: true
+        schema:
+          type: string
+      - name: body
+        description: Index settings/mappings JSON.
+        example: '{"settings": {"number_of_shards": 1}, "mappings": {"properties": {"message": {"type": "text"}}}}'
+        required: false
+        multiline: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: delete_index
+    description: Delete an index.
+    parameters:
+      - name: index
+        description: Index name.
+        example: "logs-2025.01.01"
+        required: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: index_document
+    description: Index (create or replace) a document by ID.
+    parameters:
+      - name: index
+        description: Index name.
+        example: "logs-2025.01.01"
+        required: true
+        schema:
+          type: string
+      - name: document_id
+        description: Document ID.
+        example: "doc-123"
+        required: true
+        schema:
+          type: string
+      - name: body
+        description: Document JSON.
+        example: '{"message": "hello", "level": "info"}'
+        required: true
+        multiline: true
+        schema:
+          type: string
+      - name: refresh
+        description: Refresh option (true, false, or wait_for).
+        example: "wait_for"
+        required: false
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: create_document
+    description: Create a document with auto-generated ID.
+    parameters:
+      - name: index
+        description: Index name.
+        example: "logs-2025.01.01"
+        required: true
+        schema:
+          type: string
+      - name: body
+        description: Document JSON.
+        example: '{"message": "hello", "level": "info"}'
+        required: true
+        multiline: true
+        schema:
+          type: string
+      - name: refresh
+        description: Refresh option (true, false, or wait_for).
+        example: "true"
+        required: false
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: get_document
+    description: Get a document by ID.
+    parameters:
+      - name: index
+        description: Index name.
+        example: "logs-2025.01.01"
+        required: true
+        schema:
+          type: string
+      - name: document_id
+        description: Document ID.
+        example: "doc-123"
+        required: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: update_document
+    description: Update a document by ID using partial doc or script.
+    parameters:
+      - name: index
+        description: Index name.
+        example: "logs-2025.01.01"
+        required: true
+        schema:
+          type: string
+      - name: document_id
+        description: Document ID.
+        example: "doc-123"
+        required: true
+        schema:
+          type: string
+      - name: body
+        description: Update JSON payload.
+        example: '{"doc": {"level": "warn"}}'
+        required: true
+        multiline: true
+        schema:
+          type: string
+      - name: refresh
+        description: Refresh option (true, false, or wait_for).
+        example: "false"
+        required: false
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: delete_document
+    description: Delete a document by ID.
+    parameters:
+      - name: index
+        description: Index name.
+        example: "logs-2025.01.01"
+        required: true
+        schema:
+          type: string
+      - name: document_id
+        description: Document ID.
+        example: "doc-123"
+        required: true
+        schema:
+          type: string
+      - name: refresh
+        description: Refresh option (true, false, or wait_for).
+        example: "true"
+        required: false
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: search
+    description: Search an index using query body or query string.
+    parameters:
+      - name: index
+        description: Index name.
+        example: "logs-2025.01.01"
+        required: true
+        schema:
+          type: string
+      - name: query_body
+        description: Query DSL JSON.
+        example: '{"query": {"match": {"message": "error"}}}'
+        required: false
+        multiline: true
+        schema:
+          type: string
+      - name: query_string
+        description: Query string (q parameter).
+        example: "message:error"
+        required: false
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: bulk
+    description: Bulk index/update/delete using NDJSON payload.
+    parameters:
+      - name: payload
+        description: NDJSON bulk payload.
+        example: |
+          {"index": {"_index": "logs-2025.01.01", "_id": "1"}}
+          {"message": "hello"}
+          {"delete": {"_index": "logs-2025.01.01", "_id": "2"}}
+        required: true
+        multiline: true
+        schema:
+          type: string
+      - name: refresh
+        description: Refresh option (true, false, or wait_for).
+        example: "true"
+        required: false
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: raw_request
+    description: Send a custom request to OpenSearch.
+    parameters:
+      - name: method
+        description: HTTP method.
+        example: "GET"
+        required: true
+        schema:
+          type: string
+      - name: path
+        description: API path starting with a slash.
+        example: "/_plugins/_security/api/roles"
+        required: true
+        schema:
+          type: string
+      - name: body
+        description: Request body (JSON string or raw text).
+        example: '{"some": "payload"}'
+        required: false
+        multiline: true
+        schema:
+          type: string
+      - name: headers
+        description: JSON object of headers.
+        example: '{"Content-Type": "application/json"}'
+        required: false
+        multiline: true
+        schema:
+          type: string
+      - name: params
+        description: JSON object of query parameters.
+        example: '{"pretty": "true"}'
+        required: false
+        multiline: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
