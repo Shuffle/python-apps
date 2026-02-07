@@ -1279,6 +1279,20 @@ actions:
         example: "tickets"
         schema:
           type: string 
+      - name: return_values
+        description: Whether to include the cache values in the response
+        required: false
+        options:
+          - true
+          - false
+        multiline: false
+        example: "false"
+        value: "true"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
   - name: get_cache_value
     description: Get a value saved to your organization in Shuffle. Deprecated for "get_datastore_value"
     parameters:
@@ -1300,6 +1314,7 @@ actions:
       schema:
         type: string
   - name: delete_cache_value
+
     description: Delete a value saved to your organization in Shuffle. Deprecated for "delete_datastore_value"
     parameters:
       - name: key
@@ -1379,6 +1394,17 @@ actions:
         required: false 
         multiline: false
         example: "tickets"
+        schema:
+          type: string
+      - name: return_values
+        description: Whether to include the cache values in the response
+        required: false
+        options:
+          - true
+          - false
+        multiline: false
+        example: "false"
+        value: "true"
         schema:
           type: string
     #- name: parse_ioc_new 
