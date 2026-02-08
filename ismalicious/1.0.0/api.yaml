@@ -1,0 +1,160 @@
+walkoff_version: 1.0.0
+app_version: 1.0.0
+name: ismalicious
+description: isMalicious threat intelligence platform - check IPs and domains for malicious activity
+tags:
+  - Threat Intelligence
+  - Security
+  - IOC
+categories:
+  - SIEM
+  - Threat Intelligence
+contact_info:
+  name: "isMalicious"
+  url: https://ismalicious.com
+  email: "support@ismalicious.com"
+authentication:
+  required: true
+  parameters:
+    - name: api_key
+      description: isMalicious API Key
+      example: "your-api-key"
+      required: true
+      schema:
+        type: string
+    - name: api_secret
+      description: isMalicious API Secret
+      example: "your-api-secret"
+      required: true
+      schema:
+        type: string
+    - name: api_url
+      description: API Base URL (default https://ismalicious.com)
+      example: "https://ismalicious.com"
+      required: false
+      schema:
+        type: string
+actions:
+  - name: check_ip
+    description: Check if an IP address is malicious
+    parameters:
+      - name: ip
+        description: IP address to check
+        multiline: false
+        example: "8.8.8.8"
+        required: true
+        schema:
+          type: string
+      - name: enrichment
+        description: Enrichment level (basic, standard, full)
+        multiline: false
+        options:
+          - basic
+          - standard
+          - full
+        required: false
+        example: "standard"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+      example: |
+        {
+          "success": true,
+          "malicious": false,
+          "riskScore": 15,
+          "categories": [],
+          "sources": []
+        }
+  - name: check_domain
+    description: Check if a domain is malicious
+    parameters:
+      - name: domain
+        description: Domain to check
+        multiline: false
+        example: "example.com"
+        required: true
+        schema:
+          type: string
+      - name: enrichment
+        description: Enrichment level (basic, standard, full)
+        multiline: false
+        options:
+          - basic
+          - standard
+          - full
+        required: false
+        example: "standard"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+      example: |
+        {
+          "success": true,
+          "malicious": true,
+          "riskScore": 85,
+          "categories": ["phishing"],
+          "sources": ["VirusTotal", "URLhaus"]
+        }
+  - name: get_reputation
+    description: Get reputation data for an IP or domain
+    parameters:
+      - name: query
+        description: IP address or domain to check
+        multiline: false
+        example: "8.8.8.8"
+        required: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+      example: |
+        {
+          "success": true,
+          "reputation": {
+            "score": 85,
+            "category": "trusted"
+          }
+        }
+  - name: get_location
+    description: Get geolocation data for an IP address
+    parameters:
+      - name: ip
+        description: IP address to geolocate
+        multiline: false
+        example: "8.8.8.8"
+        required: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+      example: |
+        {
+          "success": true,
+          "geo": {
+            "country": "US",
+            "city": "Mountain View",
+            "lat": 37.4056,
+            "lon": -122.0775
+          }
+        }
+  - name: get_blocklist_stats
+    description: Get statistics about available blocklists
+    parameters: []
+    returns:
+      schema:
+        type: string
+      example: |
+        {
+          "success": true,
+          "stats": {
+            "totalIPs": 150000,
+            "totalDomains": 200000
+          }
+        }
+large_image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9TpaIVBzuIOGSoThZERRy1CkWoEGqFVh1MLv2CJg1Jiouj4Fpw8GOx6uDirKuDqyAIfoA4OTopukiJ/0sKLWI8OO7Hu3uPu3eAUC8zzeoYBzTdNtPJhJjNrYrBVwQRQhhDGJmZYc5KJQvf8XWPAF/v4jzL/9yfo1fNWwwIiMSzzDBt4g3i6U3b4LxPHGElWSU+Jx4z6YLEj1xXPH7jXHBZ4JkRM52eJ44Qi4UOVjqYlUyNeIo4qmo65QsZj1XOW5y1cpU178lfGM7rK8tcpzmMJBaxBAkiFNRQRgU2YrTqpFhI037Cwz/s+iVyKeQqgZFjAVVokF0/+B/87tbKT054SeEEEHxx3I8RILgLNOuu+33sOM0TIPgMXOltf6UBzH6SXm9r0SOgbxu4uG5r6h5wuQMMPpmKpXhSkKZQKADvZ/RNOaD/FuhZ8/pWSvwECE9eKn1hH+g5kl/pq5cA92X3l/fuv0bT7E1TwEIEIr0I/E4/+1x/g7x6Ao/5LQAAJREREFT7CQAAACEIAAAAAAAAAAIAAE50ZXN0AAAAAQIAAAAAAAAAAABEZWJ1Z01lc3NhZ2UApJQBIAAiH1Rlc3QgSW1hZ2VAAICAgP///wD//wCAgAAA/wAAAP//AP8AAAD/AAD/AP///wAAAAIAAABVbmtub3duAAAAAAAAAAAAAAAAAAD//wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP//AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
