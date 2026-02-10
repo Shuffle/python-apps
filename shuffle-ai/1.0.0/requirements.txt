@@ -1,5 +1,0 @@
-shuffle-sdk
-
-pytesseract
-pdf2image
-pypdf2
