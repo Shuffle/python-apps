@@ -427,6 +427,45 @@ class ShuffleAI(AppBase):
             "reason": "Not implemented yet"
         }
 
+    def run_agent(self, input_data, actions=None, apps=None):
+        prepared_format = {
+            "id": self.action["id"],
+            "params": {
+                "tool_name": self.action["app_name"],
+                "tool_id": self.action["app_id"], 
+                "environment": self.action["environment"],
+                "input": {
+                    "text": input_data,
+                }
+            },
+        }
+
+        if actions:
+            prepared_format["params"]["tool_name"] = actions
+
+        if apps:
+            pass
+
+        baseurl = f"{self.url}/api/v1/agent?execution_id={self.current_execution_id}&authorization={self.authorization}&action_id={self.action['id']}" 
+        self.logger.info("[DEBUG] Running agent action with URL '%s'" % (baseurl))
+
+        headers = {}
+        request = requests.post(
+            baseurl,
+            json=prepared_format,
+            headers=headers,
+        )
+
+        # Random sleep timer to force delay
+        time.sleep(2)
+        # Gets into waiting state on backend
+        return json.dumps({
+            "app_run": True,
+            "input_prompt": prepared_format,
+            "status": request.status_code,
+            "body": request.text,
+        })
+
     def run_schemaless(self, category, action, app_name="", fields=""):
         self.logger.info("[DEBUG] Running schemaless action with category '%s' and action label '%s'" % (category, action))
 
@@ -477,27 +516,55 @@ class ShuffleAI(AppBase):
 
             else:
                 fields = str(fields).strip()
-                if not fields.startswith("{") and not fields.startswith("["):
-                    fields = json.dumps({
-                        "data": fields,
-                    })
+                # Valid format: 
+                # {"field1": "value1", "field2": "value2"}
+                # field1=value1&field2=value2
+                # field1:value1\nfield2:value2
 
-                try:
-                    loadedfields = json.loads(fields)
-                    for key, value in loadedfields.items(): 
-                        data["fields"].append({
-                            "key": key,
-                            "value": value,
+                cursplit = None
+                if "\\n" in fields and not fields.startswith("{") and not fields.startswith("["):
+                    cursplit = "\\n"
+                elif ("=" in fields or ":" in fields) and not fields.startswith("{") and not fields.startswith("["):
+                    cursplit = "&"
+
+                if cursplit:
+                    newfields = []
+                    for line in fields.split(cursplit):
+                        splitkey = None
+                        if "=" in line:
+                            splitkey = "="
+                        elif ":" in line:
+                            splitkey = ":"
+
+                        if splitkey: 
+                            parts = line.split(splitkey, 1)
+                            newfields.append({
+                                "key": parts[0].strip(),
+                                "value": splitkey.join(parts[1:]).strip(),
+                            })
+
+                    data["fields"] = newfields
+                else:
+                    if not fields.startswith("{") and not fields.startswith("["):
+                        fields = json.dumps({
+                            "data": fields,
                         })
 
-                except Exception as e:
-                    self.logger.info("[ERROR] Failed to load fields as JSON: %s" % e)
-                    return json.dumps({
-                        "success": False,
-                        "reason": "Ensure 'Fields' are valid JSON",
-                        "details": "%s" % e,
-                    })
+                    try:
+                        loadedfields = json.loads(fields)
+                        for key, value in loadedfields.items(): 
+                            data["fields"].append({
+                                "key": key,
+                                "value": value,
+                            })
 
+                    except Exception as e:
+                        self.logger.info("[ERROR] Failed to load fields as JSON: %s" % e)
+                        return json.dumps({
+                            "success": False,
+                            "reason": "Ensure 'Fields' are valid JSON",
+                            "details": "%s" % e,
+                        })
 
         #baseurl = "%s/api/v1/apps/categories/run" % self.base_url
         baseurl = "%s/api/v1/apps/categories/run" % self.url

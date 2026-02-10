@@ -235,6 +235,10 @@ class Tools(AppBase):
     def repeat_back_to_me(self, call):
         return call
 
+    def repeat_back_to_me2(self, body):
+        print("call:", body)
+        return body
+
     def dedup_and_merge(self, key, value, timeout, set_skipped=True):
         timeout = int(timeout)
         key = str(key)
