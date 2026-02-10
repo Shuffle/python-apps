@@ -41,14 +41,15 @@ import paramiko
 import concurrent.futures
 import multiprocessing
 
-#from walkoff_app_sdk.app_base import AppBase
+# from walkoff_app_sdk.app_base import AppBase
 from shuffle_sdk import AppBase
 
-# Override exit(), sys.exit, and os._exit 
+# Override exit(), sys.exit, and os._exit
 # sys.exit() can be caught, meaning we can have a custom handler for it
 builtins.exit = sys.exit
 os.exit = sys.exit
 os._exit = sys.exit
+
 
 class Tools(AppBase):
     __version__ = "1.2.0"
@@ -86,7 +87,7 @@ class Tools(AppBase):
             # Decode the base64 into an image and upload it as a file
             decoded_bytes = base64.b64decode(string)
 
-            # Make the bytes into unicode escaped bytes 
+            # Make the bytes into unicode escaped bytes
             # UnicodeDecodeError - 'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
             try:
                 decoded_bytes = str(decoded_bytes, "utf-8")
@@ -96,7 +97,7 @@ class Tools(AppBase):
             filename = "base64_image.png"
             file = {
                 "filename": filename,
-                "data": decoded_bytes, 
+                "data": decoded_bytes,
             }
 
             fileret = self.set_files([file])
@@ -107,7 +108,6 @@ class Tools(AppBase):
             return value
 
         elif operation == "decode":
-
             if "-" in string:
                 string = string.replace("-", "+", -1)
 
@@ -118,18 +118,19 @@ class Tools(AppBase):
             if len(string) % 4 != 0:
                 string += "=" * (4 - len(string) % 4)
 
-
             # For loop this. It's stupid.
-            decoded_bytes = "" 
+            decoded_bytes = ""
             try:
                 decoded_bytes = base64.b64decode(string)
             except Exception as e:
-                return json.dumps({
-                    "success": False,
-                    "reason": "Invalid Base64 - %s" % e,
-                })
+                return json.dumps(
+                    {
+                        "success": False,
+                        "reason": "Invalid Base64 - %s" % e,
+                    }
+                )
 
-                #if "incorrect padding" in str(e).lower():
+                # if "incorrect padding" in str(e).lower():
                 #    try:
                 #        decoded_bytes = base64.b64decode(string + "=")
                 #    except Exception as e:
@@ -143,7 +144,6 @@ class Tools(AppBase):
                 #                    except Exception as e:
                 #                        if "incorrect padding" in str(e).lower():
                 #                            return "Invalid Base64"
-
 
             try:
                 decoded_bytes = str(decoded_bytes, "utf-8")
@@ -199,7 +199,6 @@ class Tools(AppBase):
     def send_email_shuffle(self, apikey, recipients, subject, body, attachments=""):
         recipients = self.parse_list_internal(recipients)
 
-
         targets = [recipients]
         if ", " in recipients:
             targets = recipients.split(", ")
@@ -207,9 +206,9 @@ class Tools(AppBase):
             targets = recipients.split(",")
 
         data = {
-            "targets": targets, 
-            "subject": subject, 
-            "body": body, 
+            "targets": targets,
+            "subject": subject,
+            "body": body,
             "type": "alert",
             "email_app": True,
         }
@@ -222,11 +221,10 @@ class Tools(AppBase):
                 for item in attachments:
                     new_file = self.get_file(file_ids)
                     files.append(new_file)
-            
+
                 data["attachments"] = files
             except Exception as e:
                 pass
-                
 
         url = "https://shuffler.io/functions/sendmail"
         headers = {"Authorization": "Bearer %s" % apikey}
@@ -253,7 +251,8 @@ class Tools(AppBase):
         response = {
             "success": False,
             "datastore_key": cachekey,
-            "info": "All keys from the last %d seconds with the key '%s' have been merged. The result was set to SKIPPED in all other actions." % (timeout, key),
+            "info": "All keys from the last %d seconds with the key '%s' have been merged. The result was set to SKIPPED in all other actions."
+            % (timeout, key),
             "timeout": timeout,
             "original_value": value,
             "all_values": [],
@@ -276,7 +275,7 @@ class Tools(AppBase):
             found_cache["value"].append(value)
             if "created" in found_cache:
                 if found_cache["created"] + timeout + 3 < time.time():
-                    set_skipped = False 
+                    set_skipped = False
                     response["success"] = True
                     response["all_values"] = found_cache["value"]
 
@@ -284,24 +283,37 @@ class Tools(AppBase):
 
                     return json.dumps(response)
                 else:
-                    self.logger.info("Dedup-key is already handled in another workflow with timeout %d" % timeout)
+                    self.logger.info(
+                        "Dedup-key is already handled in another workflow with timeout %d"
+                        % timeout
+                    )
 
             self.set_cache(cachekey, json.dumps(found_cache["value"]))
             if set_skipped == True:
                 self.action_result["status"] = "SKIPPED"
-                self.action_result["result"] = json.dumps({
-                    "status": False,
-                    "reason": "Dedup-key is already handled in another workflow with timeout %d" % timeout,
-                })
+                self.action_result["result"] = json.dumps(
+                    {
+                        "status": False,
+                        "reason": "Dedup-key is already handled in another workflow with timeout %d"
+                        % timeout,
+                    }
+                )
 
-                self.send_result(self.action_result, {"Authorization": "Bearer %s" % self.authorization}, "/api/v1/streams")
+                self.send_result(
+                    self.action_result,
+                    {"Authorization": "Bearer %s" % self.authorization},
+                    "/api/v1/streams",
+                )
 
             return found_cache
 
         parsedvalue = [value]
         resp = self.set_cache(cachekey, json.dumps(parsedvalue))
 
-        self.logger.info("Sleeping for %d seconds while waiting for cache to fill up elsewhere" % timeout)
+        self.logger.info(
+            "Sleeping for %d seconds while waiting for cache to fill up elsewhere"
+            % timeout
+        )
         time.sleep(timeout)
         found_cache = self.get_cache(cachekey)
 
@@ -310,7 +322,6 @@ class Tools(AppBase):
 
         self.delete_cache(cachekey)
         return json.dumps(response)
-
 
     # https://github.com/fhightower/ioc-finder
     def parse_file_ioc(self, file_ids, input_type="all"):
@@ -330,7 +341,8 @@ class Tools(AppBase):
                                         for subitem in subvalue:
                                             data = {
                                                 "data": subitem,
-                                                "data_type": "%s_%s" % (key[:-1], subkey),
+                                                "data_type": "%s_%s"
+                                                % (key[:-1], subkey),
                                             }
                                             if data not in newarray:
                                                 newarray.append(data)
@@ -409,10 +421,7 @@ class Tools(AppBase):
             try:
                 json_object = json.loads(json_object)
             except json.decoder.JSONDecodeError as e:
-                return {
-                    "success": False,
-                    "reason": "Item is not valid JSON"
-                }
+                return {"success": False, "reason": "Item is not valid JSON"}
 
         if isinstance(json_object, list):
             if len(json_object) == 1:
@@ -420,16 +429,15 @@ class Tools(AppBase):
             else:
                 return {
                     "success": False,
-                    "reason": "Item is valid JSON, but can't handle lists. Use .#"
+                    "reason": "Item is valid JSON, but can't handle lists. Use .#",
                 }
 
-        #if not isinstance(json_object, object):
+        # if not isinstance(json_object, object):
         #    return {
         #        "success": False,
         #        "reason": "Item is not valid JSON (2)"
         #    }
 
-        
         if isinstance(value, str):
             try:
                 value = json.loads(value)
@@ -439,7 +447,7 @@ class Tools(AppBase):
         # Handle JSON paths
         if "." in key:
             base_object = json.loads(json.dumps(json_object))
-            #base_object.output.recipients.notificationEndpointIds = ... 
+            # base_object.output.recipients.notificationEndpointIds = ...
 
             keys = key.split(".")
             if len(keys) >= 1:
@@ -448,14 +456,14 @@ class Tools(AppBase):
             # This is awful :)
             buildstring = "base_object"
             for subkey in keys:
-                buildstring += f"[\"{subkey}\"]" 
+                buildstring += f'["{subkey}"]'
 
             buildstring += f" = {value}"
 
-            #output = 
+            # output =
             exec(buildstring)
             json_object = base_object
-            #json_object[first_object] = base_object
+            # json_object[first_object] = base_object
         else:
             json_object[key] = value
 
@@ -524,9 +532,9 @@ class Tools(AppBase):
             except:
                 self.logger.info(f"Failed mapping output data for key {key}")
 
-        return input_data 
+        return input_data
 
-    # Changed with 1.1.0 to run with different returns 
+    # Changed with 1.1.0 to run with different returns
     def regex_capture_group(self, input_data, regex):
         try:
             returnvalues = {
@@ -537,8 +545,8 @@ class Tools(AppBase):
             found = False
             for item in matches:
                 if isinstance(item, str):
-                    found = True 
-                    name = "group_0" 
+                    found = True
+                    name = "group_0"
                     try:
                         returnvalues[name].append(item)
                     except:
@@ -546,7 +554,7 @@ class Tools(AppBase):
 
                 else:
                     for i in range(0, len(item)):
-                        found = True 
+                        found = True
                         name = "group_%d" % i
                         try:
                             returnvalues[name].append(item[i])
@@ -562,10 +570,7 @@ class Tools(AppBase):
                 "reason": "Bad regex pattern: %s" % e,
             }
 
-    def regex_replace(
-        self, input_data, regex, replace_string="", ignore_case="False"
-    ):
-
+    def regex_replace(self, input_data, regex, replace_string="", ignore_case="False"):
         if ignore_case.lower().strip() == "true":
             return re.sub(regex, replace_string, input_data, flags=re.IGNORECASE)
         else:
@@ -591,10 +596,11 @@ class Tools(AppBase):
         # 2. Subprocess execute file?
         try:
             f = StringIO()
+
             def custom_print(*args, **kwargs):
                 return print(*args, file=f, **kwargs)
-            
-            #with redirect_stdout(f): # just in case
+
+            # with redirect_stdout(f): # just in case
             # Add globals in it too
             globals_copy = globals().copy()
             globals_copy["print"] = custom_print
@@ -603,7 +609,6 @@ class Tools(AppBase):
                 globals_copy["shuffle"] = self.singul
             except Exception as e:
                 self.logger.info(f"Failed to add singul to python globals: {e}")
-
 
             # Add self to globals_copy
             for key, value in locals().copy().items():
@@ -618,7 +623,7 @@ class Tools(AppBase):
                 # Same as a return
                 pass
             except SyntaxError as e:
-                # Special handler for return usage. Makes return act as 
+                # Special handler for return usage. Makes return act as
                 # an exit()
                 if "'return' outside function" in str(e):
                     return {
@@ -635,11 +640,11 @@ class Tools(AppBase):
             # Reason: SyntaxError makes it crash BEFORE it reaches the return
 
             s = f.getvalue()
-            f.close() # why: https://www.youtube.com/watch?v=6SA6S9Ca5-U
+            f.close()  # why: https://www.youtube.com/watch?v=6SA6S9Ca5-U
 
-            #try:
+            # try:
             #    s = s.encode("utf-8")
-            #except Exception as e:
+            # except Exception as e:
 
             try:
                 return {
@@ -657,7 +662,7 @@ class Tools(AppBase):
                         "success": True,
                         "message": s,
                     }
-                
+
         except Exception as e:
             return {
                 "success": False,
@@ -730,7 +735,6 @@ class Tools(AppBase):
             response_data["value"] = parsed
         return get_response.json()
 
-
     def update_cache(self, key):
         org_id = self.full_execution["workflow"]["execution_org"]["id"]
         url = f"{self.url}/api/v1/orgs/{org_id}/set_cache"
@@ -747,9 +751,7 @@ class Tools(AppBase):
         self.cache_update_buffer = []
         return get_response.json()
 
-
     def filter_list(self, input_list, field, check, value, opposite):
-
         # Remove hashtags on the fly
         # E.g. #.fieldname or .#.fieldname
 
@@ -758,20 +760,22 @@ class Tools(AppBase):
             flip = True
 
         try:
-            #input_list = eval(input_list)  # nosec
+            # input_list = eval(input_list)  # nosec
             input_list = json.loads(input_list)
         except Exception:
             try:
                 input_list = input_list.replace("'", '"', -1)
                 input_list = json.loads(input_list)
             except Exception:
-                self.logger.info("[WARNING] Error parsing string to array. Continuing anyway.")
+                self.logger.info(
+                    "[WARNING] Error parsing string to array. Continuing anyway."
+                )
 
         # Workaround D:
         if not isinstance(input_list, list):
             return {
                 "success": False,
-                "reason": "Error: input isnt a list. Please use conditions instead if using JSON.", 
+                "reason": "Error: input isnt a list. Please use conditions instead if using JSON.",
                 "valid": [],
                 "invalid": [],
             }
@@ -803,7 +807,6 @@ class Tools(AppBase):
                     except json.decoder.JSONDecodeError as e:
                         pass
 
-
                 # EQUALS JUST FOR STR
                 if check == "equals":
                     # Mostly for bools
@@ -821,7 +824,7 @@ class Tools(AppBase):
                     for subcheck in checklist:
                         subcheck = str(subcheck).strip()
 
-                        #ext.lower().strip() == value.lower().strip()
+                        # ext.lower().strip() == value.lower().strip()
                         if type(tmp) == list and subcheck in tmp:
                             new_list.append(item)
                             found = True
@@ -878,8 +881,10 @@ class Tools(AppBase):
 
                 # CONTAINS FIND FOR LIST AND IN FOR STR
                 elif check == "contains":
-                    #if str(value).lower() in str(tmp).lower():
-                    if str(value).lower() in str(tmp).lower() or self.check_wildcard(value, tmp): 
+                    # if str(value).lower() in str(tmp).lower():
+                    if str(value).lower() in str(tmp).lower() or self.check_wildcard(
+                        value, tmp
+                    ):
                         new_list.append(item)
                     else:
                         failed_list.append(item)
@@ -889,7 +894,9 @@ class Tools(AppBase):
                     checklist = value.split(",")
                     found = False
                     for checker in checklist:
-                        if str(checker).lower() in str(tmp).lower() or self.check_wildcard(checker, tmp): 
+                        if str(checker).lower() in str(
+                            tmp
+                        ).lower() or self.check_wildcard(checker, tmp):
                             new_list.append(item)
                             found = True
                             break
@@ -933,9 +940,9 @@ class Tools(AppBase):
                         failed_list.append(item)
                 elif check == "less than":
                     # Old
-                    #if int(tmp) < int(value):
+                    # if int(tmp) < int(value):
                     #    new_list.append(item)
-                    #else:
+                    # else:
                     #    failed_list.append(item)
 
                     list_set = False
@@ -974,16 +981,17 @@ class Tools(AppBase):
                     else:
                         failed_list.append(item)
 
-                    if len(self.cache_update_buffer) > 400 or (item == input_list[-1] and len(self.cache_update_buffer) > 0):
+                    if len(self.cache_update_buffer) > 400 or (
+                        item == input_list[-1] and len(self.cache_update_buffer) > 0
+                    ):
                         self.update_cache(value)
 
-
-                    #return {
+                    # return {
                     #    "success": True,
                     #    "found": False,
                     #    "key": key,
                     #    "value": new_value,
-                    #}
+                    # }
 
                 # SINGLE ITEM COULD BE A FILE OR A LIST OF FILES
                 elif check == "files by extension":
@@ -993,7 +1001,7 @@ class Tools(AppBase):
                         for file_id in tmp:
                             filedata = self.get_file(file_id)
                             _, ext = os.path.splitext(filedata["filename"])
-                            if (ext.lower().strip() == value.lower().strip()):
+                            if ext.lower().strip() == value.lower().strip():
                                 file_list.append(file_id)
                             # else:
                             #    failed_list.append(file_id)
@@ -1027,11 +1035,11 @@ class Tools(AppBase):
             failed_list = tmplist
 
         try:
-            data ={
-                    "success": True,
-                    "valid": new_list,
-                    "invalid": failed_list,
-                }
+            data = {
+                "success": True,
+                "valid": new_list,
+                "invalid": failed_list,
+            }
 
             return json.dumps(data)
             # new_list = json.dumps(new_list)
@@ -1045,7 +1053,7 @@ class Tools(AppBase):
 
         return new_list
 
-    #def multi_list_filter(self, input_list, field, check, value):
+    # def multi_list_filter(self, input_list, field, check, value):
     #    input_list = input_list.replace("'", '"', -1)
     #    input_list = json.loads(input_list)
 
@@ -1133,13 +1141,13 @@ class Tools(AppBase):
         try:
             if str(data).startswith("b'") and str(data).endswith("'"):
                 data = data[2:-1]
-            if str(data).startswith("\"") and str(data).endswith("\""):
+            if str(data).startswith('"') and str(data).endswith('"'):
                 data = data[2:-1]
         except Exception as e:
             self.logger.info(f"Exception: {e}")
 
         try:
-            #if not isinstance(data, str) and not isinstance(data, int) and not isinstance(float) and not isinstance(data, bool):
+            # if not isinstance(data, str) and not isinstance(data, int) and not isinstance(float) and not isinstance(data, bool):
             if isinstance(data, dict) or isinstance(data, list):
                 data = json.dumps(data)
         except:
@@ -1156,13 +1164,13 @@ class Tools(AppBase):
         if len(fileret) == 1:
             value = {"success": True, "filename": filename, "file_id": fileret[0]}
 
-        return value 
+        return value
 
-    # Input is WAS a file, hence it didn't get the files 
+    # Input is WAS a file, hence it didn't get the files
     def list_file_category_ids(self, file_category):
         return self.get_file_category_ids(file_category)
 
-    # Input is WAS a file, hence it didn't get the files 
+    # Input is WAS a file, hence it didn't get the files
     # Category doesn't matter as it uses file ID, which is unique anyway
     def get_file_value(self, filedata, category=""):
         filedata = self.get_file(filedata, category)
@@ -1222,7 +1230,6 @@ class Tools(AppBase):
 
         return value
 
-    
     def extract_archive(self, file_id, fileformat="zip", password=None):
         try:
             return_data = {"success": False, "files": []}
@@ -1231,7 +1238,6 @@ class Tools(AppBase):
             return_ids = None
 
             with tempfile.TemporaryDirectory() as tmpdirname:
-
                 # Get archive and save phisically
                 with open(os.path.join(tmpdirname, "archive"), "wb") as f:
                     f.write(item["data"])
@@ -1241,7 +1247,9 @@ class Tools(AppBase):
                 # Zipfile for zipped archive
                 if fileformat.strip().lower() == "zip":
                     try:
-                        with zipfile.ZipFile(os.path.join(tmpdirname, "archive")) as z_file:
+                        with zipfile.ZipFile(
+                            os.path.join(tmpdirname, "archive")
+                        ) as z_file:
                             if password:
                                 z_file.setpassword(bytes(password.encode()))
 
@@ -1252,7 +1260,10 @@ class Tools(AppBase):
 
                                 source = z_file.open(member)
                                 to_be_uploaded.append(
-                                    {"filename": source.name.split("/")[-1], "data": source.read()}
+                                    {
+                                        "filename": source.name.split("/")[-1],
+                                        "data": source.read(),
+                                    }
                                 )
 
                                 return_data["success"] = True
@@ -1280,7 +1291,10 @@ class Tools(AppBase):
 
                                 source = z_file.open(member)
                                 to_be_uploaded.append(
-                                    {"filename": source.name.split("/")[-1], "data": source.read()}
+                                    {
+                                        "filename": source.name.split("/")[-1],
+                                        "data": source.read(),
+                                    }
                                 )
 
                                 return_data["success"] = True
@@ -1323,7 +1337,9 @@ class Tools(AppBase):
                         )
                 elif fileformat.strip().lower() == "tar.gz":
                     try:
-                        with tarfile.open(os.path.join(tmpdirname, "archive"), mode="r:gz") as z_file:
+                        with tarfile.open(
+                            os.path.join(tmpdirname, "archive"), mode="r:gz"
+                        ) as z_file:
                             for member in z_file.getnames():
                                 member_files = z_file.extractfile(member)
 
@@ -1448,22 +1464,23 @@ class Tools(AppBase):
 
                 # Create archive temporary
                 with tempfile.NamedTemporaryFile() as archive:
-
                     if fileformat == "zip":
                         archive_name = "archive.zip" if not name else name
 
-                        pwd = password if isinstance(password, (bytes, bytearray)) else password.encode()
+                        pwd = (
+                            password
+                            if isinstance(password, (bytes, bytearray))
+                            else password.encode()
+                        )
 
                         with pyzipper.AESZipFile(
-                            archive.name,
-                            "w",
-                            compression=pyzipper.ZIP_DEFLATED
-                            ) as zf:
-                                zf.setpassword(pwd)
-                                zf.setencryption(pyzipper.WZ_AES, nbits=256)
+                            archive.name, "w", compression=pyzipper.ZIP_DEFLATED
+                        ) as zf:
+                            zf.setpassword(pwd)
+                            zf.setencryption(pyzipper.WZ_AES, nbits=256)
 
-                                for path in paths:
-                                    zf.write(path, arcname=os.path.basename(path))
+                            for path in paths:
+                                zf.write(path, arcname=os.path.basename(path))
 
                     elif fileformat == "7zip":
                         archive_name = "archive.7z" if not name else name
@@ -1495,8 +1512,13 @@ class Tools(AppBase):
             return {"success": False, "message": excp}
 
     def add_list_to_list(self, list_one, list_two):
-        if not isinstance(list_one, list) and not isinstance(list_one, dict): 
-            if not list_one or list_one == " " or list_one == "None" or list_one == "null":
+        if not isinstance(list_one, list) and not isinstance(list_one, dict):
+            if (
+                not list_one
+                or list_one == " "
+                or list_one == "None"
+                or list_one == "null"
+            ):
                 list_one = "[]"
 
             try:
@@ -1507,11 +1529,16 @@ class Tools(AppBase):
                 else:
                     return {
                         "success": False,
-                        "reason": f"List one is not a valid list: {list_one}" 
+                        "reason": f"List one is not a valid list: {list_one}",
                     }
 
         if not isinstance(list_two, list) and not isinstance(list_two, dict):
-            if not list_two or list_two == " " or list_two == "None" or list_two == "null":
+            if (
+                not list_two
+                or list_two == " "
+                or list_two == "None"
+                or list_two == "null"
+            ):
                 list_two = "[]"
 
             try:
@@ -1522,7 +1549,7 @@ class Tools(AppBase):
                 else:
                     return {
                         "success": False,
-                        "reason": f"List two is not a valid list: {list_two}"
+                        "reason": f"List two is not a valid list: {list_two}",
                     }
 
         if isinstance(list_one, dict):
@@ -1540,19 +1567,13 @@ class Tools(AppBase):
             try:
                 list_one = json.loads(list_one)
             except json.decoder.JSONDecodeError as e:
-                return {
-                    "success": False,
-                    "reason": "list_one is not a valid list."
-                }
+                return {"success": False, "reason": "list_one is not a valid list."}
 
         if isinstance(list_two, str):
             try:
                 list_two = json.loads(list_two)
             except json.decoder.JSONDecodeError as e:
-                return {
-                    "success": False,
-                    "reason": "list_two is not a valid list."
-                }
+                return {"success": False, "reason": "list_two is not a valid list."}
 
         def diff(li1, li2):
             try:
@@ -1561,7 +1582,7 @@ class Tools(AppBase):
                 # Bad json diffing - at least order doesn't matter :)
                 not_found = []
                 for item in list_one:
-                    #item = sorted(item.items())
+                    # item = sorted(item.items())
                     if item in list_two:
                         pass
                     else:
@@ -1589,8 +1610,14 @@ class Tools(AppBase):
             "diff": newdiff,
         }
 
-
-    def merge_lists(self, list_one, list_two, set_field="", sort_key_list_one="", sort_key_list_two=""):
+    def merge_lists(
+        self,
+        list_one,
+        list_two,
+        set_field="",
+        sort_key_list_one="",
+        sort_key_list_two="",
+    ):
         if isinstance(list_one, str):
             try:
                 list_one = json.loads(list_one)
@@ -1607,23 +1634,34 @@ class Tools(AppBase):
             if isinstance(list_one, dict) and isinstance(list_two, dict):
                 for key, value in list_two.items():
                     list_one[key] = value
-            
+
                 return list_one
 
-            return {"success": False, "message": "Both input lists need to be valid JSON lists."}
+            return {
+                "success": False,
+                "message": "Both input lists need to be valid JSON lists.",
+            }
 
         if len(list_one) != len(list_two):
-            return {"success": False, "message": "Lists length must be the same. %d vs %d. Are you trying to add them to a single list? Use add_list_to_list" % (len(list_one), len(list_two))}
+            return {
+                "success": False,
+                "message": "Lists length must be the same. %d vs %d. Are you trying to add them to a single list? Use add_list_to_list"
+                % (len(list_one), len(list_two)),
+            }
 
         if len(sort_key_list_one) > 0:
             try:
-                list_one = sorted(list_one, key=lambda k: k.get(sort_key_list_one), reverse=True)
+                list_one = sorted(
+                    list_one, key=lambda k: k.get(sort_key_list_one), reverse=True
+                )
             except:
                 pass
 
         if len(sort_key_list_two) > 0:
             try:
-                list_two = sorted(list_two, key=lambda k: k.get(sort_key_list_two), reverse=True)
+                list_two = sorted(
+                    list_two, key=lambda k: k.get(sort_key_list_two), reverse=True
+                )
             except:
                 pass
 
@@ -1637,7 +1675,11 @@ class Tools(AppBase):
                         list_one[i][key] = value
                 elif isinstance(list_two[i], str) and list_two[i] == "":
                     continue
-                elif isinstance(list_two[i], str) or isinstance(list_two[i], int) or isinstance(list_two[i], bool):
+                elif (
+                    isinstance(list_two[i], str)
+                    or isinstance(list_two[i], int)
+                    or isinstance(list_two[i], bool)
+                ):
                     if len(set_field) == 0:
                         list_one[i][base_key] = list_two[i]
                     else:
@@ -1652,8 +1694,21 @@ class Tools(AppBase):
 
         return list_one
 
-    def merge_json_objects(self, list_one, list_two, set_field="", sort_key_list_one="", sort_key_list_two=""):
-        return self.merge_lists(list_one, list_two, set_field=set_field, sort_key_list_one=sort_key_list_one, sort_key_list_two=sort_key_list_two)
+    def merge_json_objects(
+        self,
+        list_one,
+        list_two,
+        set_field="",
+        sort_key_list_one="",
+        sort_key_list_two="",
+    ):
+        return self.merge_lists(
+            list_one,
+            list_two,
+            set_field=set_field,
+            sort_key_list_one=sort_key_list_one,
+            sort_key_list_two=sort_key_list_two,
+        )
 
     def fix_json(self, json_data):
         try:
@@ -1674,14 +1729,14 @@ class Tools(AppBase):
                 else:
                     json_data[key] = value
 
-                #elif isinstance(value, list):
+                # elif isinstance(value, list):
                 #    json_data[key] = value
-                #else:
+                # else:
                 #    json_data[key] = value
                 #    #for item in json_data[key]:
                 #    #    if isinstance(item, dict):
                 #    #        json_data[
-                    
+
             for key in deletekeys:
                 del json_data[key]
 
@@ -1699,7 +1754,7 @@ class Tools(AppBase):
 
         try:
             if convertto == "json":
-                data = data.replace(" encoding=\"utf-8\"", " ")
+                data = data.replace(' encoding="utf-8"', " ")
                 ans = xmltodict.parse(data)
                 ans = self.fix_json(ans)
                 json_data = json.dumps(ans)
@@ -1709,11 +1764,7 @@ class Tools(AppBase):
                 ans = readfromstring(data)
                 return json2xml.Json2xml(ans, wrapper="all", pretty=True).to_xml()
         except Exception as e:
-            return {
-                "success": False,
-                "input": data,
-                "reason": f"{e}"
-            }
+            return {"success": False, "input": data, "reason": f"{e}"}
 
     def date_to_epoch(self, input_data, date_field, date_format):
         if isinstance(input_data, str):
@@ -1731,9 +1782,9 @@ class Tools(AppBase):
     def compare_relative_date(
         self, timestamp, date_format, equality_test, offset, units, direction
     ):
-        if timestamp== "None":
+        if timestamp == "None":
             return False
-   
+
         if date_format == "autodetect":
             input_dt = dateutil_parser(timestamp).replace(tzinfo=None)
         elif date_format != "%s":
@@ -1755,7 +1806,7 @@ class Tools(AppBase):
         if utc_format.endswith("%z"):
             utc_format = utc_format.replace("%z", "Z")
 
-        #if date_format != "%s" and date_format != "autodetect":
+        # if date_format != "%s" and date_format != "autodetect":
         if date_format == "autodetect":
             formatted_dt = datetime.datetime.utcnow() + delta
         elif date_format != "%s":
@@ -1770,24 +1821,24 @@ class Tools(AppBase):
             comparison_dt = formatted_dt
         elif direction == "ago":
             comparison_dt = formatted_dt - delta
-            #formatted_dt - delta
-            #comparison_dt = datetime.datetime.utcnow()
+            # formatted_dt - delta
+            # comparison_dt = datetime.datetime.utcnow()
         else:
             comparison_dt = formatted_dt + delta
-            #comparison_dt = datetime.datetime.utcnow()
+            # comparison_dt = datetime.datetime.utcnow()
 
         diff = int((input_dt - comparison_dt).total_seconds())
 
         if units == "seconds":
             diff = diff
         elif units == "minutes":
-            diff = int(diff/60)
+            diff = int(diff / 60)
         elif units == "hours":
-            diff = int(diff/3600)
+            diff = int(diff / 3600)
         elif units == "days":
-            diff = int(diff/86400)
+            diff = int(diff / 86400)
         elif units == "week":
-            diff = int(diff/604800)
+            diff = int(diff / 604800)
 
         result = False
         if equality_test == ">":
@@ -1801,7 +1852,7 @@ class Tools(AppBase):
                 result = not (result)
 
         elif equality_test == "=":
-            result = diff == 0 
+            result = diff == 0
 
         elif equality_test == "!=":
             result = diff != 0
@@ -1817,7 +1868,7 @@ class Tools(AppBase):
         parsed_string = "%s %s %s %s" % (equality_test, offset, units, direction)
         newdiff = diff
         if newdiff < 0:
-            newdiff = newdiff*-1
+            newdiff = newdiff * -1
 
         return {
             "success": True,
@@ -1825,10 +1876,9 @@ class Tools(AppBase):
             "check": parsed_string,
             "result": result,
             "diff": {
-                "days": int(int(newdiff)/86400),
+                "days": int(int(newdiff) / 86400),
             },
         }
-
 
     def run_math_operation(self, operation):
         result = eval(operation)
@@ -1844,10 +1894,14 @@ class Tools(AppBase):
         result = markupsafe.escape(mapping)
         return mapping
 
-    def check_datastore_contains(self, key, value, append, category=""):
-        return check_cache_contains(self, key, value, append, category)
+    def check_datastore_contains(
+        self, key, value, append, category="", return_values="true"
+    ):
+        return check_cache_contains(self, key, value, append, category, return_values)
 
-    def check_cache_contains(self, key, value, append, category=""):
+    def check_cache_contains(
+        self, key, value, append, category="", return_values="true"
+    ):
         org_id = self.full_execution["workflow"]["execution_org"]["id"]
         url = "%s/api/v1/orgs/%s/get_cache" % (self.url, org_id)
         data = {
@@ -1866,7 +1920,10 @@ class Tools(AppBase):
         allvalues = {}
         try:
             for item in self.local_storage:
-                if item["execution_id"] == self.current_execution_id and item["key"] == key:
+                if (
+                    item["execution_id"] == self.current_execution_id
+                    and item["key"] == key
+                ):
                     # Max keeping the local cache properly for 5 seconds due to workflow continuations
                     elapsed_time = time.time() - item["time_set"]
                     if elapsed_time > 5:
@@ -1875,7 +1932,10 @@ class Tools(AppBase):
                     allvalues = item["data"]
 
         except Exception as e:
-            print("[ERROR] Failed cache contains for current execution id local storage: %s" % e)
+            print(
+                "[ERROR] Failed cache contains for current execution id local storage: %s"
+                % e
+            )
 
         if isinstance(value, dict) or isinstance(value, list):
             try:
@@ -1891,15 +1951,17 @@ class Tools(AppBase):
         if str(append).lower() == "true":
             append = True
         else:
-            append = False 
+            append = False
+
+        include_values = str(return_values).lower() == "true"
 
         if "success" not in allvalues:
-            #get_response = requests.post(url, json=data, verify=False)
+            # get_response = requests.post(url, json=data, verify=False)
             pass
 
         try:
             if "success" not in allvalues:
-                #allvalues = get_response.json()
+                # allvalues = get_response.json()
                 allvalues = self.shared_cache
 
             if "success" not in allvalues:
@@ -1929,20 +1991,21 @@ class Tools(AppBase):
                         allvalues = set_response.json()
                         self.shared_cache = self.preload_cache(key=key)
 
-                        
                         newvalue = data["value"]
                         try:
                             newvalue = json.loads(data["value"])
                         except json.JSONDecodeError:
                             pass
 
-                        return {
+                        response = {
                             "success": True,
                             "found": False,
                             "key": key,
                             "search": value,
-                            "value": newvalue,
                         }
+                        if include_values:
+                            response["value"] = newvalue
+                        return response
                     except Exception as e:
                         return {
                             "success": False,
@@ -1980,8 +2043,8 @@ class Tools(AppBase):
 
                 try:
                     for item in parsedvalue:
-                        #return "%s %s" % (item, value)
-                        #self.logger.info(f"{item} == {value}")
+                        # return "%s %s" % (item, value)
+                        # self.logger.info(f"{item} == {value}")
                         if str(item) == str(value):
                             if not append:
                                 try:
@@ -1990,25 +2053,31 @@ class Tools(AppBase):
                                     newdata["data"] = allvalues
                                     self.local_storage.append(newdata)
                                 except Exception as e:
-                                    print("[ERROR] Failed in local storage append: %s" % e)
+                                    print(
+                                        "[ERROR] Failed in local storage append: %s" % e
+                                    )
 
-                                return {
+                                response = {
                                     "success": True,
                                     "found": True,
                                     "reason": "Found and not appending!",
                                     "key": key,
                                     "search": value,
-                                    "value": allvalues["value"],
                                 }
+                                if include_values:
+                                    response["value"] = allvalues["value"]
+                                return response
                             else:
-                                return {
+                                response = {
                                     "success": True,
                                     "found": True,
                                     "reason": "Found, was appending, but item already exists",
                                     "key": key,
                                     "search": value,
-                                    "value": allvalues["value"],
                                 }
+                                if include_values:
+                                    response["value"] = allvalues["value"]
+                                return response
 
                             # Lol
                             break
@@ -2017,20 +2086,24 @@ class Tools(AppBase):
                     append = True
 
                 if not append:
-                    return {
+                    response = {
                         "success": True,
                         "found": False,
                         "reason": "Not found, not appending (2)!",
                         "key": key,
                         "search": value,
-                        "value": allvalues["value"],
                     }
+                    if include_values:
+                        response["value"] = allvalues["value"]
+                    return response
 
-                #parsedvalue.append(value)
+                # parsedvalue.append(value)
 
-                #data["value"] = json.dumps(parsedvalue)
+                # data["value"] = json.dumps(parsedvalue)
 
-                if value not in allvalues["value"] and isinstance(allvalues["value"], list):
+                if value not in allvalues["value"] and isinstance(
+                    allvalues["value"], list
+                ):
                     self.cache_update_buffer.append(value)
                     allvalues["value"].append(value)
 
@@ -2056,14 +2129,16 @@ class Tools(AppBase):
                     except:
                         pass
 
-                    return {
+                    response = {
                         "success": True,
                         "found": False,
-                        "reason": f"Appended as it didn't exist",
+                        "reason": "Appended as it didn't exist",
                         "key": key,
                         "search": value,
-                        "value": newvalue,
                     }
+                    if include_values:
+                        response["value"] = newvalue
+                    return response
                 except Exception as e:
                     exception = e
                     pass
@@ -2073,10 +2148,10 @@ class Tools(AppBase):
                     "found": True,
                     "reason": f"Failed to set append the value: {exception}. This should never happen",
                     "search": value,
-                    "key": key
+                    "key": key,
                 }
 
-            #return allvalues
+            # return allvalues
 
         except Exception as e:
             print("[ERROR] Failed check cache contains: %s" % e)
@@ -2088,9 +2163,8 @@ class Tools(AppBase):
                 "found": False,
             }
 
-        return value.text 
+        return value.text
 
-    
     ## Adds value to a subkey of the cache
     ## subkey = "hi", value = "test", overwrite=False
     ## {"subkey": "hi", "value": "test"}
@@ -2128,13 +2202,17 @@ class Tools(AppBase):
         try:
             allvalues = response.json()
             allvalues["key"] = key
-            #allvalues["value"] = json.loads(json.dumps(value))
+            # allvalues["value"] = json.loads(json.dumps(value))
 
-            if (value.startswith("{") and value.endswith("}")) or (value.startswith("[") and value.endswith("]")):
+            if (value.startswith("{") and value.endswith("}")) or (
+                value.startswith("[") and value.endswith("]")
+            ):
                 try:
                     allvalues["value"] = json.loads(value)
                 except json.decoder.JSONDecodeError as e:
-                    self.logger.info("[WARNING] Failed inner value cache parsing: %s" % e)
+                    self.logger.info(
+                        "[WARNING] Failed inner value cache parsing: %s" % e
+                    )
                     allvalues["value"] = str(value)
             else:
                 allvalues["value"] = str(value)
@@ -2155,7 +2233,18 @@ class Tools(AppBase):
 
     def get_ioc(self, ioc, data_type=""):
         if len(data_type) == 0:
-            ioc_types = ["domains", "urls", "email_addresses", "ipv4s", "ipv6s", "ipv4_cidrs", "md5s", "sha256s", "sha1s", "cves"]
+            ioc_types = [
+                "domains",
+                "urls",
+                "email_addresses",
+                "ipv4s",
+                "ipv6s",
+                "ipv4_cidrs",
+                "md5s",
+                "sha256s",
+                "sha1s",
+                "cves",
+            ]
 
             iocs = find_iocs(str(ioc))
             for key, value in iocs.items():
@@ -2187,8 +2276,8 @@ class Tools(AppBase):
             if allvalues["success"] == True and len(allvalues["value"]) > 0:
                 allvalues["found"] = True
             else:
-                allvalues["success"] = True 
-                allvalues["found"] = False 
+                allvalues["success"] = True
+                allvalues["found"] = False
 
             try:
                 parsedvalue = json.loads(allvalues["value"])
@@ -2224,8 +2313,8 @@ class Tools(AppBase):
             if allvalues["success"] == True and len(allvalues["value"]) > 0:
                 allvalues["found"] = True
             else:
-                allvalues["success"] = True 
-                allvalues["found"] = False 
+                allvalues["success"] = True
+                allvalues["found"] = False
 
             try:
                 parsedvalue = json.loads(allvalues["value"])
@@ -2264,9 +2353,11 @@ class Tools(AppBase):
             try:
                 input_list = json.loads(str(input_list))
             except Exception as e:
-                returnvalue["reason"] = f"Input list is not a valid JSON list: {input_list}",
+                returnvalue["reason"] = (
+                    f"Input list is not a valid JSON list: {input_list}",
+                )
                 returnvalue["details"] = str(e)
-                return returnvalue 
+                return returnvalue
 
         org_id = self.full_execution["workflow"]["execution_org"]["id"]
         cnt = -1
@@ -2276,23 +2367,31 @@ class Tools(AppBase):
                 try:
                     item = json.loads(str(item))
                 except Exception as e:
-                    self.logger.info("[ERROR][%s] Failed to parse item as JSON: %s" % (self.current_execution_id, e))
+                    self.logger.info(
+                        "[ERROR][%s] Failed to parse item as JSON: %s"
+                        % (self.current_execution_id, e)
+                    )
                     continue
 
             input_list[cnt] = item
             if key not in item:
-                returnvalue["reason"] = "Couldn't find key '%s' in every item. Make sure to use a key that exists in every entry." % (key),
+                returnvalue["reason"] = (
+                    "Couldn't find key '%s' in every item. Make sure to use a key that exists in every entry."
+                    % (key),
+                )
                 return returnvalue
 
-            data.append({
-                "workflow_id": self.full_execution["workflow"]["id"],
-                "execution_id": self.current_execution_id,
-                "authorization": self.authorization,
-                "org_id": org_id,
-                "key": str(item[key]),
-                "value": json.dumps(item),
-                "category": category,
-            })
+            data.append(
+                {
+                    "workflow_id": self.full_execution["workflow"]["id"],
+                    "execution_id": self.current_execution_id,
+                    "authorization": self.authorization,
+                    "org_id": org_id,
+                    "key": str(item[key]),
+                    "value": json.dumps(item),
+                    "category": category,
+                }
+            )
 
         url = f"{self.url}/api/v2/datastore?bulk=true&execution_id={self.current_execution_id}&authorization={self.authorization}"
         response = requests.post(url, json=data, verify=False)
@@ -2304,16 +2403,18 @@ class Tools(AppBase):
             return returnvalue
 
         data = ""
-        try: 
+        try:
             data = response.json()
         except json.decoder.JSONDecodeError as e:
-            return response.text 
+            return response.text
 
         if "keys_existed" not in data:
-            returnvalue["error"] = "Invalid response from backend during bulk update of keys"
+            returnvalue["error"] = (
+                "Invalid response from backend during bulk update of keys"
+            )
             returnvalue["details"] = data
 
-            return returnvalue 
+            return returnvalue
 
         not_found_keys = []
         returnvalue["success"] = True
@@ -2328,17 +2429,22 @@ class Tools(AppBase):
                 else:
                     returnvalue["new"].append(datastore_item)
 
-                found = True 
+                found = True
                 break
 
             if not found:
-                print("[ERROR][%s] Key %s not found in datastore response, adding as new" % (self.current_execution_id, datastore_item[key]))
-                #returnvalue["new"].append(datastore_item)
+                print(
+                    "[ERROR][%s] Key %s not found in datastore response, adding as new"
+                    % (self.current_execution_id, datastore_item[key])
+                )
+                # returnvalue["new"].append(datastore_item)
                 not_found_keys.append(datastore_item[key])
 
         if len(not_found_keys) > 0:
             returnvalue["unhandled_keys"] = not_found_keys
-            returnvalue["reason"] = "Something went wrong updating the unhandled_keys. Please contact support@shuffler.io if this persists."
+            returnvalue["reason"] = (
+                "Something went wrong updating the unhandled_keys. Please contact support@shuffler.io if this persists."
+            )
 
         return json.dumps(returnvalue, indent=4)
 
@@ -2351,7 +2457,7 @@ class Tools(AppBase):
                 value = json.dumps(value)
             except Exception as e:
                 self.logger.info(f"[WARNING] Error in JSON dumping (set cache): {e}")
-        
+
         if not isinstance(value, str):
             value = str(value)
 
@@ -2371,20 +2477,24 @@ class Tools(AppBase):
         try:
             allvalues = response.json()
             allvalues["key"] = key
-            #allvalues["value"] = json.loads(json.dumps(value))
+            # allvalues["value"] = json.loads(json.dumps(value))
 
-            allvalues["existed"] = False  
+            allvalues["existed"] = False
             if "keys_existed" in allvalues:
                 for key_info in allvalues["keys_existed"]:
                     if key_info["key"] == key:
                         allvalues["existed"] = key_info["existed"]
                         break
 
-            if (value.startswith("{") and value.endswith("}")) or (value.startswith("[") and value.endswith("]")):
+            if (value.startswith("{") and value.endswith("}")) or (
+                value.startswith("[") and value.endswith("]")
+            ):
                 try:
                     allvalues["value"] = json.loads(value)
                 except json.decoder.JSONDecodeError as e:
-                    self.logger.info("[WARNING] Failed inner value cache parsing: %s" % e)
+                    self.logger.info(
+                        "[WARNING] Failed inner value cache parsing: %s" % e
+                    )
                     allvalues["value"] = str(value)
             else:
                 allvalues["value"] = str(value)
@@ -2397,12 +2507,17 @@ class Tools(AppBase):
             self.logger.info("Value couldn't be parsed")
             return response.text
 
-    def convert_json_to_tags(self, json_object, split_value=", ", include_key=True, lowercase=True):
+    def convert_json_to_tags(
+        self, json_object, split_value=", ", include_key=True, lowercase=True
+    ):
         if isinstance(json_object, str):
             try:
                 json_object = json.loads(json_object)
             except json.decoder.JSONDecodeError as e:
-                self.logger.info("Failed to parse list2 as json: %s. Type: %s" % (e, type(json_object)))
+                self.logger.info(
+                    "Failed to parse list2 as json: %s. Type: %s"
+                    % (e, type(json_object))
+                )
 
         if isinstance(lowercase, str) and lowercase.lower() == "true":
             lowercase = True
@@ -2417,7 +2532,11 @@ class Tools(AppBase):
         parsedstring = []
         try:
             for key, value in json_object.items():
-                if isinstance(value, str) or isinstance(value, int) or isinstance(value, bool):
+                if (
+                    isinstance(value, str)
+                    or isinstance(value, int)
+                    or isinstance(value, bool)
+                ):
                     if include_key == True:
                         parsedstring.append("%s:%s" % (key, value))
                     else:
@@ -2466,7 +2585,7 @@ class Tools(AppBase):
 
         try:
             ip_networks = list(map(ipaddress.ip_network, networks))
-            #ip_address = ipaddress.ip_address(ip, False)
+            # ip_address = ipaddress.ip_address(ip, False)
             ip_address = ipaddress.ip_address(ip)
         except ValueError as e:
             return "IP or some networks are not in valid format.\nError: {}".format(e)
@@ -2475,8 +2594,8 @@ class Tools(AppBase):
 
         result = {}
         result["ip"] = ip
-        result['networks'] = list(map(str, matched_networks))
-        result['is_contained'] = True if len(result['networks']) > 0 else False
+        result["networks"] = list(map(str, matched_networks))
+        result["is_contained"] = True if len(result["networks"]) > 0 else False
 
         return json.dumps(result)
 
@@ -2492,12 +2611,12 @@ class Tools(AppBase):
         sha256_value = ""
 
         try:
-            md5_value = hashlib.md5(str(value).encode('utf-8')).hexdigest()
+            md5_value = hashlib.md5(str(value).encode("utf-8")).hexdigest()
         except Exception as e:
             pass
 
         try:
-            sha256_value = hashlib.sha256(str(value).encode('utf-8')).hexdigest()
+            sha256_value = hashlib.sha256(str(value).encode("utf-8")).hexdigest()
         except Exception as e:
             pass
 
@@ -2508,14 +2627,17 @@ class Tools(AppBase):
             "sha256": sha256_value,
         }
 
-        return parsedvalue 
+        return parsedvalue
 
     def run_oauth_request(self, url, jwt):
         headers = {
             "Content-Type": "application/x-www-form-urlencoded",
         }
 
-        data = "grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=%s" % jwt
+        data = (
+            "grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=%s"
+            % jwt
+        )
 
         return requests.post(url, data=data, headers=headers, verify=False).text
 
@@ -2523,10 +2645,9 @@ class Tools(AppBase):
     def get_jwt_from_file(self, file_id, jwt_audience, scopes, complete_request=True):
         allscopes = scopes
 
-
         if "," in scopes:
             allscopes = " ".join(scopes.split(","))
-     
+
         # Service account key path
         filedata = self.get_file(file_id)
         if filedata["success"] == False:
@@ -2534,49 +2655,43 @@ class Tools(AppBase):
                 "success": False,
                 "message": f"Failed to get file for ID {file_id}",
             }
-    
+
         data = json.loads(filedata["data"], strict=False)
-        #sa_keyfile = ""
+        # sa_keyfile = ""
         sa_keyfile = data["private_key"]
         sa_email = data["client_email"]
-    
+
         # The audience to target
         audience = jwt_audience
-    
+
         """Generates a signed JSON Web Token using a Google API Service Account or similar."""
-        def get_jwt(sa_keyfile,
-                     sa_email,
-                     audience,
-                     allscopes,
-                     expiry_length=3600):
-        
+
+        def get_jwt(sa_keyfile, sa_email, audience, allscopes, expiry_length=3600):
             now = int(time.time())
-            
+
             # build payload
             payload = {
                 # expires after 'expiry_length' seconds.
                 # iss must match 'issuer' in the security configuration in your
                 # swagger spec (e.g. service account email). It can be any string.
-                'iss': sa_email,
+                "iss": sa_email,
                 # aud must be either your Endpoints service name, or match the value
                 # specified as the 'x-google-audience' in the OpenAPI document.
-                'scope': allscopes,
-                'aud':  audience,
+                "scope": allscopes,
+                "aud": audience,
                 "exp": now + expiry_length,
-                'iat': now,
-
+                "iat": now,
                 # sub and email should match the service account's email address
-                'sub': sa_email,
-                'email': sa_email,
+                "sub": sa_email,
+                "email": sa_email,
             }
-            
+
             # sign with keyfile
-            #signer = crypt.RSASigner.from_service_account_file(sa_keyfile)
+            # signer = crypt.RSASigner.from_service_account_file(sa_keyfile)
             signer = crypt.RSASigner.from_string(sa_keyfile)
             jwt_token = jwt.encode(signer, payload)
             return jwt_token
-    
-    
+
         signed_jwt = get_jwt(sa_keyfile, sa_email, audience, allscopes)
 
         if str(complete_request).lower() == "true":
@@ -2605,11 +2720,18 @@ class Tools(AppBase):
                     "uuid",
                     "teamid",
                     "messageid",
-                  ],
-                  "title": ["title", "message", "subject", "name"],
-                  "description": ["description", "status", "explanation", "story", "details", "snippet"],
-                  "email": ["mail", "email", "sender", "receiver", "recipient"],
-                  "data": [
+                ],
+                "title": ["title", "message", "subject", "name"],
+                "description": [
+                    "description",
+                    "status",
+                    "explanation",
+                    "story",
+                    "details",
+                    "snippet",
+                ],
+                "email": ["mail", "email", "sender", "receiver", "recipient"],
+                "data": [
                     "data",
                     "ip",
                     "domain",
@@ -2621,9 +2743,9 @@ class Tools(AppBase):
                     "value",
                     "item",
                     "rules",
-                  ],
-                  "tags": ["tags", "taxonomies", "labels", "labelids"],
-                  "assignment": [
+                ],
+                "tags": ["tags", "taxonomies", "labels", "labelids"],
+                "assignment": [
                     "assignment",
                     "user",
                     "assigned_to",
@@ -2631,40 +2753,44 @@ class Tools(AppBase):
                     "closed_by",
                     "closing_user",
                     "opened_by",
-                  ],
-                  "severity": [
+                ],
+                "severity": [
                     "severity",
                     "sev",
                     "magnitude",
                     "relevance",
-                  ]
+                ],
             }
-        
+
         return []
-    
+
     def find_key(self, inputkey, synonyms):
         inputkey = inputkey.lower().replace(" ", "").replace(".", "")
         for key, value in synonyms.items():
             if inputkey in value:
                 return key
-    
+
         return inputkey
-    
+
     def run_key_recursion(self, json_input, synonyms):
-        if isinstance(json_input, str) or isinstance(json_input, int) or isinstance(json_input, float):
+        if (
+            isinstance(json_input, str)
+            or isinstance(json_input, int)
+            or isinstance(json_input, float)
+        ):
             return json_input, {}
-    
+
         if isinstance(json_input, list):
             if len(json_input) != 1:
                 return json_input, {}
             else:
                 json_input = json_input[0]
-    
-            #new_list = []
-            #for item in json_input:
-            #run_key_recursion(item, synonyms)
-            #new_dict[new_key], found_important = run_key_recursion(value, synonyms)
-    
+
+            # new_list = []
+            # for item in json_input:
+            # run_key_recursion(item, synonyms)
+            # new_dict[new_key], found_important = run_key_recursion(value, synonyms)
+
         # Looks for exact key:value stuff in other format
         if len(json_input.keys()) == 2:
             newkey = ""
@@ -2674,54 +2800,58 @@ class Tools(AppBase):
                     newkey = value
                 elif key == "value":
                     newvalue = value
-    
+
             if len(newkey) > 0 and len(newvalue) > 0:
                 json_input[newkey] = newvalue
                 try:
                     del json_input["name"]
                 except:
                     pass
-    
+
                 try:
                     del json_input["value"]
                 except:
                     pass
-    
+
                 try:
                     del json_input["key"]
                 except:
                     pass
-    
+
         important_fields = {}
         new_dict = {}
         for key, value in json_input.items():
             new_key = self.find_key(key, synonyms)
-    
+
             if isinstance(value, list):
                 new_list = []
                 for subitem in value:
-                    returndata, found_important = self.run_key_recursion(subitem, synonyms)
-    
+                    returndata, found_important = self.run_key_recursion(
+                        subitem, synonyms
+                    )
+
                     new_list.append(returndata)
                     for subkey, subvalue in found_important.items():
-                        important_fields[subkey] = subvalue 
-    
+                        important_fields[subkey] = subvalue
+
                 new_dict[new_key] = new_list
-    
+
             elif isinstance(value, dict):
                 # FIXMe: Try to understand Key:Values as well by translating them
                 # name/key: subject
                 # value: This is a subject
                 # will become:
                 # subject: This is a subject
-                    
-                new_dict[new_key], found_important = self.run_key_recursion(value, synonyms)
-    
+
+                new_dict[new_key], found_important = self.run_key_recursion(
+                    value, synonyms
+                )
+
                 for subkey, subvalue in found_important.items():
                     important_fields[subkey] = subvalue
             else:
                 new_dict[new_key] = value
-    
+
             # Translated fields are added as important
             if key.lower().replace(" ", "").replace(".", "") != new_key:
                 try:
@@ -2731,31 +2861,33 @@ class Tools(AppBase):
                     important_fields[new_key] = new_dict[new_key]
                 except:
                     important_fields[new_key] = new_dict[new_key]
-    
-            #break
-    
+
+            # break
+
         return new_dict, important_fields
-    
+
     # Should translate the data to something more useful
     def get_standardized_data(self, json_input, input_type):
         if isinstance(json_input, str):
             json_input = json.loads(json_input, strict=False)
-    
+
         input_synonyms = self.get_synonyms(input_type)
-        parsed_data, important_fields = self.run_key_recursion(json_input, input_synonyms)
-    
+        parsed_data, important_fields = self.run_key_recursion(
+            json_input, input_synonyms
+        )
+
         # Try base64 decoding and such too?
         for key, value in important_fields.items():
             try:
                 important_fields[key] = important_fields[key][key]
             except:
                 pass
-    
+
             try:
                 important_fields[key] = base64.b64decode(important_fields[key])
             except:
                 pass
-    
+
         return {
             "success": True,
             "original": json_input,
@@ -2777,14 +2909,16 @@ class Tools(AppBase):
         if str(special_characters).lower() == "false":
             characters = string.ascii_letters + string.digits + string.punctuation
 
-        password = ''.join(random.choice(characters) for i in range(length))
+        password = "".join(random.choice(characters) for i in range(length))
 
         return {
             "success": True,
             "password": password,
         }
-    
-    def run_ssh_command(self, host, port, user_name, private_key_file_id, password, command):
+
+    def run_ssh_command(
+        self, host, port, user_name, private_key_file_id, password, command
+    ):
         ssh_client = paramiko.SSHClient()
         ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
@@ -2799,60 +2933,74 @@ class Tools(AppBase):
             try:
                 key_data = new_file["data"].decode()
             except Exception as e:
-                return {"success":"false","message":str(e)}
+                return {"success": "false", "message": str(e)}
 
             private_key_file = StringIO()
             private_key_file.write(key_data)
             private_key_file.seek(0)
             private_key = paramiko.RSAKey.from_private_key(private_key_file)
-            
+
             try:
-                ssh_client.connect(hostname=host,username=user_name,port=port, pkey= private_key)
+                ssh_client.connect(
+                    hostname=host, username=user_name, port=port, pkey=private_key
+                )
             except Exception as e:
-                return {"success":"false","message":str(e)}
+                return {"success": "false", "message": str(e)}
         else:
             try:
-                ssh_client.connect(hostname=host,username=user_name,port=port, password=str(password))
+                ssh_client.connect(
+                    hostname=host, username=user_name, port=port, password=str(password)
+                )
             except Exception as e:
-                return {"success":"false","message":str(e)}
+                return {"success": "false", "message": str(e)}
 
         try:
             stdin, stdout, stderr = ssh_client.exec_command(str(command))
             try:
-                errorLog = stderr.read().decode(errors='ignore')
+                errorLog = stderr.read().decode(errors="ignore")
             except Exception as e:
                 errorLog = f"Failed to read stderr {e}"
             try:
-                output = stdout.read().decode(errors='ignore')
+                output = stdout.read().decode(errors="ignore")
             except Exception as e:
                 output = f"Failed to read stdout {e}"
 
         except Exception as e:
-            return {"success":"false","message":str(e)}
+            return {"success": "false", "message": str(e)}
 
-        return {"success":"true","output": output, "error_logs": errorLog}
+        return {"success": "true", "output": output, "error_logs": errorLog}
 
     def cleanup_ioc_data(self, input_data):
         # Remove unecessary parts like { and }, quotes etc
         input_data = str(input_data)
         input_data = input_data.replace("{", "")
         input_data = input_data.replace("}", "")
-        input_data = input_data.replace("\"", "")
+        input_data = input_data.replace('"', "")
         input_data = input_data.replace("'", "")
 
         input_data = input_data.replace("\t", " ")
         input_data = input_data.replace("  ", " ")
         input_data = input_data.replace("\n\n", "\n")
 
-        # Remove html tags 
-        input_data = re.sub(r'<[^>]*>', '', input_data)
+        # Remove html tags
+        input_data = re.sub(r"<[^>]*>", "", input_data)
 
         return input_data
 
-
     def parse_ioc(self, input_string, input_type="all"):
-        ioc_types = ["domains", "urls", "email_addresses", "ipv4s", "ipv6s", "ipv4_cidrs", "md5s", "sha256s", "sha1s", "cves"]
-        #ioc_types = ["ipv4s"]
+        ioc_types = [
+            "domains",
+            "urls",
+            "email_addresses",
+            "ipv4s",
+            "ipv6s",
+            "ipv4_cidrs",
+            "md5s",
+            "sha256s",
+            "sha1s",
+            "cves",
+        ]
+        # ioc_types = ["ipv4s"]
 
         try:
             input_string = self.cleanup_ioc_data(input_string)
@@ -2878,21 +3026,24 @@ class Tools(AppBase):
 
                 new_input_types.append(item)
 
-            ioc_types = new_input_types 
+            ioc_types = new_input_types
             if len(ioc_types) == 0:
                 input_type = "all"
 
         # Not used for anything after cleanup fixes
-        max_size = 7500000 
-        #if len(input_string) > max_size:
+        max_size = 7500000
+        # if len(input_string) > max_size:
         #    input_string = input_string[:max_size]
 
-        self.logger.info("[DEBUG] Parsing data of length %d with types %s. Max size: %d" % (len(input_string), ioc_types, max_size))
+        self.logger.info(
+            "[DEBUG] Parsing data of length %d with types %s. Max size: %d"
+            % (len(input_string), ioc_types, max_size)
+        )
         self.logger.info(f"STRING: {input_string}")
 
-        #iocs = find_iocs(str(input_string), included_ioc_types=ioc_types)
+        # iocs = find_iocs(str(input_string), included_ioc_types=ioc_types)
         iocs = find_iocs(str(input_string))
-        #self.logger.info("[DEBUG] Found %d ioc types" % len(iocs))
+        # self.logger.info("[DEBUG] Found %d ioc types" % len(iocs))
 
         newarray = []
         for key, value in iocs.items():
@@ -2929,7 +3080,9 @@ class Tools(AppBase):
             elif "ip" in item["data_type"]:
                 item["data_type"] = "ip"
                 try:
-                    item["is_private_ip"] = ipaddress.ip_address(item["data"]).is_private
+                    item["is_private_ip"] = ipaddress.ip_address(
+                        item["data"]
+                    ).is_private
                 except:
                     pass
 
@@ -2939,25 +3092,24 @@ class Tools(AppBase):
             return "Failed to parse IOC's: %s" % e
 
         return newarray
-    
 
     def split_text(self, text):
         # Split text into chunks of 10kb. Add each 10k to array
         # In case e.g. 1.2.3.4 lands exactly on 20k boundary, it may be useful to overlap here.
         # (just shitty code to reduce chance of issues) while still going fast
         arr_one = []
-        max_len = 5000 
+        max_len = 5000
         current_string = ""
-        overlaps = 100 
+        overlaps = 100
 
         for i in range(0, len(text)):
             current_string += text[i]
             if len(current_string) > max_len:
                 # Appending just in case even with overlaps
-                if len(text) > i+overlaps:
-                    current_string += text[i+1:i+overlaps]
+                if len(text) > i + overlaps:
+                    current_string += text[i + 1 : i + overlaps]
                 else:
-                    current_string += text[i+1:]
+                    current_string += text[i + 1 :]
 
                 arr_one.append(current_string)
                 current_string = ""
@@ -2965,13 +3117,13 @@ class Tools(AppBase):
         if len(current_string) > 0:
             arr_one.append(current_string)
 
-        return arr_one 
+        return arr_one
 
     def _format_result(self, result):
         final_result = {}
-        
+
         for res in result:
-            for key,val in res.items():
+            for key, val in res.items():
                 if key in final_result:
                     if isinstance(val, list) and len(val) > 0:
                         for i in val:
@@ -2979,7 +3131,7 @@ class Tools(AppBase):
                     elif isinstance(val, dict):
                         if key in final_result:
                             if isinstance(val, dict):
-                                for k,v in val.items():
+                                for k, v in val.items():
                                     val[k].append(v)
                 else:
                     final_result[key] = val
@@ -2989,36 +3141,49 @@ class Tools(AppBase):
     # See function for how it works~: parse_ioc_new(..)
     def _with_concurency(self, array_of_strings, ioc_types):
         results = []
-        #start = time.perf_counter()
+        # start = time.perf_counter()
 
         # Workers dont matter..?
-        # What can we use instead? 
+        # What can we use instead?
 
         workers = 4
         with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as executor:
             # Submit the find_iocs function for each string in the array
-            futures = [executor.submit(
-                find_iocs, 
-                text=string, 
-                included_ioc_types=ioc_types,
-            ) for string in array_of_strings]
+            futures = [
+                executor.submit(
+                    find_iocs,
+                    text=string,
+                    included_ioc_types=ioc_types,
+                )
+                for string in array_of_strings
+            ]
 
             # Wait for all tasks to complete
             concurrent.futures.wait(futures)
 
             # Retrieve the results if needed
             results = [future.result() for future in futures]
-        
+
         return self._format_result(results)
 
     # FIXME: Make this good and actually faster than normal
     # For now: Concurrency doesn't make it faster due to GIL in python.
-    # May need to offload this to an executable or something 
+    # May need to offload this to an executable or something
     def parse_ioc_new(self, input_string, input_type="all"):
         if input_type == "":
             input_type = "all"
 
-        ioc_types = ["domains", "urls", "email_addresses", "ipv4s", "ipv4_cidrs", "md5s", "sha256s", "sha1s", "cves"]
+        ioc_types = [
+            "domains",
+            "urls",
+            "email_addresses",
+            "ipv4s",
+            "ipv4_cidrs",
+            "md5s",
+            "sha256s",
+            "sha1s",
+            "cves",
+        ]
 
         if input_type == "" or input_type == "all":
             ioc_types = ioc_types
@@ -3032,7 +3197,9 @@ class Tools(AppBase):
         input_string = str(input_string)
 
         if len(input_string) > 10000:
-            iocs = self._with_concurency(self.split_text(input_string), ioc_types=ioc_types)
+            iocs = self._with_concurency(
+                self.split_text(input_string), ioc_types=ioc_types
+            )
         else:
             iocs = find_iocs(input_string, included_ioc_types=ioc_types)
 
@@ -3041,7 +3208,7 @@ class Tools(AppBase):
             if input_type != "all":
                 if key not in input_type:
                     continue
-    
+
             if len(value) == 0:
                 continue
 
@@ -3075,7 +3242,9 @@ class Tools(AppBase):
 
             newarray[i]["data_type"] = "ip"
             try:
-                newarray[i]["is_private_ip"] = ipaddress.ip_address(item["data"]).is_private
+                newarray[i]["is_private_ip"] = ipaddress.ip_address(
+                    item["data"]
+                ).is_private
             except Exception as e:
                 pass
 
@@ -3089,15 +3258,12 @@ class Tools(AppBase):
     def merge_incoming_branches(self, input_type="list"):
         wf = self.full_execution["workflow"]
         if "branches" not in wf or not wf["branches"]:
-            return {
-                "success": False,
-                "reason": "No branches found"
-            }
+            return {"success": False, "reason": "No branches found"}
 
         if "results" not in self.full_execution or not self.full_execution["results"]:
             return {
                 "success": False,
-                "reason": "No results for previous actions not found"
+                "reason": "No results for previous actions not found",
             }
 
         if not input_type:
@@ -3105,7 +3271,7 @@ class Tools(AppBase):
 
         branches = wf["branches"]
         cur_action = self.action
-        #print("Found %d branches" % len(branches))
+        # print("Found %d branches" % len(branches))
 
         results = []
         for branch in branches:
@@ -3138,13 +3304,13 @@ class Tools(AppBase):
                         continue
 
                     newlist.append(subitem)
-                #newlist.append(item)
+                # newlist.append(item)
 
             results = newlist
         elif input_type == "dict":
             new_dict = {}
             for item in results:
-                if not isinstance(item, dict): 
+                if not isinstance(item, dict):
                     continue
 
                 new_dict = self.merge_lists(new_dict, item)
@@ -3153,7 +3319,7 @@ class Tools(AppBase):
         else:
             return {
                 "success": False,
-                "reason": "No results from source branches with type %s" % input_type
+                "reason": "No results from source branches with type %s" % input_type,
             }
 
         return results
@@ -3162,10 +3328,7 @@ class Tools(AppBase):
         return body
 
     def list_cidr_ips(self, cidr):
-        defaultreturn = {
-            "success": False,
-            "reason": "Invalid CIDR address"
-        }
+        defaultreturn = {"success": False, "reason": "Invalid CIDR address"}
 
         if not cidr:
             return defaultreturn
@@ -3191,11 +3354,7 @@ class Tools(AppBase):
             return defaultreturn
 
         ips = [str(ip) for ip in net]
-        returnvalue = {
-            "success": True,
-            "amount": len(ips),
-            "ips": ips
-        }
+        returnvalue = {"success": True, "amount": len(ips), "ips": ips}
 
         return returnvalue
 
@@ -3218,12 +3377,13 @@ class Tools(AppBase):
 
         # Loop conditions
         # Return them without a loop to make it EASY to understand
-        # Validation should be: 
+        # Validation should be:
         # Continuation based on .id.valid
         # .valid -> true/false
         # If no id exists, use name?
 
         return to_return
+
 
 if __name__ == "__main__":
     Tools.run()
