@@ -2,6 +2,7 @@ import os
 import json
 import tempfile
 import requests
+import time
 
 try:
     import pytesseract
