@@ -346,11 +346,10 @@ class Tools(AppBase):
         else:
             input_type = input_type.split(",")
 
+        # Parse file_ids if it's a JSON list string like '["id1", "id2"]'
         try:
-            file_ids = eval(file_ids)  # nosec
-        except SyntaxError:
-            file_ids = file_ids
-        except NameError:
+            file_ids = json.loads(file_ids)
+        except (json.JSONDecodeError, TypeError):
             file_ids = file_ids
 
         return_value = None
@@ -441,15 +440,14 @@ class Tools(AppBase):
             if len(keys) >= 1:
                 first_object = keys[0]
 
-            # This is awful :)
-            buildstring = "base_object"
-            for subkey in keys:
-                buildstring += f"[\"{subkey}\"]" 
+            # Walk the nested keys and set the value
+            current = base_object
+            for subkey in keys[:-1]:
+                if subkey not in current:
+                    current[subkey] = {}
+                current = current[subkey]
+            current[keys[-1]] = value
 
-            buildstring += f" = {value}"
-
-            #output = 
-            exec(buildstring)
             json_object = base_object
             #json_object[first_object] = base_object
         else:
@@ -582,78 +580,22 @@ class Tools(AppBase):
                     "message": f"Filename needs to contain .py",
                 }
 
-        # Write the code to a file
-        # 1. Take the data into a file
-        # 2. Subprocess execute file?
+        # Sandboxed execution: fresh subprocess with globals (self, singul, shuffle)
+        # preserved inside the worker. See sandbox_worker.py execute_python().
         try:
-            f = StringIO()
-            def custom_print(*args, **kwargs):
-                return print(*args, file=f, **kwargs)
-            
-            #with redirect_stdout(f): # just in case
-            # Add globals in it too
-            globals_copy = globals().copy()
-            globals_copy["print"] = custom_print
-            try:
-                globals_copy["singul"] = self.singul
-                globals_copy["shuffle"] = self.singul
-            except Exception as e:
-                self.logger.info(f"Failed to add singul to python globals: {e}")
+            result = self.run_python_sandboxed(code)
 
-
-            # Add self to globals_copy
-            for key, value in locals().copy().items():
-                if key not in globals_copy:
-                    globals_copy[key] = value
-
-            globals_copy["self"] = self
-
-            try:
-                exec(code, globals_copy)
-            except SystemExit as e:
-                # Same as a return
-                pass
-            except SyntaxError as e:
-                # Special handler for return usage. Makes return act as 
-                # an exit()
-                if "'return' outside function" in str(e):
-                    return {
-                        "success": False,
-                        "message": f"SyntaxError - Shuffle Recommendation: Instead of using 'return' without a function, use 'exit()' to return when not inside a function. Raw Syntax error: {e}",
-                    }
-                else:
-                    return {
-                        "success": False,
-                        "message": f"Syntax Error: {e}",
-                    }
-
-            # this doesn't work to capture top-level returns
-            # Reason: SyntaxError makes it crash BEFORE it reaches the return
-
-            s = f.getvalue()
-            f.close() # why: https://www.youtube.com/watch?v=6SA6S9Ca5-U
-
-            #try:
-            #    s = s.encode("utf-8")
-            #except Exception as e:
-
-            try:
+            if result.get("success"):
                 return {
                     "success": True,
-                    "message": json.loads(s.strip()),
+                    "message": result.get("result", ""),
                 }
-            except Exception as e:
-                try:
-                    return {
-                        "success": True,
-                        "message": s.strip(),
-                    }
-                except Exception as e:
-                    return {
-                        "success": True,
-                        "message": s,
-                    }
-                
+            else:
+                return {
+                    "success": False,
+                    "message": result.get("error", "Unknown error"),
+                }
+
         except Exception as e:
             return {
                 "success": False,
@@ -661,28 +603,18 @@ class Tools(AppBase):
             }
 
     def execute_bash(self, code, shuffle_input):
-        process = subprocess.Popen(
-            code,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            shell=True,  # nosec
-        )
-        stdout = process.communicate()
-        item = ""
-        if len(stdout[0]) > 0:
-            item = stdout[0]
-        else:
-            self.logger.info(f"[ERROR] FAILED to run bash command {code}!")
-            item = stdout[1]
-
+        # Sandboxed execution: fresh subprocess with clean env, resource limits.
+        # See sandbox_worker.py execute_bash().
         try:
-            ret = item.decode("utf-8")
-            return ret
-        except Exception:
-            return item
-
-        return item
+            result = self.run_bash_sandboxed(code, shuffle_input=shuffle_input)
+            if result.get("success"):
+                return result.get("result", "")
+            else:
+                self.logger.info(f"[ERROR] FAILED to run bash command {code}!")
+                return result.get("error", "")
+        except Exception as e:
+            self.logger.info(f"[ERROR] FAILED to run bash command {code}: {e}")
+            return ""
 
     # Check if wildcardstring is in all_ips and support * as wildcard
     def check_wildcard(self, wildcardstring, matching_string):
@@ -1827,8 +1759,10 @@ class Tools(AppBase):
 
 
     def run_math_operation(self, operation):
-        result = eval(operation)
-        return result
+        result = self.run_python_sandboxed(f"print(eval({repr(str(operation))}))")
+        if result.get("success"):
+            return result.get("result", "")
+        return result.get("error", "")
 
     # This is kind of stupid
     def escape_html(self, input_data):
