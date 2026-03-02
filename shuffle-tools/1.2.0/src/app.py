@@ -1168,7 +1168,7 @@ class Tools(AppBase):
                 "reason": "File not found",
             }
 
-        if "data" not in filedata:
+        if not filedata.get("data"):
             return {
                 "success": False,
                 "reason": "File content not found. File might be empty or not exist",
