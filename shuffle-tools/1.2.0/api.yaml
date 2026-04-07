@@ -81,6 +81,32 @@ actions:
     returns:
       schema:
         type: string
+
+  - name: list_datastore_category
+    description: Lists data in the datastore category specified. 
+    parameters:
+      - name: category 
+        description: The category to list 
+        required: true
+        multiline: false
+        example: "shuffle-security_incidents"
+        schema:
+          type: string
+      - name: output_type 
+        description: The output type to get
+        required: false 
+        options:
+          - values 
+          - keys
+          - ndjson
+          - csv 
+          - meta 
+        example: "values"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
   - name: set_datastore_value
     description: Set a value to be saved to your organization in Shuffle.
     parameters:

@@ -2222,6 +2222,26 @@ class Tools(AppBase):
             self.logger.info("Value couldn't be parsed")
             return response.text
 
+    def list_datastore_category(self, category, output_type=""):
+        category = category.lower().replace(" ", "_")
+        if not output_type: 
+            output_type = "values"
+
+        org_id = self.full_execution["workflow"]["execution_org"]["id"]
+        url = "%s/api/v2/datastore/category/%s?top=10000&type=%s&execution_id=%s&authorization=%s&org_id=%s" % (self.url, category, output_type, self.current_execution_id, self.authorization, org_id)
+
+        parsed_headers = {}
+        data = requests.get(url, headers=parsed_headers, verify=False)
+        try:
+            allvalues = data.json()
+            return json.dumps(allvalues)
+        except Exception as e:
+            return {
+                "success": False,
+                "reason": f"Failed to parse datastore category list response: {e}",
+                "response": data.text,
+            }
+
     def delete_datastore_value(self, key, category=""):
         return self.delete_cache(key, category=category)
 
