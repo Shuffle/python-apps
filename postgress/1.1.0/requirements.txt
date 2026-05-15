@@ -1,0 +1,2 @@
+psycopg2-binary == 2.9.12
+shuffle-sdk >= 0.0.31

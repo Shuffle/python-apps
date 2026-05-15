@@ -1,0 +1,64 @@
+app_version: 1.1.0
+name: postgress
+description: postgress integration. Compatible with SQL databases.
+contact_info:
+  name: "@d4rkw0lv3s"
+  url: https://github.com/D4rkw0lv3s
+  email: d4rkw0lv3s@outlook.pt
+tags:
+  - postgress
+  - postgresql
+categories:
+  - Intel
+  - Network
+authentication:
+  required: true
+  parameters:
+    - name: host
+      description: PostgreSQL server IP or FQDN
+      example: myserver.com or 127.0.0.1
+      required: true
+      multiline: false
+      schema:
+        type: string
+    - name: port
+      description: PostgreSQL database port
+      example: "5432"
+      required: false
+      multiline: false
+      schema:
+        type: string
+    - name: dbname
+      description: PostgreSQL database name
+      example: my_database
+      required: true
+      multiline: false
+      schema:
+        type: string
+    - name: user
+      description: PostgreSQL user name
+      example: my_username
+      required: true
+      multiline: false
+      schema:
+        type: string
+    - name: password
+      description: PostgreSQL user password
+      example: my_password
+      required: true
+      multiline: false
+      schema:
+        type: string
+actions:
+  - name: run_query
+    description: Create a new database
+    parameters:
+      - name: query
+        description: PostgreSQL query
+        example: SELECT 1
+        required: true
+        schema:
+          type: string
+    return:
+      schema:
+        type: string
