@@ -26,7 +26,7 @@ actions:
       schema:
         type: string
   - name: execute_python
-    description: Runs python with the data input. Any prints will be returned.
+    description: Runs python with the data input. Any prints will be returned. Avoid __main__ as it is not supported in this environment. 
     parameters:
       - name: code
         description: The code to run. Can be a file ID from within Shuffle.

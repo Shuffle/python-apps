@@ -2349,7 +2349,7 @@ class Tools(AppBase):
             return value.text
 
     def set_datastore_value(self, key, value, category=""):
-        return set_cache_value(self, key, value, category=category)
+        return self.set_cache_value(self, key, value, category=category)
 
     # Check if a specific key exists in a datastore category or not
     # Otherwise appends it automatically
