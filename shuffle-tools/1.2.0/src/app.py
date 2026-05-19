@@ -2348,8 +2348,6 @@ class Tools(AppBase):
             self.logger.info("Value couldn't be parsed, or json dump of value failed")
             return value.text
 
-    def set_datastore_value(self, key, value, category=""):
-        return self.set_cache_value(self, key, value, category=category)
 
     # Check if a specific key exists in a datastore category or not
     # Otherwise appends it automatically
@@ -2526,6 +2524,9 @@ class Tools(AppBase):
         except:
             self.logger.info("Value couldn't be parsed")
             return response.text
+
+    def set_datastore_value(self, key, value, category=""):
+        return self.set_cache_value(key, value, category=category)
 
     def convert_json_to_tags(
         self, json_object, split_value=", ", include_key=True, lowercase=True
