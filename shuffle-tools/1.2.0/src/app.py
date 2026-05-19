@@ -1897,7 +1897,7 @@ class Tools(AppBase):
     def check_datastore_contains(
         self, key, value, append, category="", return_values="true"
     ):
-        return check_cache_contains(self, key, value, append, category, return_values)
+        return self.check_cache_contains(self, key, value, append, category=category, return_values=return_values)
 
     def check_cache_contains(
         self, key, value, append, category="", return_values="true"
