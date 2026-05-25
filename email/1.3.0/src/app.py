@@ -83,7 +83,7 @@ class Email(AppBase):
             "reference_execution": self.current_execution_id,
         }
         
-        url = "https://shuffler.io/functions/sendmail"
+        url = "%s/api/v1/functions/sendmail" % self.url
         
         if apikey.strip() == "" and self.authorization != "standalone":
             apikey = self.authorization
@@ -765,7 +765,7 @@ class Email(AppBase):
 
         data = {"numbers": targets, "body": body}
 
-        url = "https://shuffler.io/api/v1/functions/sendsms"
+        url = "%s/api/v1/functions/sendsms" % self.url
         headers = {"Authorization": "Bearer %s" % apikey}
         return requests.post(url, headers=headers, json=data, verify=False).text
 
