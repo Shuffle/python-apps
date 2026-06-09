@@ -208,6 +208,7 @@ class Subflow(AppBase):
             "Authorization": "Bearer %s" % user_apikey,
             "User-Agent": "Shuffle Subflow 1.1.0"
         }
+        self.logger.info("[INFO] Sending a request to %s" % url)
 
         if len(auth_override) > 0:
             headers["appauth"] = auth_override
@@ -224,7 +225,7 @@ class Subflow(AppBase):
             #print(f"ARG: {argument}")
             try:
                 ret = requests.post(url, headers=headers, params=params, json=argument, verify=False, proxies=self.proxy_config)
-                print(f"Successfully sent argument of length {len(str(argument))} as JSON")
+                self.logger.info(f"Successfully sent argument of length {len(str(argument))} as JSON")
             except:
                 try:
                     ret = requests.post(url, headers=headers, json=argument, params=params, verify=False, proxies=self.proxy_config)
@@ -233,8 +234,8 @@ class Subflow(AppBase):
                     ret = requests.post(url, headers=headers, data=argument, params=params, verify=False, proxies=self.proxy_config)
                     print("Successfully sent as data (3)")
 
-        print("Status: %d" % ret.status_code)
-        print("RET: %s" % ret.text)
+        self.logger.info("Status: %d" % ret.status_code)
+        self.logger.info("RET: %s" % ret.text)
 
         return ret.text
 
