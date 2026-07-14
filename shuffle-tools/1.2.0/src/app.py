@@ -191,7 +191,7 @@ class Tools(AppBase):
 
         data = {"numbers": targets, "body": body}
 
-        url = "https://shuffler.io/api/v1/functions/sendsms"
+        url = "%s/api/v1/functions/sendsms" % self.url
         headers = {"Authorization": "Bearer %s" % apikey}
         return requests.post(url, headers=headers, json=data, verify=False).text
 
@@ -226,7 +226,7 @@ class Tools(AppBase):
             except Exception as e:
                 pass
 
-        url = "https://shuffler.io/functions/sendmail"
+        url = "%s/functions/sendmail" % self.url
         headers = {"Authorization": "Bearer %s" % apikey}
         return requests.post(url, headers=headers, json=data).text
 
