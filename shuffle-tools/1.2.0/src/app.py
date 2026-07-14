@@ -191,7 +191,8 @@ class Tools(AppBase):
 
         data = {"numbers": targets, "body": body}
 
-        base = self.url if "shuffler.io" in self.url else "https://shuffler.io"
+        # this is just to expose this feature to onprem users as well
+        base = self.url if "shuffler.io" in self.url or "run.app" in self.url else "https://shuffler.io"
         url = "%s/api/v1/functions/sendsms" % base
         headers = {"Authorization": "Bearer %s" % apikey}
         return requests.post(url, headers=headers, json=data, verify=False).text
@@ -227,7 +228,8 @@ class Tools(AppBase):
             except Exception as e:
                 pass
 
-        base = self.url if "shuffler.io" in self.url else "https://shuffler.io"
+        # this is just to expose this feature to onprem users as well
+        base = self.url if "shuffler.io" in self.url or "run.app" in self.url else "https://shuffler.io"
         url = "%s/functions/sendmail" % base
         headers = {"Authorization": "Bearer %s" % apikey}
         return requests.post(url, headers=headers, json=data).text
