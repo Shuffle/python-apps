@@ -569,7 +569,7 @@ class ShuffleAI(AppBase):
 
         #baseurl = "%s/api/v1/apps/categories/run" % self.base_url
         baseurl = "%s/api/v1/apps/categories/run" % self.url
-        baseurl += "?execution_id=%s&authorization=%s&parent_node=%s" % (self.current_execution_id, self.authorization, self.action.id)
+        baseurl += "?execution_id=%s&authorization=%s&parent_node=%s" % (self.current_execution_id, self.authorization, self.action["id"])
 
         self.logger.info("[DEBUG] Running schemaless action with URL '%s', category %s and action label %s" % (baseurl, category, action))
 
