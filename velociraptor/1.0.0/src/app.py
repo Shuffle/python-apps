@@ -23,7 +23,20 @@ class Velociraptor(AppBase):
         super().__init__(redis, logger, console_logger)
 
     def auth(self, api_config):
-        credfile = self.get_file(api_config)["data"]
+        # get_file() returns None when the worker cannot reach the Shuffle
+        # files API (e.g. distributed/org runtimes). Guard it, and fall back to
+        # treating api_config as the credential contents themselves, so the
+        # config can also be supplied inline. Raise a clear error otherwise
+        # instead of the opaque "'NoneType' object is not subscriptable".
+        _f = self.get_file(api_config)
+        credfile = _f["data"] if isinstance(_f, dict) and _f.get("data") else api_config
+        if not credfile:
+            raise ValueError(
+                "Velociraptor: could not load the API credential. get_file() "
+                "returned no data - the worker may be unable to reach the "
+                "Shuffle files API. Provide the api.config.yaml contents in the "
+                "authentication field."
+            )
         config = yaml.load(credfile, Loader=yaml.FullLoader)
         creds = grpc.ssl_channel_credentials(
             root_certificates=config["ca_certificate"].encode("utf8"),
