@@ -1,5 +1,5 @@
-cryptography==44.0.1
+cryptography==46.0.5
 exchangelib==3.3.2
 eml_parser==1.14.4
 glom==20.11.0
-requests==2.32.4
+requests==2.32.5
