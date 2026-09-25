@@ -1,0 +1,269 @@
+app_version: 1.0.0
+name: Flowtriq
+description: DDoS detection and mitigation platform. Query active incidents, monitor node health, and trigger mitigation rules from SOAR playbooks.
+contact_info:
+  name: "@flowtriq"
+  url: https://flowtriq.com
+  email: "support@flowtriq.com"
+tags:
+  - DDoS
+  - Network Security
+  - Mitigation
+categories:
+  - Network
+authentication:
+  required: true
+  parameters:
+    - name: base_url
+      description: The base URL of your Flowtriq instance API (e.g. https://your-instance.flowtriq.com)
+      multiline: false
+      example: "https://demo.flowtriq.com"
+      required: true
+      schema:
+        type: string
+    - name: api_key
+      description: Bearer token for API authentication
+      multiline: false
+      example: "*****"
+      required: true
+      schema:
+        type: string
+    - name: verify_ssl
+      description: Whether to verify TLS certificates
+      multiline: false
+      required: false
+      options:
+        - true
+        - false
+      example: "true"
+      schema:
+        type: string
+actions:
+  - name: list_incidents
+    description: List active DDoS incidents with optional filtering by status
+    parameters:
+      - name: base_url
+        description: The base URL of your Flowtriq instance API
+        multiline: false
+        example: "https://demo.flowtriq.com"
+        required: true
+        schema:
+          type: string
+      - name: api_key
+        description: Bearer token for API authentication
+        multiline: false
+        example: "*****"
+        required: true
+        schema:
+          type: string
+      - name: verify_ssl
+        description: Whether to verify TLS certificates
+        multiline: false
+        required: false
+        options:
+          - true
+          - false
+        example: "true"
+        schema:
+          type: string
+      - name: status
+        description: Filter incidents by status (e.g. active, resolved). Leave empty for all.
+        multiline: false
+        required: false
+        example: "active"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+      example: |
+        {
+          "success": true,
+          "incidents": [
+            {
+              "id": "inc-001",
+              "attack_type": "volumetric",
+              "target": "203.0.113.50",
+              "volume_bps": 12000000000,
+              "source_ips": ["198.51.100.1", "198.51.100.2"],
+              "status": "active",
+              "started_at": "2026-06-28T14:30:00Z"
+            }
+          ]
+        }
+  - name: get_incident
+    description: Get detailed information about a specific incident including attack type, source IPs, target, and volume
+    parameters:
+      - name: base_url
+        description: The base URL of your Flowtriq instance API
+        multiline: false
+        example: "https://demo.flowtriq.com"
+        required: true
+        schema:
+          type: string
+      - name: api_key
+        description: Bearer token for API authentication
+        multiline: false
+        example: "*****"
+        required: true
+        schema:
+          type: string
+      - name: verify_ssl
+        description: Whether to verify TLS certificates
+        multiline: false
+        required: false
+        options:
+          - true
+          - false
+        example: "true"
+        schema:
+          type: string
+      - name: incident_id
+        description: The ID of the incident to retrieve
+        multiline: false
+        example: "inc-001"
+        required: true
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+      example: |
+        {
+          "success": true,
+          "incident": {
+            "id": "inc-001",
+            "attack_type": "volumetric",
+            "target": "203.0.113.50",
+            "volume_bps": 12000000000,
+            "volume_pps": 8500000,
+            "source_ips": ["198.51.100.1", "198.51.100.2"],
+            "status": "active",
+            "started_at": "2026-06-28T14:30:00Z",
+            "node_id": "node-us-east-1"
+          }
+        }
+  - name: list_nodes
+    description: List all monitored nodes and their current status
+    parameters:
+      - name: base_url
+        description: The base URL of your Flowtriq instance API
+        multiline: false
+        example: "https://demo.flowtriq.com"
+        required: true
+        schema:
+          type: string
+      - name: api_key
+        description: Bearer token for API authentication
+        multiline: false
+        example: "*****"
+        required: true
+        schema:
+          type: string
+      - name: verify_ssl
+        description: Whether to verify TLS certificates
+        multiline: false
+        required: false
+        options:
+          - true
+          - false
+        example: "true"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+      example: |
+        {
+          "success": true,
+          "nodes": [
+            {
+              "id": "node-us-east-1",
+              "name": "US East",
+              "status": "online",
+              "last_seen": "2026-06-28T15:00:00Z"
+            }
+          ]
+        }
+  - name: create_mitigation_rule
+    description: Create a mitigation rule to block or rate-limit attack traffic. Used in SOAR playbooks to enable scrubbing when a DDoS is detected.
+    parameters:
+      - name: base_url
+        description: The base URL of your Flowtriq instance API
+        multiline: false
+        example: "https://demo.flowtriq.com"
+        required: true
+        schema:
+          type: string
+      - name: api_key
+        description: Bearer token for API authentication
+        multiline: false
+        example: "*****"
+        required: true
+        schema:
+          type: string
+      - name: verify_ssl
+        description: Whether to verify TLS certificates
+        multiline: false
+        required: false
+        options:
+          - true
+          - false
+        example: "true"
+        schema:
+          type: string
+      - name: name
+        description: A descriptive name for the mitigation rule
+        multiline: false
+        example: "Block volumetric attack on 203.0.113.50"
+        required: true
+        schema:
+          type: string
+      - name: rule_type
+        description: The type of mitigation rule
+        multiline: false
+        required: true
+        options:
+          - block
+          - rate_limit
+          - scrub
+        example: "block"
+        schema:
+          type: string
+      - name: target
+        description: The target IP or prefix to protect
+        multiline: false
+        example: "203.0.113.50"
+        required: true
+        schema:
+          type: string
+      - name: source_ips
+        description: Comma-separated list of source IPs or prefixes to match against. Leave empty to match all sources.
+        multiline: true
+        required: false
+        example: "198.51.100.1,198.51.100.2"
+        schema:
+          type: string
+      - name: duration_minutes
+        description: How long the rule should remain active, in minutes. Leave empty for indefinite.
+        multiline: false
+        required: false
+        example: "60"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+      example: |
+        {
+          "success": true,
+          "rule": {
+            "id": "rule-abc123",
+            "name": "Block volumetric attack on 203.0.113.50",
+            "rule_type": "block",
+            "target": "203.0.113.50",
+            "status": "active",
+            "created_at": "2026-06-28T15:05:00Z"
+          }
+        }
+large_image: data:image/png;base64,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
