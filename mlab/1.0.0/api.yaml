@@ -1,0 +1,514 @@
+app_version: 1.0.0
+name: mlab
+description: "mlab.sh: domain / IP / crypto / file / hash / URL / email / phone / MAC scanning, IOC extraction, CVE intelligence and threat-actor data."
+contact_info:
+  name: "mlab.sh"
+  url: https://mlab.sh
+  email: support@mlab.sh
+tags:
+  - Intel
+  - Scanner
+  - CVE
+categories:
+  - Intel
+authentication:
+  required: true
+  parameters:
+    - name: apikey
+      description: "mlab.sh API key (starts with mlab_). Account → Settings → API Keys. CVE and threat-actor actions don't use it."
+      example: "mlab_..."
+      required: true
+      schema:
+        type: string
+    - name: url
+      description: "Core API base URL. Only change for self-hosted instances."
+      example: "https://mlab.sh/api/v1"
+      required: false
+      schema:
+        type: string
+actions:
+  - name: scan_domain
+    description: "Launch a domain scan; optionally wait and return full results (subdomains, DNS, SSL, security.txt)"
+    parameters:
+      - name: domain
+        description: "Domain to scan"
+        required: true
+        multiline: false
+        example: "example.com"
+        schema:
+          type: string
+      - name: wait_for_completion
+        description: "Poll until the scan finishes and return results"
+        required: false
+        multiline: false
+        example: "true"
+        schema:
+          type: string
+        options:
+          - "true"
+          - "false"
+      - name: timeout
+        description: "Max seconds to wait"
+        required: false
+        multiline: false
+        example: "120"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: get_domain_status
+    description: "Status of a domain scan"
+    parameters:
+      - name: domain
+        description: "Domain"
+        required: true
+        multiline: false
+        example: "example.com"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: get_domain_results
+    description: "Results of a finished domain scan"
+    parameters:
+      - name: domain
+        description: "Domain"
+        required: true
+        multiline: false
+        example: "example.com"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: get_domain_ssl
+    description: "SSL certificates seen for a domain"
+    parameters:
+      - name: domain
+        description: "Domain"
+        required: true
+        multiline: false
+        example: "example.com"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: capture_network_requests
+    description: "Load a page and capture every network request it makes"
+    parameters:
+      - name: page_url
+        description: "Page URL to load"
+        required: true
+        multiline: false
+        example: "https://example.com"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: lookup_ip
+    description: "Geolocation, ASN and ownership for an IPv4/IPv6 address"
+    parameters:
+      - name: ip
+        description: "IP address"
+        required: true
+        multiline: false
+        example: "8.8.8.8"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: lookup_crypto
+    description: "Sanctions, labels and risk score for a crypto address"
+    parameters:
+      - name: address
+        description: "Wallet address"
+        required: true
+        multiline: false
+        example: "bc1q..."
+        schema:
+          type: string
+      - name: chain
+        description: "Chain (blank = auto-detect)"
+        required: false
+        multiline: false
+        example: ""
+        schema:
+          type: string
+        options:
+          - ""
+          - "btc"
+          - "eth"
+          - "sol"
+          - "trx"
+          - "bsc"
+          - "polygon"
+          - "arbitrum"
+          - "optimism"
+          - "base"
+          - "avax"
+          - "doge"
+          - "ton"
+    returns:
+      schema:
+        type: string
+  - name: bulk_lookup_crypto
+    description: "Look up many crypto addresses (batches of 100)"
+    parameters:
+      - name: addresses
+        description: "Addresses separated by commas, spaces or new lines"
+        required: true
+        multiline: true
+        example: ""
+        schema:
+          type: string
+      - name: chain
+        description: "Chain applied to the whole batch (blank = auto-detect)"
+        required: false
+        multiline: false
+        example: ""
+        schema:
+          type: string
+        options:
+          - ""
+          - "btc"
+          - "eth"
+          - "sol"
+          - "trx"
+          - "bsc"
+          - "polygon"
+          - "arbitrum"
+          - "optimism"
+          - "base"
+          - "avax"
+          - "doge"
+          - "ton"
+    returns:
+      schema:
+        type: string
+  - name: lookup_hash
+    description: "Known-good / known-malicious verdict for an MD5, SHA-1, SHA-256 or SHA-512"
+    parameters:
+      - name: hash
+        description: "Hex digest"
+        required: true
+        multiline: false
+        example: "44d88612fea8a8f36de82e1278abb02f"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: bulk_lookup_hash
+    description: "Look up many hashes (batches of 500)"
+    parameters:
+      - name: hashes
+        description: "Hashes separated by commas, spaces or new lines"
+        required: true
+        multiline: true
+        example: ""
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: upload_file
+    description: "Upload a Shuffle file (max 10 MB) for analysis; returns its sha256"
+    parameters:
+      - name: file_id
+        description: "Shuffle file ID"
+        required: true
+        multiline: false
+        example: "$exec.file_id"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: get_file_results
+    description: "Analysis results for an uploaded file"
+    parameters:
+      - name: sha256
+        description: "SHA-256 returned by upload_file"
+        required: true
+        multiline: false
+        example: ""
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: get_file_tool_output
+    description: "Raw output of one tool listed in the file results"
+    parameters:
+      - name: sha256
+        description: "SHA-256 of the file"
+        required: true
+        multiline: false
+        example: ""
+        schema:
+          type: string
+      - name: tool
+        description: "Tool name as listed in the results"
+        required: true
+        multiline: false
+        example: "yara"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: analyze_url
+    description: "Phishing shapes, embedded redirects and what mlab knows about the host"
+    parameters:
+      - name: target_url
+        description: "URL to analyze"
+        required: true
+        multiline: false
+        example: "https://bit.ly/3xYz"
+        schema:
+          type: string
+      - name: resolve
+        description: "Follow redirects / unmask short links"
+        required: false
+        multiline: false
+        example: "false"
+        schema:
+          type: string
+        options:
+          - "false"
+          - "true"
+    returns:
+      schema:
+        type: string
+  - name: analyze_email
+    description: "Mailbox type, spoofability of the domain and risk score"
+    parameters:
+      - name: email
+        description: "Email address"
+        required: true
+        multiline: false
+        example: "name@email.com"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: analyze_phone
+    description: "Validity, line type, operator and scam shapes"
+    parameters:
+      - name: number
+        description: "Phone number in E.164 form"
+        required: true
+        multiline: false
+        example: "+33612345678"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: lookup_mac
+    description: "Vendor, randomization, virtualization and every notation"
+    parameters:
+      - name: mac
+        description: "MAC address"
+        required: true
+        multiline: false
+        example: "00:1A:2B:3C:4D:5E"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: extract_iocs
+    description: "Pull every indicator out of raw text, with optional SMS threat scoring"
+    parameters:
+      - name: text
+        description: "Raw text (report, log, email, SMS), up to 1 MB"
+        required: true
+        multiline: true
+        example: ""
+        schema:
+          type: string
+      - name: risk
+        description: "SMS threat scoring (blank = off, fast = offline, deep = network checks)"
+        required: false
+        multiline: false
+        example: ""
+        schema:
+          type: string
+        options:
+          - ""
+          - "fast"
+          - "deep"
+      - name: country
+        description: "Keyword and brand pack used by the scorer"
+        required: false
+        multiline: false
+        example: "fr"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: get_quota
+    description: "Remaining daily quota for a scan type"
+    parameters:
+      - name: scan_type
+        description: "Scan type"
+        required: true
+        multiline: false
+        example: "domain"
+        schema:
+          type: string
+        options:
+          - "domain"
+          - "ip"
+          - "file"
+          - "crypto"
+    returns:
+      schema:
+        type: string
+  - name: search_cves
+    description: "Search CVEs by keyword, vendor or product (public, no key used)"
+    parameters:
+      - name: query
+        description: "Search query"
+        required: true
+        multiline: false
+        example: "log4j"
+        schema:
+          type: string
+      - name: severity
+        description: "Severity filter"
+        required: false
+        multiline: false
+        example: ""
+        schema:
+          type: string
+        options:
+          - ""
+          - "CRITICAL"
+          - "HIGH"
+          - "MEDIUM"
+          - "LOW"
+      - name: published_after
+        description: "Only CVEs published on/after (YYYY-MM-DD)"
+        required: false
+        multiline: false
+        example: "2024-01-01"
+        schema:
+          type: string
+      - name: exact
+        description: "Exact match"
+        required: false
+        multiline: false
+        example: "false"
+        schema:
+          type: string
+        options:
+          - "false"
+          - "true"
+      - name: kev_only
+        description: "Only CISA Known Exploited Vulnerabilities"
+        required: false
+        multiline: false
+        example: "false"
+        schema:
+          type: string
+        options:
+          - "false"
+          - "true"
+    returns:
+      schema:
+        type: string
+  - name: get_cve
+    description: "Full CVE detail including EPSS and KEV (public)"
+    parameters:
+      - name: cve_id
+        description: "CVE ID"
+        required: true
+        multiline: false
+        example: "CVE-2021-44228"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: get_latest_cves
+    description: "Vulnerabilities from the last 7 days (public)"
+    returns:
+      schema:
+        type: string
+  - name: list_threat_actors
+    description: "List / search threat actors (public)"
+    parameters:
+      - name: origin
+        description: "Country of origin"
+        required: false
+        multiline: false
+        example: "Russia"
+        schema:
+          type: string
+      - name: motivation
+        description: "Motivation"
+        required: false
+        multiline: false
+        example: "Espionage"
+        schema:
+          type: string
+      - name: sector
+        description: "Targeted sector"
+        required: false
+        multiline: false
+        example: "Government"
+        schema:
+          type: string
+      - name: limit
+        description: "Max results"
+        required: false
+        multiline: false
+        example: "50"
+        schema:
+          type: string
+      - name: offset
+        description: "Results to skip"
+        required: false
+        multiline: false
+        example: "0"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: get_threat_actor
+    description: "A threat actor by slug, with aliases, tools, CVEs and techniques (public)"
+    parameters:
+      - name: slug
+        description: "Actor slug"
+        required: true
+        multiline: false
+        example: "apt28"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+  - name: get_actors_by_cve
+    description: "Threat actors known to exploit a CVE (public)"
+    parameters:
+      - name: cve_id
+        description: "CVE ID"
+        required: true
+        multiline: false
+        example: "CVE-2021-44228"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: string
+large_image: data:image/png;base64,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
