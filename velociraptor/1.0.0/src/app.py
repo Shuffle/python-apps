@@ -67,18 +67,18 @@ class Velociraptor(AppBase):
             return r
 
     def add_client_label(self, api_config, client_id, label):
-        query = "SELECT label(client_id='" + client_id + "', labels=['" + label  +"'], op='set') FROM scope()'"
+        query = "SELECT label(client_id='" + client_id + "', labels=['" + label  +"'], op='set') FROM scope()"
         results = self.request(api_config, query)
         return results
 
 
     def get_client_label(self, api_config, client_id, label):
-        query = "SELECT label(client_id='" + client_id + "', labels=['" + label  +"'], op='check') FROM scope()'"
+        query = "SELECT label(client_id='" + client_id + "', labels=['" + label  +"'], op='check') FROM scope()"
         results = self.request(api_config, query)
         return results
 
     def remove_client_label(self, api_config, client_id, label):
-        query = "SELECT label(client_id='" + client_id + "', labels=['" + label  +"'], op='remove') FROM scope()'"
+        query = "SELECT label(client_id='" + client_id + "', labels=['" + label  +"'], op='remove') FROM scope()"
         results = self.request(api_config, query)
         return results
 
