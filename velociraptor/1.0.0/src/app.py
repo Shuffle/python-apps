@@ -1,4 +1,5 @@
 import json
+import re
 import grpc
 import ipaddress
 import time
@@ -123,7 +124,11 @@ class Velociraptor(AppBase):
         results = self.request(api_config, query)
         return results
 
-    def get_client_flow_results(self, api_config, client_id, flow_id):
+    def get_client_flow_results(self, api_config, client_id, flow_id, artifact=""):
+        if artifact:
+            # Only an artifact name, optionally /Source - it becomes part of the VQL below.
+            if not re.fullmatch(r"[A-Za-z0-9_.]+(/[A-Za-z0-9_.]+)?", artifact):
+                raise ValueError("Velociraptor: invalid artifact name %r" % artifact)
         state = self.get_client_flow_status(api_config, client_id, flow_id)
         while (state == "RUNNING"):
             state = self.get_client_flow_status(api_config, client_id, flow_id)
@@ -131,9 +136,15 @@ class Velociraptor(AppBase):
                 break
             else:
                 time.sleep(5)
-        query = "SELECT * FROM flow_results(flow_id='" + flow_id  + "', client_id='" + client_id  + "')"
+        query = "SELECT * FROM flow_results(flow_id='" + flow_id  + "', client_id='" + client_id  + "'"
+        if artifact:
+            # Artifacts with several sources return no rows unless the source is named.
+            query += ", artifact='" + artifact + "'"
+        query += ")"
         results = self.request(api_config, query)
-        return results[0]
+        if artifact:
+            return results
+        return results[0] if results else []
 
     def get_client_flow_status(self, api_config, client_id, flow_id):
         query = "SELECT * FROM flows(flow_id='" + flow_id  + "', client_id='" + client_id  + "')"
