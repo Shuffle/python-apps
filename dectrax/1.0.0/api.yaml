@@ -1,0 +1,113 @@
+app_version: 1.0.0
+name: dectrax
+description: Autonomous Cyber Deception, Honeytokens, and Line-Rate Firewall Interdiction for Shuffle SOAR
+contact_info:
+  name: DECTRAX Security Engineering
+  url: https://dectrax.com
+  email: support@dectrax.com
+tags:
+  - Deception
+  - Incident Response
+  - Threat Intelligence
+  - Firewall
+categories:
+  - Network
+  - Eradication
+  - Intelligence
+large_image: ""
+authentication:
+  required: true
+  parameters:
+    - name: apikey
+      description: DECTRAX API Bearer Token
+      example: "sec_tok_live_demo_98234"
+      required: true
+      schema:
+        type: string
+actions:
+  - name: block_ip
+    description: Automatically publishes an attacker IP into the DECTRAX External Dynamic List (EDL) feed for immediate sub-1.5s perimeter drop across Palo Alto, Fortinet, and Linux firewalls.
+    parameters:
+      - name: ip
+        description: Malicious attacker IPv4 address to quarantine
+        required: true
+        example: "198.51.100.42"
+        schema:
+          type: string
+      - name: reason
+        description: Incident justification or trigger identifier
+        required: false
+        example: "Shuffle SOAR Automated Interdiction"
+        default: "Shuffle SOAR Automated Interdiction"
+        schema:
+          type: string
+      - name: base_url
+        description: Optional override for DECTRAX on-premise controller
+        required: false
+        example: "https://api.dectrax.com"
+        default: "https://api.dectrax.com"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: object
+  - name: get_blocked_ips
+    description: Fetches the current newline-delimited external dynamic list consumed by Linux nftables, Palo Alto Networks, and Fortinet firewalls.
+    parameters:
+      - name: base_url
+        description: Optional override for DECTRAX on-premise controller
+        required: false
+        example: "https://api.dectrax.com"
+        default: "https://api.dectrax.com"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: object
+  - name: get_recent_threats
+    description: Retrieves high-fidelity honeypot breach events and attacker TTPs with deterministic 0.00% false positive accuracy.
+    parameters:
+      - name: limit
+        description: Maximum number of events to retrieve
+        required: false
+        example: 50
+        default: 50
+        schema:
+          type: integer
+      - name: base_url
+        description: Optional override for DECTRAX on-premise controller
+        required: false
+        example: "https://api.dectrax.com"
+        default: "https://api.dectrax.com"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: object
+  - name: generate_honeytoken
+    description: Provisions on-demand canary credentials, decoy AWS access keys, or fake Kerberos SPNs to plant across production hosts.
+    parameters:
+      - name: token_type
+        description: Type of synthetic canary asset to generate (aws_key, database_creds, jwt_token, kerberos_spn)
+        required: false
+        example: "aws_key"
+        default: "aws_key"
+        schema:
+          type: string
+      - name: memo
+        description: Deployment location notes or host identifier
+        required: false
+        example: "Shuffle Automated Deployment"
+        default: "Shuffle Automated Deployment"
+        schema:
+          type: string
+      - name: base_url
+        description: Optional override for DECTRAX on-premise controller
+        required: false
+        example: "https://api.dectrax.com"
+        default: "https://api.dectrax.com"
+        schema:
+          type: string
+    returns:
+      schema:
+        type: object
