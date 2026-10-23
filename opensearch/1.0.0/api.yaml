@@ -22,19 +22,19 @@ authentication:
       example: "adf5e3d0fd85633be17004735a0a119e"
       required: false
       schema:
-        type: file
+        type: string
     - name: client_key
       description: Client private key for mTLS. Supports Shuffle file ID, local file path, or inline PEM.
       example: "9a1b2c3d4e5f67890123456789abcdef"
       required: false
       schema:
-        type: file
+        type: string
     - name: ca_cert
       description: CA certificate for TLS verification. Supports Shuffle file ID, local file path, or inline PEM.
       example: "0f91affa651ff09f4e7b0c3d2a1b9c8d"
       required: false
       schema:
-        type: file
+        type: string
     - name: username
       description: OpenSearch username for basic authentication.
       example: "admin"
