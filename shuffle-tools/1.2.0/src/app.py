@@ -2952,48 +2952,51 @@ class Tools(AppBase):
         else:
             port = 22
 
-        if private_key_file_id:
-            new_file = self.get_file(private_key_file_id)
-
-            try:
-                key_data = new_file["data"].decode()
-            except Exception as e:
-                return {"success": "false", "message": str(e)}
-
-            private_key_file = StringIO()
-            private_key_file.write(key_data)
-            private_key_file.seek(0)
-            private_key = paramiko.RSAKey.from_private_key(private_key_file)
-
-            try:
-                ssh_client.connect(
-                    hostname=host, username=user_name, port=port, pkey=private_key
-                )
-            except Exception as e:
-                return {"success": "false", "message": str(e)}
-        else:
-            try:
-                ssh_client.connect(
-                    hostname=host, username=user_name, port=port, password=str(password)
-                )
-            except Exception as e:
-                return {"success": "false", "message": str(e)}
-
         try:
-            stdin, stdout, stderr = ssh_client.exec_command(str(command))
-            try:
-                errorLog = stderr.read().decode(errors="ignore")
-            except Exception as e:
-                errorLog = f"Failed to read stderr {e}"
-            try:
-                output = stdout.read().decode(errors="ignore")
-            except Exception as e:
-                output = f"Failed to read stdout {e}"
+            if private_key_file_id:
+                new_file = self.get_file(private_key_file_id)
 
-        except Exception as e:
-            return {"success": "false", "message": str(e)}
+                try:
+                    key_data = new_file["data"].decode()
+                except Exception as e:
+                    return {"success": "false", "message": str(e)}
 
-        return {"success": "true", "output": output, "error_logs": errorLog}
+                private_key_file = StringIO()
+                private_key_file.write(key_data)
+                private_key_file.seek(0)
+                private_key = paramiko.RSAKey.from_private_key(private_key_file)
+
+                try:
+                    ssh_client.connect(
+                        hostname=host, username=user_name, port=port, pkey=private_key
+                    )
+                except Exception as e:
+                    return {"success": "false", "message": str(e)}
+            else:
+                try:
+                    ssh_client.connect(
+                        hostname=host, username=user_name, port=port, password=str(password)
+                    )
+                except Exception as e:
+                    return {"success": "false", "message": str(e)}
+
+            try:
+                stdin, stdout, stderr = ssh_client.exec_command(str(command))
+                try:
+                    errorLog = stderr.read().decode(errors="ignore")
+                except Exception as e:
+                    errorLog = f"Failed to read stderr {e}"
+                try:
+                    output = stdout.read().decode(errors="ignore")
+                except Exception as e:
+                    output = f"Failed to read stdout {e}"
+
+            except Exception as e:
+                return {"success": "false", "message": str(e)}
+
+            return {"success": "true", "output": output, "error_logs": errorLog}
+        finally:
+            ssh_client.close()
 
     def cleanup_ioc_data(self, input_data):
         # Remove unecessary parts like { and }, quotes etc
