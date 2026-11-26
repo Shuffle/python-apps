@@ -109,6 +109,13 @@ actions:
         required: true
         schema:
           type: string
+      - name: artifact
+        description: Artifact, or Artifact/Source, to read (needed for artifacts with several sources, e.g. Generic.Client.Info/BasicInformation). Leave empty for the previous behaviour.
+        multiline: false
+        example: Generic.Client.Info/BasicInformation
+        required: false
+        schema:
+          type: string
     returns:
       schema:
         type: string
