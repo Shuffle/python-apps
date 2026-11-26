@@ -46,7 +46,7 @@ class Velociraptor(AppBase):
 
         return creds, config
 
-    def request(self, api_config, query):
+    def request(self, api_config, query, org_id=""):
         creds = self.auth(api_config)[0]
         config = self.auth(api_config)[1]
         options = (('grpc.ssl_target_name_override', "VelociraptorServer",),)
@@ -55,6 +55,8 @@ class Velociraptor(AppBase):
             client_query = query
             client_request = api_pb2.VQLCollectorArgs(
                 max_wait=60,
+                # Velociraptor org to run in; empty means the root org, as before.
+                org_id=(org_id or "").strip(),
                 Query=[api_pb2.VQLRequest(
                 Name="ShuffleQuery",
                 VQL=client_query,
@@ -66,45 +68,45 @@ class Velociraptor(AppBase):
                     r = r + json.loads(response.Response)
             return r
 
-    def add_client_label(self, api_config, client_id, label):
+    def add_client_label(self, api_config, client_id, label, org_id=""):
         query = "SELECT label(client_id='" + client_id + "', labels=['" + label  +"'], op='set') FROM scope()'"
-        results = self.request(api_config, query)
+        results = self.request(api_config, query, org_id)
         return results
 
 
-    def get_client_label(self, api_config, client_id, label):
+    def get_client_label(self, api_config, client_id, label, org_id=""):
         query = "SELECT label(client_id='" + client_id + "', labels=['" + label  +"'], op='check') FROM scope()'"
-        results = self.request(api_config, query)
+        results = self.request(api_config, query, org_id)
         return results
 
-    def remove_client_label(self, api_config, client_id, label):
+    def remove_client_label(self, api_config, client_id, label, org_id=""):
         query = "SELECT label(client_id='" + client_id + "', labels=['" + label  +"'], op='remove') FROM scope()'"
-        results = self.request(api_config, query)
+        results = self.request(api_config, query, org_id)
         return results
 
 
-    def add_client_quarantine(self, api_config, client_id):
+    def add_client_quarantine(self, api_config, client_id, org_id=""):
         query = 'SELECT collect_client(client_id="' + client_id + '", artifacts=["Windows.Remediation.Quarantine"], spec=dict(`Windows.Remediation.Quarantine`=dict())) FROM scope()' 
-        results = self.request(api_config, query)
+        results = self.request(api_config, query, org_id)
         return results
 
-    def remove_client_quarantine(self, api_config, client_id):
+    def remove_client_quarantine(self, api_config, client_id, org_id=""):
         query = 'SELECT collect_client(client_id="' + client_id + '", artifacts=["Windows.Remediation.Quarantine"], spec=dict(`Windows.Remediation.Quarantine`=dict(`RemovePolicy`="Y"))) FROM scope()'
-        results = self.request(api_config, query)
+        results = self.request(api_config, query, org_id)
         return results
 
-    def get_artifact_definitions(self, api_config):
+    def get_artifact_definitions(self, api_config, org_id=""):
         query = 'SELECT name, description, parameters FROM artifact_definitions(deps=True)'
-        results = self.request(api_config, query)
+        results = self.request(api_config, query, org_id)
         return results
 
-    def get_client_id(self, api_config, host):
+    def get_client_id(self, api_config, host, org_id=""):
         try:
             if ipaddress.ip_address(host):
                 query = "SELECT client_id FROM clients() WHERE last_ip =~ '" + host + "'"  
         except:
             query = "SELECT client_id FROM clients(search=" + host + ")"
-        results = self.request(api_config, query)
+        results = self.request(api_config, query, org_id)
         
         try:
             return {
@@ -118,50 +120,50 @@ class Velociraptor(AppBase):
                 "details": f"{e}"
             }
 
-    def get_client_flows(self, api_config, client_id):
+    def get_client_flows(self, api_config, client_id, org_id=""):
         query = "SELECT * FROM flows(client_id='" + client_id  + "')"
-        results = self.request(api_config, query)
+        results = self.request(api_config, query, org_id)
         return results
 
-    def get_client_flow_results(self, api_config, client_id, flow_id):
-        state = self.get_client_flow_status(api_config, client_id, flow_id)
+    def get_client_flow_results(self, api_config, client_id, flow_id, org_id=""):
+        state = self.get_client_flow_status(api_config, client_id, flow_id, org_id)
         while (state == "RUNNING"):
-            state = self.get_client_flow_status(api_config, client_id, flow_id)
+            state = self.get_client_flow_status(api_config, client_id, flow_id, org_id)
             if state == "FINISHED":
                 break
             else:
                 time.sleep(5)
         query = "SELECT * FROM flow_results(flow_id='" + flow_id  + "', client_id='" + client_id  + "')"
-        results = self.request(api_config, query)
+        results = self.request(api_config, query, org_id)
         return results[0]
 
-    def get_client_flow_status(self, api_config, client_id, flow_id):
+    def get_client_flow_status(self, api_config, client_id, flow_id, org_id=""):
         query = "SELECT * FROM flows(flow_id='" + flow_id  + "', client_id='" + client_id  + "')"
-        results = self.request(api_config, query)
+        results = self.request(api_config, query, org_id)
         return results[0]['state']
 
-    def get_hunt_flows(self, api_config, hunt_id):
+    def get_hunt_flows(self, api_config, hunt_id, org_id=""):
         query = 'SELECT * FROM hunt_flows(hunt_id="' + hunt_id  + '")'
-        results = results = self.request(api_config, query)
+        results = results = self.request(api_config, query, org_id)
         return results[0]
 
-    def get_hunt_results(self, api_config, hunt_id):
+    def get_hunt_results(self, api_config, hunt_id, org_id=""):
         query = 'SELECT * FROM hunt_results(hunt_id="' + hunt_id  + '")'
-        results = results = self.request(api_config, query)
+        results = results = self.request(api_config, query, org_id)
         return results
 
-    def search_with_custom_query(self, api_config, query):
-        results = results = self.request(api_config, query)
+    def search_with_custom_query(self, api_config, query, org_id=""):
+        results = results = self.request(api_config, query, org_id)
         return results
 
-    def search_filename(self, api_config, filepath, filename):
+    def search_filename(self, api_config, filepath, filename, org_id=""):
         query = 'SELECT hunt(description=\"Shuffle Filename Hunt::' + filename + '\", expires=(now() + 60) * 1000000,artifacts=[\"Linux.Search.FileFinder\",\"MacOS.Search.FileFinder\","Windows.Forensics.FilenameSearch\"],spec=dict(`Linux.Search.FileFinder`=dict(`SearchFilesGlob`=\"' + filename + '\"),`MacOS.Search.FileFinder`=dict(`SearchFilesGlob`=\"' + filename + '\"),`Windows.Forensics.FilenameSearch`=dict(`yaraRule`=\"wide nocase:' + filepath + filename + '\"))) AS Hunt FROM scope()'
-        results = self.request(api_config, query)
+        results = self.request(api_config, query, org_id)
         return results[0]
 
-    def search_hash(self, api_config, filehash):
+    def search_hash(self, api_config, filehash, org_id=""):
         query = 'SELECT hunt(description=\"Shuffle Hash Hunt::' + filehash + '", expires=(now() + 60) * 1000000, artifacts=[\"Generic.Forensic.LocalHashes.Query\"],spec=dict(`Generic.Forensic.LocalHashes.Query`=dict(Hashes="Hash\\n' + filehash + '\\n"))) AS Hunt from scope()'
-        results = results = self.request(api_config, query)
+        results = results = self.request(api_config, query, org_id)
         return results[0]
 
 if __name__ == "__main__":
